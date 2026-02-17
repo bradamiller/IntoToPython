@@ -1,0 +1,462 @@
+#!/usr/bin/env python3
+"""Generate PowerPoint for Module 2 Lesson 10: Final Project."""
+
+from pptx import Presentation
+from pptx.util import Inches, Pt
+from pptx.dml.color import RGBColor
+from pptx.enum.text import PP_ALIGN
+from pptx.enum.shapes import MSO_SHAPE
+import os
+
+DARK_BLUE = RGBColor(0x1B, 0x3A, 0x5C)
+BLACK = RGBColor(0x00, 0x00, 0x00)
+WHITE = RGBColor(0xFF, 0xFF, 0xFF)
+DARK_GRAY = RGBColor(0x33, 0x33, 0x33)
+LIGHT_GRAY = RGBColor(0xF0, 0xF0, 0xF0)
+MEDIUM_GRAY = RGBColor(0x99, 0x99, 0x99)
+ACCENT_BLUE = RGBColor(0x2E, 0x75, 0xB6)
+TABLE_HEADER_BG = RGBColor(0x2E, 0x75, 0xB6)
+TABLE_ALT_BG = RGBColor(0xE8, 0xF0, 0xF8)
+GREEN = RGBColor(0x17, 0x7B, 0x41)
+
+TITLE_FONT = "Calibri"
+BODY_FONT = "Calibri"
+CODE_FONT = "Courier New"
+SLIDE_WIDTH = Inches(13.333)
+SLIDE_HEIGHT = Inches(7.5)
+
+
+def add_title_bar(slide, title_text):
+    shape = slide.shapes.add_shape(
+        MSO_SHAPE.RECTANGLE, Inches(0), Inches(0), SLIDE_WIDTH, Inches(1.2))
+    shape.fill.solid()
+    shape.fill.fore_color.rgb = DARK_BLUE
+    shape.line.fill.background()
+    txBox = slide.shapes.add_textbox(Inches(0.6), Inches(0.15), Inches(12), Inches(0.9))
+    tf = txBox.text_frame
+    tf.word_wrap = True
+    p = tf.paragraphs[0]
+    p.text = title_text
+    p.font.size = Pt(32)
+    p.font.color.rgb = WHITE
+    p.font.bold = True
+    p.font.name = TITLE_FONT
+
+
+def add_bullet_text(text_frame, text, level=0, font_size=Pt(18), bold=False, color=BLACK):
+    p = text_frame.add_paragraph()
+    p.text = text
+    p.level = level
+    p.font.size = font_size
+    p.font.color.rgb = color
+    p.font.name = BODY_FONT
+    p.font.bold = bold
+    p.space_after = Pt(6)
+    return p
+
+
+def add_code_block(slide, code_text, left, top, width, height, font_size=Pt(14)):
+    bg = slide.shapes.add_shape(
+        MSO_SHAPE.ROUNDED_RECTANGLE, left, top, width, height)
+    bg.fill.solid()
+    bg.fill.fore_color.rgb = LIGHT_GRAY
+    bg.line.color.rgb = MEDIUM_GRAY
+    bg.line.width = Pt(1)
+    txBox = slide.shapes.add_textbox(
+        left + Inches(0.2), top + Inches(0.1),
+        width - Inches(0.4), height - Inches(0.2))
+    tf = txBox.text_frame
+    tf.word_wrap = False
+    for i, line in enumerate(code_text.strip().split('\n')):
+        p = tf.paragraphs[0] if i == 0 else tf.add_paragraph()
+        p.text = line
+        p.font.size = font_size
+        p.font.name = CODE_FONT
+        p.font.color.rgb = DARK_GRAY
+        p.space_after = Pt(1)
+
+
+def add_label(slide, text, left, top, width, height,
+              font_size=Pt(18), bold=True, color=DARK_BLUE):
+    txBox = slide.shapes.add_textbox(left, top, width, height)
+    tf = txBox.text_frame
+    tf.word_wrap = True
+    p = tf.paragraphs[0]
+    p.text = text
+    p.font.size = font_size
+    p.font.bold = bold
+    p.font.color.rgb = color
+    p.font.name = BODY_FONT
+    return txBox
+
+
+def add_table(slide, headers, rows, left, top, width, col_widths=None,
+              row_height=Inches(0.45), font_size=Pt(13)):
+    num_rows = len(rows) + 1
+    num_cols = len(headers)
+    table_shape = slide.shapes.add_table(
+        num_rows, num_cols, left, top, width, row_height * num_rows)
+    table = table_shape.table
+    if col_widths:
+        for i, w in enumerate(col_widths):
+            table.columns[i].width = w
+    else:
+        cw = int(width / num_cols)
+        for i in range(num_cols):
+            table.columns[i].width = cw
+    for i, header in enumerate(headers):
+        cell = table.cell(0, i)
+        cell.text = header
+        cell.fill.solid()
+        cell.fill.fore_color.rgb = TABLE_HEADER_BG
+        for p in cell.text_frame.paragraphs:
+            p.font.size = Pt(14)
+            p.font.bold = True
+            p.font.color.rgb = WHITE
+            p.font.name = BODY_FONT
+            p.alignment = PP_ALIGN.CENTER
+    for r, row in enumerate(rows):
+        for c, val in enumerate(row):
+            cell = table.cell(r + 1, c)
+            cell.text = val
+            if r % 2 == 1:
+                cell.fill.solid()
+                cell.fill.fore_color.rgb = TABLE_ALT_BG
+            for p in cell.text_frame.paragraphs:
+                p.font.size = font_size
+                p.font.name = BODY_FONT
+                p.alignment = PP_ALIGN.CENTER
+
+
+def create_content_area(slide):
+    txBox = slide.shapes.add_textbox(Inches(0.6), Inches(1.5), Inches(12), Inches(5.5))
+    tf = txBox.text_frame
+    tf.word_wrap = True
+    return tf
+
+
+def build_presentation():
+    prs = Presentation()
+    prs.slide_width = SLIDE_WIDTH
+    prs.slide_height = SLIDE_HEIGHT
+    blank_layout = prs.slide_layouts[6]
+
+    # ════════════════════════════════════════
+    # SLIDE 1: Title & Learning Objectives
+    # ════════════════════════════════════════
+    slide = prs.slides.add_slide(blank_layout)
+
+    bg = slide.shapes.add_shape(MSO_SHAPE.RECTANGLE,
+        Inches(0), Inches(0), SLIDE_WIDTH, Inches(3.0))
+    bg.fill.solid()
+    bg.fill.fore_color.rgb = DARK_BLUE
+    bg.line.fill.background()
+
+    txBox = slide.shapes.add_textbox(Inches(0.8), Inches(0.5), Inches(11), Inches(0.6))
+    tf = txBox.text_frame
+    p = tf.paragraphs[0]
+    p.text = "Module 2: Line Tracking"
+    p.font.size = Pt(20)
+    p.font.color.rgb = RGBColor(0xA0, 0xC4, 0xE8)
+    p.font.name = TITLE_FONT
+
+    txBox = slide.shapes.add_textbox(Inches(0.8), Inches(1.0), Inches(11), Inches(1.5))
+    tf = txBox.text_frame
+    p = tf.paragraphs[0]
+    p.text = "Lesson 10: Module 2 Final Project"
+    p.font.size = Pt(40)
+    p.font.color.rgb = WHITE
+    p.font.bold = True
+    p.font.name = TITLE_FONT
+
+    txBox = slide.shapes.add_textbox(Inches(0.8), Inches(3.4), Inches(6), Inches(3.5))
+    tf = txBox.text_frame
+    p = tf.paragraphs[0]
+    p.text = "Learning Objectives"
+    p.font.size = Pt(22)
+    p.font.bold = True
+    p.font.color.rgb = DARK_BLUE
+    p.font.name = TITLE_FONT
+
+    for obj in [
+        "Integrate LineSensor and LineTrack into a complete program",
+        "Write a main program that follows the circle and reverses at the cross",
+        "Test, debug, and refine a working robot program",
+        "Present and reflect on your work",
+    ]:
+        add_bullet_text(tf, obj, level=0, font_size=Pt(17), color=DARK_GRAY)
+
+    txBox = slide.shapes.add_textbox(Inches(7.5), Inches(3.4), Inches(5.5), Inches(3.5))
+    tf = txBox.text_frame
+    p = tf.paragraphs[0]
+    p.text = "Agenda"
+    p.font.size = Pt(22)
+    p.font.bold = True
+    p.font.color.rgb = DARK_BLUE
+    p.font.name = TITLE_FONT
+
+    for item, duration in [
+        ("Project overview & requirements", "10 min"),
+        ("Planning", "15 min"),
+        ("Implementation & testing", "30 min"),
+        ("Demo & reflection", "15 min"),
+    ]:
+        add_bullet_text(tf, f"{item}  ({duration})", level=0, font_size=Pt(16), color=DARK_GRAY)
+
+    # ════════════════════════════════════════
+    # SLIDE 2: Module 2 Journey
+    # ════════════════════════════════════════
+    slide = prs.slides.add_slide(blank_layout)
+    add_title_bar(slide, "Module 2 Journey")
+
+    txBox = slide.shapes.add_textbox(Inches(0.6), Inches(1.5), Inches(6.0), Inches(5.5))
+    tf = txBox.text_frame
+    tf.word_wrap = True
+    p = tf.paragraphs[0]
+    p.text = ""
+    add_bullet_text(tf, "Your progress:", level=0, font_size=Pt(20), bold=True, color=DARK_BLUE)
+    add_bullet_text(tf, "1. Lesson 1: Read sensors \u2713", level=0, font_size=Pt(17), color=DARK_GRAY)
+    add_bullet_text(tf, "2. Lesson 2: while loops \u2014 drive to edge \u2713", level=0, font_size=Pt(17), color=DARK_GRAY)
+    add_bullet_text(tf, "3. Lesson 3: if/else \u2014 bounce driving \u2713", level=0, font_size=Pt(17), color=DARK_GRAY)
+    add_bullet_text(tf, "4. Lesson 4: import random \u2014 random turns \u2713", level=0, font_size=Pt(17), color=DARK_GRAY)
+    add_bullet_text(tf, "5. Lesson 5: Proportional control \u2713", level=0, font_size=Pt(17), color=DARK_GRAY)
+    add_bullet_text(tf, "6. Lesson 6: Two-sensor line following \u2713", level=0, font_size=Pt(17), color=DARK_GRAY)
+    add_bullet_text(tf, "7. Lesson 7: Intersection detection \u2713", level=0, font_size=Pt(17), color=DARK_GRAY)
+    add_bullet_text(tf, "8. Lesson 8: LineSensor class \u2713", level=0, font_size=Pt(17), color=DARK_GRAY)
+    add_bullet_text(tf, "9. Lesson 9: LineTrack class \u2713", level=0, font_size=Pt(17), color=DARK_GRAY)
+
+    txBox = slide.shapes.add_textbox(Inches(7.0), Inches(3.0), Inches(6.0), Inches(1.5))
+    tf = txBox.text_frame
+    p = tf.paragraphs[0]
+    p.text = "10. Today: Put it ALL together!"
+    p.font.size = Pt(28)
+    p.font.bold = True
+    p.font.color.rgb = ACCENT_BLUE
+    p.font.name = BODY_FONT
+
+    # ════════════════════════════════════════
+    # SLIDE 3: Project Requirements
+    # ════════════════════════════════════════
+    slide = prs.slides.add_slide(blank_layout)
+    add_title_bar(slide, "Project Requirements")
+
+    txBox = slide.shapes.add_textbox(Inches(0.6), Inches(1.5), Inches(6.5), Inches(5.5))
+    tf = txBox.text_frame
+    tf.word_wrap = True
+    p = tf.paragraphs[0]
+    p.text = ""
+    add_bullet_text(tf, "The robot must:", level=0, font_size=Pt(20), bold=True, color=DARK_BLUE)
+    add_bullet_text(tf, "1. Follow the taped circle", level=0, font_size=Pt(18), color=DARK_GRAY)
+    add_bullet_text(tf, "2. Detect the cross intersection", level=0, font_size=Pt(18), color=DARK_GRAY)
+    add_bullet_text(tf, "3. Turn around (reverse direction)", level=0, font_size=Pt(18), color=DARK_GRAY)
+    add_bullet_text(tf, "4. Continue following", level=0, font_size=Pt(18), color=DARK_GRAY)
+    add_bullet_text(tf, "5. Repeat for 4 total reversals", level=0, font_size=Pt(18), bold=True, color=DARK_GRAY)
+    add_bullet_text(tf, "6. Stop and print a completion message", level=0, font_size=Pt(18), color=DARK_GRAY)
+
+    txBox = slide.shapes.add_textbox(Inches(7.5), Inches(1.5), Inches(5.5), Inches(5.5))
+    tf = txBox.text_frame
+    tf.word_wrap = True
+    p = tf.paragraphs[0]
+    p.text = ""
+    add_bullet_text(tf, "Code must:", level=0, font_size=Pt(20), bold=True, color=DARK_BLUE)
+    add_bullet_text(tf, "Use LineSensor and LineTrack classes",
+                    level=0, font_size=Pt(18), color=DARK_GRAY)
+    add_bullet_text(tf, "Include print statements showing progress",
+                    level=0, font_size=Pt(18), color=DARK_GRAY)
+    add_bullet_text(tf, "Be organized and commented",
+                    level=0, font_size=Pt(18), color=DARK_GRAY)
+
+    # ════════════════════════════════════════
+    # SLIDE 4: Project Options
+    # ════════════════════════════════════════
+    slide = prs.slides.add_slide(blank_layout)
+    add_title_bar(slide, "Project Options")
+
+    tf = create_content_area(slide)
+    p = tf.paragraphs[0]
+    p.text = ""
+    add_bullet_text(tf, "Option A: Standard (Recommended)",
+                    level=0, font_size=Pt(22), bold=True, color=DARK_BLUE)
+    add_bullet_text(tf, "Follow \u2192 detect \u2192 reverse \u2192 repeat 4 times \u2192 stop",
+                    level=0, font_size=Pt(19), color=DARK_GRAY)
+    add_bullet_text(tf, "Use existing classes without modification",
+                    level=0, font_size=Pt(19), color=DARK_GRAY)
+    add_bullet_text(tf, "", level=0)
+    add_bullet_text(tf, "Option B: Enhanced",
+                    level=0, font_size=Pt(22), bold=True, color=DARK_BLUE)
+    add_bullet_text(tf, "Option A plus: add turn_around() method, timing, LED feedback",
+                    level=0, font_size=Pt(19), color=DARK_GRAY)
+    add_bullet_text(tf, "", level=0)
+    add_bullet_text(tf, "Option C: Advanced",
+                    level=0, font_size=Pt(22), bold=True, color=DARK_BLUE)
+    add_bullet_text(tf, "Option A plus: off-line recovery, variable speed, creative additions",
+                    level=0, font_size=Pt(19), color=DARK_GRAY)
+
+    # ════════════════════════════════════════
+    # SLIDE 5: The Main Program
+    # ════════════════════════════════════════
+    slide = prs.slides.add_slide(blank_layout)
+    add_title_bar(slide, "The Main Program")
+
+    add_code_block(slide,
+        "board   = Board.get_default_board()\n"
+        "tracker = LineTrack()\n"
+        "\n"
+        "board.wait_for_button()\n"
+        'print("Starting!")\n'
+        "\n"
+        "for i in range(4):\n"
+        '    print("Leg", i + 1, "- Following...")\n'
+        "    tracker.track_until_cross()\n"
+        '    print("Cross! Reversing...")\n'
+        "    tracker.turn_right()\n"
+        "    tracker.turn_right()\n"
+        "\n"
+        'print("Done! 4 reversals complete.")',
+        Inches(0.6), Inches(1.5), Inches(8.0), Inches(5.5)
+    )
+
+    txBox = slide.shapes.add_textbox(Inches(8.8), Inches(1.5), Inches(4.2), Inches(5.5))
+    tf = txBox.text_frame
+    tf.word_wrap = True
+    p = tf.paragraphs[0]
+    p.text = ""
+    add_bullet_text(tf, "The power of classes:", level=0, font_size=Pt(20), bold=True, color=DARK_BLUE)
+    add_bullet_text(tf, "The main program is just ~10 lines!",
+                    level=0, font_size=Pt(18), color=DARK_GRAY)
+    add_bullet_text(tf, "", level=0)
+    add_bullet_text(tf, "All the complex sensor and motor code is hidden inside LineSensor and LineTrack.",
+                    level=0, font_size=Pt(17), color=DARK_GRAY)
+
+    # ════════════════════════════════════════
+    # SLIDE 6: Testing Strategy
+    # ════════════════════════════════════════
+    slide = prs.slides.add_slide(blank_layout)
+    add_title_bar(slide, "Testing Strategy")
+
+    add_label(slide, "Test incrementally:", Inches(0.6), Inches(1.4), Inches(12), Inches(0.5))
+
+    headers = ["Test", "What to Check"]
+    rows = [
+        ["Test 1", "Does track_until_cross() follow to the cross?"],
+        ["Test 2", "Does the turn-around work?"],
+        ["Test 3", "Does 1 full reversal work?"],
+        ["Test 4", "Do all 4 reversals complete?"],
+    ]
+    col_widths = [Inches(2.0), Inches(9.0)]
+    add_table(slide, headers, rows, Inches(0.6), Inches(2.0), Inches(11.5),
+              col_widths=col_widths, row_height=Inches(0.55))
+
+    txBox = slide.shapes.add_textbox(Inches(0.6), Inches(5.0), Inches(12), Inches(0.8))
+    tf = txBox.text_frame
+    p = tf.paragraphs[0]
+    p.text = "If something fails: Add print statements, check threshold, adjust parameters."
+    p.font.size = Pt(20)
+    p.font.bold = True
+    p.font.color.rgb = ACCENT_BLUE
+    p.font.name = BODY_FONT
+
+    # ════════════════════════════════════════
+    # SLIDE 7: Common Issues & Fixes
+    # ════════════════════════════════════════
+    slide = prs.slides.add_slide(blank_layout)
+    add_title_bar(slide, "Common Issues \u2014 and Fixes")
+
+    headers = ["Problem", "Fix"]
+    rows = [
+        ["Robot doesn\u2019t detect cross",         "Adjust threshold, widen tape cross"],
+        ["Robot loses line after turn",           "Adjust time.sleep() in turn methods"],
+        ["Robot goes wrong way after turn",       "Try turn_left() instead of turn_right()"],
+        ["Robot oscillates on the line",          "Reduce Kp value"],
+        ["Robot is too slow / too fast",          "Adjust base_effort"],
+    ]
+    col_widths = [Inches(5.0), Inches(6.5)]
+    add_table(slide, headers, rows, Inches(0.4), Inches(1.5), Inches(12.0),
+              col_widths=col_widths, row_height=Inches(0.55))
+
+    # ════════════════════════════════════════
+    # SLIDE 8: Rubric (50 points)
+    # ════════════════════════════════════════
+    slide = prs.slides.add_slide(blank_layout)
+    add_title_bar(slide, "Rubric (50 points)")
+
+    headers = ["Category", "Points"]
+    rows = [
+        ["Code organization (classes correct)", "10"],
+        ["Line following works",               "5"],
+        ["Cross detection works",              "5"],
+        ["Reversal works",                     "5"],
+        ["Completes 4 reversals",              "5"],
+        ["Testing evidence (prints)",          "6"],
+        ["Debugging process",                  "4"],
+        ["Demo works",                         "4"],
+        ["Code explanation",                   "3"],
+        ["Reflection",                         "3"],
+        ["Total",                              "50"],
+    ]
+    col_widths = [Inches(8.5), Inches(2.0)]
+    add_table(slide, headers, rows, Inches(1.0), Inches(1.5), Inches(10.5),
+              col_widths=col_widths, row_height=Inches(0.43))
+
+    # ════════════════════════════════════════
+    # SLIDE 9: Build Time!
+    # ════════════════════════════════════════
+    slide = prs.slides.add_slide(blank_layout)
+    add_title_bar(slide, "Build Time!")
+
+    tf = create_content_area(slide)
+    p = tf.paragraphs[0]
+    p.text = ""
+    add_bullet_text(tf, "Steps:", level=0, font_size=Pt(22), bold=True, color=DARK_BLUE)
+    add_bullet_text(tf, "1. Verify LineSensor and LineTrack classes work",
+                    level=0, font_size=Pt(20), color=DARK_GRAY)
+    add_bullet_text(tf, "2. Write main program",
+                    level=0, font_size=Pt(20), color=DARK_GRAY)
+    add_bullet_text(tf, "3. Test incrementally (1 reversal \u2192 4 reversals)",
+                    level=0, font_size=Pt(20), color=DARK_GRAY)
+    add_bullet_text(tf, "4. Debug and tune",
+                    level=0, font_size=Pt(20), color=DARK_GRAY)
+    add_bullet_text(tf, "5. Prepare for demo",
+                    level=0, font_size=Pt(20), color=DARK_GRAY)
+    add_bullet_text(tf, "", level=0)
+    add_bullet_text(tf, "Ask for help if stuck \u2014 debugging is part of the process!",
+                    level=0, font_size=Pt(20), bold=True, color=ACCENT_BLUE)
+
+    # ════════════════════════════════════════
+    # SLIDE 10: Looking Ahead — Module 3
+    # ════════════════════════════════════════
+    slide = prs.slides.add_slide(blank_layout)
+    add_title_bar(slide, "Looking Ahead \u2014 Module 3")
+
+    tf = create_content_area(slide)
+    p = tf.paragraphs[0]
+    p.text = ""
+    add_bullet_text(tf, "What you\u2019ve built:", level=0, font_size=Pt(22), bold=True, color=DARK_BLUE)
+    add_bullet_text(tf, "Reusable LineSensor and LineTrack classes",
+                    level=0, font_size=Pt(20), color=DARK_GRAY)
+    add_bullet_text(tf, "Skills: loops, conditionals, classes, composition",
+                    level=0, font_size=Pt(20), color=DARK_GRAY)
+    add_bullet_text(tf, "", level=0)
+    add_bullet_text(tf, "Module 3: Grid Driving", level=0, font_size=Pt(22), bold=True, color=DARK_BLUE)
+    add_bullet_text(tf, "Use LineTrack on a taped GRID",
+                    level=0, font_size=Pt(20), color=DARK_GRAY)
+    add_bullet_text(tf, "track_until_cross() drives between intersections",
+                    level=1, font_size=Pt(18), color=DARK_GRAY)
+    add_bullet_text(tf, "turn_right() and turn_left() navigate the grid",
+                    level=1, font_size=Pt(18), color=DARK_GRAY)
+    add_bullet_text(tf, "", level=0)
+    add_bullet_text(tf, "Your Module 2 classes are the foundation for everything that follows!",
+                    level=0, font_size=Pt(20), bold=True, color=ACCENT_BLUE)
+
+    # ── Save ──
+    output_path = os.path.join(
+        os.path.dirname(__file__),
+        "module-02-line-tracking", "slides", "10-final-project.pptx"
+    )
+    prs.save(output_path)
+    print(f"Presentation saved to: {output_path}")
+    print(f"Total slides: {len(prs.slides)}")
+
+
+if __name__ == "__main__":
+    build_presentation()
