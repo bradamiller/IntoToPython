@@ -77,9 +77,8 @@ class LineTrack:
 def track_until_cross(self):
     while not self.sensor.is_at_cross():
         error = self.sensor.get_error()
-        left = self.base_effort - error * self.Kp
-        right = self.base_effort + error * self.Kp
-        self.drivetrain.set_effort(left, right)
+        correction = error * self.Kp
+        self.drivetrain.arcade(self.base_effort, -correction)
     self.drivetrain.stop()
 ```
 
@@ -95,10 +94,10 @@ def track_until_cross(self):
 ```python
 def turn_right(self):
     # Drive forward to clear intersection
-    self.drivetrain.set_effort(self.base_effort, self.base_effort)
+    self.drivetrain.arcade(self.base_effort, 0)
     time.sleep(0.3)
     # Turn right
-    self.drivetrain.set_effort(0.3, -0.3)
+    self.drivetrain.arcade(0, 0.3)
     time.sleep(0.3)
     # Keep turning until line is found
     while self.sensor.is_off_line():

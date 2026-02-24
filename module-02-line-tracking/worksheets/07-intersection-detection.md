@@ -54,9 +54,8 @@ if left > threshold and right > threshold:
     drivetrain.turn(180)
 else:
     error = left - right
-    left_effort = base_effort - error * Kp
-    right_effort = base_effort + error * Kp
-    drivetrain.set_effort(left_effort, right_effort)
+    correction = error * Kp
+    drivetrain.arcade(base_effort, -correction)
 ```
 
 **Which branch runs?** (if / else) __________

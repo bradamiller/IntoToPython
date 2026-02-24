@@ -97,15 +97,15 @@ By the end of this lesson, students will be able to:
    | Both on black | 0.9 | 0.9 | 0.0 | Drive straight (intersection!) |
 
 3. **Step 3: Apply the Correction**
-   - The correction formula for two sensors:
+   - Calculate the correction and use `arcade()`:
      ```python
-     left_effort  = base_effort - error * Kp
-     right_effort = base_effort + error * Kp
+     correction = error * Kp
+     drivetrain.arcade(base_effort, -correction)
      ```
-   - Note the signs are REVERSED from Lesson 5. This is because:
+   - Note the NEGATIVE sign on the correction. This is because:
      - When error is positive (left sensor on line), we need to steer left
-     - Steering left means slowing the LEFT motor and speeding up the RIGHT motor
-     - So: left gets MINUS correction, right gets PLUS correction
+     - Negative turn value in `arcade()` steers left
+     - So: we negate the correction
 
 4. **Step 4: Build the Complete Program**
    - Walk through line by line:
@@ -134,9 +134,8 @@ By the end of this lesson, students will be able to:
          error = left_sensor - right_sensor
 
          # Apply correction
-         left_effort = base_effort - error * Kp
-         right_effort = base_effort + error * Kp
-         drivetrain.set_effort(left_effort, right_effort)
+         correction = error * Kp
+         drivetrain.arcade(base_effort, -correction)
 
          time.sleep(0.01)
      ```
@@ -148,18 +147,18 @@ By the end of this lesson, students will be able to:
    ```python
    sensor_value = reflectance.get_left()
    error = setpoint - sensor_value
-   left_effort = base_effort + error * Kp
-   right_effort = base_effort - error * Kp
+   correction = error * Kp
+   drivetrain.arcade(base_effort, correction)
    ```
 
    **Two sensors (this lesson):**
    ```python
    error = reflectance.get_left() - reflectance.get_right()
-   left_effort = base_effort - error * Kp
-   right_effort = base_effort + error * Kp
+   correction = error * Kp
+   drivetrain.arcade(base_effort, -correction)
    ```
 
-   - Key differences: no setpoint needed, signs are different, uses both sensors
+   - Key differences: no setpoint needed, correction is negated, uses both sensors
 
 6. **Demo on the Robot**
    - Upload and run on the taped circle
@@ -184,13 +183,12 @@ By the end of this lesson, students will be able to:
          right_sensor = reflectance.get_right()
          error = left_sensor - right_sensor
 
-         left_effort = base_effort - error * Kp
-         right_effort = base_effort + error * Kp
-         drivetrain.set_effort(left_effort, right_effort)
+         correction = error * Kp
+         drivetrain.arcade(base_effort, -correction)
 
          loop_count = loop_count + 1
          if loop_count % 50 == 0:
-             print(f"L={left_sensor:.2f} R={right_sensor:.2f} err={error:.2f} Lm={left_effort:.2f} Rm={right_effort:.2f}")
+             print(f"L={left_sensor:.2f} R={right_sensor:.2f} err={error:.2f} corr={correction:.2f}")
 
          time.sleep(0.01)
      ```
@@ -294,9 +292,8 @@ while True:
     error = left_sensor - right_sensor
 
     # Apply correction
-    left_effort = base_effort - error * Kp
-    right_effort = base_effort + error * Kp
-    drivetrain.set_effort(left_effort, right_effort)
+    correction = error * Kp
+    drivetrain.arcade(base_effort, -correction)
 
     time.sleep(0.01)
 ```
@@ -324,20 +321,19 @@ while True:
     right_sensor = reflectance.get_right()
     error = left_sensor - right_sensor
 
-    left_effort = base_effort - error * Kp
-    right_effort = base_effort + error * Kp
-    drivetrain.set_effort(left_effort, right_effort)
+    correction = error * Kp
+    drivetrain.arcade(base_effort, -correction)
 
     loop_count = loop_count + 1
     if loop_count % 50 == 0:
-        print(f"L={left_sensor:.2f}  R={right_sensor:.2f}  err={error:.2f}  Lm={left_effort:.2f}  Rm={right_effort:.2f}")
+        print(f"L={left_sensor:.2f}  R={right_sensor:.2f}  err={error:.2f}  corr={correction:.2f}")
 
     time.sleep(0.01)
 ```
 
 ## Teaching Notes
 - **Sensor placement matters**: The two sensors should straddle the line. If the line is very thin or the sensors are too far apart, the robot may not see the line with both sensors simultaneously. Adjust tape width or robot position as needed.
-- **The sign reversal is confusing**: Spend time on WHY `left_effort = base - error * Kp` instead of `base + error * Kp`. Draw it on the board: if the left sensor sees the line (positive error), the robot has drifted left, so it needs to steer right, which means slow the left motor.
+- **The negative sign**: Spend time on WHY `arcade(base, -correction)` uses a negative sign. Draw it on the board: if the left sensor sees the line (positive error), the robot has drifted left, so it needs to steer left to get back. A negative turn value in arcade steers left.
 - **Start with the explorer program**: Having students manually slide the robot over the line while watching sensor values print is very effective. They see the error go positive, negative, and zero in real time.
 - **Both sensors high**: Point out the last row of the error table -- both sensors reading high gives error near 0. This is ambiguous: the robot might be centered, or it might be at an intersection. Lesson 7 will address this.
 - **Kp may need re-tuning**: The Kp that worked in Lesson 5 may not be optimal here. The error values have a different range, so encourage students to tune again.

@@ -23,10 +23,7 @@ while True:
     # TODO: Calculate error (left - right)
     # error = ???
 
-    # TODO: Calculate motor efforts
-    # left_effort = base_effort - error * Kp
-    # right_effort = base_effort + error * Kp
-
-    # TODO: Apply to motors
-    # drivetrain.set_effort(left_effort, right_effort)
+    # TODO: Calculate correction and apply using arcade
+    # correction = error * Kp
+    # drivetrain.arcade(base_effort, -correction)
     pass

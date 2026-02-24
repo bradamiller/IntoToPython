@@ -19,6 +19,5 @@ print("Proportional line following started!")
 while True:
     sensor = reflectance.get_left()
     error = setpoint - sensor
-    left_effort = base_effort + error * Kp
-    right_effort = base_effort - error * Kp
-    drivetrain.set_effort(left_effort, right_effort)
+    correction = error * Kp
+    drivetrain.arcade(base_effort, correction)

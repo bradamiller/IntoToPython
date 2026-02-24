@@ -34,8 +34,8 @@ while True:
     if left > threshold and right > threshold:
         drivetrain.stop()
         break
-    drivetrain.set_effort(base_effort - error * kp,
-                          base_effort + error * kp)
+    correction = error * kp
+    drivetrain.arcade(base_effort, -correction)
 ```
 
 **Problems:**

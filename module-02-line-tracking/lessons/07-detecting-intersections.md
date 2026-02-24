@@ -113,9 +113,8 @@ By the end of this lesson, students will be able to:
        else:
            # Normal line following
            error = left - right
-           left_effort = base_effort - error * Kp
-           right_effort = base_effort + error * Kp
-           drivetrain.set_effort(left_effort, right_effort)
+           correction = error * Kp
+           drivetrain.arcade(base_effort, -correction)
    ```
 
 3. **Explain the Logic**:
@@ -160,9 +159,8 @@ By the end of this lesson, students will be able to:
           time.sleep(0.3)
       else:
           error = left - right
-          left_effort = base_effort - error * Kp
-          right_effort = base_effort + error * Kp
-          drivetrain.set_effort(left_effort, right_effort)
+          correction = error * Kp
+          drivetrain.arcade(base_effort, -correction)
 
   drivetrain.stop()
   print("Done! Crossed", cross_count, "times.")
@@ -236,9 +234,8 @@ while True:
         time.sleep(0.3)
     else:
         error = left - right
-        left_effort = base_effort - error * Kp
-        right_effort = base_effort + error * Kp
-        drivetrain.set_effort(left_effort, right_effort)
+        correction = error * Kp
+        drivetrain.arcade(base_effort, -correction)
 ```
 
 ## Teaching Notes

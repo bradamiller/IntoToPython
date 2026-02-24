@@ -31,7 +31,7 @@ Fill in the blanks to complete the composition diagram:
 ┌──────────────────┐       ┌──────────────────────┐
 │   LineSensor     │       │  DifferentialDrive    │
 │                  │       │                       │
-│ get_error()      │       │ set_effort(l, r)      │
+│ get_error()      │       │ arcade(speed, turn)   │
 │ is_at_cross()    │       │ stop()                │
 │ is_off_line()    │       │                       │
 └──────┬───────────┘       └──────────┬────────────┘
@@ -55,9 +55,8 @@ Fill in the blanks to complete the composition diagram:
 def track_until_cross(self):
     while not self.sensor.is_at_cross():
         error = self.sensor.get_error()
-        left = self.base_effort - error * self.Kp
-        right = self.base_effort + error * self.Kp
-        self.drivetrain.set_effort(left, right)
+        correction = error * self.Kp
+        self.drivetrain.arcade(self.base_effort, -correction)
     self.drivetrain.stop()
 ```
 
@@ -77,9 +76,9 @@ def track_until_cross(self):
 
 ```python
 def turn_right(self):
-    self.drivetrain.set_effort(self.base_effort, self.base_effort)
+    self.drivetrain.arcade(self.base_effort, 0)
     time.sleep(0.3)
-    self.drivetrain.set_effort(0.3, -0.3)
+    self.drivetrain.arcade(0, 0.3)
     time.sleep(0.3)
     while self.sensor.is_off_line():
         pass
@@ -139,13 +138,12 @@ tracker.turn_right()
 ```python
 while not (reflectance.get_left() > 0.5 and reflectance.get_right() > 0.5):
     error = reflectance.get_left() - reflectance.get_right()
-    left = 0.4 - error * 0.5
-    right = 0.4 + error * 0.5
-    drivetrain.set_effort(left, right)
+    correction = error * 0.5
+    drivetrain.arcade(0.4, -correction)
 drivetrain.stop()
-drivetrain.set_effort(0.4, 0.4)
+drivetrain.arcade(0.4, 0)
 time.sleep(0.3)
-drivetrain.set_effort(0.3, -0.3)
+drivetrain.arcade(0, 0.3)
 time.sleep(0.3)
 while reflectance.get_left() < 0.5 and reflectance.get_right() < 0.5:
     pass

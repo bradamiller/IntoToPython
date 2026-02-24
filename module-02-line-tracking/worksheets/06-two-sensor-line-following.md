@@ -36,15 +36,13 @@ Fill in the table. The first row is done for you.
 
 ## Part 3: Calculating Motor Efforts
 
-**Formulas:**
-```
-left_effort  = base_effort - error * Kp
-right_effort = base_effort + error * Kp
-```
+**Formula:** `arcade(base_effort, -correction)` where `correction = error * Kp`
+
+Remember: `arcade(speed, turn)` sets left motor to `speed + turn` and right motor to `speed - turn`.
 
 With `base_effort = 0.3` and `Kp = 0.5`, fill in the table:
 
-| error | error * Kp | left_effort | right_effort | Which motor faster? |
+| error | correction | -correction | left motor (0.3 + turn) | right motor (0.3 - turn) | Which motor faster? |
 |---|---|---|---|---|
 | +0.6 | _________ | _________ | _________ | _________ |
 | +0.2 | _________ | _________ | _________ | _________ |
@@ -65,9 +63,10 @@ Trace through the complete calculation for each scenario.
 | left_sensor | (given) | 0.75 |
 | right_sensor | (given) | 0.15 |
 | error | 0.75 - 0.15 = | _________ |
-| error * Kp | _________ * 0.5 = | _________ |
-| left_effort | 0.3 - _________ = | _________ |
-| right_effort | 0.3 + _________ = | _________ |
+| correction | _________ * 0.5 = | _________ |
+| arcade call | arcade(0.3, -_________) | |
+| left motor | 0.3 + (-_________) = | _________ |
+| right motor | 0.3 - (-_________) = | _________ |
 
 The robot steers: LEFT / RIGHT (circle one)
 
@@ -80,9 +79,10 @@ This is: CORRECT / INCORRECT because ________________________________________
 | left_sensor | (given) | 0.20 |
 | right_sensor | (given) | 0.70 |
 | error | 0.20 - 0.70 = | _________ |
-| error * Kp | _________ * 0.5 = | _________ |
-| left_effort | 0.3 - _________ = | _________ |
-| right_effort | 0.3 + _________ = | _________ |
+| correction | _________ * 0.5 = | _________ |
+| arcade call | arcade(0.3, -_________) | |
+| left motor | 0.3 + (-_________) = | _________ |
+| right motor | 0.3 - (-_________) = | _________ |
 
 The robot steers: LEFT / RIGHT (circle one)
 
@@ -95,27 +95,28 @@ This is: CORRECT / INCORRECT because ________________________________________
 | left_sensor | (given) | 0.45 |
 | right_sensor | (given) | 0.45 |
 | error | 0.45 - 0.45 = | _________ |
-| error * Kp | _________ * 0.5 = | _________ |
-| left_effort | 0.3 - _________ = | _________ |
-| right_effort | 0.3 + _________ = | _________ |
+| correction | _________ * 0.5 = | _________ |
+| arcade call | arcade(0.3, -_________) | |
+| left motor | 0.3 + (-_________) = | _________ |
+| right motor | 0.3 - (-_________) = | _________ |
 
 The robot: STEERS LEFT / STEERS RIGHT / DRIVES STRAIGHT (circle one)
 
-## Part 5: Why Are the Signs Different?
+## Part 5: Why the Negative Sign?
 
-In Lesson 5 (one sensor), the motor formula was:
-```
-left_effort  = base_effort + correction
-right_effort = base_effort - correction
-```
-
-In Lesson 6 (two sensors), the motor formula is:
-```
-left_effort  = base_effort - error * Kp
-right_effort = base_effort + error * Kp
+In Lesson 5 (one sensor), the arcade call was:
+```python
+correction = error * Kp
+drivetrain.arcade(base_effort, correction)
 ```
 
-The signs flipped! Explain why in your own words:
+In Lesson 6 (two sensors), the arcade call is:
+```python
+correction = error * Kp
+drivetrain.arcade(base_effort, -correction)
+```
+
+Why do we negate the correction? Explain in your own words:
 
 _________________________________________________________________
 
@@ -123,7 +124,7 @@ _________________________________________________________________
 
 _________________________________________________________________
 
-Hint: Think about what "positive error" means in each version.
+Hint: Think about what "positive error" means in each version and which direction the robot needs to steer.
 
 ## Part 6: Code Comparison
 
@@ -134,8 +135,7 @@ Hint: Think about what "positive error" means in each version.
 sensor_value = reflectance.get_left()
 error = _________ - sensor_value
 correction = error * Kp
-left_effort = base_effort _____ correction
-right_effort = base_effort _____ correction
+drivetrain.arcade(base_effort, ___________)
 ```
 
 **Two-sensor version (Lesson 6):**
@@ -143,8 +143,8 @@ right_effort = base_effort _____ correction
 left_sensor = reflectance._________()
 right_sensor = reflectance._________()
 error = _________ - _________
-left_effort = base_effort _____ error * Kp
-right_effort = base_effort _____ error * Kp
+correction = error * Kp
+drivetrain.arcade(base_effort, ___________)
 ```
 
 ## Part 7: Code Prediction
@@ -187,9 +187,8 @@ while True:
     left_sensor = reflectance.get_left()
     right_sensor = reflectance.get_right()
     error = right_sensor - left_sensor       # <-- Look here
-    left_effort = base_effort - error * Kp
-    right_effort = base_effort + error * Kp
-    drivetrain.set_effort(left_effort, right_effort)
+    correction = error * Kp
+    drivetrain.arcade(base_effort, -correction)
 ```
 
 What is wrong? ____________________________________________________________
@@ -202,9 +201,8 @@ while True:
     left_sensor = reflectance.get_left()
     right_sensor = reflectance.get_right()
     error = left_sensor - right_sensor
-    left_effort = base_effort - error * Kp
-    right_effort = base_effort + error * Kp
-    drivetrain.set_effort(left_effort, right_effort)
+    correction = error * Kp
+    drivetrain.arcade(base_effort, -correction)
     time.sleep(1)                              # <-- Look here
 ```
 

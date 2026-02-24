@@ -5,32 +5,32 @@
 
 **Learning Objectives:**
 - Understand what a setpoint is and how to calculate error
-- Use `set_effort()` for continuous motor control
+- Use `arcade()` for continuous motor control with steering
 - Build a proportional control loop for line following
 - Tune the Kp gain constant by observing behavior
 
 **Agenda:**
-- The problem with bounce driving (5 min)
-- Introducing set_effort() and continuous control (5 min)
+- From staying inside to following the line (5 min)
+- Introducing arcade() and continuous control (5 min)
 - Building the proportional controller step by step (20 min)
 - Practice: Follow the circle edge and tune Kp (20 min)
 
 ---
 
-## Slide 2: Hook -- What is Wrong with Bounce Driving?
-**Bounce driving (Lessons 3-4):**
+## Slide 2: Hook -- From Staying Inside to Following the Line
+**Lessons 3-4: Staying inside the circle**
 ```
-Drive straight --> Hit line --> Stop --> Turn --> Drive straight --> Hit line --> ...
+Drive straight --> Hit line --> Turn around --> Drive straight --> Hit line --> ...
 ```
 
-**Problems:**
-- Jerky, not smooth
-- Robot is NOT following the line -- it is bouncing off it
-- Cannot handle curves well
+**That was about staying inside the circle, not following the line.**
+- The robot bounced between edges
+- It never tracked along the line itself
 
-**What we want:**
-- Robot smoothly follows the line
+**Now we want something new:**
+- Robot smoothly follows the edge of the line
 - Constant small adjustments, like steering a car
+- The robot stays ON the line, not just inside the circle
 
 **Question:** "How can the robot steer while it is driving?"
 
@@ -38,7 +38,7 @@ Drive straight --> Hit line --> Stop --> Turn --> Drive straight --> Hit line --
 
 ## Slide 3: Blocking vs. Continuous Motor Control
 
-**Blocking calls (what we used before):**
+**Blocking calls (what we have used so far):**
 ```python
 drivetrain.straight(30)   # Drives 30 cm, then STOPS
 drivetrain.turn(90)       # Turns 90 degrees, then STOPS
@@ -48,41 +48,45 @@ drivetrain.turn(90)       # Turns 90 degrees, then STOPS
 
 **Continuous control (new):**
 ```python
-drivetrain.set_effort(0.3, 0.3)   # Sets motors and KEEPS GOING
+drivetrain.arcade(0.3, 0)   # Drive forward and KEEP GOING
 ```
 - Sets motor power and returns immediately
 - Motors keep running until you change them
 - You can read sensors in between calls
 
-**Key difference:** `set_effort()` does not block -- the program keeps running.
+**Key difference:** `arcade()` does not block -- the program keeps running.
 
 ---
 
-## Slide 4: set_effort() Examples
+## Slide 4: arcade() -- Speed and Steering
+
+**`arcade(speed, turn)` -- two parameters:**
+- **speed:** How fast to go forward (-1.0 to 1.0)
+- **turn:** How much to steer (-1.0 to 1.0)
 
 **Drive straight:**
 ```python
-drivetrain.set_effort(0.3, 0.3)   # Both motors equal
+drivetrain.arcade(0.3, 0)      # Forward, no turning
 ```
 
-**Turn right (left faster):**
+**Steer right:**
 ```python
-drivetrain.set_effort(0.4, 0.2)   # Left faster than right
+drivetrain.arcade(0.3, 0.15)   # Forward + steer right
 ```
 
-**Turn left (right faster):**
+**Steer left:**
 ```python
-drivetrain.set_effort(0.2, 0.4)   # Right faster than left
+drivetrain.arcade(0.3, -0.15)  # Forward + steer left
 ```
 
 **Stop:**
 ```python
-drivetrain.stop()                  # Both motors off
+drivetrain.stop()               # Both motors off
 ```
 
-**Values range from -1.0 (full reverse) to 1.0 (full forward)**
+**Under the hood:** `arcade(speed, turn)` sets left motor to `speed + turn` and right motor to `speed - turn`.
 
-**Question:** "What would `set_effort(0.5, -0.5)` do?" (Spin in place)
+**Question:** "What would `arcade(0.3, 0.15)` do to each motor?" (Left = 0.45, Right = 0.15)
 
 ---
 
@@ -99,7 +103,7 @@ drivetrain.stop()                  # Both motors off
 setpoint = 0.5   # The edge of the line
 ```
 
-**[Diagram description: A cross-section of the taped line showing the sensor position. On the left side is white (low reading), in the middle is the edge (setpoint ~0.5), on the right is black (high reading). An arrow points to the edge labeled "This is where we want to be."]**
+**[Image: setpoint-cross-section.png — Cross-section showing white surface (low ~0.1-0.3), edge (setpoint 0.5), and black tape (high ~0.7-0.9) with sensor reading curve]**
 
 **Goal:** Keep the sensor reading at the setpoint by making constant small steering adjustments.
 
@@ -146,11 +150,12 @@ correction = error * Kp
 | +0.4 | +0.20 | Stronger steer toward line |
 | 0.0 | 0.0 | Drive straight |
 
-**Then apply correction to motors:**
+**Then apply correction to motors using arcade:**
 ```python
-left_effort  = base_effort + correction
-right_effort = base_effort - correction
+drivetrain.arcade(base_effort, correction)
 ```
+
+**This is exactly what arcade does:** adds correction to the left motor, subtracts it from the right.
 
 **Question:** "What happens if Kp is very large, like 5.0?" (Overcorrection, oscillation)
 
@@ -174,14 +179,12 @@ while True:
     correction = error * Kp
 
     # 4. Apply to motors
-    left_effort = base_effort + correction
-    right_effort = base_effort - correction
-    drivetrain.set_effort(left_effort, right_effort)
+    drivetrain.arcade(base_effort, correction)
 
     time.sleep(0.01)
 ```
 
-**[Diagram description: A circular flow diagram showing: Read Sensor --> Calculate Error --> Calculate Correction --> Set Motors --> (back to) Read Sensor. Label: "This loop runs hundreds of times per second."]**
+**[Image: control-loop-diagram.png — Circular flow diagram showing the four steps of the control loop: Read Sensor → Calculate Error → Calculate Correction → Set Motors, with arrows connecting back in a cycle]**
 
 ---
 
@@ -197,8 +200,8 @@ Kp            = 0.5
 correction    = 0.3 * 0.5 = 0.15
 base_effort   = 0.3
 
-left_effort   = 0.3 + 0.15 = 0.45
-right_effort  = 0.3 - 0.15 = 0.15
+arcade(0.3, 0.15) --> left = 0.3 + 0.15 = 0.45
+                      right = 0.3 - 0.15 = 0.15
 ```
 
 **Result:** Left motor runs at 0.45, right motor runs at 0.15.
@@ -210,8 +213,8 @@ Left is faster, so the robot steers to the right -- back toward the line.
 error         = 0.5 - 0.8 = -0.3
 correction    = -0.3 * 0.5 = -0.15
 
-left_effort   = 0.3 + (-0.15) = 0.15
-right_effort  = 0.3 - (-0.15) = 0.45
+arcade(0.3, -0.15) --> left = 0.3 + (-0.15) = 0.15
+                       right = 0.3 - (-0.15) = 0.45
 ```
 
 **Result:** Right motor is faster, robot steers left -- away from the line.
@@ -264,8 +267,7 @@ while True:
     sensor_value = reflectance.get_left()
     error = setpoint - sensor_value
     correction = error * Kp
-    drivetrain.set_effort(base_effort + correction,
-                          base_effort - correction)
+    drivetrain.arcade(base_effort, correction)
     time.sleep(0.01)
 ```
 

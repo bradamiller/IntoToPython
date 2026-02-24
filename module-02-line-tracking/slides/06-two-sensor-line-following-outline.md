@@ -77,21 +77,21 @@ error = reflectance.get_left() - reflectance.get_right()    # No setpoint needed
 
 ## Slide 5: Applying the Correction
 
-**Motor effort formula:**
+**Apply the correction with arcade:**
 ```python
-left_effort  = base_effort - error * Kp
-right_effort = base_effort + error * Kp
+correction = error * Kp
+drivetrain.arcade(base_effort, -correction)
 ```
 
-**Why the signs?**
+**Why the negative sign?**
 - If error is **positive** (drifted left, left sensor on line):
   - Need to steer **left** to get back
-  - Slow down left motor (subtract), speed up right motor (add)
+  - Negative turn value = steer left
 - If error is **negative** (drifted right, right sensor on line):
   - Need to steer **right** to get back
-  - Speed up left motor (subtracting a negative = adding), slow down right motor
+  - Positive turn value (negating a negative) = steer right
 
-**Note:** The signs are reversed from Lesson 5 because the error formula changed.
+**Note:** The negative sign is needed because the two-sensor error has the opposite direction from the one-sensor error in Lesson 5.
 
 ---
 
@@ -104,10 +104,11 @@ left_sensor   = 0.8
 right_sensor  = 0.2
 error         = 0.8 - 0.2 = 0.6
 Kp            = 0.5
+correction    = 0.6 * 0.5 = 0.3
 base_effort   = 0.3
 
-left_effort   = 0.3 - (0.6 * 0.5) = 0.3 - 0.3 = 0.0
-right_effort  = 0.3 + (0.6 * 0.5) = 0.3 + 0.3 = 0.6
+arcade(0.3, -0.3) --> left = 0.3 + (-0.3) = 0.0
+                      right = 0.3 - (-0.3) = 0.6
 ```
 
 **Result:** Left motor stops, right motor runs fast. Robot turns left, back toward center.
@@ -118,9 +119,10 @@ right_effort  = 0.3 + (0.6 * 0.5) = 0.3 + 0.3 = 0.6
 left_sensor   = 0.2
 right_sensor  = 0.8
 error         = 0.2 - 0.8 = -0.6
+correction    = -0.6 * 0.5 = -0.3
 
-left_effort   = 0.3 - (-0.6 * 0.5) = 0.3 + 0.3 = 0.6
-right_effort  = 0.3 + (-0.6 * 0.5) = 0.3 - 0.3 = 0.0
+arcade(0.3, 0.3) --> left = 0.3 + 0.3 = 0.6
+                     right = 0.3 - 0.3 = 0.0
 ```
 
 **Result:** Right motor stops, left motor runs fast. Robot turns right, back toward center.
@@ -153,9 +155,8 @@ while True:
     error = left_sensor - right_sensor
 
     # Apply correction
-    left_effort = base_effort - error * Kp
-    right_effort = base_effort + error * Kp
-    drivetrain.set_effort(left_effort, right_effort)
+    correction = error * Kp
+    drivetrain.arcade(base_effort, -correction)
 
     time.sleep(0.01)
 ```
@@ -173,7 +174,7 @@ while True:
 | What it follows | Edge of the line | Center of the line |
 | Error formula | `setpoint - sensor` | `left - right` |
 | Needs setpoint? | Yes (0.5) | No |
-| Motor formula | `base + correction` / `base - correction` | `base - error*Kp` / `base + error*Kp` |
+| Arcade call | `arcade(base, correction)` | `arcade(base, -correction)` |
 | Smoothness | Good | Better |
 | Recovery | Can only detect one side | Detects both sides |
 

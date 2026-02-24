@@ -64,13 +64,9 @@ Use `correction = error * Kp` to fill in the table.
 
 ## Part 4: Calculating Motor Efforts
 
-Use these formulas:
-```
-left_effort  = base_effort + correction
-right_effort = base_effort - correction
-```
+`arcade(speed, turn)` sets the left motor to `speed + turn` and the right motor to `speed - turn`.
 
-With `base_effort = 0.3`, fill in the table:
+With `base_effort = 0.3`, fill in what `arcade(0.3, correction)` does:
 
 | correction | left_effort | right_effort | Which motor is faster? | Robot steers... |
 |---|---|---|---|---|
@@ -93,8 +89,9 @@ Trace through the entire proportional control calculation for each scenario.
 | sensor_value | (given) | 0.15 |
 | error | 0.5 - 0.15 = | _________ |
 | correction | _________ * 0.5 = | _________ |
-| left_effort | 0.3 + _________ = | _________ |
-| right_effort | 0.3 - _________ = | _________ |
+| arcade call | arcade(0.3, _________) | |
+| left motor | 0.3 + _________ = | _________ |
+| right motor | 0.3 - _________ = | _________ |
 
 What will the robot do? _______________________________________________
 
@@ -105,8 +102,9 @@ What will the robot do? _______________________________________________
 | sensor_value | (given) | 0.85 |
 | error | 0.5 - 0.85 = | _________ |
 | correction | _________ * 0.5 = | _________ |
-| left_effort | 0.3 + _________ = | _________ |
-| right_effort | 0.3 - _________ = | _________ |
+| arcade call | arcade(0.3, _________) | |
+| left motor | 0.3 + _________ = | _________ |
+| right motor | 0.3 - _________ = | _________ |
 
 What will the robot do? _______________________________________________
 
@@ -117,8 +115,9 @@ What will the robot do? _______________________________________________
 | sensor_value | (given) | 0.50 |
 | error | 0.5 - 0.50 = | _________ |
 | correction | _________ * 0.5 = | _________ |
-| left_effort | 0.3 + _________ = | _________ |
-| right_effort | 0.3 - _________ = | _________ |
+| arcade call | arcade(0.3, _________) | |
+| left motor | 0.3 + _________ = | _________ |
+| right motor | 0.3 - _________ = | _________ |
 
 What will the robot do? _______________________________________________
 
@@ -134,13 +133,13 @@ Does the next line of code run while the robot is driving? YES / NO
 
 **Continuous call:**
 ```python
-drivetrain.set_effort(0.3, 0.3)
+drivetrain.arcade(0.3, 0)
 ```
 This function does what? _______________________________________________
 
 Does the next line of code run while the robot is driving? YES / NO
 
-**Why is `set_effort()` better for a control loop?**
+**Why is `arcade()` better for a control loop?**
 
 _________________________________________________________________
 
@@ -158,10 +157,14 @@ board = Board.get_default_board()
 
 board.wait_for_button()
 
-drivetrain.set_effort(0.4, 0.2)
+drivetrain.arcade(0.3, 0.1)
 time.sleep(3)
 drivetrain.stop()
 ```
+
+What does arcade set the left motor to? _________
+
+What does arcade set the right motor to? _________
 
 Which motor is faster? Left / Right
 
@@ -182,7 +185,7 @@ base_effort = 0.3
 sensor_value = reflectance.get_left()
 error = setpoint - sensor_value
 correction = error * Kp
-drivetrain.set_effort(base_effort + correction, base_effort - correction)
+drivetrain.arcade(base_effort, correction)
 ```
 
 What is missing? __________________________________________________________
@@ -195,7 +198,7 @@ while True:
     sensor_value = reflectance.get_left()
     error = sensor_value - setpoint           # <-- Look at this line
     correction = error * Kp
-    drivetrain.set_effort(base_effort + correction, base_effort - correction)
+    drivetrain.arcade(base_effort, correction)
 ```
 
 What is different about the error calculation? _________________________________
