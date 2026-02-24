@@ -46,47 +46,45 @@ drivetrain.turn(90)       # Turns 90 degrees, then STOPS
 - Robot does one thing at a time
 - Cannot read sensors WHILE driving
 
-**Continuous control (new):**
+**Continuous control with set_effort():**
 ```python
-drivetrain.arcade(0.3, 0)   # Drive forward and KEEP GOING
+drivetrain.set_effort(0.3, 0.3)   # Sets left and right motors, KEEPS GOING
 ```
-- Sets motor power and returns immediately
+- Sets each motor's power individually and returns immediately
 - Motors keep running until you change them
 - You can read sensors in between calls
+- Values range from -1.0 (full reverse) to 1.0 (full forward) for each motor
 
-**Key difference:** `arcade()` does not block -- the program keeps running.
+**Key difference:** `set_effort()` does not block -- the program keeps running.
 
 ---
 
-## Slide 4: arcade() -- Speed and Steering
+## Slide 4: arcade() -- A Shortcut for Steering
 
-**`arcade(speed, turn)` -- two parameters:**
-- **speed:** How fast to go forward (-1.0 to 1.0)
-- **turn:** How much to steer (-1.0 to 1.0)
-
-**Drive straight:**
+**Steering with set_effort() requires math:**
 ```python
-drivetrain.arcade(0.3, 0)      # Forward, no turning
+drivetrain.set_effort(0.3 + 0.15, 0.3 - 0.15)   # Steer right
+```
+You have to add the turn amount to one motor and subtract from the other every time.
+
+**arcade() does this for you:**
+```python
+drivetrain.arcade(0.3, 0.15)   # Same thing -- steer right
 ```
 
-**Steer right:**
+**`arcade(speed, turn)` is equivalent to:**
 ```python
-drivetrain.arcade(0.3, 0.15)   # Forward + steer right
+drivetrain.set_effort(speed + turn, speed - turn)
 ```
 
-**Steer left:**
-```python
-drivetrain.arcade(0.3, -0.15)  # Forward + steer left
-```
+| arcade call | Left motor | Right motor | Result |
+|---|---|---|---|
+| `arcade(0.3, 0)` | 0.3 | 0.3 | Drive straight |
+| `arcade(0.3, 0.15)` | 0.45 | 0.15 | Steer right |
+| `arcade(0.3, -0.15)` | 0.15 | 0.45 | Steer left |
+| `arcade(0, 0.3)` | 0.3 | -0.3 | Spin right in place |
 
-**Stop:**
-```python
-drivetrain.stop()               # Both motors off
-```
-
-**Under the hood:** `arcade(speed, turn)` sets left motor to `speed + turn` and right motor to `speed - turn`.
-
-**Question:** "What would `arcade(0.3, 0.15)` do to each motor?" (Left = 0.45, Right = 0.15)
+**Question:** "What would `arcade(0.3, 0.1)` set each motor to?" (Left = 0.4, Right = 0.2)
 
 ---
 

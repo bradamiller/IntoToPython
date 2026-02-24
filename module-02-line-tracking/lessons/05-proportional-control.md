@@ -43,11 +43,20 @@ By the end of this lesson, students will be able to:
    - The robot needs to do the same: constantly read the sensor and constantly adjust its steering.
    - This is a completely different approach from bounce driving -- instead of reacting when we hit the line, we are constantly adjusting to stay on it.
 
-3. **Introduce arcade()**
+3. **Introduce set_effort() and arcade()**
    - So far, we have used `drivetrain.straight()` and `drivetrain.turn()` -- these are blocking calls. The robot finishes one before starting the next.
-   - `drivetrain.arcade(speed, turn)` sets both motors at once and does NOT block. The motors keep running at those levels until you change them.
-   - The first parameter is forward speed (-1 to 1). The second parameter is the turn amount (-1 to 1).
-   - Under the hood, `arcade(speed, turn)` sets the left motor to `speed + turn` and the right motor to `speed - turn`.
+   - `drivetrain.set_effort(left, right)` sets each motor individually and does NOT block. The motors keep running at that effort until you change them.
+   - Values range from -1 (full reverse) to 1 (full forward) for each motor.
+   - For example, `set_effort(0.3, 0.3)` drives straight; `set_effort(0.45, 0.15)` steers right.
+   - When steering, you always add to one motor and subtract from the other. The `arcade()` method does this math for you:
+     ```
+     drivetrain.arcade(speed, turn)
+     ```
+     is equivalent to:
+     ```
+     drivetrain.set_effort(speed + turn, speed - turn)
+     ```
+   - So `arcade(0.3, 0.15)` is the same as `set_effort(0.45, 0.15)` -- it steers right.
    - This is the key to continuous control: call `arcade()` inside a loop, and the robot can steer while driving.
 
 4. **Quick Demo: arcade() Basics**
@@ -69,6 +78,7 @@ By the end of this lesson, students will be able to:
      ```
    - Ask: "What does `arcade(0.3, 0.15)` do to each motor?" (Left = 0.45, Right = 0.15 -- steers right)
    - Ask: "What does `arcade(0.3, -0.15)` do?" (Left = 0.15, Right = 0.45 -- steers left)
+   - Ask: "What `set_effort()` call is `arcade(0.3, 0.1)` equivalent to?" (`set_effort(0.4, 0.2)`)
 
 ### Guided Practice: Building a Proportional Controller (20 minutes)
 
