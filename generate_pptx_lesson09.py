@@ -302,26 +302,26 @@ def build_presentation():
     add_code_block(slide,
         "def turn_right(self):\n"
         "    # Drive forward to clear intersection\n"
-        "    self.drivetrain.set_effort(self.base_effort, self.base_effort)\n"
-        "    time.sleep(0.3)\n"
-        "    # Turn right\n"
-        "    self.drivetrain.set_effort(0.3, -0.3)\n"
-        "    time.sleep(0.3)\n"
+        "    self.drivetrain.straight(5)\n"
+        "    # Turn right 90 degrees\n"
+        "    self.drivetrain.turn(90)\n"
         "    # Keep turning until line is found\n"
         "    while self.sensor.is_off_line():\n"
         "        pass\n"
         "    self.drivetrain.stop()",
-        Inches(0.6), Inches(1.5), Inches(9.5), Inches(4.0)
+        Inches(0.6), Inches(1.5), Inches(9.5), Inches(3.5)
     )
 
-    txBox = slide.shapes.add_textbox(Inches(0.6), Inches(5.8), Inches(12), Inches(1.5))
+    txBox = slide.shapes.add_textbox(Inches(0.6), Inches(5.3), Inches(12), Inches(2.0))
     tf = txBox.text_frame
     tf.word_wrap = True
     p = tf.paragraphs[0]
     p.text = ""
-    add_bullet_text(tf, "Three phases: Clear intersection \u2192 start turning \u2192 find line again",
+    add_bullet_text(tf, "Three phases: Drive past intersection \u2192 turn 90\u00b0 \u2192 find line again",
                     level=0, font_size=Pt(18), bold=True, color=DARK_BLUE)
-    add_bullet_text(tf, "turn_left() is the same but with opposite motor directions.",
+    add_bullet_text(tf, "straight() and turn() are sensor-based \u2014 more reliable than sleep().",
+                    level=0, font_size=Pt(18), color=DARK_GRAY)
+    add_bullet_text(tf, "turn_left() is the same but with turn(-90).",
                     level=0, font_size=Pt(18), color=DARK_GRAY)
 
     # ════════════════════════════════════════

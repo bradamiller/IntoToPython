@@ -391,7 +391,61 @@ def build_presentation():
                     level=0, font_size=Pt(18), bold=True, color=ACCENT_BLUE)
 
     # ════════════════════════════════════════
-    # SLIDE 8: Your Turn!
+    # SLIDE 8: Alternative — Using a Function and a for Loop
+    # ════════════════════════════════════════
+    slide = prs.slides.add_slide(blank_layout)
+    add_title_bar(slide, "Alternative \u2014 Using a Function and a for Loop")
+
+    txBox = slide.shapes.add_textbox(Inches(0.6), Inches(1.4), Inches(12), Inches(0.8))
+    tf = txBox.text_frame
+    tf.word_wrap = True
+    p = tf.paragraphs[0]
+    p.text = ""
+    add_bullet_text(tf, "Another way to count crossings:", level=0, font_size=Pt(20), bold=True, color=DARK_BLUE)
+    add_bullet_text(tf, "Write a function that line-follows until it hits a cross, then use a for loop to call it 4 times.",
+                    level=0, font_size=Pt(18), color=DARK_GRAY)
+
+    add_code_block(slide,
+        "def drive_to_cross():\n"
+        '    """Line-follow until a cross is detected."""\n'
+        "    while True:\n"
+        "        left  = reflectance.get_left()\n"
+        "        right = reflectance.get_right()\n"
+        "\n"
+        "        if left > threshold and right > threshold:\n"
+        "            drivetrain.stop()\n"
+        "            return              # cross found — done\n"
+        "\n"
+        "        # normal line following\n"
+        "        error = left - right\n"
+        "        correction = error * Kp\n"
+        "        drivetrain.arcade(base_effort, -correction)\n"
+        "\n"
+        "for i in range(4):\n"
+        "    drive_to_cross()\n"
+        "    drivetrain.turn(180)\n"
+        "    time.sleep(0.3)",
+        Inches(0.6), Inches(2.7), Inches(8.0), Inches(4.6),
+        font_size=Pt(12)
+    )
+
+    txBox = slide.shapes.add_textbox(Inches(8.8), Inches(2.7), Inches(4.3), Inches(4.5))
+    tf = txBox.text_frame
+    tf.word_wrap = True
+    p = tf.paragraphs[0]
+    p.text = ""
+    add_bullet_text(tf, "Why this is nice:", level=0, font_size=Pt(18), bold=True, color=DARK_BLUE)
+    add_bullet_text(tf, "The function does ONE job: drive until a cross",
+                    level=0, font_size=Pt(16), color=DARK_GRAY)
+    add_bullet_text(tf, "The for loop is simple and clear: do it 4 times",
+                    level=0, font_size=Pt(16), color=DARK_GRAY)
+    add_bullet_text(tf, "Easy to change: want 6 crosses? Just change range(4) to range(6)",
+                    level=0, font_size=Pt(16), color=DARK_GRAY)
+    add_bullet_text(tf, "", level=0)
+    add_bullet_text(tf, "Same result, different style!", level=0, font_size=Pt(18), bold=True, color=ACCENT_BLUE)
+
+    # ════════════════════════════════════════
+    # SLIDE 9: Your Turn!
     # ════════════════════════════════════════
     slide = prs.slides.add_slide(blank_layout)
     add_title_bar(slide, "Your Turn!")
@@ -420,7 +474,7 @@ def build_presentation():
                     level=0, font_size=Pt(18), color=DARK_GRAY)
 
     # ════════════════════════════════════════
-    # SLIDE 9: Connection to Next Lesson
+    # SLIDE 10: Connection to Next Lesson
     # ════════════════════════════════════════
     slide = prs.slides.add_slide(blank_layout)
     add_title_bar(slide, "Connection to Next Lesson")

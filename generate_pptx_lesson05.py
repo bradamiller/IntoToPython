@@ -6,6 +6,7 @@ from pptx.util import Inches, Pt
 from pptx.dml.color import RGBColor
 from pptx.enum.text import PP_ALIGN
 from pptx.enum.shapes import MSO_SHAPE
+import math
 import os
 
 # ── Colors ──
@@ -578,6 +579,83 @@ def build_presentation():
     slide = prs.slides.add_slide(blank_layout)
     add_title_bar(slide, "What Does Kp Do?")
 
+    # ── Diagram: Three horizontal paths showing Kp behavior ──
+    KP_COLORS = {
+        "low": RGBColor(0xE0, 0x70, 0x30),   # orange-red
+        "right": RGBColor(0x2E, 0xA0, 0x2E),  # green
+        "high": RGBColor(0xCC, 0x33, 0x33),   # red
+    }
+
+    diagram_top = Inches(1.4)
+    path_height = Inches(1.1)
+    path_left = Inches(1.0)
+    path_width = Inches(11.0)
+    line_y_offset = Inches(0.55)  # center of each path row
+
+    for idx, (label, kp_label, color, desc) in enumerate([
+        ("Kp too low (0.1)", "Kp = 0.1", KP_COLORS["low"],
+         "Robot drifts slowly away from line"),
+        ("Kp just right (0.5)", "Kp = 0.5", KP_COLORS["right"],
+         "Robot smoothly follows the line"),
+        ("Kp too high (2.0)", "Kp = 2.0", KP_COLORS["high"],
+         "Robot zigzags wildly across the line"),
+    ]):
+        row_top = diagram_top + path_height * idx
+
+        # Draw the target line (dashed-style: series of short gray segments)
+        target_y = row_top + line_y_offset
+        line_shape = slide.shapes.add_connector(
+            1,  # straight connector
+            path_left + Inches(1.2), target_y,
+            path_left + path_width - Inches(0.5), target_y
+        )
+        line_shape.line.color.rgb = MEDIUM_GRAY
+        line_shape.line.width = Pt(2)
+        line_shape.line.dash_style = 2  # dash
+
+        # Label on the left
+        add_label(slide, label, path_left - Inches(0.8), row_top + Inches(0.1),
+                  Inches(2.8), Inches(0.4), font_size=Pt(15), bold=True, color=color)
+
+        # Draw the robot path using connected freeform-like segments
+        # We approximate with multiple short connectors to show the path shape
+        num_segments = 20
+        seg_width = (path_width / 914400 - 1.7) / num_segments
+
+        if idx == 0:  # Kp too low: gentle drift away from line
+            def y_func(t):
+                return 0.4 * t  # slow linear drift upward
+        elif idx == 1:  # Kp just right: small smooth oscillation hugging line
+            def y_func(t):
+                return 0.08 * math.sin(t * 3.5 * math.pi)
+        else:  # Kp too high: large rapid oscillation
+            def y_func(t):
+                return 0.35 * math.sin(t * 7 * math.pi)
+
+        base_x = path_left / 914400 + 1.2
+        base_y = (row_top + line_y_offset) / 914400
+
+        for s in range(num_segments):
+            t0 = s / num_segments
+            t1 = (s + 1) / num_segments
+            x0 = base_x + t0 * seg_width * num_segments
+            x1 = base_x + t1 * seg_width * num_segments
+            y0 = base_y - y_func(t0)  # negative because PowerPoint y goes down
+            y1 = base_y - y_func(t1)
+            conn = slide.shapes.add_connector(
+                1,  # straight connector
+                Inches(x0), Inches(y0),
+                Inches(x1), Inches(y1)
+            )
+            conn.line.color.rgb = color
+            conn.line.width = Pt(2.5)
+
+        # Description on the right
+        add_label(slide, desc,
+                  path_left + path_width - Inches(0.3), row_top + Inches(0.15),
+                  Inches(2.5), Inches(0.8), font_size=Pt(13), bold=False, color=DARK_GRAY)
+
+    # ── Table below the diagram ──
     headers = ["Kp Value", "Behavior"]
     rows = [
         ["Too low (e.g., 0.1)", "Robot reacts too slowly, drifts off the line"],
@@ -585,18 +663,16 @@ def build_presentation():
         ["Too high (e.g., 2.0)", "Robot overcorrects, oscillates wildly"],
     ]
     col_widths = [Inches(3.5), Inches(7.5)]
-    add_table(slide, headers, rows, Inches(0.6), Inches(1.5), Inches(11.0),
-              col_widths=col_widths, row_height=Inches(0.55))
+    add_table(slide, headers, rows, Inches(0.6), Inches(4.8), Inches(11.0),
+              col_widths=col_widths, row_height=Inches(0.45))
 
-    txBox = slide.shapes.add_textbox(Inches(0.6), Inches(4.0), Inches(12), Inches(2.5))
+    txBox = slide.shapes.add_textbox(Inches(0.6), Inches(6.3), Inches(12), Inches(1.0))
     tf = txBox.text_frame
     tf.word_wrap = True
     p = tf.paragraphs[0]
     p.text = ""
-    add_bullet_text(tf, "Tuning Kp is about finding the sweet spot:", level=0, font_size=Pt(20), bold=True, color=DARK_BLUE)
-    add_bullet_text(tf, "Start at 0.5", level=0, font_size=Pt(18), color=DARK_GRAY)
-    add_bullet_text(tf, "If too wiggly, lower it", level=0, font_size=Pt(18), color=DARK_GRAY)
-    add_bullet_text(tf, "If too sluggish, raise it", level=0, font_size=Pt(18), color=DARK_GRAY)
+    add_bullet_text(tf, "Tuning Kp: Start at 0.5, lower if too wiggly, raise if too sluggish",
+                    level=0, font_size=Pt(18), bold=True, color=ACCENT_BLUE)
 
     # ════════════════════════════════════════
     # SLIDE 11: Exercise — Follow the Circle
