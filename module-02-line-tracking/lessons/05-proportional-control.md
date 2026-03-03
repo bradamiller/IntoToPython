@@ -59,23 +59,31 @@ By the end of this lesson, students will be able to:
    - So `arcade(0.3, 0.15)` is the same as `set_effort(0.45, 0.15)` -- it steers right.
    - This is the key to continuous control: call `arcade()` inside a loop, and the robot can steer while driving.
 
-4. **Quick Demo: arcade() Basics**
-   - Show this code on the board:
+4. **Quick Demo: Blocking vs. Non-Blocking**
+   - Show the blocking approach students already know:
      ```python
      from XRPLib.differential_drive import DifferentialDrive
      from XRPLib.board import Board
-     import time
 
      drivetrain = DifferentialDrive.get_default_differential_drive()
      board = Board.get_default_board()
 
      board.wait_for_button()
 
-     # Drive straight for 2 seconds
-     drivetrain.arcade(0.5, 0)
-     time.sleep(2)
-     drivetrain.stop()
+     # Blocking: drives exactly 30 cm, then stops and moves to the next line
+     drivetrain.straight(30)
+     # Blocking: turns exactly 90 degrees, then stops and moves to the next line
+     drivetrain.turn(90)
      ```
+   - Explain: `straight()` and `turn()` are great for driving fixed distances and angles -- they use the wheel sensors internally, so they are accurate regardless of battery level or driving surface.
+   - But for proportional control, we need to read sensors and adjust steering WHILE driving. Blocking calls do not let us do that.
+   - Show the non-blocking alternative:
+     ```python
+     # Non-blocking: sets motor effort and returns immediately
+     drivetrain.arcade(0.3, 0)      # Motors start running, program continues
+     drivetrain.arcade(0.3, 0.15)   # Change steering without stopping
+     ```
+   - `arcade()` does NOT block -- the motors keep running at that effort until you change them. This is what we need for a control loop.
    - Ask: "What does `arcade(0.3, 0.15)` do to each motor?" (Left = 0.45, Right = 0.15 -- steers right)
    - Ask: "What does `arcade(0.3, -0.15)` do?" (Left = 0.15, Right = 0.45 -- steers left)
    - Ask: "What `set_effort()` call is `arcade(0.3, 0.1)` equivalent to?" (`set_effort(0.4, 0.2)`)
@@ -338,31 +346,38 @@ while True:
     time.sleep(0.01)
 ```
 
-### Exploring arcade() (Introductory Demo)
+### Blocking vs. Non-Blocking Demo
 ```python
 from XRPLib.differential_drive import DifferentialDrive
 from XRPLib.board import Board
-import time
 
 drivetrain = DifferentialDrive.get_default_differential_drive()
 board = Board.get_default_board()
 
 board.wait_for_button()
 
-# Drive straight
-print("Driving straight...")
+# --- Blocking calls: straight() and turn() ---
+# These use wheel sensors internally, so they drive accurate
+# distances and angles regardless of battery level or surface.
+print("Driving 30 cm forward...")
+drivetrain.straight(30)
+
+print("Turning 90 degrees right...")
+drivetrain.turn(90)
+
+print("Driving 30 cm forward...")
+drivetrain.straight(30)
+
+# --- Non-blocking: arcade() ---
+# arcade() sets motor effort and returns immediately.
+# The motors keep running until you change them or call stop().
+# This is what we need for continuous control loops where we
+# read sensors and adjust steering on every iteration.
+print("arcade(0.3, 0) -- driving straight with effort 0.3")
 drivetrain.arcade(0.3, 0)
-time.sleep(2)
-
-# Steer right
-print("Steering right...")
-drivetrain.arcade(0.3, 0.15)
-time.sleep(2)
-
-# Steer left
-print("Steering left...")
-drivetrain.arcade(0.3, -0.15)
-time.sleep(2)
+# Program continues immediately -- motors are still running!
+# In a control loop, we would read sensors and call arcade()
+# again with an updated steering value.
 
 drivetrain.stop()
 print("Done!")
