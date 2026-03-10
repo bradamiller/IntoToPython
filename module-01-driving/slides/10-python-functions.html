@@ -1,0 +1,605 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 10 Slide Outline: Python Functions - Module 1: Driving</title>
+    <style>
+        
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f5f5;
+    overflow: hidden;
+}
+
+.nav-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 300px;
+    height: 100vh;
+    background-color: #1B3A5C;
+    color: white;
+    padding: 20px;
+    overflow-y: auto;
+    z-index: 1000;
+}
+
+.nav-header h2 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #A0C4E8;
+}
+
+.nav-header h3 {
+    font-size: 14px;
+    margin-bottom: 20px;
+    color: #FFFFFF;
+}
+
+.slide-nav {
+    display: flex;
+    flex-direction: column;
+}
+
+.nav-item {
+    color: #FFFFFF;
+    text-decoration: none;
+    padding: 8px 12px;
+    margin-bottom: 4px;
+    border-radius: 4px;
+    font-size: 13px;
+    line-height: 1.4;
+    transition: background-color 0.2s;
+}
+
+.nav-item:hover {
+    background-color: #2E75B6;
+}
+
+.slides-container {
+    margin-left: 300px;
+    height: 100vh;
+    position: relative;
+}
+
+.slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: calc(100vw - 300px);
+    height: 100vh;
+    background-color: white;
+    display: none;
+    flex-direction: column;
+}
+
+.slide.active {
+    display: flex;
+}
+
+.title-bar {
+    background-color: #1B3A5C;
+    color: white;
+    padding: 20px 40px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+}
+
+.title-bar h1 {
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.content {
+    flex: 1;
+    padding: 40px;
+    overflow-y: auto;
+    max-width: 1200px;
+}
+
+.header-text {
+    font-size: 24px;
+    font-weight: bold;
+    color: #1B3A5C;
+    margin-bottom: 16px;
+}
+
+.body-text {
+    font-size: 18px;
+    margin-bottom: 12px;
+    line-height: 1.5;
+}
+
+.bold {
+    font-weight: bold;
+}
+
+.bullet {
+    font-size: 18px;
+    margin-bottom: 8px;
+    margin-left: 20px;
+    line-height: 1.4;
+}
+
+.bullet.level-1 {
+    margin-left: 40px;
+}
+
+.code-block {
+    background-color: #F0F0F0;
+    border: 1px solid #999;
+    border-radius: 8px;
+    padding: 16px;
+    margin: 16px 0;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.4;
+    color: #333;
+    overflow-x: auto;
+}
+
+.content-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 16px 0;
+    font-size: 14px;
+}
+
+.content-table th {
+    background-color: #2E75B6;
+    color: white;
+    padding: 8px 12px;
+    text-align: center;
+    font-weight: bold;
+}
+
+.content-table td {
+    padding: 6px 12px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+.content-table tr:nth-child(even) {
+    background-color: #E8F0F8;
+}
+
+.spacer {
+    height: 16px;
+}
+
+    </style>
+</head>
+<body>
+    <div class="nav-sidebar">
+        <div class="nav-header">
+            <h2>Module 1: Driving</h2>
+            <h3>Lesson 10 Slide Outline: Python Functions</h3>
+        </div>
+        <nav class="slide-nav">
+            <a href="#slide-1" class="nav-item" onclick="showSlide(0)">Title & Learning Objectives</a>
+<a href="#slide-2" class="nav-item" onclick="showSlide(1)">Hook - Code Organization with Python</a>
+<a href="#slide-3" class="nav-item" onclick="showSlide(2)">Function Definition Syntax</a>
+<a href="#slide-4" class="nav-item" onclick="showSlide(3)">Function Parameters</a>
+<a href="#slide-5" class="nav-item" onclick="showSlide(4)">Blockly → Python Functions</a>
+<a href="#slide-6" class="nav-item" onclick="showSlide(5)">Multiple Parameters</a>
+<a href="#slide-7" class="nav-item" onclick="showSlide(6)">Return Values</a>
+<a href="#slide-8" class="nav-item" onclick="showSlide(7)">Function Scope</a>
+<a href="#slide-9" class="nav-item" onclick="showSlide(8)">Function Design Best Practices</a>
+<a href="#slide-10" class="nav-item" onclick="showSlide(9)">Common Function Errors</a>
+<a href="#slide-11" class="nav-item" onclick="showSlide(10)">Python Function Best Practices</a>
+<a href="#slide-12" class="nav-item" onclick="showSlide(11)">Connection to Final Project (Lesson 11)</a>
+        </nav>
+    </div>
+    <div class="slides-container">
+        <div id="slide-1" class="slide">
+    <div class="title-bar">
+        <h1>Title & Learning Objectives</h1>
+    </div>
+    <div class="content">
+        <p class="header-text bold">Title: Python Functions</p>
+<div class="spacer"></div>
+<p class="header-text bold">Learning Objectives:</p>
+<p class="bullet level-0">Write function definitions using def syntax</p>
+<p class="bullet level-0">Use parameters and arguments</p>
+<p class="bullet level-0">Return values from functions</p>
+<p class="bullet level-0">Understand scope and variable lifetime</p>
+<p class="bullet level-0">Apply functions to robot programming</p>
+<div class="spacer"></div>
+<p class="header-text bold">Agenda:</p>
+<p class="bullet level-0">Function syntax (5 min)</p>
+<p class="bullet level-0">Parameters & arguments (8 min)</p>
+<p class="bullet level-0">Guided: Build polygon function (8 min)</p>
+<p class="bullet level-0">Practice: Write custom functions (14 min)</p>
+<div class="spacer"></div>
+
+    </div>
+</div>
+<div id="slide-2" class="slide">
+    <div class="title-bar">
+        <h1>Hook - Code Organization with Python</h1>
+    </div>
+    <div class="content">
+        <p class="header-text bold">Blockly Functions (from earlier):</p>
+<pre class="code-block"><code>Define draw_triangle:
+  [Blocks...]
+
+Call draw_triangle
+Call draw_triangle  ← Reuses same code</code></pre>
+<div class="spacer"></div>
+<p class="header-text bold">Python Same Concept:</p>
+<pre class="code-block"><code>def draw_triangle():
+    drivetrain.straight(30)
+    drivetrain.turn(120)
+
+draw_triangle()  # Calls it
+draw_triangle()  # Reuses it</code></pre>
+<div class="spacer"></div>
+<p class="header-text bold">Question: "Can you organize Python code into reusable chunks?"</p>
+<div class="spacer"></div>
+
+    </div>
+</div>
+<div id="slide-3" class="slide">
+    <div class="title-bar">
+        <h1>Function Definition Syntax</h1>
+    </div>
+    <div class="content">
+        <p class="header-text bold">Basic Python Function:</p>
+<div class="spacer"></div>
+<pre class="code-block"><code>def function_name():
+    # Code here runs when called
+    print("Hello")
+    drivetrain.straight(50)</code></pre>
+<div class="spacer"></div>
+<p class="header-text bold">Breaking it down:</p>
+<p class="bullet level-0">def - Keyword: define a function</p>
+<p class="bullet level-0">function_name - You choose the name (lowercase, underscores)</p>
+<p class="bullet level-0">() - Empty parentheses (we'll add parameters later)</p>
+<p class="bullet level-0">: - Colon ends the def line</p>
+<p class="bullet level-0">Indented code - Body of function</p>
+<div class="spacer"></div>
+<p class="header-text bold">Calling it:</p>
+<pre class="code-block"><code>function_name()      # Parentheses required!</code></pre>
+<div class="spacer"></div>
+
+    </div>
+</div>
+<div id="slide-4" class="slide">
+    <div class="title-bar">
+        <h1>Function Parameters</h1>
+    </div>
+    <div class="content">
+        <p class="header-text bold">Function WITH parameters:</p>
+<div class="spacer"></div>
+<pre class="code-block"><code>def draw_polygon(sides, distance):
+    angle = 360 / sides
+    
+    for i in range(sides):
+        drivetrain.straight(distance)
+        drivetrain.turn(angle)</code></pre>
+<div class="spacer"></div>
+<p class="header-text bold">Parameters:</p>
+<p class="bullet level-0">sides - How many sides</p>
+<p class="bullet level-0">distance - Length of each side</p>
+<div class="spacer"></div>
+<p class="header-text bold">Calling with arguments:</p>
+<pre class="code-block"><code>draw_polygon(3, 25)   # Triangle, 25cm
+draw_polygon(4, 30)   # Square, 30cm
+draw_polygon(5, 20)   # Pentagon, 20cm</code></pre>
+<div class="spacer"></div>
+<p class="header-text bold">Key Rules:</p>
+<p class="bullet level-0">Parameter order matters</p>
+<p class="bullet level-0">Argument count must match parameter count</p>
+<p class="bullet level-0">Python = dynamic (arguments can be numbers OR variables)</p>
+<div class="spacer"></div>
+
+    </div>
+</div>
+<div id="slide-5" class="slide">
+    <div class="title-bar">
+        <h1>Blockly → Python Functions</h1>
+    </div>
+    <div class="content">
+        <p class="header-text bold">Blockly Definition:</p>
+<pre class="code-block"><code>Define draw_triangle with parameter: size
+  Repeat 3 times:
+    Straight(size)
+    Turn(120)
+
+Call draw_triangle with argument: 25</code></pre>
+<div class="spacer"></div>
+<p class="header-text bold">Python Equivalent:</p>
+<pre class="code-block"><code>def draw_triangle(size):
+    for i in range(3):
+        drivetrain.straight(size)
+        drivetrain.turn(120)
+
+draw_triangle(25)</code></pre>
+<div class="spacer"></div>
+<p class="header-text bold">Translation:</p>
+<p class="bullet level-0">Blockly: "Define ... with parameter" → Python: def function(parameter):</p>
+<p class="bullet level-0">Blockly: "Call ... with argument" → Python: function(argument)</p>
+<div class="spacer"></div>
+
+    </div>
+</div>
+<div id="slide-6" class="slide">
+    <div class="title-bar">
+        <h1>Multiple Parameters</h1>
+    </div>
+    <div class="content">
+        <p class="header-text bold">Three-Parameter Function:</p>
+<div class="spacer"></div>
+<pre class="code-block"><code>def draw_polygon(sides, distance, effort):
+    angle = 360 / sides
+    
+    for i in range(sides):
+        drivetrain.straight(distance, max_effort=effort)
+        drivetrain.turn(angle, max_effort=effort)</code></pre>
+<div class="spacer"></div>
+<p class="header-text bold">Parameter meanings:</p>
+<p class="bullet level-0">sides - Integer (3, 4, 5, ...)</p>
+<p class="bullet level-0">distance - Float (25, 50, 75)</p>
+<p class="bullet level-0">effort - Float 0-1 (0.3, 0.7, 1.0)</p>
+<div class="spacer"></div>
+<p class="header-text bold">Calling with different arguments:</p>
+<pre class="code-block"><code>draw_polygon(4, 30, 0.5)    # Slow square
+draw_polygon(4, 30, 1.0)    # Fast square
+draw_polygon(8, 20, 0.7)    # Medium octagon</code></pre>
+<div class="spacer"></div>
+
+    </div>
+</div>
+<div id="slide-7" class="slide">
+    <div class="title-bar">
+        <h1>Return Values</h1>
+    </div>
+    <div class="content">
+        <p class="header-text bold">Functions can send back results:</p>
+<div class="spacer"></div>
+<pre class="code-block"><code>def calculate_polygon_angle(sides):
+    angle = 360 / sides
+    return angle
+
+my_angle = calculate_polygon_angle(5)
+print(my_angle)     # Prints: 72.0
+
+drivetrain.turn(my_angle)</code></pre>
+<div class="spacer"></div>
+<p class="header-text bold">Breakdown:</p>
+<p class="bullet level-0">return keyword - Send value back to caller</p>
+<p class="bullet level-0">Value after return - What gets sent back</p>
+<p class="bullet level-0">Function call becomes the value</p>
+<div class="spacer"></div>
+<p class="header-text bold">With multiple processing:</p>
+<pre class="code-block"><code>def is_valid_polygon(sides):
+    if sides >= 3:
+        return True
+    else:
+        return False
+
+if is_valid_polygon(4):
+    print("Valid polygon")</code></pre>
+<div class="spacer"></div>
+
+    </div>
+</div>
+<div id="slide-8" class="slide">
+    <div class="title-bar">
+        <h1>Function Scope</h1>
+    </div>
+    <div class="content">
+        <p class="header-text bold">Variables exist only where defined:</p>
+<div class="spacer"></div>
+<pre class="code-block"><code>def my_function():
+    x = 10          # x only exists here
+    print(x)        # ✓ Works
+
+print(x)            # ✗ Error! x doesn't exist here</code></pre>
+<div class="spacer"></div>
+<p class="header-text bold">Scope Rules:</p>
+<p class="bullet level-0">Local scope - Variables inside function</p>
+<p class="bullet level-0">Global scope - Variables outside function</p>
+<p class="bullet level-0">Function parameters - Treated as local variables</p>
+<div class="spacer"></div>
+<p class="header-text bold">Example:</p>
+<pre class="code-block"><code>def draw_polygon(sides):
+    angle = 360 / sides   # Local: angle exists here
+    ...
+
+draw_polygon(5)
+print(angle)              # ✗ Error: angle not defined here!</code></pre>
+<div class="spacer"></div>
+
+    </div>
+</div>
+<div id="slide-9" class="slide">
+    <div class="title-bar">
+        <h1>Function Design Best Practices</h1>
+    </div>
+    <div class="content">
+        <p class="header-text bold">Good Function:</p>
+<pre class="code-block"><code>def draw_square(size):
+    """Draw a square with given side length"""
+    for i in range(4):
+        drivetrain.straight(size)
+        drivetrain.turn(90)</code></pre>
+<div class="spacer"></div>
+<p class="header-text bold">Features:</p>
+<p class="bullet level-0">✓ Clear name (verb: "draw_")</p>
+<p class="bullet level-0">✓ Single responsibility (only draws square)</p>
+<p class="bullet level-0">✓ Documented with docstring</p>
+<p class="bullet level-0">✓ Takes relevant parameters</p>
+<p class="bullet level-0">✓ Returns nothing (or meaningful value)</p>
+<div class="spacer"></div>
+<p class="header-text bold">Bad Function:</p>
+<pre class="code-block"><code>def do_stuff():                    # ✗ Vague name
+    drivetrain.straight(30)
+    my_variable = 50
+    drivetrain.turn(my_variable)   # ✗ Magic numbers
+    print("done")</code></pre>
+<div class="spacer"></div>
+
+    </div>
+</div>
+<div id="slide-10" class="slide">
+    <div class="title-bar">
+        <h1>Common Function Errors</h1>
+    </div>
+    <div class="content">
+        <p class="header-text bold">Error 1: Mismatched arguments/parameters</p>
+<pre class="code-block"><code>def draw_polygon(sides, distance):
+    ...
+
+draw_polygon(4)      # ✗ Only 1 argument, needs 2
+→ TypeError: missing 1 required positional argument</code></pre>
+<div class="spacer"></div>
+<p class="header-text bold">Error 2: Returning from global scope</p>
+<pre class="code-block"><code>def my_function():
+    x = 10
+    return x
+
+result = my_function()
+print(x)             # ✗ x is local, not accessible here</code></pre>
+<div class="spacer"></div>
+<p class="header-text bold">Error 3: Using wrong variable</p>
+<pre class="code-block"><code>def my_function():
+    angle = 360 / sides    # ✗ sides doesn't exist
+    ...
+
+my_function()</code></pre>
+<div class="spacer"></div>
+<p class="header-text bold">Fix: Check parameter names match usage</p>
+<div class="spacer"></div>
+
+    </div>
+</div>
+<div id="slide-11" class="slide">
+    <div class="title-bar">
+        <h1>Python Function Best Practices</h1>
+    </div>
+    <div class="content">
+        <p class="header-text bold">Testing Small Functions:</p>
+<pre class="code-block"><code>def draw_square(size):
+    for i in range(4):
+        drivetrain.straight(size)
+        drivetrain.turn(90)
+
+# Test with different sizes
+draw_square(20)
+# Verify: robot draws 20cm square
+draw_square(40)
+# Verify: robot draws 40cm square</code></pre>
+<div class="spacer"></div>
+<p class="header-text bold">Combining Functions:</p>
+<pre class="code-block"><code>def draw_square(size):
+    for i in range(4):
+        drivetrain.straight(size)
+        drivetrain.turn(90)
+
+def draw_art():
+    draw_square(20)
+    drivetrain.straight(100)
+    draw_square(30)
+    drivetrain.straight(100)
+    draw_square(40)
+
+draw_art()  # Calls draw_art, which calls draw_square multiple times</code></pre>
+<div class="spacer"></div>
+
+    </div>
+</div>
+<div id="slide-12" class="slide">
+    <div class="title-bar">
+        <h1>Connection to Final Project (Lesson 11)</h1>
+    </div>
+    <div class="content">
+        <p class="header-text bold">Preview:</p>
+<p class="bullet level-0">Today: Write individual functions</p>
+<p class="bullet level-0">Next lesson: Combine functions into full project</p>
+<p class="bullet level-0">Challenge: Design comprehensive program</p>
+<div class="spacer"></div>
+<p class="header-text bold">Python Program Structure (coming):</p>
+<pre class="code-block"><code>def draw_polygon(sides, distance):
+    angle = 360 / sides
+    for i in range(sides):
+        drivetrain.straight(distance)
+        drivetrain.turn(angle)
+
+def create_artwork():
+    draw_polygon(3, 30)
+    move_forward(50)
+    draw_polygon(4, 30)
+    move_forward(50)
+    draw_polygon(5, 30)
+
+# Main program
+create_artwork()</code></pre>
+<div class="spacer"></div>
+<p class="header-text bold">Teaser: "You've mastered loops AND functions. Now combine them in a capstone project!"</p>
+
+    </div>
+</div>
+    </div>
+    <script>
+        
+let currentSlide = 0;
+const slides = document.querySelectorAll('.slide');
+
+function showSlide(index) {
+    slides.forEach((slide, i) => {
+        if (i === index) {
+            slide.classList.add('active');
+        } else {
+            slide.classList.remove('active');
+        }
+    });
+    currentSlide = index;
+
+    // Update navigation highlighting
+    document.querySelectorAll('.nav-item').forEach((item, i) => {
+        if (i === index) {
+            item.classList.add('active');
+        } else {
+            item.classList.remove('active');
+        }
+    });
+}
+
+function nextSlide() {
+    if (currentSlide < 11) {
+        showSlide(currentSlide + 1);
+    }
+}
+
+function prevSlide() {
+    if (currentSlide > 0) {
+        showSlide(currentSlide - 1);
+    }
+}
+
+// Keyboard navigation
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault();
+        nextSlide();
+    } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        prevSlide();
+    }
+});
+
+// Initialize first slide
+showSlide(0);
+
+    </script>
+</body>
+</html>

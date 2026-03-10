@@ -1,0 +1,1745 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lesson 8: Introduction to Classes — LineSensor</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/theme/white.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css">
+    <style>
+        :root {
+            --navy: #1B3A5C;
+            --accent-blue: #2E75B6;
+            --light-blue: #E8F4FD;
+            --success-green: #27AE60;
+            --warning-orange: #F39C12;
+            --error-red: #E74C3C;
+            --light-gray: #F5F6FA;
+            --code-bg: #F0F0F0;
+            --text-dark: #2C3E50;
+            --purple: #7D3C98;
+        }
+
+        .reveal {
+            font-family: 'Segoe UI', Calibri, Arial, sans-serif;
+            color: var(--text-dark);
+        }
+
+        .reveal h1, .reveal h2, .reveal h3 {
+            color: var(--navy);
+            font-weight: 700;
+            text-transform: none;
+        }
+
+        .reveal h1 { font-size: 2.2em; }
+        .reveal h2 { font-size: 1.6em; }
+        .reveal h3 { font-size: 1.2em; }
+
+        .reveal .slide-number {
+            font-size: 14px;
+            color: var(--navy);
+        }
+
+        /* Title slide */
+        .title-slide {
+            background: linear-gradient(135deg, var(--navy) 0%, var(--accent-blue) 100%);
+        }
+        .title-slide h1, .title-slide h2, .title-slide p {
+            color: white !important;
+        }
+        .title-slide .subtitle {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        /* Section divider slides */
+        .section-slide {
+            background: linear-gradient(135deg, var(--accent-blue) 0%, #4A90D9 100%);
+        }
+        .section-slide h2, .section-slide p {
+            color: white !important;
+        }
+
+        /* Code styling */
+        .reveal pre {
+            width: 100%;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            border-radius: 10px;
+            border-left: 4px solid var(--accent-blue);
+        }
+        .reveal pre code {
+            font-family: 'Courier New', 'Fira Code', monospace;
+            font-size: 0.65em;
+            line-height: 1.5;
+            padding: 20px !important;
+            max-height: 500px;
+        }
+
+        /* Inline code */
+        .reveal code:not(.hljs) {
+            background: var(--code-bg);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            color: var(--accent-blue);
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Styled boxes */
+        .concept-box {
+            background: var(--light-blue);
+            border-left: 5px solid var(--accent-blue);
+            border-radius: 8px;
+            padding: 20px 25px;
+            margin: 15px 0;
+            text-align: left;
+        }
+
+        .key-idea {
+            background: linear-gradient(135deg, #FFF9E6, #FFF3CC);
+            border-left: 5px solid var(--warning-orange);
+            border-radius: 8px;
+            padding: 18px 25px;
+            margin: 15px 0;
+            text-align: left;
+            font-size: 0.9em;
+        }
+        .key-idea::before {
+            content: '💡 ';
+            font-size: 1.2em;
+        }
+
+        .warning-box {
+            background: #FDE8E8;
+            border-left: 5px solid var(--error-red);
+            border-radius: 8px;
+            padding: 18px 25px;
+            margin: 15px 0;
+            text-align: left;
+            font-size: 0.85em;
+        }
+
+        .success-box {
+            background: #E8F8F0;
+            border-left: 5px solid var(--success-green);
+            border-radius: 8px;
+            padding: 18px 25px;
+            margin: 15px 0;
+            text-align: left;
+        }
+
+        /* Vocab table */
+        .reveal table {
+            border-collapse: separate;
+            border-spacing: 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            margin: 0 auto;
+            font-size: 0.75em;
+        }
+        .reveal table th {
+            background: var(--navy);
+            color: white;
+            padding: 14px 24px;
+            font-weight: 600;
+        }
+        .reveal table td {
+            padding: 12px 24px;
+            border-bottom: 1px solid #EEE;
+        }
+        .reveal table tr:nth-child(even) td {
+            background: var(--light-gray);
+        }
+        .reveal table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Comparison columns */
+        .compare-container {
+            display: flex;
+            gap: 20px;
+            align-items: stretch;
+        }
+        .compare-box {
+            flex: 1;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: left;
+        }
+        .compare-box.before {
+            background: #FDE8E8;
+            border: 2px solid var(--error-red);
+        }
+        .compare-box.after {
+            background: #E8F8F0;
+            border: 2px solid var(--success-green);
+        }
+        .compare-box h3 {
+            margin-top: 0;
+            font-size: 0.95em;
+        }
+        .compare-box.before h3 { color: var(--error-red); }
+        .compare-box.after h3 { color: var(--success-green); }
+
+        /* Blueprint diagram */
+        .blueprint-diagram {
+            display: flex;
+            gap: 30px;
+            align-items: center;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .blueprint-card {
+            background: white;
+            border: 3px dashed var(--accent-blue);
+            border-radius: 12px;
+            padding: 20px 30px;
+            min-width: 200px;
+            text-align: center;
+            position: relative;
+        }
+        .blueprint-card .card-label {
+            position: absolute;
+            top: -14px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--accent-blue);
+            color: white;
+            padding: 2px 16px;
+            border-radius: 12px;
+            font-size: 0.7em;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        .object-card {
+            background: white;
+            border: 3px solid var(--success-green);
+            border-radius: 12px;
+            padding: 20px 25px;
+            min-width: 160px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 4px 12px rgba(39,174,96,0.15);
+        }
+        .object-card .card-label {
+            position: absolute;
+            top: -14px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--success-green);
+            color: white;
+            padding: 2px 16px;
+            border-radius: 12px;
+            font-size: 0.7em;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        .arrow {
+            font-size: 2em;
+            color: var(--accent-blue);
+        }
+
+        /* Anatomy diagram */
+        .anatomy-container {
+            display: flex;
+            gap: 25px;
+            align-items: flex-start;
+        }
+        .anatomy-code {
+            flex: 1.3;
+        }
+        .anatomy-labels {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 10px;
+        }
+        .anatomy-label {
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 0.7em;
+            font-weight: 600;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .anatomy-label .dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        /* Step indicators */
+        .step-container {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: white;
+            border: 2px solid var(--accent-blue);
+            border-radius: 10px;
+            padding: 12px 18px;
+            font-size: 0.7em;
+            text-align: left;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .step-num {
+            background: var(--accent-blue);
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        /* Badge/pill */
+        .badge {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.65em;
+            font-weight: 600;
+            margin: 2px 4px;
+        }
+        .badge-blue { background: var(--light-blue); color: var(--accent-blue); }
+        .badge-green { background: #E8F8F0; color: var(--success-green); }
+        .badge-orange { background: #FFF3CC; color: #D68910; }
+        .badge-purple { background: #F0E8FD; color: var(--purple); }
+
+        /* Sensor diagram */
+        .sensor-diagram {
+            display: flex;
+            gap: 25px;
+            justify-content: center;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+        .sensor-scenario {
+            background: white;
+            border-radius: 12px;
+            padding: 15px;
+            width: 210px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            text-align: center;
+        }
+        .sensor-scenario h4 {
+            font-size: 0.7em;
+            margin: 0 0 10px;
+            color: var(--navy);
+        }
+        .sensor-result {
+            font-size: 0.6em;
+            margin-top: 8px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+        .result-true { background: #E8F8F0; color: var(--success-green); }
+        .result-false { background: #F5F6FA; color: #999; }
+
+        /* Inventory summary */
+        .inventory {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+        .inventory-item {
+            background: white;
+            border-radius: 12px;
+            padding: 15px 20px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+            min-width: 110px;
+        }
+        .inventory-num {
+            font-size: 2em;
+            font-weight: 800;
+            color: var(--accent-blue);
+            line-height: 1;
+        }
+        .inventory-label {
+            font-size: 0.65em;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        /* Mistake styling */
+        .mistake-row {
+            display: flex;
+            gap: 12px;
+            align-items: stretch;
+            margin: 10px 0;
+        }
+        .mistake-wrong, .mistake-right {
+            flex: 1;
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.6em;
+            text-align: left;
+        }
+        .mistake-wrong {
+            background: #FDE8E8;
+            border: 2px solid var(--error-red);
+        }
+        .mistake-right {
+            background: #E8F8F0;
+            border: 2px solid var(--success-green);
+        }
+        .mistake-label {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            font-weight: 700;
+            font-size: 0.7rem;
+            margin-bottom: 6px;
+        }
+        .mistake-wrong .mistake-label { color: var(--error-red); }
+        .mistake-right .mistake-label { color: var(--success-green); }
+
+        /* Agenda list */
+        .agenda-list {
+            text-align: left;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .agenda-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+            font-size: 0.85em;
+        }
+        .agenda-icon {
+            font-size: 1.5em;
+            width: 50px;
+            text-align: center;
+        }
+        .agenda-time {
+            background: rgba(255,255,255,0.2);
+            padding: 3px 12px;
+            border-radius: 12px;
+            font-size: 0.75em;
+            white-space: nowrap;
+        }
+
+        /* Flow diagram */
+        .flow-container {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            align-items: center;
+            margin: 10px 0;
+        }
+        .flow-step {
+            background: white;
+            border: 2px solid var(--accent-blue);
+            border-radius: 8px;
+            padding: 8px 24px;
+            font-size: 0.7em;
+            width: 380px;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .flow-arrow {
+            color: var(--accent-blue);
+            font-size: 1.2em;
+        }
+
+        /* Two column layout */
+        .two-col {
+            display: flex;
+            gap: 30px;
+            align-items: flex-start;
+        }
+        .two-col > * { flex: 1; }
+
+        /* Lists */
+        .reveal ul {
+            list-style: none;
+            padding-left: 0;
+        }
+        .reveal ul li {
+            padding: 4px 0;
+            position: relative;
+            padding-left: 24px;
+        }
+        .reveal ul li::before {
+            content: '▸';
+            color: var(--accent-blue);
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        .reveal .small-text {
+            font-size: 0.65em;
+            color: #888;
+        }
+
+        /* Preview box */
+        .preview-box {
+            background: linear-gradient(135deg, var(--light-blue), #F0E8FD);
+            border: 2px dashed var(--accent-blue);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 15px;
+        }
+        .preview-box h3 {
+            margin-top: 0;
+            font-size: 0.9em;
+        }
+
+        /* Slide backgrounds */
+        .reveal .slides section {
+            padding: 30px 40px;
+        }
+
+        /* ============================================
+           NEW: Spaghetti vs Organized visual (Slide 3)
+           ============================================ */
+        .spaghetti-vs-organized {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            align-items: center;
+            margin: 15px 0;
+        }
+        .spaghetti-box, .organized-box {
+            width: 250px;
+            height: 160px;
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .spaghetti-box {
+            background: #FFF5F5;
+            border: 2px solid var(--error-red);
+        }
+        .organized-box {
+            background: #F0FFF4;
+            border: 2px solid var(--success-green);
+        }
+
+        /* Tangled lines via SVG in CSS */
+        .spaghetti-box .tangle {
+            position: absolute;
+            inset: 0;
+        }
+        .spaghetti-label, .organized-label {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 0.6em;
+            font-weight: 700;
+            padding: 3px 12px;
+            border-radius: 10px;
+            white-space: nowrap;
+        }
+        .spaghetti-label {
+            background: var(--error-red);
+            color: white;
+        }
+        .organized-label {
+            background: var(--success-green);
+            color: white;
+        }
+
+        /* Organized boxes inside */
+        .org-inner-box {
+            position: absolute;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.5em;
+            font-weight: 700;
+            color: white;
+        }
+
+        .transform-arrow {
+            font-size: 2.5em;
+            color: var(--accent-blue);
+            animation: pulse-arrow 2s ease-in-out infinite;
+        }
+        @keyframes pulse-arrow {
+            0%, 100% { opacity: 0.6; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.15); }
+        }
+
+        /* ============================================
+           NEW: Factory Pipeline (Slide 4)
+           ============================================ */
+        .factory-pipeline {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 20px 0;
+        }
+        .factory-blueprint {
+            background: white;
+            border: 3px dashed var(--accent-blue);
+            border-radius: 14px;
+            padding: 18px 22px;
+            text-align: center;
+            position: relative;
+            min-width: 180px;
+        }
+        .factory-blueprint .blueprint-icon {
+            font-size: 2.5em;
+            margin-bottom: 5px;
+        }
+        .factory-blueprint .blueprint-title {
+            font-weight: 800;
+            color: var(--accent-blue);
+            font-size: 0.85em;
+        }
+        .factory-blueprint .blueprint-contents {
+            font-size: 0.55em;
+            color: #666;
+            margin-top: 6px;
+            text-align: left;
+        }
+        .factory-arrow-group {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+        }
+        .factory-arrow-group .pipe {
+            font-size: 1.8em;
+            color: var(--accent-blue);
+        }
+        .factory-arrow-group .pipe-label {
+            font-size: 0.55em;
+            color: var(--accent-blue);
+            font-weight: 600;
+        }
+        .factory-objects {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .factory-obj {
+            background: white;
+            border: 3px solid var(--success-green);
+            border-radius: 10px;
+            padding: 10px 18px;
+            text-align: center;
+            box-shadow: 0 3px 10px rgba(39,174,96,0.15);
+            position: relative;
+        }
+        .factory-obj .obj-name {
+            font-weight: 700;
+            font-size: 0.75em;
+            color: var(--success-green);
+        }
+        .factory-obj .obj-data {
+            font-size: 0.55em;
+            color: #666;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* ============================================
+           NEW: Self mapping diagram (Slide 9)
+           ============================================ */
+        .self-mapping {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            margin: 15px 0;
+        }
+        .self-blueprint-box {
+            background: white;
+            border: 3px dashed var(--accent-blue);
+            border-radius: 14px;
+            padding: 18px 22px;
+            text-align: left;
+            min-width: 220px;
+            position: relative;
+        }
+        .self-blueprint-box .sb-title {
+            font-weight: 800;
+            color: var(--accent-blue);
+            font-size: 0.75em;
+            text-align: center;
+            margin-bottom: 10px;
+        }
+        .self-code-line {
+            font-family: 'Courier New', monospace;
+            font-size: 0.6em;
+            padding: 4px 8px;
+            margin: 4px 0;
+            border-radius: 4px;
+        }
+        .self-code-line.highlight-self {
+            background: #FFF3CC;
+            border: 1px solid var(--warning-orange);
+        }
+        .self-mapping-arrows {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            align-items: center;
+        }
+        .self-mapping-arrows .map-arrow {
+            font-size: 1.5em;
+            color: var(--accent-blue);
+        }
+        .self-objects-col {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .self-obj-box {
+            background: white;
+            border: 3px solid var(--success-green);
+            border-radius: 10px;
+            padding: 12px 18px;
+            text-align: left;
+            box-shadow: 0 3px 10px rgba(39,174,96,0.12);
+        }
+        .self-obj-box .obj-title {
+            font-weight: 700;
+            font-size: 0.7em;
+            color: var(--success-green);
+            margin-bottom: 6px;
+        }
+        .self-obj-box .obj-attr {
+            font-family: 'Courier New', monospace;
+            font-size: 0.6em;
+            padding: 3px 6px;
+            background: #E8F8F0;
+            border-radius: 4px;
+            margin: 3px 0;
+        }
+
+        /* ============================================
+           NEW: Method call trace (Slide 10)
+           ============================================ */
+        .call-trace {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+            margin: 12px 0;
+        }
+        .call-trace-step {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            max-width: 520px;
+        }
+        .call-depth {
+            width: 30px;
+            text-align: right;
+            font-size: 0.6em;
+            color: #999;
+            flex-shrink: 0;
+        }
+        .call-box {
+            flex: 1;
+            border-radius: 8px;
+            padding: 8px 16px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.65em;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .call-box.depth-0 {
+            background: var(--light-blue);
+            border: 2px solid var(--accent-blue);
+        }
+        .call-box.depth-1 {
+            background: #E8F8F0;
+            border: 2px solid var(--success-green);
+            margin-left: 30px;
+        }
+        .call-box.depth-2 {
+            background: #FFF3CC;
+            border: 2px solid var(--warning-orange);
+            margin-left: 60px;
+        }
+        .call-direction {
+            font-size: 0.75em;
+            padding: 2px 8px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        .call-down { color: var(--accent-blue); }
+        .call-up { color: var(--success-green); }
+        .call-trace-connector {
+            width: 2px;
+            height: 8px;
+            background: #CCC;
+            margin-left: 50px;
+        }
+
+        /* ============================================
+           NEW: Robot on track (Slide 11)
+           ============================================ */
+        .robot-track-scene {
+            position: relative;
+            width: 180px;
+            height: 110px;
+            margin: 0 auto 5px;
+        }
+        /* The track line */
+        .track-h-line {
+            position: absolute;
+            top: 50px;
+            left: 10px;
+            right: 10px;
+            height: 8px;
+            background: #333;
+            border-radius: 4px;
+        }
+        /* Cross mark */
+        .track-v-line {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 25px;
+            width: 8px;
+            height: 58px;
+            background: #333;
+            border-radius: 4px;
+        }
+        /* Robot body */
+        .robot-body {
+            position: absolute;
+            width: 60px;
+            height: 40px;
+            background: var(--accent-blue);
+            border-radius: 8px;
+            top: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            box-shadow: 0 3px 8px rgba(0,0,0,0.2);
+        }
+        /* Robot wheels */
+        .robot-wheel {
+            position: absolute;
+            width: 10px;
+            height: 18px;
+            background: #444;
+            border-radius: 3px;
+        }
+        .robot-wheel.left { left: -6px; top: 11px; }
+        .robot-wheel.right { right: -6px; top: 11px; }
+        /* Sensor dots on robot */
+        .robot-sensor {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            bottom: -2px;
+            border: 2px solid white;
+        }
+        .robot-sensor.left-sensor { left: 10px; }
+        .robot-sensor.right-sensor { right: 10px; }
+        .robot-sensor.sensing-high { background: var(--success-green); }
+        .robot-sensor.sensing-low { background: #CCC; }
+
+        /* ============================================
+           NEW: Color-coded anatomy (Slide 12)
+           ============================================ */
+        .anatomy-map {
+            display: flex;
+            gap: 10px;
+            align-items: stretch;
+        }
+        .anatomy-map-code {
+            flex: 1.4;
+            position: relative;
+        }
+        .anatomy-map-legend {
+            flex: 0.6;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .anatomy-region {
+            border-radius: 8px;
+            padding: 10px 14px;
+            font-size: 0.62em;
+            font-weight: 600;
+            text-align: left;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .anatomy-region .region-bar {
+            width: 6px;
+            height: 100%;
+            min-height: 30px;
+            border-radius: 3px;
+            flex-shrink: 0;
+        }
+        .anatomy-region .region-lines {
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            font-weight: 400;
+            color: #666;
+            margin-top: 3px;
+        }
+
+        /* Color-coded code overlay */
+        .code-region-class { border-left: 4px solid var(--accent-blue) !important; }
+        .code-region-init { border-left: 4px solid var(--warning-orange) !important; }
+        .code-region-attr { border-left: 4px solid var(--purple) !important; }
+        .code-region-methods { border-left: 4px solid var(--success-green) !important; }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- SLIDE 1: Title -->
+            <section class="title-slide" data-background="linear-gradient(135deg, #1B3A5C 0%, #2E75B6 100%)">
+                <h1 style="font-size: 2.4em; margin-bottom: 10px;">Introduction to Classes</h1>
+                <h2 style="font-weight: 400; font-size: 1.3em; opacity: 0.9;">Building a LineSensor for Your XRP Robot</h2>
+                <p class="subtitle" style="margin-top: 40px;">Lesson 8 &nbsp;·&nbsp; Module 2: Line Tracking</p>
+
+                <div style="margin-top: 50px;">
+                    <div class="agenda-list" style="color: white;">
+                        <div class="agenda-item">
+                            <span class="agenda-icon">🤔</span>
+                            <span style="flex:1">Why do we need classes?</span>
+                            <span class="agenda-time">5 min</span>
+                        </div>
+                        <div class="agenda-item">
+                            <span class="agenda-icon">🔧</span>
+                            <span style="flex:1">Class syntax walkthrough</span>
+                            <span class="agenda-time">10 min</span>
+                        </div>
+                        <div class="agenda-item">
+                            <span class="agenda-icon">🏗️</span>
+                            <span style="flex:1">Build LineSensor step by step</span>
+                            <span class="agenda-time">15 min</span>
+                        </div>
+                        <div class="agenda-item" style="border-bottom: none;">
+                            <span class="agenda-icon">🚀</span>
+                            <span style="flex:1">Practice: Write &amp; test your own</span>
+                            <span class="agenda-time">15 min</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 2: Learning Objectives -->
+            <section>
+                <h2>🎯 Learning Objectives</h2>
+                <p style="font-size:0.8em; color:#666; margin-bottom:20px;">By the end of this lesson, you will be able to...</p>
+
+                <div style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;">
+                    <div style="background: var(--light-blue); border-radius: 10px; padding: 16px 20px; width: 45%; text-align: left; font-size: 0.75em;">
+                        <strong style="color: var(--accent-blue);">📦 Organize</strong><br>
+                        Explain why classes group related functions and data together
+                    </div>
+                    <div style="background: #E8F8F0; border-radius: 10px; padding: 16px 20px; width: 45%; text-align: left; font-size: 0.75em;">
+                        <strong style="color: var(--success-green);">✏️ Write</strong><br>
+                        Create a class with <code>__init__</code>, <code>self</code>, and methods
+                    </div>
+                    <div style="background: #FFF3CC; border-radius: 10px; padding: 16px 20px; width: 45%; text-align: left; font-size: 0.75em;">
+                        <strong style="color: #D68910;">🔨 Build</strong><br>
+                        Create objects and call methods on them
+                    </div>
+                    <div style="background: #F0E8FD; border-radius: 10px; padding: 16px 20px; width: 45%; text-align: left; font-size: 0.75em;">
+                        <strong style="color: #7D3C98;">🤖 Apply</strong><br>
+                        Build a working LineSensor class for the XRP robot
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 3: The Problem — with spaghetti vs organized visual -->
+            <section>
+                <h2>😬 The Problem with Our Code</h2>
+                <p style="font-size: 0.7em; color: #666;">Our Lesson 7 program has everything mixed together!</p>
+
+                <!-- Spaghetti vs Organized visual -->
+                <div class="spaghetti-vs-organized">
+                    <div class="spaghetti-box">
+                        <svg class="tangle" viewBox="0 0 250 160" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M 20 30 C 80 90, 150 10, 230 50" stroke="#E74C3C" stroke-width="3" fill="none" opacity="0.6"/>
+                            <path d="M 30 70 C 100 20, 180 130, 220 40" stroke="#2E75B6" stroke-width="3" fill="none" opacity="0.6"/>
+                            <path d="M 15 110 C 90 50, 120 130, 235 80" stroke="#F39C12" stroke-width="3" fill="none" opacity="0.6"/>
+                            <path d="M 40 20 C 60 140, 200 20, 210 120" stroke="#27AE60" stroke-width="3" fill="none" opacity="0.6"/>
+                            <path d="M 25 90 C 130 30, 70 120, 230 100" stroke="#7D3C98" stroke-width="3" fill="none" opacity="0.5"/>
+                            <path d="M 50 130 C 110 60, 160 110, 200 25" stroke="#E74C3C" stroke-width="2" fill="none" opacity="0.4"/>
+                            <text x="50" y="85" font-size="10" fill="#999" font-family="Courier New">sensor?</text>
+                            <text x="130" y="45" font-size="10" fill="#999" font-family="Courier New">driving?</text>
+                            <text x="90" y="125" font-size="10" fill="#999" font-family="Courier New">threshold?</text>
+                        </svg>
+                        <div class="spaghetti-label">🍝 Tangled Code</div>
+                    </div>
+
+                    <div class="transform-arrow">→</div>
+
+                    <div class="organized-box">
+                        <div class="org-inner-box" style="top: 15px; left: 15px; width: 100px; height: 55px; background: var(--accent-blue);">
+                            📦 LineSensor
+                        </div>
+                        <div class="org-inner-box" style="top: 15px; right: 15px; width: 100px; height: 55px; background: var(--success-green);">
+                            📦 Driving
+                        </div>
+                        <div class="org-inner-box" style="bottom: 35px; left: 50%; transform: translateX(-50%); width: 120px; height: 40px; background: var(--warning-orange);">
+                            📦 Main Loop
+                        </div>
+                        <div class="organized-label">✨ Organized Code</div>
+                    </div>
+                </div>
+
+                <div class="two-col" style="font-size: 0.75em;">
+                    <div>
+                        <div class="warning-box" style="margin-top: 0; padding: 12px 18px;">
+                            <strong>⚠️ Sensor code</strong> and <strong>driving code</strong> are tangled together
+                        </div>
+                        <div class="warning-box" style="padding: 12px 18px;">
+                            <strong>⚠️ Hard to reuse</strong> just the sensor part
+                        </div>
+                    </div>
+                    <div>
+                        <div class="key-idea" style="margin-top: 0;">
+                            How could we <em>separate</em> the sensor logic from the driving logic?<br>
+                            <strong>Answer: Classes!</strong>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 4: What Is a Class? — with Factory Pipeline -->
+            <section>
+                <h2>📦 What Is a Class?</h2>
+                <div class="concept-box" style="text-align: center; font-size: 0.95em; margin-bottom: 15px; padding: 14px 20px;">
+                    A <strong>class</strong> is a blueprint that groups related <em>data</em> and <em>functions</em> together.
+                </div>
+
+                <!-- Factory Pipeline Infographic -->
+                <div class="factory-pipeline">
+                    <div class="factory-blueprint">
+                        <div class="blueprint-icon">📐</div>
+                        <div class="blueprint-title">LineSensor</div>
+                        <div style="font-size: 0.55em; color: #999; margin: 3px 0;">— THE BLUEPRINT —</div>
+                        <div class="blueprint-contents">
+                            <span class="badge badge-blue" style="font-size: 1em;">Data</span> reflectance, threshold<br>
+                            <span class="badge badge-green" style="font-size: 1em;">Actions</span> get_error, is_at_cross
+                        </div>
+                    </div>
+
+                    <div class="factory-arrow-group">
+                        <div class="pipe-label">LineSensor()</div>
+                        <div class="pipe">→</div>
+                        <div class="pipe-label">LineSensor()</div>
+                        <div class="pipe">→</div>
+                    </div>
+
+                    <div class="factory-objects">
+                        <div class="factory-obj">
+                            <div class="obj-name">sensor_a</div>
+                            <div class="obj-data">threshold = 0.5</div>
+                        </div>
+                        <div class="factory-obj">
+                            <div class="obj-name">sensor_b</div>
+                            <div class="obj-data">threshold = 0.5</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Vocab as visual cards instead of table -->
+                <div style="display: flex; gap: 10px; justify-content: center; margin-top: 10px;">
+                    <div style="background: var(--light-blue); border-radius: 10px; padding: 12px 16px; width: 22%; text-align: center;">
+                        <div style="font-size: 1.5em;">📐</div>
+                        <strong style="font-size: 0.75em; color: var(--accent-blue);">Class</strong>
+                        <div style="font-size: 0.6em; color: #666;">The blueprint</div>
+                    </div>
+                    <div style="background: #E8F8F0; border-radius: 10px; padding: 12px 16px; width: 22%; text-align: center;">
+                        <div style="font-size: 1.5em;">🍪</div>
+                        <strong style="font-size: 0.75em; color: var(--success-green);">Object</strong>
+                        <div style="font-size: 0.6em; color: #666;">A thing built from it</div>
+                    </div>
+                    <div style="background: #FFF3CC; border-radius: 10px; padding: 12px 16px; width: 22%; text-align: center;">
+                        <div style="font-size: 1.5em;">⚡</div>
+                        <strong style="font-size: 0.75em; color: #D68910;">Method</strong>
+                        <div style="font-size: 0.6em; color: #666;">What it can <em>do</em></div>
+                    </div>
+                    <div style="background: #F0E8FD; border-radius: 10px; padding: 12px 16px; width: 22%; text-align: center;">
+                        <div style="font-size: 1.5em;">🧠</div>
+                        <strong style="font-size: 0.75em; color: var(--purple);">Attribute</strong>
+                        <div style="font-size: 0.6em; color: #666;">What it <em>knows</em></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 5: You Already Use Classes -->
+            <section>
+                <h2>🎉 You Already Use Classes!</h2>
+                <p style="font-size: 0.8em; color: #666;">Every time you wrote this code, you were using a class:</p>
+
+                <pre><code class="python" data-trim>
+drivetrain = DifferentialDrive.get_default_differential_drive()
+drivetrain.straight(30)
+drivetrain.turn(90)
+drivetrain.stop()
+                </code></pre>
+
+                <div style="display: flex; gap: 15px; justify-content: center; margin-top: 20px;">
+                    <div style="background: var(--light-blue); border-radius: 10px; padding: 16px 24px; text-align: center;">
+                        <div style="font-size: 0.65em; color: #666;">THE CLASS</div>
+                        <code style="font-size: 1.1em;">DifferentialDrive</code>
+                        <div style="font-size: 0.65em; margin-top: 5px;">🏭 The blueprint</div>
+                    </div>
+                    <div style="font-size: 2em; color: var(--accent-blue); align-self: center;">→</div>
+                    <div style="background: #E8F8F0; border-radius: 10px; padding: 16px 24px; text-align: center;">
+                        <div style="font-size: 0.65em; color: #666;">THE OBJECT</div>
+                        <code style="font-size: 1.1em;">drivetrain</code>
+                        <div style="font-size: 0.65em; margin-top: 5px;">🤖 A specific instance</div>
+                    </div>
+                    <div style="font-size: 2em; color: var(--accent-blue); align-self: center;">→</div>
+                    <div style="background: #FFF3CC; border-radius: 10px; padding: 16px 24px; text-align: center;">
+                        <div style="font-size: 0.65em; color: #666;">THE METHODS</div>
+                        <code style="font-size: 1.1em;">.straight() .turn()</code>
+                        <div style="font-size: 0.65em; margin-top: 5px;">⚡ Actions it can do</div>
+                    </div>
+                </div>
+
+                <div class="success-box" style="text-align: center; margin-top: 20px; font-size: 0.9em;">
+                    <strong>Today you will build your own class</strong> — just like the ones in XRPLib!
+                </div>
+            </section>
+
+            <!-- SLIDE 6: Section Divider -->
+            <section class="section-slide" data-background="linear-gradient(135deg, #2E75B6 0%, #4A90D9 100%)">
+                <h2 style="font-size: 2em;">🔧 Class Syntax</h2>
+                <p style="font-size: 1.1em; opacity: 0.9;">Let's learn the building blocks</p>
+
+                <div class="step-container" style="margin-top: 40px;">
+                    <div class="step" style="background: rgba(255,255,255,0.95);">
+                        <div class="step-num">1</div>
+                        <div>Empty class</div>
+                    </div>
+                    <div class="step" style="background: rgba(255,255,255,0.95);">
+                        <div class="step-num">2</div>
+                        <div><code>__init__</code></div>
+                    </div>
+                    <div class="step" style="background: rgba(255,255,255,0.95);">
+                        <div class="step-num">3</div>
+                        <div>Methods</div>
+                    </div>
+                    <div class="step" style="background: rgba(255,255,255,0.95);">
+                        <div class="step-num">4</div>
+                        <div>Using objects</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 7: Empty Class -->
+            <section>
+                <h2>Step 1: An Empty Class</h2>
+
+                <div class="two-col">
+                    <div>
+                        <pre><code class="python" data-trim>
+class LineSensor:
+    pass
+                        </code></pre>
+
+                        <pre style="margin-top: 15px;"><code class="python" data-trim>
+# Creating an object
+sensor = LineSensor()
+print(type(sensor))
+# &lt;class '__main__.LineSensor'&gt;
+                        </code></pre>
+                    </div>
+                    <div style="font-size: 0.75em; text-align: left;">
+                        <div class="anatomy-labels">
+                            <div class="anatomy-label" style="background: #E8F4FD;">
+                                <div class="dot" style="background: var(--accent-blue);"></div>
+                                <code>class</code> — keyword that starts a class
+                            </div>
+                            <div class="anatomy-label" style="background: #E8F8F0;">
+                                <div class="dot" style="background: var(--success-green);"></div>
+                                <code>LineSensor</code> — name (CamelCase!)
+                            </div>
+                            <div class="anatomy-label" style="background: #FFF3CC;">
+                                <div class="dot" style="background: var(--warning-orange);"></div>
+                                <code>:</code> — colon starts the body
+                            </div>
+                            <div class="anatomy-label" style="background: #F0E8FD;">
+                                <div class="dot" style="background: #7D3C98;"></div>
+                                <code>pass</code> — placeholder ("nothing yet")
+                            </div>
+                        </div>
+
+                        <div class="key-idea" style="margin-top: 15px;">
+                            Parentheses <code>()</code> after the class name create a new object — this is called <strong>instantiation</strong>.
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 8: __init__ -->
+            <section>
+                <h2>Step 2: The <code>__init__</code> Method</h2>
+                <p style="font-size: 0.75em; color: #666;"><code>__init__</code> runs <strong>automatically</strong> when you create an object — it's called the <strong>constructor</strong>.</p>
+
+                <pre><code class="python" data-trim>
+class LineSensor:
+    def __init__(self):
+        self.reflectance = Reflectance.get_default_reflectance()
+        self.threshold = 0.5
+                </code></pre>
+
+                <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-top: 15px;">
+                    <div style="background: var(--light-blue); border-radius: 10px; padding: 14px 18px; font-size: 0.7em; text-align: left; width: 28%;">
+                        <strong style="color: var(--accent-blue);">def __init__(self):</strong><br>
+                        Special method — runs when object is created
+                    </div>
+                    <div style="background: #E8F8F0; border-radius: 10px; padding: 14px 18px; font-size: 0.7em; text-align: left; width: 28%;">
+                        <strong style="color: var(--success-green);">self</strong><br>
+                        Refers to the object being created ("me, myself")
+                    </div>
+                    <div style="background: #FFF3CC; border-radius: 10px; padding: 14px 18px; font-size: 0.7em; text-align: left; width: 28%;">
+                        <strong style="color: #D68910;">self.threshold</strong><br>
+                        Stores 0.5 <em>on this object</em> as an attribute
+                    </div>
+                </div>
+
+                <pre style="margin-top: 15px;"><code class="python" data-trim>
+sensor = LineSensor()       # __init__ runs here!
+print(sensor.threshold)     # Prints: 0.5
+                </code></pre>
+
+                <div class="key-idea" style="text-align: center;">
+                    <code>self.something</code> means <strong>"this object's something"</strong>
+                </div>
+            </section>
+
+            <!-- SLIDE 9: Understanding self — with blueprint→objects mapping -->
+            <section>
+                <h2>🪞 Understanding <code>self</code></h2>
+                <p style="font-size: 0.7em; color: #666; margin-bottom: 10px;"><code>self</code> = "the object referring to itself" — like each student saying "my"</p>
+
+                <!-- Enhanced self mapping diagram -->
+                <div class="self-mapping">
+                    <div class="self-blueprint-box">
+                        <div class="sb-title">📐 Blueprint (Class)</div>
+                        <div class="self-code-line" style="background: #F5F6FA;">class LineSensor:</div>
+                        <div class="self-code-line" style="background: #F5F6FA;">&nbsp;&nbsp;def __init__(<strong style="color:var(--warning-orange);">self</strong>):</div>
+                        <div class="self-code-line highlight-self">&nbsp;&nbsp;&nbsp;&nbsp;<strong style="color:var(--warning-orange);">self</strong>.threshold = 0.5</div>
+                        <div class="self-code-line highlight-self">&nbsp;&nbsp;&nbsp;&nbsp;<strong style="color:var(--warning-orange);">self</strong>.reflectance = ...</div>
+                        <div style="text-align: center; margin-top: 8px; font-size: 0.6em; color: var(--warning-orange); font-weight: 700;">
+                            ↑ <code>self</code> = placeholder for "whichever object calls me"
+                        </div>
+                    </div>
+
+                    <div class="self-mapping-arrows">
+                        <div style="font-size: 0.6em; color: var(--accent-blue); font-weight: 600;">becomes</div>
+                        <div class="map-arrow">→</div>
+                        <div class="map-arrow">→</div>
+                    </div>
+
+                    <div class="self-objects-col">
+                        <div class="self-obj-box">
+                            <div class="obj-title">sensor_a = LineSensor()</div>
+                            <div class="obj-attr">sensor_a.threshold = 0.5</div>
+                            <div class="obj-attr">sensor_a.reflectance = ...</div>
+                        </div>
+                        <div class="self-obj-box">
+                            <div class="obj-title">sensor_b = LineSensor()</div>
+                            <div class="obj-attr">sensor_b.threshold = 0.5</div>
+                            <div class="obj-attr">sensor_b.reflectance = ...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 15px; justify-content: center; margin-top: 10px;">
+                    <div class="warning-box" style="margin: 0; padding: 10px 18px; font-size: 0.75em; flex: 1; max-width: 350px;">
+                        <strong>Rule:</strong> You write <code>self</code> in the <em>definition</em>. You <strong>NEVER</strong> write <code>self</code> when <em>calling</em>.
+                    </div>
+                    <div style="background: #E8F8F0; border-radius: 8px; padding: 10px 18px; font-size: 0.7em; flex: 1; max-width: 350px; text-align: left; border-left: 5px solid var(--success-green);">
+                        <strong style="font-family: 'Courier New', monospace;">def get_error(self): ...</strong><br>
+                        <strong style="font-family: 'Courier New', monospace;">sensor.get_error()</strong> <span style="color: var(--success-green);">← no self!</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 10: Adding Methods — with call trace diagram -->
+            <section>
+                <h2>Step 3: Adding Methods</h2>
+                <p style="font-size: 0.7em; color: #666;">A method is a function inside a class. Methods can call other methods!</p>
+
+                <div class="two-col">
+                    <div>
+                        <pre><code class="python" data-trim data-line-numbers="5-11">
+class LineSensor:
+    def __init__(self):
+        self.reflectance = Reflectance.get_default_reflectance()
+        self.threshold = 0.5
+
+    def get_left(self):
+        return self.reflectance.get_left()
+
+    def get_right(self):
+        return self.reflectance.get_right()
+
+    def get_error(self):
+        return self.get_left() - self.get_right()
+                        </code></pre>
+                    </div>
+                    <div>
+                        <!-- Method call trace diagram -->
+                        <div style="font-size: 0.7em; font-weight: 700; color: var(--navy); margin-bottom: 8px;">How <code>sensor.get_error()</code> works:</div>
+                        <div class="call-trace">
+                            <div class="call-trace-step">
+                                <div class="call-depth">You</div>
+                                <div class="call-box depth-0">
+                                    <span>sensor.get_error()</span>
+                                    <span class="call-direction call-down">↓ calls</span>
+                                </div>
+                            </div>
+                            <div class="call-trace-connector"></div>
+                            <div class="call-trace-step">
+                                <div class="call-depth"></div>
+                                <div class="call-box depth-1">
+                                    <span>self.get_left()</span>
+                                    <span class="call-direction call-down">↓ calls</span>
+                                </div>
+                            </div>
+                            <div class="call-trace-connector" style="margin-left: 80px;"></div>
+                            <div class="call-trace-step">
+                                <div class="call-depth"></div>
+                                <div class="call-box depth-2">
+                                    <span>self.reflectance.get_left()</span>
+                                    <span class="call-direction call-up">↑ returns 0.8</span>
+                                </div>
+                            </div>
+                            <div class="call-trace-connector" style="margin-left: 50px;"></div>
+                            <div class="call-trace-step">
+                                <div class="call-depth"></div>
+                                <div class="call-box depth-1">
+                                    <span>self.get_right()</span>
+                                    <span class="call-direction call-down">↓ calls</span>
+                                </div>
+                            </div>
+                            <div class="call-trace-connector" style="margin-left: 80px;"></div>
+                            <div class="call-trace-step">
+                                <div class="call-depth"></div>
+                                <div class="call-box depth-2">
+                                    <span>self.reflectance.get_right()</span>
+                                    <span class="call-direction call-up">↑ returns 0.3</span>
+                                </div>
+                            </div>
+                            <div class="call-trace-connector"></div>
+                            <div class="call-trace-step">
+                                <div class="call-depth">Result</div>
+                                <div class="call-box depth-0">
+                                    <span>0.8 - 0.3 = <strong>0.5</strong></span>
+                                    <span class="call-direction call-up">↑ returns 0.5</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 11: Boolean Methods — with robot on track -->
+            <section>
+                <h2>Step 4: Boolean Methods</h2>
+                <p style="font-size: 0.7em; color: #666;">Methods that return <code>True</code> or <code>False</code> — perfect for <code>if</code> and <code>while</code>!</p>
+
+                <pre><code class="python" data-trim>
+def is_at_cross(self):
+    return self.get_left() > self.threshold and self.get_right() > self.threshold
+
+def is_off_line(self):
+    return self.get_left() < self.threshold and self.get_right() < self.threshold
+                </code></pre>
+
+                <!-- Robot on track diagrams -->
+                <div class="sensor-diagram">
+                    <div class="sensor-scenario">
+                        <h4>Following Line</h4>
+                        <div class="robot-track-scene">
+                            <div class="track-h-line"></div>
+                            <!-- Robot slightly left of center -->
+                            <div class="robot-body" style="left: 40%; transform: translateX(-50%);">
+                                <div class="robot-wheel left"></div>
+                                <div class="robot-wheel right"></div>
+                                <div class="robot-sensor left-sensor sensing-high"></div>
+                                <div class="robot-sensor right-sensor sensing-low"></div>
+                            </div>
+                        </div>
+                        <div class="sensor-result result-false">is_at_cross → False</div>
+                        <div class="sensor-result result-false" style="margin-top:3px;">is_off_line → False</div>
+                    </div>
+
+                    <div class="sensor-scenario" style="border: 2px solid var(--success-green);">
+                        <h4>🎯 At a Cross</h4>
+                        <div class="robot-track-scene">
+                            <div class="track-h-line"></div>
+                            <div class="track-v-line"></div>
+                            <div class="robot-body">
+                                <div class="robot-wheel left"></div>
+                                <div class="robot-wheel right"></div>
+                                <div class="robot-sensor left-sensor sensing-high"></div>
+                                <div class="robot-sensor right-sensor sensing-high"></div>
+                            </div>
+                        </div>
+                        <div class="sensor-result result-true">is_at_cross → True ✓</div>
+                        <div class="sensor-result result-false" style="margin-top:3px;">is_off_line → False</div>
+                    </div>
+
+                    <div class="sensor-scenario" style="border: 2px solid var(--error-red);">
+                        <h4>⚠️ Off the Line</h4>
+                        <div class="robot-track-scene">
+                            <div class="track-h-line"></div>
+                            <!-- Robot way off to the right -->
+                            <div class="robot-body" style="left: 80%; transform: translateX(-50%);">
+                                <div class="robot-wheel left"></div>
+                                <div class="robot-wheel right"></div>
+                                <div class="robot-sensor left-sensor sensing-low"></div>
+                                <div class="robot-sensor right-sensor sensing-low"></div>
+                            </div>
+                        </div>
+                        <div class="sensor-result result-false">is_at_cross → False</div>
+                        <div class="sensor-result result-true" style="margin-top:3px;">is_off_line → True ✓</div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 15px; justify-content: center; font-size: 0.6em; margin-top: 5px;">
+                    <div style="display: flex; align-items: center; gap: 5px;">
+                        <div style="width: 12px; height: 12px; border-radius: 50%; background: var(--success-green); border: 2px solid white; box-shadow: 0 0 0 1px #ccc;"></div>
+                        Sensor reading HIGH (on dark line)
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 5px;">
+                        <div style="width: 12px; height: 12px; border-radius: 50%; background: #CCC; border: 2px solid white; box-shadow: 0 0 0 1px #ccc;"></div>
+                        Sensor reading LOW (off line)
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 12: Complete Class — with color-coded anatomy -->
+            <section>
+                <h2>🏆 The Complete LineSensor Class</h2>
+
+                <div class="anatomy-map">
+                    <div class="anatomy-map-code">
+                        <pre style="margin: 0;"><code class="python" data-trim data-line-numbers>
+from XRPLib.reflectance import Reflectance
+
+class LineSensor:
+    def __init__(self):
+        self.reflectance = Reflectance.get_default_reflectance()
+        self.threshold = 0.5
+
+    def get_left(self):
+        return self.reflectance.get_left()
+
+    def get_right(self):
+        return self.reflectance.get_right()
+
+    def get_error(self):
+        return self.get_left() - self.get_right()
+
+    def is_at_cross(self):
+        return (self.get_left() > self.threshold
+                and self.get_right() > self.threshold)
+
+    def is_off_line(self):
+        return (self.get_left() < self.threshold
+                and self.get_right() < self.threshold)
+                        </code></pre>
+                    </div>
+                    <div class="anatomy-map-legend">
+                        <!-- Color-coded anatomy regions -->
+                        <div class="anatomy-region" style="background: var(--light-blue);">
+                            <div class="region-bar" style="background: var(--accent-blue);"></div>
+                            <div>
+                                <strong style="color: var(--accent-blue);">Class Definition</strong>
+                                <div class="region-lines">Line 3</div>
+                            </div>
+                        </div>
+                        <div class="anatomy-region" style="background: #FFF3CC;">
+                            <div class="region-bar" style="background: var(--warning-orange);"></div>
+                            <div>
+                                <strong style="color: var(--warning-orange);">Constructor (__init__)</strong>
+                                <div class="region-lines">Lines 4-6</div>
+                            </div>
+                        </div>
+                        <div class="anatomy-region" style="background: #F0E8FD;">
+                            <div class="region-bar" style="background: var(--purple);"></div>
+                            <div>
+                                <strong style="color: var(--purple);">Attributes (2)</strong>
+                                <div class="region-lines">self.reflectance<br>self.threshold</div>
+                            </div>
+                        </div>
+                        <div class="anatomy-region" style="background: #E8F8F0;">
+                            <div class="region-bar" style="background: var(--success-green);"></div>
+                            <div>
+                                <strong style="color: var(--success-green);">Methods (5)</strong>
+                                <div class="region-lines">get_left, get_right<br>get_error<br>is_at_cross, is_off_line</div>
+                            </div>
+                        </div>
+
+                        <!-- Inventory counters -->
+                        <div style="display: flex; gap: 8px; margin-top: 5px;">
+                            <div class="inventory-item" style="padding: 8px 12px; min-width: 0; flex: 1;">
+                                <div class="inventory-num" style="font-size: 1.5em;">1</div>
+                                <div class="inventory-label">CLASS</div>
+                            </div>
+                            <div class="inventory-item" style="padding: 8px 12px; min-width: 0; flex: 1;">
+                                <div class="inventory-num" style="font-size: 1.5em;">2</div>
+                                <div class="inventory-label">ATTRS</div>
+                            </div>
+                            <div class="inventory-item" style="padding: 8px 12px; min-width: 0; flex: 1;">
+                                <div class="inventory-num" style="font-size: 1.5em;">5</div>
+                                <div class="inventory-label">METHODS</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 13: Before vs After -->
+            <section>
+                <h2>Before vs. After — Why Classes Win</h2>
+
+                <div class="compare-container">
+                    <div class="compare-box before">
+                        <h3>❌ Before (Lesson 7)</h3>
+                        <pre style="border-left-color: var(--error-red);"><code class="python" data-trim>
+reflectance = Reflectance.get_default_reflectance()
+threshold = 0.5
+
+left = reflectance.get_left()
+right = reflectance.get_right()
+error = left - right
+at_cross = left > threshold and right > threshold
+off_line = left < threshold and right < threshold
+                        </code></pre>
+                        <div style="font-size: 0.65em; margin-top: 8px; color: var(--error-red);">
+                            8 lines · variables scattered · hard to reuse
+                        </div>
+                    </div>
+                    <div class="compare-box after">
+                        <h3>✅ After (Lesson 8)</h3>
+                        <pre style="border-left-color: var(--success-green);"><code class="python" data-trim>
+sensor = LineSensor()
+
+error = sensor.get_error()
+at_cross = sensor.is_at_cross()
+off_line = sensor.is_off_line()
+                        </code></pre>
+                        <div style="font-size: 0.65em; margin-top: 8px; color: var(--success-green);">
+                            5 lines · reads like English · reusable anywhere
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 12px; justify-content: center; margin-top: 20px;">
+                    <div style="background: #E8F8F0; border-radius: 8px; padding: 10px 18px; font-size: 0.7em; text-align: center;">
+                        ✅ Fewer lines<br>where you use it
+                    </div>
+                    <div style="background: #E8F8F0; border-radius: 8px; padding: 10px 18px; font-size: 0.7em; text-align: center;">
+                        ✅ Reads almost<br>like English
+                    </div>
+                    <div style="background: #E8F8F0; border-radius: 8px; padding: 10px 18px; font-size: 0.7em; text-align: center;">
+                        ✅ Sensor logic is<br>packaged &amp; reusable
+                    </div>
+                    <div style="background: #E8F8F0; border-radius: 8px; padding: 10px 18px; font-size: 0.7em; text-align: center;">
+                        ✅ Threshold stored<br>in one place
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 14: Common Mistakes -->
+            <section>
+                <h2>🚨 Common Mistakes</h2>
+                <p style="font-size: 0.75em; color: #666;">Watch out for these three errors — almost everyone makes them at first!</p>
+
+                <div style="font-size: 0.85em;">
+                    <p style="text-align: left; font-weight: bold; margin-bottom: 5px;">Mistake #1: Forgetting <code>self</code> in the definition</p>
+                    <div class="mistake-row">
+                        <div class="mistake-wrong">
+                            <div class="mistake-label">❌ WRONG</div>
+                            <code>def get_error():</code>
+                        </div>
+                        <div class="mistake-right">
+                            <div class="mistake-label">✅ CORRECT</div>
+                            <code>def get_error(self):</code>
+                        </div>
+                    </div>
+
+                    <p style="text-align: left; font-weight: bold; margin-bottom: 5px; margin-top: 15px;">Mistake #2: Forgetting <code>self.</code> when accessing attributes</p>
+                    <div class="mistake-row">
+                        <div class="mistake-wrong">
+                            <div class="mistake-label">❌ WRONG</div>
+                            <code>return reflectance.get_left()</code>
+                        </div>
+                        <div class="mistake-right">
+                            <div class="mistake-label">✅ CORRECT</div>
+                            <code>return self.reflectance.get_left()</code>
+                        </div>
+                    </div>
+
+                    <p style="text-align: left; font-weight: bold; margin-bottom: 5px; margin-top: 15px;">Mistake #3: Passing <code>self</code> when calling a method</p>
+                    <div class="mistake-row">
+                        <div class="mistake-wrong">
+                            <div class="mistake-label">❌ WRONG</div>
+                            <code>sensor.get_error(sensor)</code>
+                        </div>
+                        <div class="mistake-right">
+                            <div class="mistake-label">✅ CORRECT</div>
+                            <code>sensor.get_error()</code>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 15: Practice Time -->
+            <section class="section-slide" data-background="linear-gradient(135deg, #27AE60 0%, #2ECC71 100%)">
+                <h2 style="font-size: 2em;">🚀 Your Turn!</h2>
+                <p style="font-size: 1em; opacity: 0.95;">Time to build your own LineSensor class</p>
+
+                <div style="display: flex; gap: 15px; justify-content: center; margin-top: 30px; flex-wrap: wrap;">
+                    <div class="step" style="background: rgba(255,255,255,0.95); width: 40%;">
+                        <div class="step-num" style="background: var(--success-green);">1</div>
+                        <div style="text-align: left; font-size: 0.95em;">
+                            <strong>Type the class</strong><br>
+                            <span style="font-size: 0.8em; color: #666;">Write the complete LineSensor class from scratch</span>
+                        </div>
+                    </div>
+                    <div class="step" style="background: rgba(255,255,255,0.95); width: 40%;">
+                        <div class="step-num" style="background: var(--success-green);">2</div>
+                        <div style="text-align: left; font-size: 0.95em;">
+                            <strong>Create an object</strong><br>
+                            <span style="font-size: 0.8em; color: #666;">Instantiate a LineSensor and test methods</span>
+                        </div>
+                    </div>
+                    <div class="step" style="background: rgba(255,255,255,0.95); width: 40%;">
+                        <div class="step-num" style="background: var(--success-green);">3</div>
+                        <div style="text-align: left; font-size: 0.95em;">
+                            <strong>Test on the robot</strong><br>
+                            <span style="font-size: 0.8em; color: #666;">Move the sensors over the line, check output</span>
+                        </div>
+                    </div>
+                    <div class="step" style="background: rgba(255,255,255,0.95); width: 40%;">
+                        <div class="step-num" style="background: var(--success-green);">4</div>
+                        <div style="text-align: left; font-size: 0.95em;">
+                            <strong>Challenge: Add a method</strong><br>
+                            <span style="font-size: 0.8em; color: #666;">Write a <code>status()</code> method that prints all values</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SLIDE 16: What's Next -->
+            <section>
+                <h2>🔮 Coming Up: Lesson 9</h2>
+
+                <div class="blueprint-diagram" style="margin-top: 30px;">
+                    <div class="blueprint-card" style="border-color: var(--accent-blue);">
+                        <div class="card-label" style="background: var(--accent-blue);">TODAY — Lesson 8</div>
+                        <div style="font-size: 2em; margin: 15px 0;">🔍</div>
+                        <div style="font-weight: bold;">LineSensor</div>
+                        <div style="font-size: 0.65em; color: #666; margin-top: 5px;">Sensor logic only</div>
+                    </div>
+
+                    <div class="arrow">→</div>
+
+                    <div class="blueprint-card" style="border-color: var(--success-green);">
+                        <div class="card-label" style="background: var(--success-green);">NEXT — Lesson 9</div>
+                        <div style="font-size: 2em; margin: 15px 0;">🏎️</div>
+                        <div style="font-weight: bold;">LineTrack</div>
+                        <div style="font-size: 0.65em; color: #666; margin-top: 5px;">Uses LineSensor inside it!</div>
+                    </div>
+                </div>
+
+                <div class="preview-box" style="max-width: 550px; margin: 25px auto 0;">
+                    <h3 style="color: var(--accent-blue);">👀 Preview — Object Composition</h3>
+                    <pre style="margin: 10px 0 0;"><code class="python" data-trim>
+class LineTrack:
+    def __init__(self):
+        self.sensor = LineSensor()    # Uses LineSensor!
+        self.drivetrain = DifferentialDrive.get_default_differential_drive()
+                    </code></pre>
+                    <p style="font-size: 0.7em; color: #666; margin: 8px 0 0;">One class using another class inside it — that's <strong>composition</strong>!</p>
+                </div>
+            </section>
+
+            <!-- SLIDE 17: Key Takeaways -->
+            <section>
+                <h2>📋 Key Takeaways</h2>
+
+                <div style="display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; margin-top: 15px;">
+                    <div style="background: white; border: 2px solid var(--accent-blue); border-radius: 12px; padding: 18px; width: 42%; text-align: left; box-shadow: 0 3px 10px rgba(0,0,0,0.06);">
+                        <div style="font-size: 1.5em; margin-bottom: 5px;">📦</div>
+                        <strong style="color: var(--navy);">Classes organize code</strong>
+                        <p style="font-size: 0.7em; color: #666; margin: 5px 0 0;">Group related data (attributes) and actions (methods) into one reusable package.</p>
+                    </div>
+                    <div style="background: white; border: 2px solid var(--accent-blue); border-radius: 12px; padding: 18px; width: 42%; text-align: left; box-shadow: 0 3px 10px rgba(0,0,0,0.06);">
+                        <div style="font-size: 1.5em; margin-bottom: 5px;">🏗️</div>
+                        <strong style="color: var(--navy);">__init__ sets things up</strong>
+                        <p style="font-size: 0.7em; color: #666; margin: 5px 0 0;">The constructor runs automatically and uses <code>self</code> to store data on the object.</p>
+                    </div>
+                    <div style="background: white; border: 2px solid var(--accent-blue); border-radius: 12px; padding: 18px; width: 42%; text-align: left; box-shadow: 0 3px 10px rgba(0,0,0,0.06);">
+                        <div style="font-size: 1.5em; margin-bottom: 5px;">🪞</div>
+                        <strong style="color: var(--navy);">self = "my"</strong>
+                        <p style="font-size: 0.7em; color: #666; margin: 5px 0 0;">Write <code>self</code> in definitions, never when calling. Python handles it automatically.</p>
+                    </div>
+                    <div style="background: white; border: 2px solid var(--accent-blue); border-radius: 12px; padding: 18px; width: 42%; text-align: left; box-shadow: 0 3px 10px rgba(0,0,0,0.06);">
+                        <div style="font-size: 1.5em; margin-bottom: 5px;">⚡</div>
+                        <strong style="color: var(--navy);">Methods are just functions</strong>
+                        <p style="font-size: 0.7em; color: #666; margin: 5px 0 0;">The only difference: they live inside a class and take <code>self</code> as the first parameter.</p>
+                    </div>
+                </div>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/reveal.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/reveal.js/4.6.1/plugin/highlight/highlight.min.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: 'c/t',
+            showSlideNumber: 'all',
+            transition: 'slide',
+            transitionSpeed: 'default',
+            backgroundTransition: 'fade',
+            width: 1280,
+            height: 720,
+            margin: 0.04,
+            center: true,
+            plugins: [RevealHighlight]
+        });
+    </script>
+</body>
+</html>
