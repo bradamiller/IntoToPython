@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Introduction to the Grid - Module 3: Grid Driving</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Patrick+Hand&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Patrick Hand', cursive;
+            background-color: #faf8f5;
+            overflow: hidden;
+            color: #2d3436;
+        }
+
+        /* ── Sidebar Navigation ── */
+        .nav-sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 240px;
+            height: 100vh;
+            background-color: #faf8f5;
+            border-right: 3px solid #b8c5d0;
+            padding: 24px 16px;
+            overflow-y: auto;
+            z-index: 1000;
+            background-image:
+                linear-gradient(rgba(180, 200, 220, 0.15) 1px, transparent 1px);
+            background-size: 100% 28px;
+        }
+
+        .nav-header h2 {
+            font-family: 'Caveat', cursive;
+            font-size: 20px;
+            color: #5b8fa8;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .nav-header h3 {
+            font-family: 'Caveat', cursive;
+            font-size: 16px;
+            color: #636e72;
+            margin-bottom: 20px;
+            font-weight: 400;
+        }
+
+        .slide-nav {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .nav-item {
+            color: #2d3436;
+            text-decoration: none;
+            padding: 6px 10px;
+            margin-bottom: 3px;
+            border-radius: 6px;
+            font-size: 15px;
+            line-height: 1.3;
+            transition: all 0.2s;
+            font-family: 'Patrick Hand', cursive;
+        }
+
+        .nav-item:hover {
+            background-color: rgba(91, 143, 168, 0.15);
+        }
+
+        .nav-item.active {
+            background-color: rgba(91, 143, 168, 0.2);
+            font-weight: bold;
+            border-left: 3px solid #5b8fa8;
+        }
+
+        /* ── Slides Container ── */
+        .slides-container {
+            margin-left: 240px;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: calc(100vw - 240px);
+            height: 100vh;
+            background-color: #fdfcfa;
+            display: none;
+            flex-direction: column;
+            /* Notebook paper lines */
+            background-image:
+                linear-gradient(rgba(180, 200, 220, 0.12) 1px, transparent 1px);
+            background-size: 100% 32px;
+            background-position: 0 80px;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        /* ── Title Bar (sketch style) ── */
+        .title-bar {
+            padding: 20px 50px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            position: relative;
+            border-bottom: 3px solid #5b8fa8;
+            background-color: rgba(91, 143, 168, 0.06);
+        }
+
+        .title-bar::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 30px;
+            right: 60px;
+            height: 3px;
+            background-color: rgba(91, 143, 168, 0.15);
+            transform: rotate(-0.3deg);
+        }
+
+        .title-bar h1 {
+            font-family: 'Caveat', cursive;
+            font-size: 36px;
+            font-weight: 700;
+            color: #2d3436;
+            transform: rotate(-0.5deg);
+        }
+
+        /* ── Slide Content ── */
+        .content {
+            flex: 1;
+            padding: 30px 50px;
+            padding-bottom: 80px;
+            overflow-y: auto;
+            max-width: 1100px;
+        }
+
+        /* ── Text Styles ── */
+        .header-text {
+            font-family: 'Caveat', cursive;
+            font-size: 28px;
+            font-weight: 600;
+            color: #5b8fa8;
+            margin-bottom: 12px;
+            margin-top: 8px;
+        }
+
+        .body-text {
+            font-size: 22px;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .bold {
+            font-weight: bold;
+        }
+
+        .bullet {
+            font-size: 22px;
+            margin-bottom: 6px;
+            margin-left: 24px;
+            line-height: 1.4;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .bullet::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 11px;
+            width: 8px;
+            height: 8px;
+            background-color: #5b8fa8;
+            border-radius: 50%;
+            transform: rotate(5deg);
+        }
+
+        .bullet.level-1 {
+            margin-left: 52px;
+            font-size: 20px;
+        }
+
+        .bullet.level-1::before {
+            width: 6px;
+            height: 6px;
+            background-color: #e8a87c;
+            top: 10px;
+        }
+
+        /* ── Code Blocks (sketch style) ── */
+        .code-block {
+            background-color: #f0ede8;
+            border: 2px solid #b8c5d0;
+            border-radius: 12px;
+            padding: 18px 22px;
+            margin: 16px 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 16px;
+            line-height: 1.5;
+            color: #2d3436;
+            overflow-x: auto;
+            position: relative;
+            box-shadow: 3px 3px 0 rgba(91, 143, 168, 0.15);
+            transform: rotate(-0.2deg);
+        }
+
+        .code-block::before {
+            content: '< / >';
+            position: absolute;
+            top: -12px;
+            right: 20px;
+            background-color: #fdfcfa;
+            padding: 2px 10px;
+            font-family: 'Caveat', cursive;
+            font-size: 16px;
+            color: #5b8fa8;
+            border: 2px solid #b8c5d0;
+            border-radius: 8px;
+        }
+
+        /* ── Tables (sketch style) ── */
+        .content-table {
+            width: 90%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 16px auto;
+            font-size: 18px;
+            border: 2px solid #b8c5d0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 3px 3px 0 rgba(91, 143, 168, 0.12);
+        }
+
+        .content-table th {
+            background-color: rgba(91, 143, 168, 0.2);
+            color: #2d3436;
+            padding: 10px 16px;
+            text-align: center;
+            font-family: 'Caveat', cursive;
+            font-size: 22px;
+            font-weight: 600;
+            border-bottom: 2px solid #b8c5d0;
+        }
+
+        .content-table td {
+            padding: 8px 16px;
+            text-align: center;
+            border-bottom: 1px dashed #ccc;
+            font-size: 18px;
+        }
+
+        .content-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .content-table tr:nth-child(even) {
+            background-color: rgba(232, 168, 124, 0.06);
+        }
+
+        .spacer {
+            height: 14px;
+        }
+
+        /* ── Sketch Decorations ── */
+        .sketch-box {
+            border: 2px solid #5b8fa8;
+            border-radius: 14px;
+            padding: 18px;
+            margin: 12px 0;
+            position: relative;
+            background-color: rgba(91, 143, 168, 0.04);
+            box-shadow: 2px 2px 0 rgba(91, 143, 168, 0.1);
+        }
+
+        .sketch-highlight {
+            background: linear-gradient(180deg, transparent 60%, rgba(232, 168, 124, 0.3) 60%);
+            padding: 0 4px;
+        }
+
+        .sketch-arrow {
+            display: inline-block;
+            font-size: 28px;
+            color: #e8a87c;
+            margin: 0 8px;
+        }
+
+        /* ── Illustrations (SVG inline) ── */
+        .illustration {
+            display: flex;
+            justify-content: center;
+            margin: 16px 0;
+        }
+
+        .illustration svg {
+            max-width: 100%;
+        }
+
+        /* ── Question callout ── */
+        .question-box {
+            border: 2px dashed #e8a87c;
+            border-radius: 14px;
+            padding: 16px 20px;
+            margin: 14px 0;
+            background-color: rgba(232, 168, 124, 0.08);
+            position: relative;
+        }
+
+        .question-box::before {
+            content: '?';
+            position: absolute;
+            top: -14px;
+            left: 16px;
+            background-color: #e8a87c;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Caveat', cursive;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .answer-box {
+            border: 2px dashed #85c88a;
+            border-radius: 14px;
+            padding: 16px 20px;
+            margin: 14px 0;
+            background-color: rgba(133, 200, 138, 0.08);
+            position: relative;
+        }
+
+        .answer-box::before {
+            content: '!';
+            position: absolute;
+            top: -14px;
+            left: 16px;
+            background-color: #85c88a;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Caveat', cursive;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        /* ── Key insight callout ── */
+        .insight-box {
+            border: 2px solid #e8a87c;
+            border-radius: 14px;
+            padding: 16px 20px;
+            margin: 14px 0;
+            background-color: rgba(232, 168, 124, 0.08);
+            text-align: center;
+            font-family: 'Caveat', cursive;
+            font-size: 26px;
+            font-weight: 600;
+            color: #2d3436;
+            transform: rotate(-0.3deg);
+            box-shadow: 3px 3px 0 rgba(232, 168, 124, 0.15);
+        }
+
+        /* ── Activity slide styling ── */
+        .activity-step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            padding-left: 8px;
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 32px;
+            height: 32px;
+            background-color: #5b8fa8;
+            color: white;
+            border-radius: 50%;
+            font-family: 'Caveat', cursive;
+            font-size: 20px;
+            font-weight: 700;
+            margin-right: 12px;
+            margin-top: 2px;
+            box-shadow: 2px 2px 0 rgba(91, 143, 168, 0.2);
+        }
+
+        .step-text {
+            font-size: 21px;
+            line-height: 1.4;
+            padding-top: 4px;
+        }
+
+        /* ── Checkpoint style ── */
+        .checkpoint {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 8px;
+            padding-left: 8px;
+        }
+
+        .check-icon {
+            min-width: 26px;
+            height: 26px;
+            border: 2px solid #85c88a;
+            border-radius: 6px;
+            margin-right: 12px;
+            margin-top: 4px;
+            position: relative;
+        }
+
+        .checkpoint .step-text {
+            font-size: 20px;
+        }
+
+        /* ── Navigation ── */
+        .slide-navigation {
+            position: absolute;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background-color: rgba(250, 248, 245, 0.95);
+            padding: 8px 20px;
+            border-radius: 25px;
+            border: 2px solid #b8c5d0;
+            box-shadow: 2px 2px 0 rgba(91, 143, 168, 0.1);
+        }
+
+        .nav-btn {
+            padding: 6px 18px;
+            border: 2px solid #5b8fa8;
+            border-radius: 20px;
+            background-color: rgba(91, 143, 168, 0.1);
+            color: #2d3436;
+            font-size: 16px;
+            font-family: 'Patrick Hand', cursive;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background-color: rgba(91, 143, 168, 0.25);
+        }
+
+        .nav-btn:disabled {
+            border-color: #ccc;
+            color: #aaa;
+            background-color: transparent;
+            cursor: not-allowed;
+        }
+
+        .slide-counter {
+            font-size: 16px;
+            font-family: 'Caveat', cursive;
+            font-weight: 600;
+            color: #5b8fa8;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        /* ── Title Slide Special ── */
+        .slide-title-page {
+            background-image: none;
+            background-color: #fdfcfa;
+        }
+
+        .title-hero {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .title-hero .module-label {
+            font-family: 'Patrick Hand', cursive;
+            font-size: 22px;
+            color: #5b8fa8;
+            margin-bottom: 8px;
+            letter-spacing: 2px;
+        }
+
+        .title-hero .lesson-title {
+            font-family: 'Caveat', cursive;
+            font-size: 64px;
+            font-weight: 700;
+            color: #2d3436;
+            margin-bottom: 24px;
+            transform: rotate(-1deg);
+            position: relative;
+        }
+
+        .title-hero .lesson-title::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 10%;
+            right: 10%;
+            height: 4px;
+            background-color: #e8a87c;
+            border-radius: 2px;
+            transform: rotate(0.5deg);
+        }
+
+        .title-hero .divider-sketch {
+            width: 120px;
+            height: 3px;
+            background: #b8c5d0;
+            margin: 16px auto;
+            border-radius: 2px;
+            transform: rotate(-1deg);
+        }
+
+        .title-content {
+            display: flex;
+            gap: 60px;
+            margin-top: 20px;
+            text-align: left;
+            max-width: 900px;
+        }
+
+        .title-section {
+            flex: 1;
+        }
+
+        .title-section h3 {
+            font-family: 'Caveat', cursive;
+            font-size: 26px;
+            font-weight: 600;
+            color: #5b8fa8;
+            margin-bottom: 10px;
+            border-bottom: 2px solid rgba(91, 143, 168, 0.2);
+            padding-bottom: 4px;
+        }
+
+        .title-section .bullet {
+            font-size: 19px;
+        }
+
+        .title-section .bullet::before {
+            top: 9px;
+        }
+
+        /* ── Grid illustration ── */
+        .grid-illustration {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        /* ── Progression arrow ── */
+        .progression {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .progression-step {
+            border: 2px solid #b8c5d0;
+            border-radius: 14px;
+            padding: 12px 18px;
+            text-align: center;
+            font-size: 18px;
+            background-color: rgba(91, 143, 168, 0.05);
+            min-width: 180px;
+        }
+
+        .progression-step.current {
+            border-color: #e8a87c;
+            background-color: rgba(232, 168, 124, 0.1);
+            box-shadow: 3px 3px 0 rgba(232, 168, 124, 0.15);
+        }
+
+        .progression-step .step-label {
+            font-family: 'Caveat', cursive;
+            font-size: 16px;
+            color: #5b8fa8;
+            font-weight: 600;
+        }
+
+        .progression-arrow {
+            font-size: 28px;
+            color: #b8c5d0;
+        }
+
+        /* ── Two-column layout ── */
+        .two-col {
+            display: flex;
+            gap: 30px;
+            margin-top: 10px;
+        }
+
+        .two-col .col {
+            flex: 1;
+        }
+
+        /* ── Robot SVG ── */
+        .robot-icon {
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-sidebar">
+        <div class="nav-header">
+            <h2>Module 3: Grid Driving</h2>
+            <h3>Lesson 1</h3>
+        </div>
+        <nav class="slide-nav">
+            <a href="#slide-1" class="nav-item" onclick="showSlide(0)">Title & Objectives</a>
+            <a href="#slide-2" class="nav-item" onclick="showSlide(1)">From Circle to Grid</a>
+            <a href="#slide-3" class="nav-item" onclick="showSlide(2)">The Grid Layout</a>
+            <a href="#slide-4" class="nav-item" onclick="showSlide(3)">Why the Grid Matters</a>
+            <a href="#slide-5" class="nav-item" onclick="showSlide(4)">LineTrack Methods</a>
+            <a href="#slide-6" class="nav-item" onclick="showSlide(5)">First Intersection</a>
+            <a href="#slide-7" class="nav-item" onclick="showSlide(6)">Drive and Turn</a>
+            <a href="#slide-8" class="nav-item" onclick="showSlide(7)">Code Reuse</a>
+            <a href="#slide-9" class="nav-item" onclick="showSlide(8)">Your Turn!</a>
+            <a href="#slide-10" class="nav-item" onclick="showSlide(9)">What's Next</a>
+        </nav>
+    </div>
+
+    <div class="slides-container">
+
+        <!-- ═══ SLIDE 1: Title ═══ -->
+        <div id="slide-1" class="slide slide-title-page">
+            <div class="title-hero">
+                <!-- XRP robot top-down view -->
+                <svg width="80" height="80" viewBox="0 0 80 80" style="margin-bottom: 12px;">
+                    <rect x="18" y="20" width="44" height="44" rx="6" fill="#b8c5d0" stroke="#2d3436" stroke-width="2.5" transform="rotate(-2 40 42)"/>
+                    <text x="40" y="47" font-family="Caveat, cursive" font-size="16" fill="#2d3436" text-anchor="middle" font-weight="700">XRP</text>
+                    <!-- Sensor bar -->
+                    <rect x="28" y="62" width="24" height="10" rx="3" fill="#636e72" stroke="#2d3436" stroke-width="2"/>
+                    <rect x="32" y="70" width="6" height="5" rx="1.5" fill="#e85d5d" stroke="#2d3436" stroke-width="1.5"/>
+                    <rect x="42" y="70" width="6" height="5" rx="1.5" fill="#e85d5d" stroke="#2d3436" stroke-width="1.5"/>
+                </svg>
+                <div class="module-label">MODULE 3 &middot; LESSON 1</div>
+                <div class="lesson-title">Introduction to the Grid</div>
+                <div class="divider-sketch"></div>
+                <div class="title-content">
+                    <div class="title-section">
+                        <h3>Learning Objectives</h3>
+                        <p class="bullet">Describe the physical grid layout and how intersections are formed</p>
+                        <p class="bullet">Explain how cross detection maps to grid intersections</p>
+                        <p class="bullet">Use LineTrack to drive to the first intersection</p>
+                        <p class="bullet">Reuse existing code on a new surface</p>
+                    </div>
+                    <div class="title-section">
+                        <h3>Agenda</h3>
+                        <p class="bullet">From circle to grid (10 min)</p>
+                        <p class="bullet">Review: LineTrack methods (5 min)</p>
+                        <p class="bullet">Guided: Drive to first intersection (15 min)</p>
+                        <p class="bullet">Practice (15 min)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn" disabled>Previous</button>
+                <span class="slide-counter">1 / 10</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 2: Hook — From Circle to Grid ═══ -->
+        <div id="slide-2" class="slide">
+            <div class="title-bar">
+                <h1>From Circle to Grid</h1>
+            </div>
+            <div class="content">
+                <p class="header-text">Remember Module 2?</p>
+                <p class="bullet">You built a <span class="sketch-highlight">LineTrack</span> class that follows lines and detects crosses</p>
+
+                <div class="spacer"></div>
+
+                <p class="header-text">Now look at this grid...</p>
+                <div class="illustration">
+                    <svg width="675" height="210" viewBox="0 0 520 160">
+                        <!-- Circle (Module 2) -->
+                        <text x="100" y="18" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" text-anchor="middle" font-weight="600">Module 2: Circle</text>
+                        <ellipse cx="100" cy="90" rx="60" ry="55" fill="none" stroke="#2d3436" stroke-width="3" stroke-dasharray="0" transform="rotate(-2 100 90)"/>
+                        <circle cx="100" cy="35" r="6" fill="#e8a87c" stroke="#2d3436" stroke-width="2"/>
+                        <text x="100" y="39" font-family="Caveat, cursive" font-size="11" fill="white" text-anchor="middle" font-weight="700">+</text>
+                        <!-- Robot on circle - XRP style -->
+                        <rect x="133" y="70" width="20" height="20" rx="3" fill="#b8c5d0" stroke="#2d3436" stroke-width="1.5" transform="rotate(15 143 80)"/>
+                        <text x="143" y="83" font-family="Caveat, cursive" font-size="7" fill="#2d3436" text-anchor="middle" font-weight="600">XRP</text>
+                        <rect x="151" y="73" width="6" height="13" rx="2" fill="#636e72" stroke="#2d3436" stroke-width="1" transform="rotate(15 154 80)"/>
+                        <rect x="155" y="74" width="3" height="3" rx="1" fill="#e85d5d" stroke="#2d3436" stroke-width="0.8" transform="rotate(15 157 76)"/>
+                        <rect x="155" y="82" width="3" height="3" rx="1" fill="#e85d5d" stroke="#2d3436" stroke-width="0.8" transform="rotate(15 157 84)"/>
+
+                        <!-- Arrow -->
+                        <text x="220" y="60" font-family="Caveat, cursive" font-size="22" fill="#e8a87c" font-weight="700">same code!</text>
+                        <path d="M200 85 C230 85, 250 85, 280 85" fill="none" stroke="#e8a87c" stroke-width="3" stroke-linecap="round"/>
+                        <polygon points="280,80 295,85 280,90" fill="#e8a87c"/>
+
+                        <!-- Grid (Module 3) -->
+                        <text x="400" y="18" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" text-anchor="middle" font-weight="600">Module 3: Grid</text>
+                        <!-- Grid lines -->
+                        <line x1="320" y1="50" x2="320" y2="150" stroke="#2d3436" stroke-width="2.5"/>
+                        <line x1="370" y1="50" x2="370" y2="150" stroke="#2d3436" stroke-width="2.5"/>
+                        <line x1="420" y1="50" x2="420" y2="150" stroke="#2d3436" stroke-width="2.5"/>
+                        <line x1="470" y1="50" x2="470" y2="150" stroke="#2d3436" stroke-width="2.5"/>
+                        <line x1="310" y1="55" x2="480" y2="55" stroke="#2d3436" stroke-width="2.5"/>
+                        <line x1="310" y1="100" x2="480" y2="100" stroke="#2d3436" stroke-width="2.5"/>
+                        <line x1="310" y1="145" x2="480" y2="145" stroke="#2d3436" stroke-width="2.5"/>
+                        <!-- Robot on grid - XRP style (traveling right) -->
+                        <rect x="328" y="88" width="20" height="20" rx="3" fill="#b8c5d0" stroke="#2d3436" stroke-width="1.5"/>
+                        <text x="338" y="102" font-family="Caveat, cursive" font-size="7" fill="#2d3436" text-anchor="middle" font-weight="600">XRP</text>
+                        <rect x="346" y="92" width="6" height="13" rx="2" fill="#636e72" stroke="#2d3436" stroke-width="1"/>
+                        <rect x="350" y="93" width="3" height="3" rx="1" fill="#e85d5d" stroke="#2d3436" stroke-width="0.8"/>
+                        <rect x="350" y="101" width="3" height="3" rx="1" fill="#e85d5d" stroke="#2d3436" stroke-width="0.8"/>
+                    </svg>
+                </div>
+
+                <div class="question-box">
+                    <p class="body-text" style="margin-left: 8px;"><strong>"Can your Module 2 code work on this grid without changes?"</strong></p>
+                </div>
+                <div class="answer-box">
+                    <p class="body-text" style="margin-left: 8px;"><strong>Yes!</strong> That's the power of code reuse.</p>
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">2 / 10</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 3: The Grid Layout ═══ -->
+        <div id="slide-3" class="slide">
+            <div class="title-bar">
+                <h1>The Grid Layout</h1>
+            </div>
+            <div class="content">
+                <p class="header-text">A grid is a network of taped lines</p>
+
+                <div class="grid-illustration">
+                    <svg width="460" height="260" viewBox="0 0 460 260">
+                        <!-- Column labels -->
+                        <text x="130" y="25" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" text-anchor="middle" font-weight="600">Col 0</text>
+                        <text x="230" y="25" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" text-anchor="middle" font-weight="600">Col 1</text>
+                        <text x="330" y="25" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" text-anchor="middle" font-weight="600">Col 2</text>
+                        <text x="430" y="25" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" text-anchor="middle" font-weight="600">Col 3</text>
+                        <!-- Row labels -->
+                        <text x="60" y="60" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" text-anchor="middle" font-weight="600">Row 0</text>
+                        <text x="60" y="120" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" text-anchor="middle" font-weight="600">Row 1</text>
+                        <text x="60" y="180" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" text-anchor="middle" font-weight="600">Row 2</text>
+                        <text x="60" y="240" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" text-anchor="middle" font-weight="600">Row 3</text>
+                        <!-- Horizontal lines -->
+                        <line x1="110" y1="55" x2="445" y2="55" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                        <line x1="110" y1="115" x2="445" y2="116" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                        <line x1="110" y1="175" x2="445" y2="175" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                        <line x1="110" y1="235" x2="445" y2="234" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                        <!-- Vertical lines -->
+                        <line x1="130" y1="38" x2="130" y2="250" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                        <line x1="230" y1="38" x2="230" y2="250" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                        <line x1="330" y1="38" x2="330" y2="250" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                        <line x1="430" y1="38" x2="430" y2="250" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                    </svg>
+                </div>
+
+                <div class="sketch-box">
+                    <p class="header-text" style="margin: 0;">Each place lines cross is an intersection</p>
+                    <p class="bullet">Lines connect them horizontally and vertically</p>
+                    <p class="bullet">The robot follows lines between intersections</p>
+                    <p class="bullet">Cross detection tells the robot "you've arrived!"</p>
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">3 / 10</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 4: Why the Grid Matters ═══ -->
+        <div id="slide-4" class="slide">
+            <div class="title-bar">
+                <h1>Why the Grid Matters</h1>
+            </div>
+            <div class="content">
+                <p class="header-text">The grid is a stepping stone</p>
+
+                <div class="progression">
+                    <div class="progression-step">
+                        <div class="step-label">Module 2</div>
+                        <div>Follow a circle,<br>detect one cross</div>
+                    </div>
+                    <div class="progression-arrow">&#10132;</div>
+                    <div class="progression-step current">
+                        <div class="step-label">Module 3 (now!)</div>
+                        <div>Navigate a GRID<br>of crosses</div>
+                    </div>
+                    <div class="progression-arrow">&#10132;</div>
+                    <div class="progression-step">
+                        <div class="step-label">Module 4</div>
+                        <div>Use COORDINATES<br>for pathfinding</div>
+                    </div>
+                </div>
+
+                <div class="spacer"></div>
+
+                <div class="insight-box">
+                    Grid navigation = line following + cross detection + turns
+                    <br>
+                    <span style="font-size: 22px; color: #5b8fa8;">You already have all three from Module 2!</span>
+                </div>
+
+                <div class="illustration" style="margin-top: 24px;">
+                    <svg width="380" height="100" viewBox="0 0 380 100">
+                        <!-- Three puzzle pieces -->
+                        <rect x="10" y="20" width="100" height="60" rx="12" fill="rgba(91, 143, 168, 0.15)" stroke="#5b8fa8" stroke-width="2"/>
+                        <text x="60" y="46" font-family="Caveat, cursive" font-size="15" fill="#2d3436" text-anchor="middle" font-weight="600">Line</text>
+                        <text x="60" y="64" font-family="Caveat, cursive" font-size="15" fill="#2d3436" text-anchor="middle" font-weight="600">Following</text>
+
+                        <text x="128" y="55" font-family="Caveat, cursive" font-size="24" fill="#e8a87c" font-weight="700">+</text>
+
+                        <rect x="145" y="20" width="100" height="60" rx="12" fill="rgba(232, 168, 124, 0.15)" stroke="#e8a87c" stroke-width="2"/>
+                        <text x="195" y="46" font-family="Caveat, cursive" font-size="15" fill="#2d3436" text-anchor="middle" font-weight="600">Cross</text>
+                        <text x="195" y="64" font-family="Caveat, cursive" font-size="15" fill="#2d3436" text-anchor="middle" font-weight="600">Detection</text>
+
+                        <text x="263" y="55" font-family="Caveat, cursive" font-size="24" fill="#e8a87c" font-weight="700">+</text>
+
+                        <rect x="280" y="20" width="90" height="60" rx="12" fill="rgba(133, 200, 138, 0.15)" stroke="#85c88a" stroke-width="2"/>
+                        <text x="325" y="55" font-family="Caveat, cursive" font-size="15" fill="#2d3436" text-anchor="middle" font-weight="600">Turns</text>
+                    </svg>
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">4 / 10</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 5: Review — LineTrack Methods ═══ -->
+        <div id="slide-5" class="slide">
+            <div class="title-bar">
+                <h1>Review &mdash; LineTrack Methods</h1>
+            </div>
+            <div class="content">
+                <p class="header-text">Your LineTrack class from Module 2 has three key methods:</p>
+
+                <pre class="code-block"><code>tracker = LineTrack()
+
+# Follow the line until an intersection
+tracker.track_until_cross()
+
+# Turn right onto perpendicular line
+tracker.turn_right()
+
+# Turn left onto perpendicular line
+tracker.turn_left()</code></pre>
+
+                <div class="insight-box">
+                    These three methods are ALL you need for grid navigation!
+                </div>
+
+                <div class="illustration" style="margin-top: 16px;">
+                    <svg width="500" height="90" viewBox="0 0 500 90">
+                        <!-- Method cards -->
+                        <rect x="10" y="10" width="150" height="70" rx="12" fill="rgba(91, 143, 168, 0.12)" stroke="#5b8fa8" stroke-width="2" transform="rotate(-1 85 45)"/>
+                        <text x="85" y="38" font-family="Fira Code, monospace" font-size="11" fill="#2d3436" text-anchor="middle">track_until</text>
+                        <text x="85" y="54" font-family="Fira Code, monospace" font-size="11" fill="#2d3436" text-anchor="middle">_cross()</text>
+                        <text x="85" y="72" font-family="Caveat, cursive" font-size="13" fill="#5b8fa8" text-anchor="middle">&#8594; drives forward</text>
+
+                        <rect x="180" y="10" width="140" height="70" rx="12" fill="rgba(232, 168, 124, 0.12)" stroke="#e8a87c" stroke-width="2" transform="rotate(0.5 250 45)"/>
+                        <text x="250" y="42" font-family="Fira Code, monospace" font-size="11" fill="#2d3436" text-anchor="middle">turn_right()</text>
+                        <text x="250" y="62" font-family="Caveat, cursive" font-size="13" fill="#e8a87c" text-anchor="middle">&#8635; turns 90&deg;</text>
+
+                        <rect x="340" y="10" width="140" height="70" rx="12" fill="rgba(133, 200, 138, 0.12)" stroke="#85c88a" stroke-width="2" transform="rotate(-0.5 410 45)"/>
+                        <text x="410" y="42" font-family="Fira Code, monospace" font-size="11" fill="#2d3436" text-anchor="middle">turn_left()</text>
+                        <text x="410" y="62" font-family="Caveat, cursive" font-size="13" fill="#85c88a" text-anchor="middle">&#8634; turns 90&deg;</text>
+                    </svg>
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">5 / 10</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 6: Driving to the First Intersection ═══ -->
+        <div id="slide-6" class="slide">
+            <div class="title-bar">
+                <h1>Driving to the First Intersection</h1>
+            </div>
+            <div class="content">
+                <p class="header-text">Setup: Place robot on a grid line, behind an intersection</p>
+
+                <div class="two-col">
+                    <div class="col">
+                        <pre class="code-block"><code>board = Board.get_default_board()
+tracker = LineTrack()
+
+board.wait_for_button()
+print("Driving to first intersection...")
+tracker.track_until_cross()
+print("Intersection reached!")</code></pre>
+                    </div>
+                    <div class="col">
+                        <p class="header-text">What happens:</p>
+                        <div class="illustration">
+                            <svg width="325" height="235" viewBox="0 0 250 180">
+                                <!-- Line -->
+                                <line x1="30" y1="90" x2="230" y2="90" stroke="#2d3436" stroke-width="3" stroke-linecap="round"/>
+                                <line x1="170" y1="40" x2="170" y2="140" stroke="#2d3436" stroke-width="3" stroke-linecap="round"/>
+                                <!-- Robot start - XRP style (traveling right) -->
+                                <rect x="48" y="78" width="24" height="24" rx="3" fill="#b8c5d0" stroke="#2d3436" stroke-width="2"/>
+                                <text x="60" y="94" font-family="Caveat, cursive" font-size="8" fill="#2d3436" text-anchor="middle" font-weight="600">XRP</text>
+                                <rect x="70" y="82" width="8" height="16" rx="2" fill="#636e72" stroke="#2d3436" stroke-width="1"/>
+                                <rect x="76" y="84" width="4" height="4" rx="1" fill="#e85d5d" stroke="#2d3436" stroke-width="1"/>
+                                <rect x="76" y="92" width="4" height="4" rx="1" fill="#e85d5d" stroke="#2d3436" stroke-width="1"/>
+                                <!-- Arrow showing movement -->
+                                <path d="M85 75 C110 65, 130 65, 150 72" fill="none" stroke="#e8a87c" stroke-width="2.5" stroke-dasharray="6,4" stroke-linecap="round"/>
+                                <polygon points="150,68 158,73 150,78" fill="#e8a87c"/>
+                                <!-- Labels -->
+                                <text x="60" y="72" font-family="Caveat, cursive" font-size="14" fill="#5b8fa8" text-anchor="middle" font-weight="600">start</text>
+                                <text x="170" y="160" font-family="Caveat, cursive" font-size="14" fill="#e8a87c" text-anchor="middle" font-weight="600">stop!</text>
+                                <!-- Step labels -->
+                                <text x="115" y="55" font-family="Caveat, cursive" font-size="13" fill="#636e72" text-anchor="middle">follows line...</text>
+                                <text x="200" y="60" font-family="Caveat, cursive" font-size="13" fill="#636e72" text-anchor="middle">sensors detect</text>
+                                <text x="200" y="74" font-family="Caveat, cursive" font-size="13" fill="#636e72" text-anchor="middle">the cross!</text>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">6 / 10</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 7: Drive and Turn ═══ -->
+        <div id="slide-7" class="slide">
+            <div class="title-bar">
+                <h1>Drive and Turn</h1>
+            </div>
+            <div class="content">
+                <p class="header-text">After reaching an intersection, you can turn:</p>
+
+                <div class="two-col">
+                    <div class="col">
+                        <pre class="code-block"><code>board.wait_for_button()
+
+tracker.track_until_cross()
+tracker.drivetrain.straight(8, 0.5)
+print("At intersection!")
+
+tracker.turn_right()
+print("Turned right!")
+
+tracker.track_until_cross()
+tracker.drivetrain.straight(8, 0.5)
+print("At next intersection!")</code></pre>
+                    </div>
+                    <div class="col">
+                        <div class="illustration">
+                            <svg width="340" height="285" viewBox="0 0 260 220">
+                                <!-- Grid lines -->
+                                <line x1="20" y1="80" x2="240" y2="80" stroke="#2d3436" stroke-width="3" stroke-linecap="round"/>
+                                <line x1="120" y1="20" x2="120" y2="200" stroke="#2d3436" stroke-width="3" stroke-linecap="round"/>
+                                <!-- Step 1: drive forward - XRP style faded -->
+                                <rect x="38" y="68" width="20" height="20" rx="3" fill="#b8c5d0" stroke="#2d3436" stroke-width="1.5" opacity="0.5"/>
+                                <text x="48" y="82" font-family="Caveat, cursive" font-size="7" fill="#2d3436" text-anchor="middle" font-weight="600" opacity="0.5">XRP</text>
+                                <rect x="56" y="72" width="6" height="13" rx="2" fill="#636e72" stroke="#2d3436" stroke-width="1" opacity="0.5"/>
+                                <rect x="60" y="73" width="3" height="3" rx="1" fill="#e85d5d" stroke="#2d3436" stroke-width="0.8" opacity="0.5"/>
+                                <rect x="60" y="81" width="3" height="3" rx="1" fill="#e85d5d" stroke="#2d3436" stroke-width="0.8" opacity="0.5"/>
+                                <path d="M70 65 L100 72" fill="none" stroke="#5b8fa8" stroke-width="2" stroke-dasharray="4,3" stroke-linecap="round"/>
+                                <polygon points="100,68 108,72 100,76" fill="#5b8fa8"/>
+                                <text x="80" y="55" font-family="Caveat, cursive" font-size="14" fill="#5b8fa8" text-anchor="middle" font-weight="600">1. drive</text>
+
+                                <!-- Step 2: clear + turn right -->
+                                <path d="M130 72 C140 60, 140 85, 130 95" fill="none" stroke="#e8a87c" stroke-width="2.5" stroke-linecap="round"/>
+                                <polygon points="126,95 132,102 136,93" fill="#e8a87c"/>
+                                <text x="168" y="55" font-family="Caveat, cursive" font-size="14" fill="#e8a87c" text-anchor="middle" font-weight="600">2. clear</text>
+                                <text x="168" y="69" font-family="Caveat, cursive" font-size="14" fill="#e8a87c" text-anchor="middle" font-weight="600">+ turn</text>
+
+                                <!-- Step 3: drive to next intersection indicator -->
+                                <path d="M120 100 L120 140" fill="none" stroke="#85c88a" stroke-width="2" stroke-dasharray="4,3" stroke-linecap="round"/>
+                                <polygon points="116,140 120,150 124,140" fill="#85c88a"/>
+                                <text x="170" y="130" font-family="Caveat, cursive" font-size="14" fill="#85c88a" text-anchor="middle" font-weight="600">3. drive</text>
+                                <text x="170" y="144" font-family="Caveat, cursive" font-size="14" fill="#85c88a" text-anchor="middle" font-weight="600">again!</text>
+
+                                <!-- Next intersection -->
+                                <circle cx="120" cy="170" r="8" fill="rgba(133, 200, 138, 0.4)" stroke="#85c88a" stroke-width="2" stroke-dasharray="4,3"/>
+                                <text x="120" y="195" font-family="Caveat, cursive" font-size="13" fill="#85c88a" text-anchor="middle">next intersection</text>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">7 / 10</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 8: Code Reuse in Action ═══ -->
+        <div id="slide-8" class="slide">
+            <div class="title-bar">
+                <h1>Code Reuse in Action</h1>
+            </div>
+            <div class="content">
+                <p class="header-text">Module 2 code &#8594; Module 3 application</p>
+
+                <div class="illustration" style="margin: 10px 0 20px;">
+                    <svg width="600" height="80" viewBox="0 0 600 80">
+                        <!-- Module 2 box -->
+                        <rect x="10" y="10" width="200" height="60" rx="14" fill="rgba(91, 143, 168, 0.12)" stroke="#5b8fa8" stroke-width="2.5" transform="rotate(-0.5 110 40)"/>
+                        <text x="110" y="35" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle" font-weight="700">Module 2</text>
+                        <text x="110" y="55" font-family="Caveat, cursive" font-size="16" fill="#636e72" text-anchor="middle">Circle + LineTrack</text>
+
+                        <!-- Arrow -->
+                        <path d="M220 40 C260 30, 300 30, 340 40" fill="none" stroke="#e8a87c" stroke-width="3" stroke-linecap="round"/>
+                        <polygon points="340,35 352,40 340,45" fill="#e8a87c"/>
+                        <text x="280" y="25" font-family="Caveat, cursive" font-size="16" fill="#e8a87c" text-anchor="middle" font-weight="600">zero changes!</text>
+
+                        <!-- Module 3 box -->
+                        <rect x="360" y="10" width="220" height="60" rx="14" fill="rgba(232, 168, 124, 0.12)" stroke="#e8a87c" stroke-width="2.5" transform="rotate(0.5 470 40)"/>
+                        <text x="470" y="35" font-family="Caveat, cursive" font-size="20" fill="#e8a87c" text-anchor="middle" font-weight="700">Module 3</text>
+                        <text x="470" y="55" font-family="Caveat, cursive" font-size="16" fill="#636e72" text-anchor="middle">Grid Navigation</text>
+                    </svg>
+                </div>
+
+                <table class="content-table">
+                    <thead>
+                        <tr>
+                            <th>Module 2</th>
+                            <th>Module 3</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Follow circle</td>
+                            <td>Follow grid lines</td>
+                        </tr>
+                        <tr>
+                            <td>Detect cross on circle</td>
+                            <td>Detect grid intersection</td>
+                        </tr>
+                        <tr>
+                            <td>Turn at cross</td>
+                            <td>Turn at intersection</td>
+                        </tr>
+                        <tr>
+                            <td><code style="font-family: 'Fira Code', monospace; font-size: 16px;">track_until_cross()</code></td>
+                            <td>Same method, same code!</td>
+                        </tr>
+                        <tr>
+                            <td><code style="font-family: 'Fira Code', monospace; font-size: 16px;">turn_right()</code></td>
+                            <td>Same method, same code!</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="insight-box" style="margin-top: 20px;">
+                    Good code works in new situations without modification.
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">8 / 10</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 9: Your Turn! ═══ -->
+        <div id="slide-9" class="slide">
+            <div class="title-bar">
+                <h1>Your Turn!</h1>
+            </div>
+            <div class="content">
+                <p class="header-text">Activity</p>
+
+                <div class="sketch-box">
+                    <div class="activity-step">
+                        <span class="step-number">1</span>
+                        <span class="step-text">Copy your LineSensor and LineTrack classes from Module 2</span>
+                    </div>
+                    <div class="activity-step">
+                        <span class="step-number">2</span>
+                        <span class="step-text">Write a program that drives to the first intersection and stops</span>
+                    </div>
+                    <div class="activity-step">
+                        <span class="step-number">3</span>
+                        <span class="step-text">Verify the robot stops at the right place</span>
+                    </div>
+                    <div class="activity-step">
+                        <span class="step-number">4</span>
+                        <span class="step-text">Add a <code style="font-family: 'Fira Code', monospace;">turn_right()</code> after reaching the intersection</span>
+                    </div>
+                    <div class="activity-step">
+                        <span class="step-number">5</span>
+                        <span class="step-text">Add another <code style="font-family: 'Fira Code', monospace;">track_until_cross()</code> to drive to the next intersection</span>
+                    </div>
+                </div>
+
+                <div class="spacer"></div>
+
+                <p class="header-text">Checkpoints</p>
+                <div class="sketch-box" style="border-color: #85c88a; background-color: rgba(133, 200, 138, 0.04);">
+                    <div class="checkpoint">
+                        <span class="check-icon"></span>
+                        <span class="step-text">Does the robot stop at the first intersection?</span>
+                    </div>
+                    <div class="checkpoint">
+                        <span class="check-icon"></span>
+                        <span class="step-text">Does the turn line up with the perpendicular line?</span>
+                    </div>
+                    <div class="checkpoint">
+                        <span class="check-icon"></span>
+                        <span class="step-text">Does the robot reach the second intersection after turning?</span>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">9 / 10</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 10: Connection to Next Lesson ═══ -->
+        <div id="slide-10" class="slide">
+            <div class="title-bar">
+                <h1>What's Next</h1>
+            </div>
+            <div class="content">
+                <div class="two-col">
+                    <div class="col">
+                        <p class="header-text">What you did today</p>
+                        <div class="sketch-box">
+                            <p class="bullet">Saw how the grid relates to Module 2's cross detection</p>
+                            <p class="bullet">Drove to the first intersection using LineTrack</p>
+                            <p class="bullet">Added a turn at the intersection</p>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <p class="header-text">Next lesson (Lesson 2)</p>
+                        <div class="sketch-box" style="border-color: #e8a87c; background-color: rgba(232, 168, 124, 0.04);">
+                            <p class="bullet">Drive PAST an intersection to reach the next one</p>
+                            <p class="bullet">Learn the "clear the intersection" technique</p>
+                            <p class="bullet">Use for loops to drive multiple intersections</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="spacer"></div>
+
+                <div class="question-box" style="text-align: center;">
+                    <p class="body-text" style="margin-left: 8px; font-family: 'Caveat', cursive; font-size: 28px; font-weight: 600;">
+                        Challenge: What if you need to go 3 intersections forward? That's next!
+                    </p>
+                </div>
+
+                <div class="illustration" style="margin-top: 20px;">
+                    <svg width="570" height="105" viewBox="0 0 440 80">
+                        <!-- Three intersections -->
+                        <line x1="20" y1="40" x2="420" y2="40" stroke="#2d3436" stroke-width="3" stroke-linecap="round"/>
+                        <!-- Intersection 1 -->
+                        <line x1="110" y1="10" x2="110" y2="70" stroke="#2d3436" stroke-width="3"/>
+                        <text x="110" y="8" font-family="Caveat, cursive" font-size="12" fill="#636e72" text-anchor="middle">1</text>
+                        <!-- Intersection 2 -->
+                        <line x1="220" y1="10" x2="220" y2="70" stroke="#2d3436" stroke-width="3"/>
+                        <text x="220" y="8" font-family="Caveat, cursive" font-size="12" fill="#636e72" text-anchor="middle">2</text>
+                        <!-- Intersection 3 -->
+                        <line x1="330" y1="10" x2="330" y2="70" stroke="#2d3436" stroke-width="3"/>
+                        <text x="330" y="8" font-family="Caveat, cursive" font-size="12" fill="#636e72" text-anchor="middle">3</text>
+                        <!-- Robot - XRP style (traveling right) -->
+                        <rect x="33" y="26" width="24" height="24" rx="3" fill="#b8c5d0" stroke="#2d3436" stroke-width="2"/>
+                        <text x="45" y="42" font-family="Caveat, cursive" font-size="8" fill="#2d3436" text-anchor="middle" font-weight="600">XRP</text>
+                        <rect x="55" y="30" width="8" height="16" rx="2" fill="#636e72" stroke="#2d3436" stroke-width="1"/>
+                        <rect x="61" y="32" width="4" height="4" rx="1" fill="#e85d5d" stroke="#2d3436" stroke-width="1"/>
+                        <rect x="61" y="40" width="4" height="4" rx="1" fill="#e85d5d" stroke="#2d3436" stroke-width="1"/>
+                        <!-- Dashed path -->
+                        <path d="M70 28 C85 18, 320 18, 340 32" fill="none" stroke="#e8a87c" stroke-width="2" stroke-dasharray="6,4" stroke-linecap="round"/>
+                        <text x="200" y="18" font-family="Caveat, cursive" font-size="14" fill="#e8a87c" text-anchor="middle" font-weight="600">for loop!</text>
+                    </svg>
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">10 / 10</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn" disabled>Next</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const navItems = document.querySelectorAll('.nav-item');
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                if (i === index) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+            currentSlide = index;
+
+            navItems.forEach((item, i) => {
+                if (i === index) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        }
+
+        function nextSlide() {
+            if (currentSlide < slides.length - 1) {
+                showSlide(currentSlide + 1);
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                showSlide(currentSlide - 1);
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            }
+        });
+
+        // Initialize first slide
+        showSlide(0);
+    </script>
+</body>
+</html>
