@@ -1,0 +1,1570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lists — Storing Paths as Collections - Module 4: Manhattan</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Patrick+Hand&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Patrick Hand', cursive;
+            background-color: #faf8f5;
+            overflow: hidden;
+            color: #2d3436;
+        }
+
+        /* ── Sidebar Navigation ── */
+        .nav-sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 240px;
+            height: 100vh;
+            background-color: #faf8f5;
+            border-right: 3px solid #b8c5d0;
+            padding: 24px 16px;
+            overflow-y: auto;
+            z-index: 1000;
+            background-image:
+                linear-gradient(rgba(180, 200, 220, 0.15) 1px, transparent 1px);
+            background-size: 100% 28px;
+        }
+
+        .nav-header h2 {
+            font-family: 'Caveat', cursive;
+            font-size: 20px;
+            color: #5b8fa8;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .nav-header h3 {
+            font-family: 'Caveat', cursive;
+            font-size: 16px;
+            color: #636e72;
+            margin-bottom: 20px;
+            font-weight: 400;
+        }
+
+        .slide-nav {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .nav-item {
+            color: #2d3436;
+            text-decoration: none;
+            padding: 6px 10px;
+            margin-bottom: 3px;
+            border-radius: 6px;
+            font-size: 15px;
+            line-height: 1.3;
+            transition: all 0.2s;
+            font-family: 'Patrick Hand', cursive;
+        }
+
+        .nav-item:hover {
+            background-color: rgba(91, 143, 168, 0.15);
+        }
+
+        .nav-item.active {
+            background-color: rgba(91, 143, 168, 0.2);
+            font-weight: bold;
+            border-left: 3px solid #5b8fa8;
+        }
+
+        /* ── Slides Container ── */
+        .slides-container {
+            margin-left: 240px;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: calc(100vw - 240px);
+            height: 100vh;
+            background-color: #fdfcfa;
+            display: none;
+            flex-direction: column;
+            /* Notebook paper lines */
+            background-image:
+                linear-gradient(rgba(180, 200, 220, 0.12) 1px, transparent 1px);
+            background-size: 100% 32px;
+            background-position: 0 80px;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        /* ── Title Bar (sketch style) ── */
+        .title-bar {
+            padding: 20px 50px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            position: relative;
+            border-bottom: 3px solid #5b8fa8;
+            background-color: rgba(91, 143, 168, 0.06);
+        }
+
+        .title-bar::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 30px;
+            right: 60px;
+            height: 3px;
+            background-color: rgba(91, 143, 168, 0.15);
+            transform: rotate(-0.3deg);
+        }
+
+        .title-bar h1 {
+            font-family: 'Caveat', cursive;
+            font-size: 36px;
+            font-weight: 700;
+            color: #2d3436;
+            transform: rotate(-0.5deg);
+        }
+
+        /* ── Slide Content ── */
+        .content {
+            flex: 1;
+            padding: 30px 50px;
+            padding-bottom: 80px;
+            overflow-y: auto;
+            max-width: 1100px;
+        }
+
+        /* ── Text Styles ── */
+        .header-text {
+            font-family: 'Caveat', cursive;
+            font-size: 28px;
+            font-weight: 600;
+            color: #5b8fa8;
+            margin-bottom: 12px;
+            margin-top: 8px;
+        }
+
+        .body-text {
+            font-size: 22px;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .bold {
+            font-weight: bold;
+        }
+
+        .bullet {
+            font-size: 22px;
+            margin-bottom: 6px;
+            margin-left: 24px;
+            line-height: 1.4;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .bullet::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 11px;
+            width: 8px;
+            height: 8px;
+            background-color: #5b8fa8;
+            border-radius: 50%;
+            transform: rotate(5deg);
+        }
+
+        .bullet.level-1 {
+            margin-left: 52px;
+            font-size: 20px;
+        }
+
+        .bullet.level-1::before {
+            width: 6px;
+            height: 6px;
+            background-color: #e8a87c;
+            top: 10px;
+        }
+
+        /* ── Code Blocks (sketch style) ── */
+        .code-block {
+            background-color: #f0ede8;
+            border: 2px solid #b8c5d0;
+            border-radius: 12px;
+            padding: 18px 22px;
+            margin: 16px 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 16px;
+            line-height: 1.5;
+            color: #2d3436;
+            overflow-x: auto;
+            position: relative;
+            box-shadow: 3px 3px 0 rgba(91, 143, 168, 0.15);
+            transform: rotate(-0.2deg);
+        }
+
+        .code-block::before {
+            content: '< / >';
+            position: absolute;
+            top: -12px;
+            right: 20px;
+            background-color: #fdfcfa;
+            padding: 2px 10px;
+            font-family: 'Caveat', cursive;
+            font-size: 16px;
+            color: #5b8fa8;
+            border: 2px solid #b8c5d0;
+            border-radius: 8px;
+        }
+
+        .code-block.compact::before {
+            display: none;
+        }
+
+        .code-output {
+            background-color: #f0ede8;
+            border: 2px solid #b8c5d0;
+            border-radius: 12px;
+            padding: 14px 22px;
+            margin: 10px 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 15px;
+            line-height: 1.5;
+            color: #636e72;
+            position: relative;
+            box-shadow: 2px 2px 0 rgba(91, 143, 168, 0.1);
+        }
+
+        .code-output::before {
+            content: 'output';
+            position: absolute;
+            top: -12px;
+            right: 20px;
+            background-color: #fdfcfa;
+            padding: 2px 10px;
+            font-family: 'Caveat', cursive;
+            font-size: 15px;
+            color: #636e72;
+            border: 2px solid #b8c5d0;
+            border-radius: 8px;
+        }
+
+        /* ── Tables (sketch style) ── */
+        .content-table {
+            width: 90%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 16px auto;
+            font-size: 18px;
+            border: 2px solid #b8c5d0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 3px 3px 0 rgba(91, 143, 168, 0.12);
+        }
+
+        .content-table th {
+            background-color: rgba(91, 143, 168, 0.2);
+            color: #2d3436;
+            padding: 10px 16px;
+            text-align: center;
+            font-family: 'Caveat', cursive;
+            font-size: 22px;
+            font-weight: 600;
+            border-bottom: 2px solid #b8c5d0;
+        }
+
+        .content-table td {
+            padding: 8px 16px;
+            text-align: center;
+            border-bottom: 1px dashed #ccc;
+            font-size: 18px;
+        }
+
+        .content-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .content-table tr:nth-child(even) {
+            background-color: rgba(232, 168, 124, 0.06);
+        }
+
+        .spacer {
+            height: 14px;
+        }
+
+        /* ── Sketch Decorations ── */
+        .sketch-box {
+            border: 2px solid #5b8fa8;
+            border-radius: 14px;
+            padding: 18px;
+            margin: 12px 0;
+            position: relative;
+            background-color: rgba(91, 143, 168, 0.04);
+            box-shadow: 2px 2px 0 rgba(91, 143, 168, 0.1);
+        }
+
+        .sketch-highlight {
+            background: linear-gradient(180deg, transparent 60%, rgba(232, 168, 124, 0.3) 60%);
+            padding: 0 4px;
+        }
+
+        .sketch-arrow {
+            display: inline-block;
+            font-size: 28px;
+            color: #e8a87c;
+            margin: 0 8px;
+        }
+
+        /* ── Illustrations (SVG inline) ── */
+        .illustration {
+            display: flex;
+            justify-content: center;
+            margin: 16px 0;
+        }
+
+        .illustration svg {
+            max-width: 100%;
+        }
+
+        /* ── Question callout ── */
+        .question-box {
+            border: 2px dashed #e8a87c;
+            border-radius: 14px;
+            padding: 16px 20px;
+            margin: 14px 0;
+            background-color: rgba(232, 168, 124, 0.08);
+            position: relative;
+        }
+
+        .question-box::before {
+            content: '?';
+            position: absolute;
+            top: -14px;
+            left: 16px;
+            background-color: #e8a87c;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Caveat', cursive;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .answer-box {
+            border: 2px dashed #85c88a;
+            border-radius: 14px;
+            padding: 16px 20px;
+            margin: 14px 0;
+            background-color: rgba(133, 200, 138, 0.08);
+            position: relative;
+        }
+
+        .answer-box::before {
+            content: '!';
+            position: absolute;
+            top: -14px;
+            left: 16px;
+            background-color: #85c88a;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Caveat', cursive;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        /* ── Key insight callout ── */
+        .insight-box {
+            border: 2px solid #e8a87c;
+            border-radius: 14px;
+            padding: 16px 20px;
+            margin: 14px 0;
+            background-color: rgba(232, 168, 124, 0.08);
+            text-align: center;
+            font-family: 'Caveat', cursive;
+            font-size: 26px;
+            font-weight: 600;
+            color: #2d3436;
+            transform: rotate(-0.3deg);
+            box-shadow: 3px 3px 0 rgba(232, 168, 124, 0.15);
+        }
+
+        /* ── Activity slide styling ── */
+        .activity-step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            padding-left: 8px;
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 32px;
+            height: 32px;
+            background-color: #5b8fa8;
+            color: white;
+            border-radius: 50%;
+            font-family: 'Caveat', cursive;
+            font-size: 20px;
+            font-weight: 700;
+            margin-right: 12px;
+            margin-top: 2px;
+            box-shadow: 2px 2px 0 rgba(91, 143, 168, 0.2);
+        }
+
+        .step-text {
+            font-size: 21px;
+            line-height: 1.4;
+            padding-top: 4px;
+        }
+
+        /* ── Checkpoint style ── */
+        .checkpoint {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 8px;
+            padding-left: 8px;
+        }
+
+        .check-icon {
+            min-width: 26px;
+            height: 26px;
+            border: 2px solid #85c88a;
+            border-radius: 6px;
+            margin-right: 12px;
+            margin-top: 4px;
+            position: relative;
+        }
+
+        .checkpoint .step-text {
+            font-size: 20px;
+        }
+
+        /* ── Navigation ── */
+        .slide-navigation {
+            position: absolute;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background-color: rgba(250, 248, 245, 0.95);
+            padding: 8px 20px;
+            border-radius: 25px;
+            border: 2px solid #b8c5d0;
+            box-shadow: 2px 2px 0 rgba(91, 143, 168, 0.1);
+        }
+
+        .nav-btn {
+            padding: 6px 18px;
+            border: 2px solid #5b8fa8;
+            border-radius: 20px;
+            background-color: rgba(91, 143, 168, 0.1);
+            color: #2d3436;
+            font-size: 16px;
+            font-family: 'Patrick Hand', cursive;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background-color: rgba(91, 143, 168, 0.25);
+        }
+
+        .nav-btn:disabled {
+            border-color: #ccc;
+            color: #aaa;
+            background-color: transparent;
+            cursor: not-allowed;
+        }
+
+        .slide-counter {
+            font-size: 16px;
+            font-family: 'Caveat', cursive;
+            font-weight: 600;
+            color: #5b8fa8;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        /* ── Title Slide Special ── */
+        .slide-title-page {
+            background-image: none;
+            background-color: #fdfcfa;
+        }
+
+        .title-hero {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .title-hero .module-label {
+            font-family: 'Patrick Hand', cursive;
+            font-size: 22px;
+            color: #5b8fa8;
+            margin-bottom: 8px;
+            letter-spacing: 2px;
+        }
+
+        .title-hero .lesson-title {
+            font-family: 'Caveat', cursive;
+            font-size: 64px;
+            font-weight: 700;
+            color: #2d3436;
+            margin-bottom: 24px;
+            transform: rotate(-1deg);
+            position: relative;
+        }
+
+        .title-hero .lesson-title::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 10%;
+            right: 10%;
+            height: 4px;
+            background-color: #e8a87c;
+            border-radius: 2px;
+            transform: rotate(0.5deg);
+        }
+
+        .title-hero .divider-sketch {
+            width: 120px;
+            height: 3px;
+            background: #b8c5d0;
+            margin: 16px auto;
+            border-radius: 2px;
+            transform: rotate(-1deg);
+        }
+
+        .title-content {
+            display: flex;
+            gap: 60px;
+            margin-top: 20px;
+            text-align: left;
+            max-width: 900px;
+        }
+
+        .title-section {
+            flex: 1;
+        }
+
+        .title-section h3 {
+            font-family: 'Caveat', cursive;
+            font-size: 26px;
+            font-weight: 600;
+            color: #5b8fa8;
+            margin-bottom: 10px;
+            border-bottom: 2px solid rgba(91, 143, 168, 0.2);
+            padding-bottom: 4px;
+        }
+
+        .title-section .bullet {
+            font-size: 19px;
+        }
+
+        .title-section .bullet::before {
+            top: 9px;
+        }
+
+        /* ── Grid illustration ── */
+        .grid-illustration {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        /* ── Progression arrow ── */
+        .progression {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .progression-step {
+            border: 2px solid #b8c5d0;
+            border-radius: 14px;
+            padding: 12px 18px;
+            text-align: center;
+            font-size: 18px;
+            background-color: rgba(91, 143, 168, 0.05);
+            min-width: 180px;
+        }
+
+        .progression-step.current {
+            border-color: #e8a87c;
+            background-color: rgba(232, 168, 124, 0.1);
+            box-shadow: 3px 3px 0 rgba(232, 168, 124, 0.15);
+        }
+
+        .progression-step .step-label {
+            font-family: 'Caveat', cursive;
+            font-size: 16px;
+            color: #5b8fa8;
+            font-weight: 600;
+        }
+
+        .progression-arrow {
+            font-size: 28px;
+            color: #b8c5d0;
+        }
+
+        /* ── Two-column layout ── */
+        .two-col {
+            display: flex;
+            gap: 30px;
+            margin-top: 10px;
+        }
+
+        .two-col .col {
+            flex: 1;
+        }
+
+        /* ── Robot SVG ── */
+        .robot-icon {
+            display: inline-block;
+        }
+
+        /* ── Error highlight ── */
+        .error-highlight {
+            background-color: rgba(232, 93, 93, 0.12);
+            border-left: 3px solid #e85d5d;
+            padding: 2px 6px;
+        }
+
+        .correct-highlight {
+            background-color: rgba(133, 200, 138, 0.12);
+            border-left: 3px solid #85c88a;
+            padding: 2px 6px;
+        }
+
+        .inline-code {
+            font-family: 'Fira Code', monospace;
+            font-size: 18px;
+            background-color: #f0ede8;
+            padding: 2px 8px;
+            border-radius: 6px;
+            border: 1px solid #b8c5d0;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-sidebar">
+        <div class="nav-header">
+            <h2>Module 4: Manhattan</h2>
+            <h3>Lesson 3</h3>
+        </div>
+        <nav class="slide-nav">
+            <a href="#slide-1" class="nav-item" onclick="showSlide(0)">Title & Objectives</a>
+            <a href="#slide-2" class="nav-item" onclick="showSlide(1)">One Position Is Not Enough</a>
+            <a href="#slide-3" class="nav-item" onclick="showSlide(2)">What Is a List?</a>
+            <a href="#slide-4" class="nav-item" onclick="showSlide(3)">List Operations</a>
+            <a href="#slide-5" class="nav-item" onclick="showSlide(4)">Iterating Through a List</a>
+            <a href="#slide-6" class="nav-item" onclick="showSlide(5)">Building a List Step by Step</a>
+            <a href="#slide-7" class="nav-item" onclick="showSlide(6)">A Path Is a List of Tuples</a>
+            <a href="#slide-8" class="nav-item" onclick="showSlide(7)">Building a Path with append()</a>
+            <a href="#slide-9" class="nav-item" onclick="showSlide(8)">Common List Mistakes</a>
+            <a href="#slide-10" class="nav-item" onclick="showSlide(9)">Your Turn!</a>
+            <a href="#slide-11" class="nav-item" onclick="showSlide(10)">What's Next</a>
+        </nav>
+    </div>
+
+    <div class="slides-container">
+
+        <!-- ═══════════════ SLIDE 1: Title ═══════════════ -->
+        <div class="slide slide-title-page active" id="slide-1">
+            <div class="title-hero">
+                <!-- Robot with a list of coordinates flowing behind it -->
+                <div class="illustration">
+                    <svg width="520" height="104" viewBox="0 0 520 104">
+                        <!-- Path dots representing coordinates -->
+                        <rect x="10" y="40" width="50" height="28" rx="8" fill="rgba(91,143,168,0.12)" stroke="#5b8fa8" stroke-width="2"/>
+                        <text x="35" y="59" font-family="Fira Code, monospace" font-size="11" fill="#5b8fa8" text-anchor="middle">(0,0)</text>
+
+                        <rect x="75" y="40" width="50" height="28" rx="8" fill="rgba(91,143,168,0.12)" stroke="#5b8fa8" stroke-width="2"/>
+                        <text x="100" y="59" font-family="Fira Code, monospace" font-size="11" fill="#5b8fa8" text-anchor="middle">(1,0)</text>
+
+                        <rect x="140" y="40" width="50" height="28" rx="8" fill="rgba(91,143,168,0.12)" stroke="#5b8fa8" stroke-width="2"/>
+                        <text x="165" y="59" font-family="Fira Code, monospace" font-size="11" fill="#5b8fa8" text-anchor="middle">(2,0)</text>
+
+                        <rect x="205" y="40" width="50" height="28" rx="8" fill="rgba(232,168,124,0.15)" stroke="#e8a87c" stroke-width="2"/>
+                        <text x="230" y="59" font-family="Fira Code, monospace" font-size="11" fill="#e8a87c" text-anchor="middle">(2,1)</text>
+
+                        <rect x="270" y="40" width="50" height="28" rx="8" fill="rgba(232,168,124,0.15)" stroke="#e8a87c" stroke-width="2"/>
+                        <text x="295" y="59" font-family="Fira Code, monospace" font-size="11" fill="#e8a87c" text-anchor="middle">(2,2)</text>
+
+                        <rect x="335" y="40" width="50" height="28" rx="8" fill="rgba(133,200,138,0.15)" stroke="#85c88a" stroke-width="2"/>
+                        <text x="360" y="59" font-family="Fira Code, monospace" font-size="11" fill="#85c88a" text-anchor="middle">(2,3)</text>
+
+                        <!-- Arrows between -->
+                        <line x1="62" y1="54" x2="73" y2="54" stroke="#b8c5d0" stroke-width="2"/>
+                        <line x1="127" y1="54" x2="138" y2="54" stroke="#b8c5d0" stroke-width="2"/>
+                        <line x1="192" y1="54" x2="203" y2="54" stroke="#b8c5d0" stroke-width="2"/>
+                        <line x1="257" y1="54" x2="268" y2="54" stroke="#b8c5d0" stroke-width="2"/>
+                        <line x1="322" y1="54" x2="333" y2="54" stroke="#b8c5d0" stroke-width="2"/>
+
+                        <!-- Arrow to robot -->
+                        <line x1="387" y1="54" x2="410" y2="54" stroke="#e8a87c" stroke-width="2" stroke-dasharray="4,3"/>
+
+                        <!-- Robot (traveling right) -->
+                        <rect x="420" y="40" width="32" height="32" rx="4" fill="#b8c5d0" stroke="#2d3436" stroke-width="2" transform="rotate(-1 436 56)"/>
+                        <text x="436" y="61" font-family="Caveat, cursive" font-size="11" fill="#2d3436" text-anchor="middle" font-weight="600">XRP</text>
+                        <rect x="450" y="46" width="10" height="20" rx="2" fill="#636e72" stroke="#2d3436" stroke-width="1"/>
+                        <rect x="458" y="49" width="5" height="5" rx="1" fill="#e85d5d" stroke="#2d3436" stroke-width="1"/>
+                        <rect x="458" y="58" width="5" height="5" rx="1" fill="#e85d5d" stroke="#2d3436" stroke-width="1"/>
+
+                        <!-- Bracket -->
+                        <text x="8" y="90" font-family="Fira Code, monospace" font-size="18" fill="#5b8fa8">[</text>
+                        <text x="387" y="90" font-family="Fira Code, monospace" font-size="18" fill="#5b8fa8">]</text>
+                    </svg>
+                </div>
+                <div class="module-label">MODULE 4: MANHATTAN</div>
+                <div class="lesson-title">Lists &mdash; Storing Paths as Collections</div>
+                <div class="divider-sketch"></div>
+                <div class="title-content">
+                    <div class="title-section">
+                        <h3>Learning Objectives</h3>
+                        <div class="bullet">Create and manipulate lists in Python</div>
+                        <div class="bullet">Use <span class="inline-code">append()</span> to add items to a list</div>
+                        <div class="bullet">Iterate through a list with a <span class="inline-code">for</span> loop</div>
+                        <div class="bullet">Represent a path as a list of coordinate tuples</div>
+                    </div>
+                    <div class="title-section">
+                        <h3>Agenda</h3>
+                        <div class="bullet">What is a list? (8 min)</div>
+                        <div class="bullet">Creating lists and append() (10 min)</div>
+                        <div class="bullet">Iterating with for loops (10 min)</div>
+                        <div class="bullet">Paths as lists of tuples (17 min)</div>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button class="nav-btn" onclick="prevSlide()" disabled>&larr; Prev</button>
+                <span class="slide-counter">1 / 11</span>
+                <button class="nav-btn" onclick="nextSlide()">Next &rarr;</button>
+            </div>
+        </div>
+
+        <!-- ═══════════════ SLIDE 2: One Position Is Not Enough ═══════════════ -->
+        <div class="slide" id="slide-2">
+            <div class="title-bar"><h1>One Position Is Not Enough</h1></div>
+            <div class="content">
+                <p class="header-text">Problem: We can store ONE position with a tuple</p>
+                <div class="code-block compact" style="display:inline-block; padding:10px 18px; margin:8px 0;">position = (2, 3)</div>
+
+                <p class="header-text" style="margin-top:18px;">But a path has MANY positions:</p>
+
+                <!-- Path illustration on a grid -->
+                <div class="illustration">
+                    <svg width="520" height="260" viewBox="0 0 520 260">
+                        <!-- 4x4 grid lines (no circles) -->
+                        <!-- Horizontal lines -->
+                        <line x1="60" y1="40" x2="360" y2="40" stroke="#2d3436" stroke-width="2.5"/>
+                        <line x1="60" y1="110" x2="360" y2="110" stroke="#2d3436" stroke-width="2.5"/>
+                        <line x1="60" y1="180" x2="360" y2="180" stroke="#2d3436" stroke-width="2.5"/>
+                        <line x1="60" y1="250" x2="360" y2="250" stroke="#2d3436" stroke-width="2.5"/>
+                        <!-- Vertical lines -->
+                        <line x1="60" y1="40" x2="60" y2="250" stroke="#2d3436" stroke-width="2.5"/>
+                        <line x1="160" y1="40" x2="160" y2="250" stroke="#2d3436" stroke-width="2.5"/>
+                        <line x1="260" y1="40" x2="260" y2="250" stroke="#2d3436" stroke-width="2.5"/>
+                        <line x1="360" y1="40" x2="360" y2="250" stroke="#2d3436" stroke-width="2.5"/>
+
+                        <!-- Row labels -->
+                        <text x="30" y="46" font-family="Caveat, cursive" font-size="16" fill="#5b8fa8" text-anchor="middle">0</text>
+                        <text x="30" y="116" font-family="Caveat, cursive" font-size="16" fill="#5b8fa8" text-anchor="middle">1</text>
+                        <text x="30" y="186" font-family="Caveat, cursive" font-size="16" fill="#5b8fa8" text-anchor="middle">2</text>
+                        <!-- Col labels -->
+                        <text x="60" y="28" font-family="Caveat, cursive" font-size="16" fill="#5b8fa8" text-anchor="middle">0</text>
+                        <text x="160" y="28" font-family="Caveat, cursive" font-size="16" fill="#5b8fa8" text-anchor="middle">1</text>
+                        <text x="260" y="28" font-family="Caveat, cursive" font-size="16" fill="#5b8fa8" text-anchor="middle">2</text>
+                        <text x="360" y="28" font-family="Caveat, cursive" font-size="16" fill="#5b8fa8" text-anchor="middle">3</text>
+
+                        <!-- Path: (0,0) -> (1,0) -> (2,0) -> (2,1) -> (2,2) -> (2,3) -->
+                        <!-- Dashed path line -->
+                        <path d="M 60 40 L 60 110 L 60 180 L 160 180 L 260 180 L 360 180" fill="none" stroke="#e8a87c" stroke-width="3" stroke-dasharray="8,5" stroke-linecap="round"/>
+
+                        <!-- Step labels -->
+                        <text x="72" y="38" font-family="Fira Code, monospace" font-size="11" fill="#e8a87c">(0,0)</text>
+                        <text x="72" y="108" font-family="Fira Code, monospace" font-size="11" fill="#e8a87c">(1,0)</text>
+                        <text x="72" y="178" font-family="Fira Code, monospace" font-size="11" fill="#e8a87c">(2,0)</text>
+                        <text x="148" y="200" font-family="Fira Code, monospace" font-size="11" fill="#e8a87c">(2,1)</text>
+                        <text x="248" y="200" font-family="Fira Code, monospace" font-size="11" fill="#e8a87c">(2,2)</text>
+                        <text x="348" y="200" font-family="Fira Code, monospace" font-size="11" fill="#85c88a">(2,3)</text>
+
+                        <!-- Robot at destination (2,3) facing right -->
+                        <rect x="347" y="164" width="26" height="26" rx="3" fill="#b8c5d0" stroke="#2d3436" stroke-width="2" transform="rotate(-1 360 177)"/>
+                        <text x="360" y="182" font-family="Caveat, cursive" font-size="9" fill="#2d3436" text-anchor="middle" font-weight="600">XRP</text>
+
+                        <!-- Arrow indicating the question -->
+                        <text x="420" y="100" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" transform="rotate(-2 440 100)">6 positions!</text>
+                        <text x="420" y="125" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" transform="rotate(-1 440 125)">How to store</text>
+                        <text x="420" y="150" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" transform="rotate(0 440 150)">them all?</text>
+                    </svg>
+                </div>
+
+                <div class="question-box">
+                    <p class="body-text" style="margin-top:4px;">"How do we store a whole sequence of positions?"</p>
+                </div>
+
+                <div class="answer-box">
+                    <p class="body-text" style="margin-top:4px;"><span class="bold">A list!</span> &mdash; Python's built-in collection type</p>
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button class="nav-btn" onclick="prevSlide()">&larr; Prev</button>
+                <span class="slide-counter">2 / 11</span>
+                <button class="nav-btn" onclick="nextSlide()">Next &rarr;</button>
+            </div>
+        </div>
+
+        <!-- ═══════════════ SLIDE 3: What Is a List? ═══════════════ -->
+        <div class="slide" id="slide-3">
+            <div class="title-bar"><h1>What Is a List?</h1></div>
+            <div class="content">
+                <p class="body-text"><span class="bold">List:</span> An ordered, <span class="sketch-highlight">mutable</span> collection of values</p>
+
+                <div class="header-text">Creating a list:</div>
+                <div class="code-block">numbers = [1, 2, 3, 4, 5]
+names = ["Alice", "Bob", "Charlie"]
+empty = []</div>
+
+                <div class="header-text">Key features:</div>
+                <div class="bullet">Uses square brackets: <span class="inline-code">[ ]</span></div>
+                <div class="bullet">Values separated by commas</div>
+                <div class="bullet">Can hold any type of value</div>
+                <div class="bullet">Can grow and shrink (<span class="sketch-highlight">mutable!</span>)</div>
+
+                <div class="spacer"></div>
+
+                <!-- Comparison diagram: Tuple vs List -->
+                <div class="illustration">
+                    <svg width="560" height="150" viewBox="0 0 560 150">
+                        <!-- Tuple box -->
+                        <rect x="20" y="10" width="230" height="130" rx="14" fill="rgba(91,143,168,0.06)" stroke="#5b8fa8" stroke-width="2" transform="rotate(-0.5 135 75)"/>
+                        <text x="135" y="38" font-family="Caveat, cursive" font-size="24" fill="#5b8fa8" text-anchor="middle" font-weight="600">Tuple</text>
+                        <text x="135" y="62" font-family="Patrick Hand, cursive" font-size="17" fill="#2d3436" text-anchor="middle">Brackets: ( )</text>
+                        <text x="135" y="85" font-family="Patrick Hand, cursive" font-size="17" fill="#2d3436" text-anchor="middle">Cannot change (immutable)</text>
+                        <text x="135" y="108" font-family="Patrick Hand, cursive" font-size="17" fill="#2d3436" text-anchor="middle">Best for: fixed data</text>
+                        <text x="135" y="131" font-family="Fira Code, monospace" font-size="13" fill="#636e72" text-anchor="middle">(2, 3)</text>
+
+                        <!-- Arrow -->
+                        <text x="280" y="80" font-family="Patrick Hand, cursive" font-size="32" fill="#e8a87c" text-anchor="middle">vs</text>
+
+                        <!-- List box -->
+                        <rect x="310" y="10" width="230" height="130" rx="14" fill="rgba(232,168,124,0.06)" stroke="#e8a87c" stroke-width="2" transform="rotate(0.5 425 75)"/>
+                        <text x="425" y="38" font-family="Caveat, cursive" font-size="24" fill="#e8a87c" text-anchor="middle" font-weight="600">List</text>
+                        <text x="425" y="62" font-family="Patrick Hand, cursive" font-size="17" fill="#2d3436" text-anchor="middle">Brackets: [ ]</text>
+                        <text x="425" y="85" font-family="Patrick Hand, cursive" font-size="17" fill="#2d3436" text-anchor="middle">Can change (mutable)</text>
+                        <text x="425" y="108" font-family="Patrick Hand, cursive" font-size="17" fill="#2d3436" text-anchor="middle">Best for: collections</text>
+                        <text x="425" y="131" font-family="Fira Code, monospace" font-size="13" fill="#636e72" text-anchor="middle">[(0,0), (1,0), (2,0)]</text>
+                    </svg>
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button class="nav-btn" onclick="prevSlide()">&larr; Prev</button>
+                <span class="slide-counter">3 / 11</span>
+                <button class="nav-btn" onclick="nextSlide()">Next &rarr;</button>
+            </div>
+        </div>
+
+        <!-- ═══════════════ SLIDE 4: List Operations ═══════════════ -->
+        <div class="slide" id="slide-4">
+            <div class="title-bar"><h1>List Operations</h1></div>
+            <div class="content">
+                <div class="two-col">
+                    <div class="col">
+                        <div class="header-text">Creating and accessing:</div>
+                        <div class="code-block">colors = ["red", "green", "blue"]
+print(colors[0])      # "red"
+print(colors[1])      # "green"
+print(len(colors))    # 3</div>
+
+                        <div class="header-text">Adding items with append():</div>
+                        <div class="code-block">colors = ["red", "green"]
+colors.append("blue")
+print(colors)
+# ["red", "green", "blue"]
+colors.append("yellow")
+print(colors)
+# ["red", "green", "blue", "yellow"]</div>
+                    </div>
+                    <div class="col">
+                        <!-- Visual: list growing with append -->
+                        <div class="illustration">
+                            <svg width="280" height="340" viewBox="0 0 280 340">
+                                <!-- Stage 1: initial list -->
+                                <text x="10" y="24" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" font-weight="600">Index lookup:</text>
+                                <rect x="10" y="34" width="260" height="90" rx="12" fill="rgba(91,143,168,0.05)" stroke="#b8c5d0" stroke-width="2"/>
+                                <!-- Index 0 -->
+                                <rect x="30" y="50" width="60" height="30" rx="6" fill="rgba(232,93,93,0.15)" stroke="#e85d5d" stroke-width="1.5"/>
+                                <text x="60" y="70" font-family="Fira Code, monospace" font-size="13" fill="#2d3436" text-anchor="middle">"red"</text>
+                                <text x="60" y="105" font-family="Caveat, cursive" font-size="15" fill="#636e72" text-anchor="middle">[0]</text>
+                                <!-- Index 1 -->
+                                <rect x="110" y="50" width="60" height="30" rx="6" fill="rgba(133,200,138,0.2)" stroke="#85c88a" stroke-width="1.5"/>
+                                <text x="140" y="70" font-family="Fira Code, monospace" font-size="12" fill="#2d3436" text-anchor="middle">"green"</text>
+                                <text x="140" y="105" font-family="Caveat, cursive" font-size="15" fill="#636e72" text-anchor="middle">[1]</text>
+                                <!-- Index 2 -->
+                                <rect x="190" y="50" width="60" height="30" rx="6" fill="rgba(91,143,168,0.15)" stroke="#5b8fa8" stroke-width="1.5"/>
+                                <text x="220" y="70" font-family="Fira Code, monospace" font-size="12" fill="#2d3436" text-anchor="middle">"blue"</text>
+                                <text x="220" y="105" font-family="Caveat, cursive" font-size="15" fill="#636e72" text-anchor="middle">[2]</text>
+
+                                <!-- append() visual -->
+                                <text x="10" y="150" font-family="Caveat, cursive" font-size="20" fill="#e8a87c" font-weight="600">append() adds to the end:</text>
+
+                                <!-- Before -->
+                                <rect x="10" y="162" width="130" height="30" rx="8" fill="rgba(91,143,168,0.05)" stroke="#b8c5d0" stroke-width="2"/>
+                                <text x="35" y="182" font-family="Fira Code, monospace" font-size="11" fill="#2d3436">"red"</text>
+                                <text x="95" y="182" font-family="Fira Code, monospace" font-size="11" fill="#2d3436">"green"</text>
+
+                                <!-- Arrow -->
+                                <text x="145" y="182" font-family="Patrick Hand, cursive" font-size="22" fill="#e8a87c">&rarr;</text>
+
+                                <!-- After -->
+                                <rect x="10" y="202" width="200" height="30" rx="8" fill="rgba(91,143,168,0.05)" stroke="#b8c5d0" stroke-width="2"/>
+                                <text x="30" y="222" font-family="Fira Code, monospace" font-size="11" fill="#2d3436">"red"</text>
+                                <text x="85" y="222" font-family="Fira Code, monospace" font-size="11" fill="#2d3436">"green"</text>
+                                <rect x="140" y="206" width="60" height="22" rx="5" fill="rgba(232,168,124,0.2)" stroke="#e8a87c" stroke-width="1.5" stroke-dasharray="4,2"/>
+                                <text x="170" y="222" font-family="Fira Code, monospace" font-size="11" fill="#e8a87c" text-anchor="middle">"blue"</text>
+                                <text x="170" y="250" font-family="Caveat, cursive" font-size="15" fill="#e8a87c" text-anchor="middle">new!</text>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="insight-box">append() always adds to the END of the list</div>
+            </div>
+            <div class="slide-navigation">
+                <button class="nav-btn" onclick="prevSlide()">&larr; Prev</button>
+                <span class="slide-counter">4 / 11</span>
+                <button class="nav-btn" onclick="nextSlide()">Next &rarr;</button>
+            </div>
+        </div>
+
+        <!-- ═══════════════ SLIDE 5: Iterating Through a List ═══════════════ -->
+        <div class="slide" id="slide-5">
+            <div class="title-bar"><h1>Iterating Through a List</h1></div>
+            <div class="content">
+                <div class="two-col">
+                    <div class="col">
+                        <div class="header-text">Use a for loop to visit each item:</div>
+                        <div class="code-block">colors = ["red", "green", "blue"]
+
+for color in colors:
+    print(color)</div>
+                        <div class="code-output">red
+green
+blue</div>
+
+                        <div class="spacer"></div>
+                        <div class="header-text">With index numbers:</div>
+                        <div class="code-block">for i in range(len(colors)):
+    print("Item", i, "is", colors[i])</div>
+                        <div class="code-output">Item 0 is red
+Item 1 is green
+Item 2 is blue</div>
+                    </div>
+                    <div class="col">
+                        <!-- Visual: for loop walking through list -->
+                        <div class="illustration">
+                            <svg width="280" height="330" viewBox="0 0 280 330">
+                                <text x="140" y="22" font-family="Caveat, cursive" font-size="22" fill="#5b8fa8" text-anchor="middle" font-weight="600">for color in colors:</text>
+
+                                <!-- The list boxes -->
+                                <rect x="30" y="40" width="60" height="36" rx="8" fill="rgba(232,93,93,0.12)" stroke="#e85d5d" stroke-width="2"/>
+                                <text x="60" y="64" font-family="Fira Code, monospace" font-size="12" fill="#2d3436" text-anchor="middle">"red"</text>
+
+                                <rect x="110" y="40" width="60" height="36" rx="8" fill="rgba(133,200,138,0.15)" stroke="#85c88a" stroke-width="2"/>
+                                <text x="140" y="64" font-family="Fira Code, monospace" font-size="11" fill="#2d3436" text-anchor="middle">"green"</text>
+
+                                <rect x="190" y="40" width="60" height="36" rx="8" fill="rgba(91,143,168,0.15)" stroke="#5b8fa8" stroke-width="2"/>
+                                <text x="220" y="64" font-family="Fira Code, monospace" font-size="12" fill="#2d3436" text-anchor="middle">"blue"</text>
+
+                                <!-- Iteration arrows -->
+                                <!-- Iteration 1 -->
+                                <path d="M 60 80 L 60 105" stroke="#e8a87c" stroke-width="2" fill="none" marker-end="url(#arrowOrange)"/>
+                                <rect x="15" y="110" width="200" height="34" rx="8" fill="rgba(232,168,124,0.08)" stroke="#e8a87c" stroke-width="1.5" stroke-dasharray="4,3"/>
+                                <text x="115" y="132" font-family="Patrick Hand, cursive" font-size="16" fill="#2d3436" text-anchor="middle">color = "red" &rarr; print</text>
+
+                                <!-- Iteration 2 -->
+                                <path d="M 140 80 L 140 160" stroke="#e8a87c" stroke-width="2" fill="none" marker-end="url(#arrowOrange)"/>
+                                <rect x="15" y="165" width="200" height="34" rx="8" fill="rgba(232,168,124,0.08)" stroke="#e8a87c" stroke-width="1.5" stroke-dasharray="4,3"/>
+                                <text x="115" y="187" font-family="Patrick Hand, cursive" font-size="16" fill="#2d3436" text-anchor="middle">color = "green" &rarr; print</text>
+
+                                <!-- Iteration 3 -->
+                                <path d="M 220 80 L 220 215" stroke="#e8a87c" stroke-width="2" fill="none" marker-end="url(#arrowOrange)"/>
+                                <rect x="15" y="220" width="200" height="34" rx="8" fill="rgba(232,168,124,0.08)" stroke="#e8a87c" stroke-width="1.5" stroke-dasharray="4,3"/>
+                                <text x="115" y="242" font-family="Patrick Hand, cursive" font-size="16" fill="#2d3436" text-anchor="middle">color = "blue" &rarr; print</text>
+
+                                <!-- Done -->
+                                <rect x="55" y="275" width="120" height="32" rx="10" fill="rgba(133,200,138,0.15)" stroke="#85c88a" stroke-width="2"/>
+                                <text x="115" y="297" font-family="Caveat, cursive" font-size="20" fill="#85c88a" text-anchor="middle" font-weight="600">Done!</text>
+
+                                <defs>
+                                    <marker id="arrowOrange" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto">
+                                        <polygon points="0 0, 8 3, 0 6" fill="#e8a87c"/>
+                                    </marker>
+                                </defs>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button class="nav-btn" onclick="prevSlide()">&larr; Prev</button>
+                <span class="slide-counter">5 / 11</span>
+                <button class="nav-btn" onclick="nextSlide()">Next &rarr;</button>
+            </div>
+        </div>
+
+        <!-- ═══════════════ SLIDE 6: Building a List Step by Step ═══════════════ -->
+        <div class="slide" id="slide-6">
+            <div class="title-bar"><h1>Building a List Step by Step</h1></div>
+            <div class="content">
+                <p class="header-text">Start empty, add items in a loop:</p>
+                <div class="two-col">
+                    <div class="col">
+                        <div class="code-block">squares = []
+
+for i in range(5):
+    squares.append(i * i)
+
+print(squares)</div>
+                        <div class="code-output">[0, 1, 4, 9, 16]</div>
+                    </div>
+                    <div class="col">
+                        <!-- Step-by-step table as SVG -->
+                        <div class="illustration">
+                            <svg width="320" height="230" viewBox="0 0 320 230">
+                                <text x="160" y="22" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle" font-weight="600">Step by step:</text>
+
+                                <!-- Table header -->
+                                <rect x="10" y="32" width="300" height="30" rx="6" fill="rgba(91,143,168,0.2)" stroke="#b8c5d0" stroke-width="2"/>
+                                <text x="55" y="52" font-family="Caveat, cursive" font-size="16" fill="#2d3436" text-anchor="middle" font-weight="600">i</text>
+                                <text x="120" y="52" font-family="Caveat, cursive" font-size="16" fill="#2d3436" text-anchor="middle" font-weight="600">i * i</text>
+                                <text x="235" y="52" font-family="Caveat, cursive" font-size="16" fill="#2d3436" text-anchor="middle" font-weight="600">List after append</text>
+
+                                <!-- Row 1 -->
+                                <rect x="10" y="62" width="300" height="28" rx="0" fill="rgba(232,168,124,0.04)"/>
+                                <text x="55" y="81" font-family="Fira Code, monospace" font-size="13" fill="#2d3436" text-anchor="middle">0</text>
+                                <text x="120" y="81" font-family="Fira Code, monospace" font-size="13" fill="#2d3436" text-anchor="middle">0</text>
+                                <text x="235" y="81" font-family="Fira Code, monospace" font-size="13" fill="#2d3436" text-anchor="middle">[0]</text>
+                                <line x1="10" y1="90" x2="310" y2="90" stroke="#ccc" stroke-width="1" stroke-dasharray="4,3"/>
+
+                                <!-- Row 2 -->
+                                <text x="55" y="109" font-family="Fira Code, monospace" font-size="13" fill="#2d3436" text-anchor="middle">1</text>
+                                <text x="120" y="109" font-family="Fira Code, monospace" font-size="13" fill="#2d3436" text-anchor="middle">1</text>
+                                <text x="235" y="109" font-family="Fira Code, monospace" font-size="13" fill="#2d3436" text-anchor="middle">[0, 1]</text>
+                                <line x1="10" y1="118" x2="310" y2="118" stroke="#ccc" stroke-width="1" stroke-dasharray="4,3"/>
+
+                                <!-- Row 3 -->
+                                <rect x="10" y="118" width="300" height="28" rx="0" fill="rgba(232,168,124,0.04)"/>
+                                <text x="55" y="137" font-family="Fira Code, monospace" font-size="13" fill="#2d3436" text-anchor="middle">2</text>
+                                <text x="120" y="137" font-family="Fira Code, monospace" font-size="13" fill="#2d3436" text-anchor="middle">4</text>
+                                <text x="235" y="137" font-family="Fira Code, monospace" font-size="13" fill="#2d3436" text-anchor="middle">[0, 1, 4]</text>
+                                <line x1="10" y1="146" x2="310" y2="146" stroke="#ccc" stroke-width="1" stroke-dasharray="4,3"/>
+
+                                <!-- Row 4 -->
+                                <text x="55" y="165" font-family="Fira Code, monospace" font-size="13" fill="#2d3436" text-anchor="middle">3</text>
+                                <text x="120" y="165" font-family="Fira Code, monospace" font-size="13" fill="#2d3436" text-anchor="middle">9</text>
+                                <text x="235" y="165" font-family="Fira Code, monospace" font-size="13" fill="#2d3436" text-anchor="middle">[0, 1, 4, 9]</text>
+                                <line x1="10" y1="174" x2="310" y2="174" stroke="#ccc" stroke-width="1" stroke-dasharray="4,3"/>
+
+                                <!-- Row 5 -->
+                                <rect x="10" y="174" width="300" height="28" rx="0" fill="rgba(232,168,124,0.04)"/>
+                                <text x="55" y="193" font-family="Fira Code, monospace" font-size="13" fill="#2d3436" text-anchor="middle">4</text>
+                                <text x="120" y="193" font-family="Fira Code, monospace" font-size="13" fill="#2d3436" text-anchor="middle">16</text>
+                                <text x="235" y="193" font-family="Fira Code, monospace" font-size="13" fill="#e8a87c" text-anchor="middle" font-weight="bold">[0, 1, 4, 9, 16]</text>
+
+                                <!-- Border -->
+                                <rect x="10" y="32" width="300" height="172" rx="8" fill="none" stroke="#b8c5d0" stroke-width="2"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+                <div class="insight-box">This pattern is KEY for building paths!</div>
+            </div>
+            <div class="slide-navigation">
+                <button class="nav-btn" onclick="prevSlide()">&larr; Prev</button>
+                <span class="slide-counter">6 / 11</span>
+                <button class="nav-btn" onclick="nextSlide()">Next &rarr;</button>
+            </div>
+        </div>
+
+        <!-- ═══════════════ SLIDE 7: A Path Is a List of Tuples ═══════════════ -->
+        <div class="slide" id="slide-7">
+            <div class="title-bar"><h1>A Path Is a List of Tuples</h1></div>
+            <div class="content">
+                <p class="header-text">Combining lists and tuples:</p>
+                <div class="code-block">path = [(0, 0), (1, 0), (2, 0), (2, 1), (2, 2), (2, 3)]
+
+print("Path has", len(path), "steps")
+print("Start:", path[0])
+print("End:", path[-1])</div>
+
+                <!-- Grid showing path with robot -->
+                <div class="illustration">
+                    <svg width="560" height="215" viewBox="0 0 560 215">
+                        <!-- 3x4 grid -->
+                        <line x1="40" y1="30" x2="340" y2="30" stroke="#2d3436" stroke-width="2.5"/>
+                        <line x1="40" y1="100" x2="340" y2="100" stroke="#2d3436" stroke-width="2.5"/>
+                        <line x1="40" y1="170" x2="340" y2="170" stroke="#2d3436" stroke-width="2.5"/>
+                        <line x1="40" y1="30" x2="40" y2="170" stroke="#2d3436" stroke-width="2.5"/>
+                        <line x1="140" y1="30" x2="140" y2="170" stroke="#2d3436" stroke-width="2.5"/>
+                        <line x1="240" y1="30" x2="240" y2="170" stroke="#2d3436" stroke-width="2.5"/>
+                        <line x1="340" y1="30" x2="340" y2="170" stroke="#2d3436" stroke-width="2.5"/>
+
+                        <!-- Labels -->
+                        <text x="15" y="35" font-family="Caveat, cursive" font-size="15" fill="#5b8fa8" text-anchor="middle">0</text>
+                        <text x="15" y="105" font-family="Caveat, cursive" font-size="15" fill="#5b8fa8" text-anchor="middle">1</text>
+                        <text x="15" y="175" font-family="Caveat, cursive" font-size="15" fill="#5b8fa8" text-anchor="middle">2</text>
+                        <text x="40" y="20" font-family="Caveat, cursive" font-size="15" fill="#5b8fa8" text-anchor="middle">0</text>
+                        <text x="140" y="20" font-family="Caveat, cursive" font-size="15" fill="#5b8fa8" text-anchor="middle">1</text>
+                        <text x="240" y="20" font-family="Caveat, cursive" font-size="15" fill="#5b8fa8" text-anchor="middle">2</text>
+                        <text x="340" y="20" font-family="Caveat, cursive" font-size="15" fill="#5b8fa8" text-anchor="middle">3</text>
+
+                        <!-- Path -->
+                        <path d="M 40 30 L 40 100 L 40 170 L 140 170 L 240 170 L 340 170" fill="none" stroke="#e8a87c" stroke-width="3" stroke-dasharray="8,5" stroke-linecap="round"/>
+
+                        <!-- Start marker -->
+                        <rect x="26" y="18" width="28" height="24" rx="6" fill="rgba(133,200,138,0.2)" stroke="#85c88a" stroke-width="1.5"/>
+                        <text x="40" y="35" font-family="Caveat, cursive" font-size="11" fill="#85c88a" text-anchor="middle" font-weight="600">start</text>
+
+                        <!-- Robot at end (2,3) -->
+                        <rect x="326" y="156" width="28" height="28" rx="3" fill="#b8c5d0" stroke="#2d3436" stroke-width="2"/>
+                        <text x="340" y="175" font-family="Caveat, cursive" font-size="9" fill="#2d3436" text-anchor="middle" font-weight="600">XRP</text>
+
+                        <!-- Iterating code visual -->
+                        <rect x="380" y="20" width="170" height="180" rx="12" fill="rgba(91,143,168,0.04)" stroke="#5b8fa8" stroke-width="2"/>
+                        <text x="465" y="45" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" text-anchor="middle" font-weight="600">path[-1]</text>
+                        <line x1="360" y1="170" x2="380" y2="160" stroke="#5b8fa8" stroke-width="1.5" stroke-dasharray="4,3"/>
+                        <text x="465" y="70" font-family="Fira Code, monospace" font-size="12" fill="#2d3436" text-anchor="middle">(2, 3)</text>
+
+                        <text x="465" y="100" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" text-anchor="middle" font-weight="600">path[0]</text>
+                        <line x1="40" y1="30" x2="380" y2="110" stroke="#85c88a" stroke-width="1.5" stroke-dasharray="4,3"/>
+                        <text x="465" y="125" font-family="Fira Code, monospace" font-size="12" fill="#2d3436" text-anchor="middle">(0, 0)</text>
+
+                        <text x="465" y="155" font-family="Caveat, cursive" font-size="18" fill="#e8a87c" text-anchor="middle" font-weight="600">len(path)</text>
+                        <text x="465" y="180" font-family="Fira Code, monospace" font-size="14" fill="#e8a87c" text-anchor="middle">6</text>
+                    </svg>
+                </div>
+
+                <div class="header-text">Iterating through a path:</div>
+                <div class="code-block">for step in path:
+    print("Visit:", step)
+    print("  Row:", step[0], "Col:", step[1])</div>
+            </div>
+            <div class="slide-navigation">
+                <button class="nav-btn" onclick="prevSlide()">&larr; Prev</button>
+                <span class="slide-counter">7 / 11</span>
+                <button class="nav-btn" onclick="nextSlide()">Next &rarr;</button>
+            </div>
+        </div>
+
+        <!-- ═══════════════ SLIDE 8: Building a Path with append() ═══════════════ -->
+        <div class="slide" id="slide-8">
+            <div class="title-bar"><h1>Building a Path with append()</h1></div>
+            <div class="content">
+                <p class="header-text">Build a path programmatically:</p>
+                <div class="two-col">
+                    <div class="col">
+                        <div class="code-block">path = []
+
+# Add the starting position
+path.append((0, 0))
+
+# Move down 2 rows
+path.append((1, 0))
+path.append((2, 0))
+
+# Move right 3 columns
+path.append((2, 1))
+path.append((2, 2))
+path.append((2, 3))
+
+print("Path:", path)</div>
+                        <div class="code-output">Path: [(0, 0), (1, 0), (2, 0), (2, 1), (2, 2), (2, 3)]</div>
+                    </div>
+                    <div class="col">
+                        <!-- Visual: list growing with each append -->
+                        <div class="illustration">
+                            <svg width="280" height="360" viewBox="0 0 280 360">
+                                <text x="140" y="20" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle" font-weight="600">List grows with each append():</text>
+
+                                <!-- Step 1 -->
+                                <rect x="10" y="32" width="65" height="26" rx="6" fill="rgba(91,143,168,0.1)" stroke="#5b8fa8" stroke-width="1.5"/>
+                                <text x="42" y="50" font-family="Fira Code, monospace" font-size="11" fill="#2d3436" text-anchor="middle">(0,0)</text>
+
+                                <!-- Step 2 -->
+                                <rect x="10" y="68" width="130" height="26" rx="6" fill="rgba(91,143,168,0.1)" stroke="#5b8fa8" stroke-width="1.5"/>
+                                <text x="42" y="86" font-family="Fira Code, monospace" font-size="11" fill="#2d3436" text-anchor="middle">(0,0)</text>
+                                <rect x="78" y="72" width="55" height="18" rx="4" fill="rgba(232,168,124,0.2)" stroke="#e8a87c" stroke-width="1"/>
+                                <text x="105" y="86" font-family="Fira Code, monospace" font-size="11" fill="#e8a87c" text-anchor="middle">(1,0)</text>
+
+                                <!-- Step 3 -->
+                                <rect x="10" y="104" width="195" height="26" rx="6" fill="rgba(91,143,168,0.1)" stroke="#5b8fa8" stroke-width="1.5"/>
+                                <text x="42" y="122" font-family="Fira Code, monospace" font-size="11" fill="#2d3436" text-anchor="middle">(0,0)</text>
+                                <text x="105" y="122" font-family="Fira Code, monospace" font-size="11" fill="#2d3436" text-anchor="middle">(1,0)</text>
+                                <rect x="140" y="108" width="55" height="18" rx="4" fill="rgba(232,168,124,0.2)" stroke="#e8a87c" stroke-width="1"/>
+                                <text x="168" y="122" font-family="Fira Code, monospace" font-size="11" fill="#e8a87c" text-anchor="middle">(2,0)</text>
+
+                                <!-- Step 4 -->
+                                <rect x="10" y="140" width="255" height="26" rx="6" fill="rgba(91,143,168,0.1)" stroke="#5b8fa8" stroke-width="1.5"/>
+                                <text x="35" y="158" font-family="Fira Code, monospace" font-size="10" fill="#2d3436" text-anchor="middle">(0,0)</text>
+                                <text x="85" y="158" font-family="Fira Code, monospace" font-size="10" fill="#2d3436" text-anchor="middle">(1,0)</text>
+                                <text x="140" y="158" font-family="Fira Code, monospace" font-size="10" fill="#2d3436" text-anchor="middle">(2,0)</text>
+                                <rect x="200" y="144" width="55" height="18" rx="4" fill="rgba(232,168,124,0.2)" stroke="#e8a87c" stroke-width="1"/>
+                                <text x="228" y="158" font-family="Fira Code, monospace" font-size="10" fill="#e8a87c" text-anchor="middle">(2,1)</text>
+
+                                <!-- Dots -->
+                                <text x="140" y="186" font-family="Caveat, cursive" font-size="22" fill="#636e72" text-anchor="middle">. . .</text>
+
+                                <!-- Final -->
+                                <rect x="10" y="200" width="260" height="30" rx="8" fill="rgba(133,200,138,0.1)" stroke="#85c88a" stroke-width="2"/>
+                                <text x="140" y="220" font-family="Fira Code, monospace" font-size="10" fill="#2d3436" text-anchor="middle">[(0,0), (1,0), (2,0), (2,1), (2,2), (2,3)]</text>
+
+                                <text x="140" y="260" font-family="Caveat, cursive" font-size="18" fill="#85c88a" text-anchor="middle" font-weight="600">Complete path!</text>
+
+                                <!-- Robot at bottom -->
+                                <rect x="120" y="278" width="28" height="28" rx="3" fill="#b8c5d0" stroke="#2d3436" stroke-width="2" transform="rotate(-1 134 292)"/>
+                                <text x="134" y="297" font-family="Caveat, cursive" font-size="9" fill="#2d3436" text-anchor="middle" font-weight="600">XRP</text>
+                                <rect x="146" y="283" width="9" height="18" rx="2" fill="#636e72" stroke="#2d3436" stroke-width="1"/>
+                                <rect x="153" y="286" width="4" height="4" rx="1" fill="#e85d5d" stroke="#2d3436" stroke-width="1"/>
+                                <rect x="153" y="294" width="4" height="4" rx="1" fill="#e85d5d" stroke="#2d3436" stroke-width="1"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="insight-box">Next lesson: We'll write code that CALCULATES the path automatically!</div>
+            </div>
+            <div class="slide-navigation">
+                <button class="nav-btn" onclick="prevSlide()">&larr; Prev</button>
+                <span class="slide-counter">8 / 11</span>
+                <button class="nav-btn" onclick="nextSlide()">Next &rarr;</button>
+            </div>
+        </div>
+
+        <!-- ═══════════════ SLIDE 9: Common List Mistakes ═══════════════ -->
+        <div class="slide" id="slide-9">
+            <div class="title-bar"><h1>Common List Mistakes</h1></div>
+            <div class="content">
+                <div class="header-text">Mistake 1: append() inside vs. outside loop</div>
+                <div class="two-col">
+                    <div class="col">
+                        <div class="code-block" style="border-color: #e85d5d; transform: rotate(0.2deg);">
+                            <div class="error-highlight">path = []
+for i in range(3):
+    position = (i, 0)
+path.append(position)  # WRONG!</div>
+                        </div>
+                        <p class="body-text" style="color:#e85d5d; font-size:18px; margin-left:8px;">Only adds the last one!</p>
+                    </div>
+                    <div class="col">
+                        <div class="code-block" style="border-color: #85c88a; transform: rotate(-0.2deg);">
+                            <div class="correct-highlight">path = []
+for i in range(3):
+    position = (i, 0)
+    path.append(position)  # Correct!</div>
+                        </div>
+                        <p class="body-text" style="color:#85c88a; font-size:18px; margin-left:8px;">Adds each one inside the loop</p>
+                    </div>
+                </div>
+
+                <div class="spacer"></div>
+                <div class="header-text">Mistake 2: Confusing [ ] and ( )</div>
+                <div class="code-block compact" style="padding:12px 18px; font-size:15px;">path = [(0, 0), (1, 0)]   # List of tuples &check;
+path = ((0, 0), (1, 0))   # Tuple of tuples &mdash; not what we want</div>
+
+                <div class="spacer"></div>
+                <div class="header-text">Mistake 3: Forgetting the list is empty</div>
+                <div class="code-block compact" style="padding:12px 18px; font-size:15px;">path = []
+print(path[0])    # IndexError! Empty list has no items.</div>
+
+                <!-- Warning icon -->
+                <div class="illustration">
+                    <svg width="400" height="65" viewBox="0 0 400 65">
+                        <rect x="10" y="5" width="380" height="55" rx="14" fill="rgba(232,168,124,0.1)" stroke="#e8a87c" stroke-width="2" transform="rotate(-0.3 200 32)"/>
+                        <text x="40" y="40" font-family="Caveat, cursive" font-size="28" fill="#e8a87c" font-weight="700">!</text>
+                        <text x="65" y="38" font-family="Patrick Hand, cursive" font-size="20" fill="#2d3436">Indentation matters &mdash; code inside the loop must be indented</text>
+                    </svg>
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button class="nav-btn" onclick="prevSlide()">&larr; Prev</button>
+                <span class="slide-counter">9 / 11</span>
+                <button class="nav-btn" onclick="nextSlide()">Next &rarr;</button>
+            </div>
+        </div>
+
+        <!-- ═══════════════ SLIDE 10: Your Turn! ═══════════════ -->
+        <div class="slide" id="slide-10">
+            <div class="title-bar"><h1>Your Turn!</h1></div>
+            <div class="content">
+                <div class="two-col">
+                    <div class="col">
+                        <div class="header-text">Activity:</div>
+                        <div class="activity-step">
+                            <span class="step-number">1</span>
+                            <span class="step-text">Create an empty list called <span class="inline-code">path</span></span>
+                        </div>
+                        <div class="activity-step">
+                            <span class="step-number">2</span>
+                            <span class="step-text">Use <span class="inline-code">append()</span> to add these coordinates in order: (0,0), (0,1), (0,2), (1,2), (2,2)</span>
+                        </div>
+                        <div class="activity-step">
+                            <span class="step-number">3</span>
+                            <span class="step-text">Print the full path</span>
+                        </div>
+                        <div class="activity-step">
+                            <span class="step-number">4</span>
+                            <span class="step-text">Print how many steps the path has</span>
+                        </div>
+                        <div class="activity-step">
+                            <span class="step-number">5</span>
+                            <span class="step-text">Use a <span class="inline-code">for</span> loop to print each step with its row and column</span>
+                        </div>
+
+                        <div class="spacer"></div>
+                        <div class="header-text">Challenge:</div>
+                        <div class="code-block">path = []
+for row in range(5):
+    path.append((row, 0))
+print(path)</div>
+
+                        <div class="spacer"></div>
+                        <div class="header-text" style="color:#85c88a;">Checkpoints:</div>
+                        <div class="checkpoint">
+                            <div class="check-icon"></div>
+                            <span class="step-text">Can you create and append to a list?</span>
+                        </div>
+                        <div class="checkpoint">
+                            <div class="check-icon"></div>
+                            <span class="step-text">Can you iterate through a list of tuples?</span>
+                        </div>
+                        <div class="checkpoint">
+                            <div class="check-icon"></div>
+                            <span class="step-text">Can you access row and column from each tuple?</span>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <!-- Grid showing the activity path -->
+                        <div class="illustration">
+                            <svg width="280" height="310" viewBox="0 0 280 310">
+                                <text x="140" y="20" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle" font-weight="600">Your path to build:</text>
+
+                                <!-- 3x3 grid -->
+                                <line x1="40" y1="50" x2="240" y2="50" stroke="#2d3436" stroke-width="2.5"/>
+                                <line x1="40" y1="130" x2="240" y2="130" stroke="#2d3436" stroke-width="2.5"/>
+                                <line x1="40" y1="210" x2="240" y2="210" stroke="#2d3436" stroke-width="2.5"/>
+                                <line x1="40" y1="50" x2="40" y2="210" stroke="#2d3436" stroke-width="2.5"/>
+                                <line x1="140" y1="50" x2="140" y2="210" stroke="#2d3436" stroke-width="2.5"/>
+                                <line x1="240" y1="50" x2="240" y2="210" stroke="#2d3436" stroke-width="2.5"/>
+
+                                <!-- Labels -->
+                                <text x="18" y="55" font-family="Caveat, cursive" font-size="15" fill="#5b8fa8" text-anchor="middle">0</text>
+                                <text x="18" y="135" font-family="Caveat, cursive" font-size="15" fill="#5b8fa8" text-anchor="middle">1</text>
+                                <text x="18" y="215" font-family="Caveat, cursive" font-size="15" fill="#5b8fa8" text-anchor="middle">2</text>
+                                <text x="40" y="42" font-family="Caveat, cursive" font-size="15" fill="#5b8fa8" text-anchor="middle">0</text>
+                                <text x="140" y="42" font-family="Caveat, cursive" font-size="15" fill="#5b8fa8" text-anchor="middle">1</text>
+                                <text x="240" y="42" font-family="Caveat, cursive" font-size="15" fill="#5b8fa8" text-anchor="middle">2</text>
+
+                                <!-- Path: (0,0) -> (0,1) -> (0,2) -> (1,2) -> (2,2) -->
+                                <path d="M 40 50 L 140 50 L 240 50 L 240 130 L 240 210" fill="none" stroke="#e8a87c" stroke-width="3" stroke-dasharray="8,5" stroke-linecap="round"/>
+
+                                <!-- Step numbers along path -->
+                                <rect x="26" y="56" width="28" height="18" rx="5" fill="rgba(133,200,138,0.3)" stroke="#85c88a" stroke-width="1"/>
+                                <text x="40" y="70" font-family="Caveat, cursive" font-size="12" fill="#85c88a" text-anchor="middle" font-weight="600">1st</text>
+
+                                <rect x="126" y="56" width="28" height="18" rx="5" fill="rgba(91,143,168,0.15)" stroke="#5b8fa8" stroke-width="1"/>
+                                <text x="140" y="70" font-family="Caveat, cursive" font-size="12" fill="#5b8fa8" text-anchor="middle" font-weight="600">2nd</text>
+
+                                <rect x="246" y="44" width="28" height="18" rx="5" fill="rgba(91,143,168,0.15)" stroke="#5b8fa8" stroke-width="1"/>
+                                <text x="260" y="58" font-family="Caveat, cursive" font-size="12" fill="#5b8fa8" text-anchor="middle" font-weight="600">3rd</text>
+
+                                <rect x="246" y="124" width="28" height="18" rx="5" fill="rgba(91,143,168,0.15)" stroke="#5b8fa8" stroke-width="1"/>
+                                <text x="260" y="138" font-family="Caveat, cursive" font-size="12" fill="#5b8fa8" text-anchor="middle" font-weight="600">4th</text>
+
+                                <rect x="246" y="216" width="28" height="18" rx="5" fill="rgba(232,168,124,0.3)" stroke="#e8a87c" stroke-width="1"/>
+                                <text x="260" y="230" font-family="Caveat, cursive" font-size="12" fill="#e8a87c" text-anchor="middle" font-weight="600">5th</text>
+
+                                <!-- Robot at destination -->
+                                <rect x="226" y="196" width="28" height="28" rx="3" fill="#b8c5d0" stroke="#2d3436" stroke-width="2" transform="rotate(-1 240 210)"/>
+                                <text x="240" y="215" font-family="Caveat, cursive" font-size="9" fill="#2d3436" text-anchor="middle" font-weight="600">XRP</text>
+                                <!-- Sensor bar (facing down) -->
+                                <rect x="232" y="222" width="16" height="9" rx="2" fill="#636e72" stroke="#2d3436" stroke-width="1"/>
+                                <rect x="234" y="229" width="4" height="4" rx="1" fill="#e85d5d" stroke="#2d3436" stroke-width="1"/>
+                                <rect x="242" y="229" width="4" height="4" rx="1" fill="#e85d5d" stroke="#2d3436" stroke-width="1"/>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button class="nav-btn" onclick="prevSlide()">&larr; Prev</button>
+                <span class="slide-counter">10 / 11</span>
+                <button class="nav-btn" onclick="nextSlide()">Next &rarr;</button>
+            </div>
+        </div>
+
+        <!-- ═══════════════ SLIDE 11: Connection to Next Lesson ═══════════════ -->
+        <div class="slide" id="slide-11">
+            <div class="title-bar"><h1>What's Next</h1></div>
+            <div class="content">
+                <div class="two-col">
+                    <div class="col">
+                        <div class="header-text">What you did today:</div>
+                        <div class="sketch-box">
+                            <div class="bullet">Created lists and used <span class="inline-code">append()</span></div>
+                            <div class="bullet">Iterated through lists with <span class="inline-code">for</span> loops</div>
+                            <div class="bullet">Built paths as lists of coordinate tuples</div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="header-text" style="color:#e8a87c;">Next lesson (Lesson 4):</div>
+                        <div class="sketch-box" style="border-color:#e8a87c; background-color:rgba(232,168,124,0.04);">
+                            <div class="bullet">Learn the <span class="bold">Manhattan algorithm</span></div>
+                            <div class="bullet">Given a start and destination, compute every step</div>
+                            <div class="bullet">No more adding coordinates by hand!</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Progression diagram -->
+                <div class="progression">
+                    <div class="progression-step">
+                        <div class="step-label">Lesson 1</div>
+                        Coordinates
+                    </div>
+                    <div class="progression-arrow">&rarr;</div>
+                    <div class="progression-step">
+                        <div class="step-label">Lesson 2</div>
+                        Tuples
+                    </div>
+                    <div class="progression-arrow">&rarr;</div>
+                    <div class="progression-step current">
+                        <div class="step-label">Lesson 3</div>
+                        Lists
+                    </div>
+                    <div class="progression-arrow">&rarr;</div>
+                    <div class="progression-step" style="border-style: dashed;">
+                        <div class="step-label">Lesson 4</div>
+                        Manhattan Algorithm
+                    </div>
+                </div>
+
+                <div class="insight-box">You now have the data structures. Next, you'll learn the algorithm.</div>
+
+                <!-- Robot with thought bubble -->
+                <div class="illustration">
+                    <svg width="480" height="120" viewBox="0 0 480 120">
+                        <!-- Robot -->
+                        <rect x="30" y="45" width="32" height="32" rx="4" fill="#b8c5d0" stroke="#2d3436" stroke-width="2" transform="rotate(-1 46 61)"/>
+                        <text x="46" y="66" font-family="Caveat, cursive" font-size="11" fill="#2d3436" text-anchor="middle" font-weight="600">XRP</text>
+                        <rect x="60" y="51" width="10" height="20" rx="2" fill="#636e72" stroke="#2d3436" stroke-width="1"/>
+                        <rect x="68" y="54" width="5" height="5" rx="1" fill="#e85d5d" stroke="#2d3436" stroke-width="1"/>
+                        <rect x="68" y="63" width="5" height="5" rx="1" fill="#e85d5d" stroke="#2d3436" stroke-width="1"/>
+
+                        <!-- Thought bubble dots -->
+                        <circle cx="88" cy="55" r="3" fill="#b8c5d0"/>
+                        <circle cx="100" cy="45" r="5" fill="#b8c5d0"/>
+
+                        <!-- Thought bubble -->
+                        <rect x="115" y="10" width="350" height="90" rx="20" fill="rgba(91,143,168,0.06)" stroke="#b8c5d0" stroke-width="2"/>
+                        <text x="290" y="42" font-family="Patrick Hand, cursive" font-size="18" fill="#2d3436" text-anchor="middle">I know tuples and lists now...</text>
+                        <text x="290" y="68" font-family="Caveat, cursive" font-size="22" fill="#e8a87c" text-anchor="middle" font-weight="600">Teach me the algorithm!</text>
+                    </svg>
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button class="nav-btn" onclick="prevSlide()">&larr; Prev</button>
+                <span class="slide-counter">11 / 11</span>
+                <button class="nav-btn" onclick="nextSlide()" disabled>Next &rarr;</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const navItems = document.querySelectorAll('.nav-item');
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                if (i === index) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+            currentSlide = index;
+
+            navItems.forEach((item, i) => {
+                if (i === index) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        }
+
+        function nextSlide() {
+            if (currentSlide < slides.length - 1) {
+                showSlide(currentSlide + 1);
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                showSlide(currentSlide - 1);
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            }
+        });
+
+        // Initialize first slide
+        showSlide(0);
+    </script>
+</body>
+</html>

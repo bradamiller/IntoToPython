@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Manhattan Algorithm - Module 4: Manhattan</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Patrick+Hand&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Patrick Hand', cursive;
+            background-color: #faf8f5;
+            overflow: hidden;
+            color: #2d3436;
+        }
+
+        /* ── Sidebar Navigation ── */
+        .nav-sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 240px;
+            height: 100vh;
+            background-color: #faf8f5;
+            border-right: 3px solid #b8c5d0;
+            padding: 24px 16px;
+            overflow-y: auto;
+            z-index: 1000;
+            background-image:
+                linear-gradient(rgba(180, 200, 220, 0.15) 1px, transparent 1px);
+            background-size: 100% 28px;
+        }
+
+        .nav-header h2 {
+            font-family: 'Caveat', cursive;
+            font-size: 20px;
+            color: #5b8fa8;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .nav-header h3 {
+            font-family: 'Caveat', cursive;
+            font-size: 16px;
+            color: #636e72;
+            margin-bottom: 20px;
+            font-weight: 400;
+        }
+
+        .slide-nav {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .nav-item {
+            color: #2d3436;
+            text-decoration: none;
+            padding: 6px 10px;
+            margin-bottom: 3px;
+            border-radius: 6px;
+            font-size: 15px;
+            line-height: 1.3;
+            transition: all 0.2s;
+            font-family: 'Patrick Hand', cursive;
+        }
+
+        .nav-item:hover {
+            background-color: rgba(91, 143, 168, 0.15);
+        }
+
+        .nav-item.active {
+            background-color: rgba(91, 143, 168, 0.2);
+            font-weight: bold;
+            border-left: 3px solid #5b8fa8;
+        }
+
+        /* ── Slides Container ── */
+        .slides-container {
+            margin-left: 240px;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: calc(100vw - 240px);
+            height: 100vh;
+            background-color: #fdfcfa;
+            display: none;
+            flex-direction: column;
+            /* Notebook paper lines */
+            background-image:
+                linear-gradient(rgba(180, 200, 220, 0.12) 1px, transparent 1px);
+            background-size: 100% 32px;
+            background-position: 0 80px;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        /* ── Title Bar (sketch style) ── */
+        .title-bar {
+            padding: 20px 50px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            position: relative;
+            border-bottom: 3px solid #5b8fa8;
+            background-color: rgba(91, 143, 168, 0.06);
+        }
+
+        .title-bar::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 30px;
+            right: 60px;
+            height: 3px;
+            background-color: rgba(91, 143, 168, 0.15);
+            transform: rotate(-0.3deg);
+        }
+
+        .title-bar h1 {
+            font-family: 'Caveat', cursive;
+            font-size: 36px;
+            font-weight: 700;
+            color: #2d3436;
+            transform: rotate(-0.5deg);
+        }
+
+        /* ── Slide Content ── */
+        .content {
+            flex: 1;
+            padding: 30px 50px;
+            padding-bottom: 80px;
+            overflow-y: auto;
+            max-width: 1100px;
+        }
+
+        /* ── Text Styles ── */
+        .header-text {
+            font-family: 'Caveat', cursive;
+            font-size: 28px;
+            font-weight: 600;
+            color: #5b8fa8;
+            margin-bottom: 12px;
+            margin-top: 8px;
+        }
+
+        .body-text {
+            font-size: 22px;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .bold {
+            font-weight: bold;
+        }
+
+        .bullet {
+            font-size: 22px;
+            margin-bottom: 6px;
+            margin-left: 24px;
+            line-height: 1.4;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .bullet::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 11px;
+            width: 8px;
+            height: 8px;
+            background-color: #5b8fa8;
+            border-radius: 50%;
+            transform: rotate(5deg);
+        }
+
+        .bullet.level-1 {
+            margin-left: 52px;
+            font-size: 20px;
+        }
+
+        .bullet.level-1::before {
+            width: 6px;
+            height: 6px;
+            background-color: #e8a87c;
+            top: 10px;
+        }
+
+        /* ── Code Blocks (sketch style) ── */
+        .code-block {
+            background-color: #f0ede8;
+            border: 2px solid #b8c5d0;
+            border-radius: 12px;
+            padding: 18px 22px;
+            margin: 16px 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 16px;
+            line-height: 1.5;
+            color: #2d3436;
+            overflow-x: auto;
+            position: relative;
+            box-shadow: 3px 3px 0 rgba(91, 143, 168, 0.15);
+            transform: rotate(-0.2deg);
+        }
+
+        .code-block::before {
+            content: '< / >';
+            position: absolute;
+            top: -12px;
+            right: 20px;
+            background-color: #fdfcfa;
+            padding: 2px 10px;
+            font-family: 'Caveat', cursive;
+            font-size: 16px;
+            color: #5b8fa8;
+            border: 2px solid #b8c5d0;
+            border-radius: 8px;
+        }
+
+        /* ── Tables (sketch style) ── */
+        .content-table {
+            width: 90%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 16px auto;
+            font-size: 18px;
+            border: 2px solid #b8c5d0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 3px 3px 0 rgba(91, 143, 168, 0.12);
+        }
+
+        .content-table th {
+            background-color: rgba(91, 143, 168, 0.2);
+            color: #2d3436;
+            padding: 10px 16px;
+            text-align: center;
+            font-family: 'Caveat', cursive;
+            font-size: 22px;
+            font-weight: 600;
+            border-bottom: 2px solid #b8c5d0;
+        }
+
+        .content-table td {
+            padding: 8px 16px;
+            text-align: center;
+            border-bottom: 1px dashed #ccc;
+            font-size: 18px;
+        }
+
+        .content-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .content-table tr:nth-child(even) {
+            background-color: rgba(232, 168, 124, 0.06);
+        }
+
+        .spacer {
+            height: 14px;
+        }
+
+        /* ── Sketch Decorations ── */
+        .sketch-box {
+            border: 2px solid #5b8fa8;
+            border-radius: 14px;
+            padding: 18px;
+            margin: 12px 0;
+            position: relative;
+            background-color: rgba(91, 143, 168, 0.04);
+            box-shadow: 2px 2px 0 rgba(91, 143, 168, 0.1);
+        }
+
+        .sketch-highlight {
+            background: linear-gradient(180deg, transparent 60%, rgba(232, 168, 124, 0.3) 60%);
+            padding: 0 4px;
+        }
+
+        .sketch-arrow {
+            display: inline-block;
+            font-size: 28px;
+            color: #e8a87c;
+            margin: 0 8px;
+        }
+
+        /* ── Illustrations (SVG inline) ── */
+        .illustration {
+            display: flex;
+            justify-content: center;
+            margin: 16px 0;
+        }
+
+        .illustration svg {
+            max-width: 100%;
+        }
+
+        /* ── Question callout ── */
+        .question-box {
+            border: 2px dashed #e8a87c;
+            border-radius: 14px;
+            padding: 16px 20px;
+            margin: 14px 0;
+            background-color: rgba(232, 168, 124, 0.08);
+            position: relative;
+        }
+
+        .question-box::before {
+            content: '?';
+            position: absolute;
+            top: -14px;
+            left: 16px;
+            background-color: #e8a87c;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Caveat', cursive;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .answer-box {
+            border: 2px dashed #85c88a;
+            border-radius: 14px;
+            padding: 16px 20px;
+            margin: 14px 0;
+            background-color: rgba(133, 200, 138, 0.08);
+            position: relative;
+        }
+
+        .answer-box::before {
+            content: '!';
+            position: absolute;
+            top: -14px;
+            left: 16px;
+            background-color: #85c88a;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Caveat', cursive;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        /* ── Key insight callout ── */
+        .insight-box {
+            border: 2px solid #e8a87c;
+            border-radius: 14px;
+            padding: 16px 20px;
+            margin: 14px 0;
+            background-color: rgba(232, 168, 124, 0.08);
+            text-align: center;
+            font-family: 'Caveat', cursive;
+            font-size: 26px;
+            font-weight: 600;
+            color: #2d3436;
+            transform: rotate(-0.3deg);
+            box-shadow: 3px 3px 0 rgba(232, 168, 124, 0.15);
+        }
+
+        /* ── Activity slide styling ── */
+        .activity-step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            padding-left: 8px;
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 32px;
+            height: 32px;
+            background-color: #5b8fa8;
+            color: white;
+            border-radius: 50%;
+            font-family: 'Caveat', cursive;
+            font-size: 20px;
+            font-weight: 700;
+            margin-right: 12px;
+            margin-top: 2px;
+            box-shadow: 2px 2px 0 rgba(91, 143, 168, 0.2);
+        }
+
+        .step-text {
+            font-size: 21px;
+            line-height: 1.4;
+            padding-top: 4px;
+        }
+
+        /* ── Checkpoint style ── */
+        .checkpoint {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 8px;
+            padding-left: 8px;
+        }
+
+        .check-icon {
+            min-width: 26px;
+            height: 26px;
+            border: 2px solid #85c88a;
+            border-radius: 6px;
+            margin-right: 12px;
+            margin-top: 4px;
+            position: relative;
+        }
+
+        .checkpoint .step-text {
+            font-size: 20px;
+        }
+
+        /* ── Navigation ── */
+        .slide-navigation {
+            position: absolute;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background-color: rgba(250, 248, 245, 0.95);
+            padding: 8px 20px;
+            border-radius: 25px;
+            border: 2px solid #b8c5d0;
+            box-shadow: 2px 2px 0 rgba(91, 143, 168, 0.1);
+        }
+
+        .nav-btn {
+            padding: 6px 18px;
+            border: 2px solid #5b8fa8;
+            border-radius: 20px;
+            background-color: rgba(91, 143, 168, 0.1);
+            color: #2d3436;
+            font-size: 16px;
+            font-family: 'Patrick Hand', cursive;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background-color: rgba(91, 143, 168, 0.25);
+        }
+
+        .nav-btn:disabled {
+            border-color: #ccc;
+            color: #aaa;
+            background-color: transparent;
+            cursor: not-allowed;
+        }
+
+        .slide-counter {
+            font-size: 16px;
+            font-family: 'Caveat', cursive;
+            font-weight: 600;
+            color: #5b8fa8;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        /* ── Title Slide Special ── */
+        .slide-title-page {
+            background-image: none;
+            background-color: #fdfcfa;
+        }
+
+        .title-hero {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .title-hero .module-label {
+            font-family: 'Patrick Hand', cursive;
+            font-size: 22px;
+            color: #5b8fa8;
+            margin-bottom: 8px;
+            letter-spacing: 2px;
+        }
+
+        .title-hero .lesson-title {
+            font-family: 'Caveat', cursive;
+            font-size: 64px;
+            font-weight: 700;
+            color: #2d3436;
+            margin-bottom: 24px;
+            transform: rotate(-1deg);
+            position: relative;
+        }
+
+        .title-hero .lesson-title::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 10%;
+            right: 10%;
+            height: 4px;
+            background-color: #e8a87c;
+            border-radius: 2px;
+            transform: rotate(0.5deg);
+        }
+
+        .title-hero .divider-sketch {
+            width: 120px;
+            height: 3px;
+            background: #b8c5d0;
+            margin: 16px auto;
+            border-radius: 2px;
+            transform: rotate(-1deg);
+        }
+
+        .title-content {
+            display: flex;
+            gap: 60px;
+            margin-top: 20px;
+            text-align: left;
+            max-width: 900px;
+        }
+
+        .title-section {
+            flex: 1;
+        }
+
+        .title-section h3 {
+            font-family: 'Caveat', cursive;
+            font-size: 26px;
+            font-weight: 600;
+            color: #5b8fa8;
+            margin-bottom: 10px;
+            border-bottom: 2px solid rgba(91, 143, 168, 0.2);
+            padding-bottom: 4px;
+        }
+
+        .title-section .bullet {
+            font-size: 19px;
+        }
+
+        .title-section .bullet::before {
+            top: 9px;
+        }
+
+        /* ── Grid illustration ── */
+        .grid-illustration {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        /* ── Progression arrow ── */
+        .progression {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .progression-step {
+            border: 2px solid #b8c5d0;
+            border-radius: 14px;
+            padding: 12px 18px;
+            text-align: center;
+            font-size: 18px;
+            background-color: rgba(91, 143, 168, 0.05);
+            min-width: 180px;
+        }
+
+        .progression-step.current {
+            border-color: #e8a87c;
+            background-color: rgba(232, 168, 124, 0.1);
+            box-shadow: 3px 3px 0 rgba(232, 168, 124, 0.15);
+        }
+
+        .progression-step .step-label {
+            font-family: 'Caveat', cursive;
+            font-size: 16px;
+            color: #5b8fa8;
+            font-weight: 600;
+        }
+
+        .progression-arrow {
+            font-size: 28px;
+            color: #b8c5d0;
+        }
+
+        /* ── Two-column layout ── */
+        .two-col {
+            display: flex;
+            gap: 30px;
+            margin-top: 10px;
+        }
+
+        .two-col .col {
+            flex: 1;
+        }
+
+        /* ── Robot SVG ── */
+        .robot-icon {
+            display: inline-block;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-sidebar">
+        <div class="nav-header">
+            <h2>Module 4: Manhattan</h2>
+            <h3>Lesson 4</h3>
+        </div>
+        <nav class="slide-nav">
+            <a href="#slide-1" class="nav-item" onclick="showSlide(0)">Title & Objectives</a>
+            <a href="#slide-2" class="nav-item" onclick="showSlide(1)">How Do You Walk in a City?</a>
+            <a href="#slide-3" class="nav-item" onclick="showSlide(2)">Manhattan Distance</a>
+            <a href="#slide-4" class="nav-item" onclick="showSlide(3)">Rows First, Then Columns</a>
+            <a href="#slide-5" class="nav-item" onclick="showSlide(4)">Tracing on the Grid</a>
+            <a href="#slide-6" class="nav-item" onclick="showSlide(5)">Direction Matters</a>
+            <a href="#slide-7" class="nav-item" onclick="showSlide(6)">The Step Value</a>
+            <a href="#slide-8" class="nav-item" onclick="showSlide(7)">Hand Trace Practice</a>
+            <a href="#slide-9" class="nav-item" onclick="showSlide(8)">Edge Cases</a>
+            <a href="#slide-10" class="nav-item" onclick="showSlide(9)">Your Turn!</a>
+            <a href="#slide-11" class="nav-item" onclick="showSlide(10)">What's Next</a>
+        </nav>
+    </div>
+
+    <div class="slides-container">
+
+        <!-- ═══ SLIDE 1: Title ═══ -->
+        <div id="slide-1" class="slide slide-title-page">
+            <div class="title-hero">
+                <!-- Robot illustration -->
+                <svg width="80" height="80" viewBox="0 0 80 80" style="margin-bottom: 12px;">
+                    <rect x="18" y="20" width="44" height="44" rx="6" fill="#b8c5d0" stroke="#2d3436" stroke-width="2.5" transform="rotate(-2 40 42)"/>
+                    <text x="40" y="47" font-family="Caveat, cursive" font-size="16" fill="#2d3436" text-anchor="middle" font-weight="700">XRP</text>
+                    <rect x="28" y="62" width="24" height="10" rx="3" fill="#636e72" stroke="#2d3436" stroke-width="2"/>
+                    <rect x="32" y="70" width="6" height="5" rx="1.5" fill="#e85d5d" stroke="#2d3436" stroke-width="1.5"/>
+                    <rect x="42" y="70" width="6" height="5" rx="1.5" fill="#e85d5d" stroke="#2d3436" stroke-width="1.5"/>
+                </svg>
+                <div class="module-label">MODULE 4 &middot; LESSON 4</div>
+                <div class="lesson-title">The Manhattan Algorithm</div>
+                <div class="divider-sketch"></div>
+                <div class="title-content">
+                    <div class="title-section">
+                        <h3>Learning Objectives</h3>
+                        <p class="bullet">Understand how Manhattan distance pathfinding works</p>
+                        <p class="bullet">Trace the algorithm by hand for given start/destination pairs</p>
+                        <p class="bullet">Explain the "rows first, then columns" strategy</p>
+                        <p class="bullet">Handle paths in all four directions</p>
+                    </div>
+                    <div class="title-section">
+                        <h3>Agenda</h3>
+                        <p class="bullet">What is Manhattan distance? (10 min)</p>
+                        <p class="bullet">The algorithm: rows first, then columns (10 min)</p>
+                        <p class="bullet">Hand-tracing examples (15 min)</p>
+                        <p class="bullet">Practice worksheet (10 min)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn" disabled>Previous</button>
+                <span class="slide-counter">1 / 11</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 2: Hook — How Do You Walk in a City? ═══ -->
+        <div id="slide-2" class="slide">
+            <div class="title-bar">
+                <h1>How Do You Walk in a City?</h1>
+            </div>
+            <div class="content">
+                <div class="question-box">
+                    <p class="body-text" style="margin-left: 8px;"><strong>"If you're at 1st Street & 1st Avenue and need to get to 4th Street & 3rd Avenue, how do you walk?"</strong></p>
+                </div>
+
+                <p class="header-text">You can't cut diagonally through buildings!</p>
+                <p class="bullet">Walk along streets (rows) and avenues (columns)</p>
+                <p class="bullet">Go north/south first, then east/west -- or vice versa</p>
+
+                <div class="illustration">
+                    <svg width="520" height="370" viewBox="0 0 400 285">
+                        <!-- City grid - streets (horizontal) -->
+                        <line x1="40" y1="40" x2="360" y2="40" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                        <line x1="40" y1="120" x2="360" y2="120" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                        <line x1="40" y1="200" x2="360" y2="200" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                        <!-- Avenues (vertical) -->
+                        <line x1="60" y1="20" x2="60" y2="220" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                        <line x1="160" y1="20" x2="160" y2="220" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                        <line x1="260" y1="20" x2="260" y2="220" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                        <line x1="340" y1="20" x2="340" y2="220" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                        <!-- Building blocks (filled gray) -->
+                        <rect x="70" y="50" width="80" height="60" rx="4" fill="rgba(184,197,208,0.25)" stroke="#b8c5d0" stroke-width="1.5"/>
+                        <rect x="170" y="50" width="80" height="60" rx="4" fill="rgba(184,197,208,0.25)" stroke="#b8c5d0" stroke-width="1.5"/>
+                        <rect x="70" y="130" width="80" height="60" rx="4" fill="rgba(184,197,208,0.25)" stroke="#b8c5d0" stroke-width="1.5"/>
+                        <rect x="170" y="130" width="80" height="60" rx="4" fill="rgba(184,197,208,0.25)" stroke="#b8c5d0" stroke-width="1.5"/>
+                        <rect x="270" y="50" width="60" height="60" rx="4" fill="rgba(184,197,208,0.25)" stroke="#b8c5d0" stroke-width="1.5"/>
+                        <rect x="270" y="130" width="60" height="60" rx="4" fill="rgba(184,197,208,0.25)" stroke="#b8c5d0" stroke-width="1.5"/>
+                        <!-- Diagonal line (crossed out) -->
+                        <line x1="60" y1="40" x2="260" y2="200" stroke="#e85d5d" stroke-width="2.5" stroke-dasharray="6,4" opacity="0.6"/>
+                        <text x="175" y="140" font-family="Caveat, cursive" font-size="18" fill="#e85d5d" text-anchor="middle" font-weight="700" transform="rotate(-35 175 140)">Can't go diagonal!</text>
+                        <!-- Walking path (L-shape) -->
+                        <path d="M60 40 L60 200 L260 200" fill="none" stroke="#5b8fa8" stroke-width="4" stroke-linecap="round" stroke-dasharray="8,5" opacity="0.8"/>
+                        <polygon points="255,195 265,200 255,205" fill="#5b8fa8" opacity="0.8"/>
+                        <!-- Start marker -->
+                        <circle cx="60" cy="40" r="8" fill="#e8a87c" stroke="#2d3436" stroke-width="2"/>
+                        <text x="60" y="15" font-family="Caveat, cursive" font-size="14" fill="#e8a87c" text-anchor="middle" font-weight="600">Start</text>
+                        <!-- End marker -->
+                        <circle cx="260" cy="200" r="8" fill="#85c88a" stroke="#2d3436" stroke-width="2"/>
+                        <text x="260" y="232" font-family="Caveat, cursive" font-size="14" fill="#85c88a" text-anchor="middle" font-weight="600">Destination</text>
+                        <!-- Labels -->
+                        <text x="200" y="268" font-family="Caveat, cursive" font-size="16" fill="#5b8fa8" text-anchor="middle" font-weight="600">Walk along streets and avenues</text>
+                    </svg>
+                </div>
+
+                <div class="insight-box">
+                    This is <span class="sketch-highlight">Manhattan distance</span> -- named after the grid layout of Manhattan, New York City.
+                    Our robot has the same constraint: it drives along grid lines, not diagonally.
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">2 / 11</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 3: Manhattan Distance ═══ -->
+        <div id="slide-3" class="slide">
+            <div class="title-bar">
+                <h1>Manhattan Distance</h1>
+            </div>
+            <div class="content">
+                <p class="header-text">The total number of row steps + column steps between two points</p>
+
+                <div class="two-col">
+                    <div class="col">
+                        <div class="sketch-box">
+                            <p class="header-text" style="margin-top: 0;">Example</p>
+                            <p class="bullet">Start: <strong>(0, 0)</strong></p>
+                            <p class="bullet">Destination: <strong>(2, 3)</strong></p>
+                            <p class="bullet">Row distance: |2 - 0| = <strong>2 steps</strong></p>
+                            <p class="bullet">Column distance: |3 - 0| = <strong>3 steps</strong></p>
+                            <div class="spacer"></div>
+                            <div class="insight-box" style="font-size: 24px;">Manhattan distance: 2 + 3 = 5 steps</div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="illustration">
+                            <svg width="325" height="310" viewBox="0 0 250 240">
+                                <!-- Grid lines -->
+                                <line x1="40" y1="40" x2="220" y2="40" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                                <line x1="40" y1="100" x2="220" y2="100" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                                <line x1="40" y1="160" x2="220" y2="160" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                                <line x1="40" y1="20" x2="40" y2="180" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                                <line x1="100" y1="20" x2="100" y2="180" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                                <line x1="160" y1="20" x2="160" y2="180" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                                <line x1="220" y1="20" x2="220" y2="180" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                                <!-- Row/Col labels -->
+                                <text x="15" y="44" font-family="Caveat, cursive" font-size="13" fill="#5b8fa8" text-anchor="middle">R0</text>
+                                <text x="15" y="104" font-family="Caveat, cursive" font-size="13" fill="#5b8fa8" text-anchor="middle">R1</text>
+                                <text x="15" y="164" font-family="Caveat, cursive" font-size="13" fill="#5b8fa8" text-anchor="middle">R2</text>
+                                <text x="40" y="15" font-family="Caveat, cursive" font-size="13" fill="#5b8fa8" text-anchor="middle">C0</text>
+                                <text x="100" y="15" font-family="Caveat, cursive" font-size="13" fill="#5b8fa8" text-anchor="middle">C1</text>
+                                <text x="160" y="15" font-family="Caveat, cursive" font-size="13" fill="#5b8fa8" text-anchor="middle">C2</text>
+                                <text x="220" y="15" font-family="Caveat, cursive" font-size="13" fill="#5b8fa8" text-anchor="middle">C3</text>
+                                <!-- Diagonal (straight-line) -->
+                                <line x1="40" y1="40" x2="220" y2="160" stroke="#e85d5d" stroke-width="2" stroke-dasharray="5,4" opacity="0.5"/>
+                                <text x="150" y="88" font-family="Caveat, cursive" font-size="12" fill="#e85d5d" transform="rotate(33 150 88)">~3.6</text>
+                                <!-- Manhattan path -->
+                                <path d="M40 40 L40 160 L220 160" fill="none" stroke="#5b8fa8" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="8,5" opacity="0.8"/>
+                                <polygon points="215,155 225,160 215,165" fill="#5b8fa8" opacity="0.8"/>
+                                <!-- 2 steps label (vertical) -->
+                                <text x="54" y="105" font-family="Caveat, cursive" font-size="14" fill="#5b8fa8" font-weight="600">2 rows</text>
+                                <!-- 3 steps label (horizontal) -->
+                                <text x="130" y="185" font-family="Caveat, cursive" font-size="14" fill="#5b8fa8" font-weight="600">3 cols</text>
+                                <!-- Start -->
+                                <circle cx="40" cy="40" r="7" fill="#e8a87c" stroke="#2d3436" stroke-width="2"/>
+                                <text x="60" y="35" font-family="Caveat, cursive" font-size="13" fill="#e8a87c" font-weight="600">(0,0)</text>
+                                <!-- End -->
+                                <circle cx="220" cy="160" r="7" fill="#85c88a" stroke="#2d3436" stroke-width="2"/>
+                                <text x="220" y="200" font-family="Caveat, cursive" font-size="13" fill="#85c88a" text-anchor="middle" font-weight="600">(2,3)</text>
+                                <!-- Comparison -->
+                                <text x="130" y="228" font-family="Caveat, cursive" font-size="14" fill="#636e72" text-anchor="middle">Manhattan = 5 &ge; Straight-line ~3.6</text>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="answer-box">
+                    <p class="body-text" style="margin-left: 8px;"><strong>Manhattan distance is always &ge; straight-line distance.</strong> They're equal only when moving purely along one axis.</p>
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">3 / 11</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 4: The Algorithm — Rows First, Then Columns ═══ -->
+        <div id="slide-4" class="slide">
+            <div class="title-bar">
+                <h1>The Algorithm: Rows First, Then Columns</h1>
+            </div>
+            <div class="content">
+                <p class="header-text">Strategy: Move along rows until correct row, then move along columns</p>
+
+                <div class="two-col">
+                    <div class="col">
+                        <div class="sketch-box">
+                            <p class="header-text" style="margin-top: 0;">Example: (0, 0) to (2, 3)</p>
+                            <p class="body-text"><strong>Step 1: Move along rows (0 &rarr; 2)</strong></p>
+                            <p class="bullet level-1">(0, 0) &rarr; (1, 0) &rarr; (2, 0)</p>
+                            <div class="spacer"></div>
+                            <p class="body-text"><strong>Step 2: Move along columns (0 &rarr; 3)</strong></p>
+                            <p class="bullet level-1">(2, 0) &rarr; (2, 1) &rarr; (2, 2) &rarr; (2, 3)</p>
+                        </div>
+
+                        <div class="code-block" style="font-size: 15px; padding: 12px 16px; margin-top: 12px;">
+                            <div style="display: none;"></div>(0,0) &rarr; (1,0) &rarr; (2,0) &rarr; (2,1) &rarr; (2,2) &rarr; (2,3)<br><br>Total: 5 steps (matches Manhattan distance!)
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="illustration">
+                            <svg width="325" height="310" viewBox="0 0 250 240">
+                                <!-- Grid lines -->
+                                <line x1="40" y1="40" x2="220" y2="40" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                                <line x1="40" y1="100" x2="220" y2="100" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                                <line x1="40" y1="160" x2="220" y2="160" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                                <line x1="40" y1="20" x2="40" y2="180" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                                <line x1="100" y1="20" x2="100" y2="180" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                                <line x1="160" y1="20" x2="160" y2="180" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                                <line x1="220" y1="20" x2="220" y2="180" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                                <!-- Row/Col labels -->
+                                <text x="15" y="44" font-family="Caveat, cursive" font-size="13" fill="#5b8fa8" text-anchor="middle">R0</text>
+                                <text x="15" y="104" font-family="Caveat, cursive" font-size="13" fill="#5b8fa8" text-anchor="middle">R1</text>
+                                <text x="15" y="164" font-family="Caveat, cursive" font-size="13" fill="#5b8fa8" text-anchor="middle">R2</text>
+                                <text x="40" y="15" font-family="Caveat, cursive" font-size="13" fill="#5b8fa8" text-anchor="middle">C0</text>
+                                <text x="100" y="15" font-family="Caveat, cursive" font-size="13" fill="#5b8fa8" text-anchor="middle">C1</text>
+                                <text x="160" y="15" font-family="Caveat, cursive" font-size="13" fill="#5b8fa8" text-anchor="middle">C2</text>
+                                <text x="220" y="15" font-family="Caveat, cursive" font-size="13" fill="#5b8fa8" text-anchor="middle">C3</text>
+                                <!-- Step 1: Rows (vertical down) - ORANGE -->
+                                <path d="M40 40 L40 160" fill="none" stroke="#e8a87c" stroke-width="4" stroke-linecap="round" stroke-dasharray="8,5"/>
+                                <polygon points="35,155 40,168 45,155" fill="#e8a87c"/>
+                                <text x="56" y="100" font-family="Caveat, cursive" font-size="14" fill="#e8a87c" font-weight="600">Step 1</text>
+                                <!-- Step 2: Columns (horizontal right) - TEAL -->
+                                <path d="M40 160 L220 160" fill="none" stroke="#5b8fa8" stroke-width="4" stroke-linecap="round" stroke-dasharray="8,5"/>
+                                <polygon points="215,155 228,160 215,165" fill="#5b8fa8"/>
+                                <text x="130" y="185" font-family="Caveat, cursive" font-size="14" fill="#5b8fa8" font-weight="600">Step 2</text>
+                                <!-- Coordinate labels at each intersection -->
+                                <text x="40" y="32" font-family="Fira Code, monospace" font-size="10" fill="#e8a87c" text-anchor="middle">(0,0)</text>
+                                <text x="40" y="95" font-family="Fira Code, monospace" font-size="10" fill="#e8a87c" text-anchor="middle">(1,0)</text>
+                                <text x="40" y="153" font-family="Fira Code, monospace" font-size="10" fill="#636e72" text-anchor="middle">(2,0)</text>
+                                <text x="100" y="153" font-family="Fira Code, monospace" font-size="10" fill="#5b8fa8" text-anchor="middle">(2,1)</text>
+                                <text x="160" y="153" font-family="Fira Code, monospace" font-size="10" fill="#5b8fa8" text-anchor="middle">(2,2)</text>
+                                <text x="220" y="153" font-family="Fira Code, monospace" font-size="10" fill="#85c88a" text-anchor="middle">(2,3)</text>
+                                <!-- Robot at start -->
+                                <rect x="28" y="42" width="24" height="24" rx="3" fill="#b8c5d0" stroke="#2d3436" stroke-width="1.5"/>
+                                <text x="40" y="58" font-family="Caveat, cursive" font-size="8" fill="#2d3436" text-anchor="middle" font-weight="600">XRP</text>
+                                <!-- Green dot at end -->
+                                <circle cx="220" cy="160" r="7" fill="#85c88a" stroke="#2d3436" stroke-width="2"/>
+                                <!-- L-shape label -->
+                                <text x="130" y="225" font-family="Caveat, cursive" font-size="16" fill="#636e72" text-anchor="middle">The path makes an "L" shape!</text>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">4 / 11</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 5: Tracing on the Grid ═══ -->
+        <div id="slide-5" class="slide">
+            <div class="title-bar">
+                <h1>Tracing on the Grid</h1>
+            </div>
+            <div class="content">
+                <p class="header-text">Visual: (0, 0) to (2, 3)</p>
+
+                <div class="illustration">
+                    <svg width="585" height="370" viewBox="0 0 450 285">
+                        <!-- Grid lines - 3 rows x 4 cols -->
+                        <line x1="80" y1="60" x2="380" y2="60" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                        <line x1="80" y1="140" x2="380" y2="140" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                        <line x1="80" y1="220" x2="380" y2="220" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                        <line x1="80" y1="30" x2="80" y2="250" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                        <line x1="180" y1="30" x2="180" y2="250" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                        <line x1="280" y1="30" x2="280" y2="250" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                        <line x1="380" y1="30" x2="380" y2="250" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                        <!-- Row/Col labels -->
+                        <text x="50" y="64" font-family="Caveat, cursive" font-size="15" fill="#5b8fa8" text-anchor="middle" font-weight="600">R0</text>
+                        <text x="50" y="144" font-family="Caveat, cursive" font-size="15" fill="#5b8fa8" text-anchor="middle" font-weight="600">R1</text>
+                        <text x="50" y="224" font-family="Caveat, cursive" font-size="15" fill="#5b8fa8" text-anchor="middle" font-weight="600">R2</text>
+                        <text x="80" y="25" font-family="Caveat, cursive" font-size="15" fill="#5b8fa8" text-anchor="middle" font-weight="600">C0</text>
+                        <text x="180" y="25" font-family="Caveat, cursive" font-size="15" fill="#5b8fa8" text-anchor="middle" font-weight="600">C1</text>
+                        <text x="280" y="25" font-family="Caveat, cursive" font-size="15" fill="#5b8fa8" text-anchor="middle" font-weight="600">C2</text>
+                        <text x="380" y="25" font-family="Caveat, cursive" font-size="15" fill="#5b8fa8" text-anchor="middle" font-weight="600">C3</text>
+                        <!-- Path: down from (0,0) to (2,0) then right to (2,3) -->
+                        <!-- Down arrows -->
+                        <line x1="80" y1="68" x2="80" y2="132" stroke="#e8a87c" stroke-width="4" stroke-linecap="round"/>
+                        <polygon points="75,128 80,138 85,128" fill="#e8a87c"/>
+                        <line x1="80" y1="148" x2="80" y2="212" stroke="#e8a87c" stroke-width="4" stroke-linecap="round"/>
+                        <polygon points="75,208 80,218 85,208" fill="#e8a87c"/>
+                        <!-- Right arrows -->
+                        <line x1="88" y1="220" x2="172" y2="220" stroke="#5b8fa8" stroke-width="4" stroke-linecap="round"/>
+                        <polygon points="168,215 178,220 168,225" fill="#5b8fa8"/>
+                        <line x1="188" y1="220" x2="272" y2="220" stroke="#5b8fa8" stroke-width="4" stroke-linecap="round"/>
+                        <polygon points="268,215 278,220 268,225" fill="#5b8fa8"/>
+                        <line x1="288" y1="220" x2="372" y2="220" stroke="#5b8fa8" stroke-width="4" stroke-linecap="round"/>
+                        <polygon points="368,215 378,220 368,225" fill="#5b8fa8"/>
+                        <!-- START label -->
+                        <rect x="90" y="48" width="56" height="22" rx="6" fill="rgba(232,168,124,0.2)" stroke="#e8a87c" stroke-width="1.5"/>
+                        <text x="118" y="64" font-family="Caveat, cursive" font-size="14" fill="#e8a87c" text-anchor="middle" font-weight="600">START</text>
+                        <!-- END label -->
+                        <rect x="388" y="208" width="44" height="22" rx="6" fill="rgba(133,200,138,0.2)" stroke="#85c88a" stroke-width="1.5"/>
+                        <text x="410" y="224" font-family="Caveat, cursive" font-size="14" fill="#85c88a" text-anchor="middle" font-weight="600">END</text>
+                        <!-- Robot at start (traveling down) -->
+                        <rect x="68" y="48" width="24" height="24" rx="3" fill="#b8c5d0" stroke="#2d3436" stroke-width="1.5"/>
+                        <text x="80" y="64" font-family="Caveat, cursive" font-size="8" fill="#2d3436" text-anchor="middle" font-weight="600">XRP</text>
+                        <rect x="72" y="70" width="16" height="6" rx="1.5" fill="#636e72" stroke="#2d3436" stroke-width="1"/>
+                        <rect x="73" y="74" width="4" height="3" rx="1" fill="#e85d5d" stroke="#2d3436" stroke-width="0.8"/>
+                        <rect x="83" y="74" width="4" height="3" rx="1" fill="#e85d5d" stroke="#2d3436" stroke-width="0.8"/>
+                    </svg>
+                </div>
+
+                <div class="insight-box">
+                    The path always makes an "L" shape: down 2 rows, then right 3 columns. Always rows first, then columns.
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">5 / 11</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 6: Direction Matters ═══ -->
+        <div id="slide-6" class="slide">
+            <div class="title-bar">
+                <h1>Direction Matters</h1>
+            </div>
+            <div class="content">
+                <p class="header-text">What if the destination is UP or LEFT?</p>
+
+                <div class="two-col">
+                    <div class="col">
+                        <div class="sketch-box">
+                            <p class="body-text"><strong>Example: (2, 3) to (0, 1)</strong></p>
+                            <p class="bullet">Row: go from 2 to 0 (decrease -- move <span class="sketch-highlight">UP</span>)</p>
+                            <p class="bullet">Column: go from 3 to 1 (decrease -- move <span class="sketch-highlight">LEFT</span>)</p>
+                            <div class="spacer"></div>
+                            <div class="code-block" style="font-size: 14px; padding: 10px 14px; transform: none;"><div style="display: none;"></div>(2,3) &rarr; (1,3) &rarr; (0,3) &rarr; (0,2) &rarr; (0,1)</div>
+                        </div>
+
+                        <div class="spacer"></div>
+
+                        <div class="answer-box">
+                            <p class="body-text" style="margin-left: 8px;"><strong>How to determine direction:</strong></p>
+                            <p class="bullet" style="font-size: 20px;">dest row &gt; current row &rarr; move <strong>DOWN</strong></p>
+                            <p class="bullet" style="font-size: 20px;">dest row &lt; current row &rarr; move <strong>UP</strong></p>
+                            <p class="bullet" style="font-size: 20px;">dest col &gt; current col &rarr; move <strong>RIGHT</strong></p>
+                            <p class="bullet" style="font-size: 20px;">dest col &lt; current col &rarr; move <strong>LEFT</strong></p>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="illustration">
+                            <svg width="325" height="310" viewBox="0 0 250 240">
+                                <!-- Grid lines -->
+                                <line x1="40" y1="40" x2="220" y2="40" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                                <line x1="40" y1="100" x2="220" y2="100" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                                <line x1="40" y1="160" x2="220" y2="160" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                                <line x1="40" y1="20" x2="40" y2="180" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                                <line x1="100" y1="20" x2="100" y2="180" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                                <line x1="160" y1="20" x2="160" y2="180" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                                <line x1="220" y1="20" x2="220" y2="180" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                                <!-- Labels -->
+                                <text x="15" y="44" font-family="Caveat, cursive" font-size="13" fill="#5b8fa8" text-anchor="middle">R0</text>
+                                <text x="15" y="104" font-family="Caveat, cursive" font-size="13" fill="#5b8fa8" text-anchor="middle">R1</text>
+                                <text x="15" y="164" font-family="Caveat, cursive" font-size="13" fill="#5b8fa8" text-anchor="middle">R2</text>
+                                <text x="40" y="15" font-family="Caveat, cursive" font-size="13" fill="#5b8fa8" text-anchor="middle">C0</text>
+                                <text x="100" y="15" font-family="Caveat, cursive" font-size="13" fill="#5b8fa8" text-anchor="middle">C1</text>
+                                <text x="160" y="15" font-family="Caveat, cursive" font-size="13" fill="#5b8fa8" text-anchor="middle">C2</text>
+                                <text x="220" y="15" font-family="Caveat, cursive" font-size="13" fill="#5b8fa8" text-anchor="middle">C3</text>
+                                <!-- Path: UP from (2,3) to (0,3) then LEFT to (0,1) -->
+                                <!-- Up arrows (orange) -->
+                                <line x1="220" y1="152" x2="220" y2="108" stroke="#e8a87c" stroke-width="4" stroke-linecap="round"/>
+                                <polygon points="215,112 220,102 225,112" fill="#e8a87c"/>
+                                <line x1="220" y1="92" x2="220" y2="48" stroke="#e8a87c" stroke-width="4" stroke-linecap="round"/>
+                                <polygon points="215,52 220,42 225,52" fill="#e8a87c"/>
+                                <!-- Left arrows (teal) -->
+                                <line x1="212" y1="40" x2="168" y2="40" stroke="#5b8fa8" stroke-width="4" stroke-linecap="round"/>
+                                <polygon points="172,35 162,40 172,45" fill="#5b8fa8"/>
+                                <line x1="152" y1="40" x2="108" y2="40" stroke="#5b8fa8" stroke-width="4" stroke-linecap="round"/>
+                                <polygon points="112,35 102,40 112,45" fill="#5b8fa8"/>
+                                <!-- Start marker (2,3) -->
+                                <circle cx="220" cy="160" r="7" fill="#e8a87c" stroke="#2d3436" stroke-width="2"/>
+                                <text x="220" y="195" font-family="Caveat, cursive" font-size="13" fill="#e8a87c" text-anchor="middle" font-weight="600">Start (2,3)</text>
+                                <!-- End marker (0,1) -->
+                                <circle cx="100" cy="40" r="7" fill="#85c88a" stroke="#2d3436" stroke-width="2"/>
+                                <text x="100" y="205" font-family="Caveat, cursive" font-size="13" fill="#85c88a" text-anchor="middle" font-weight="600">End (0,1)</text>
+                                <!-- Step labels -->
+                                <text x="235" y="130" font-family="Caveat, cursive" font-size="13" fill="#e8a87c" font-weight="600">UP</text>
+                                <text x="160" y="33" font-family="Caveat, cursive" font-size="13" fill="#5b8fa8" font-weight="600">LEFT</text>
+                                <!-- Reversed L shape notation -->
+                                <text x="130" y="228" font-family="Caveat, cursive" font-size="15" fill="#636e72" text-anchor="middle">Reversed "L" -- still rows first!</text>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">6 / 11</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 7: The Step Value ═══ -->
+        <div id="slide-7" class="slide">
+            <div class="title-bar">
+                <h1>The Step Value</h1>
+            </div>
+            <div class="content">
+                <p class="header-text">Use +1 or -1 to control direction</p>
+
+                <div class="two-col">
+                    <div class="col">
+                        <div class="code-block">If destination row &gt; start row:<br>&nbsp;&nbsp;&nbsp;&nbsp;row_step = +1 &nbsp;&nbsp;(moving down)<br>Else:<br>&nbsp;&nbsp;&nbsp;&nbsp;row_step = -1 &nbsp;&nbsp;(moving up)<br><br>If destination col &gt; start col:<br>&nbsp;&nbsp;&nbsp;&nbsp;col_step = +1 &nbsp;&nbsp;(moving right)<br>Else:<br>&nbsp;&nbsp;&nbsp;&nbsp;col_step = -1 &nbsp;&nbsp;(moving left)</div>
+
+                        <div class="sketch-box" style="border-color: #e8a87c; background-color: rgba(232,168,124,0.04);">
+                            <p class="body-text"><strong>Example: (3, 0) to (1, 2)</strong></p>
+                            <p class="bullet">Row: 3 &rarr; 1, so row_step = <strong>-1</strong></p>
+                            <p class="bullet">Col: 0 &rarr; 2, so col_step = <strong>+1</strong></p>
+                            <p class="bullet">Path: (3,0) &rarr; (2,0) &rarr; (1,0) &rarr; (1,1) &rarr; (1,2)</p>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="illustration">
+                            <svg width="325" height="350" viewBox="0 0 250 270">
+                                <!-- Grid lines - 4 rows x 3 cols -->
+                                <line x1="40" y1="40" x2="180" y2="40" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                                <line x1="40" y1="100" x2="180" y2="100" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                                <line x1="40" y1="160" x2="180" y2="160" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                                <line x1="40" y1="220" x2="180" y2="220" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                                <line x1="40" y1="20" x2="40" y2="240" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                                <line x1="110" y1="20" x2="110" y2="240" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                                <line x1="180" y1="20" x2="180" y2="240" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                                <!-- Labels -->
+                                <text x="15" y="44" font-family="Caveat, cursive" font-size="12" fill="#5b8fa8" text-anchor="middle">R0</text>
+                                <text x="15" y="104" font-family="Caveat, cursive" font-size="12" fill="#5b8fa8" text-anchor="middle">R1</text>
+                                <text x="15" y="164" font-family="Caveat, cursive" font-size="12" fill="#5b8fa8" text-anchor="middle">R2</text>
+                                <text x="15" y="224" font-family="Caveat, cursive" font-size="12" fill="#5b8fa8" text-anchor="middle">R3</text>
+                                <text x="40" y="15" font-family="Caveat, cursive" font-size="12" fill="#5b8fa8" text-anchor="middle">C0</text>
+                                <text x="110" y="15" font-family="Caveat, cursive" font-size="12" fill="#5b8fa8" text-anchor="middle">C1</text>
+                                <text x="180" y="15" font-family="Caveat, cursive" font-size="12" fill="#5b8fa8" text-anchor="middle">C2</text>
+                                <!-- Path: UP from (3,0) to (1,0) then RIGHT to (1,2) -->
+                                <line x1="40" y1="212" x2="40" y2="168" stroke="#e8a87c" stroke-width="4" stroke-linecap="round"/>
+                                <polygon points="35,172 40,162 45,172" fill="#e8a87c"/>
+                                <line x1="40" y1="152" x2="40" y2="108" stroke="#e8a87c" stroke-width="4" stroke-linecap="round"/>
+                                <polygon points="35,112 40,102 45,112" fill="#e8a87c"/>
+                                <line x1="48" y1="100" x2="102" y2="100" stroke="#5b8fa8" stroke-width="4" stroke-linecap="round"/>
+                                <polygon points="98,95 108,100 98,105" fill="#5b8fa8"/>
+                                <line x1="118" y1="100" x2="172" y2="100" stroke="#5b8fa8" stroke-width="4" stroke-linecap="round"/>
+                                <polygon points="168,95 178,100 168,105" fill="#5b8fa8"/>
+                                <!-- Start (3,0) -->
+                                <circle cx="40" cy="220" r="7" fill="#e8a87c" stroke="#2d3436" stroke-width="2"/>
+                                <text x="55" y="225" font-family="Fira Code, monospace" font-size="10" fill="#e8a87c">(3,0)</text>
+                                <!-- End (1,2) -->
+                                <circle cx="180" cy="100" r="7" fill="#85c88a" stroke="#2d3436" stroke-width="2"/>
+                                <text x="195" y="105" font-family="Fira Code, monospace" font-size="10" fill="#85c88a">(1,2)</text>
+                                <!-- Step value labels -->
+                                <rect x="50" y="175" width="60" height="22" rx="6" fill="rgba(232,168,124,0.15)" stroke="#e8a87c" stroke-width="1.5"/>
+                                <text x="80" y="191" font-family="Fira Code, monospace" font-size="10" fill="#e8a87c" text-anchor="middle">step = -1</text>
+                                <rect x="95" y="75" width="60" height="22" rx="6" fill="rgba(91,143,168,0.15)" stroke="#5b8fa8" stroke-width="1.5"/>
+                                <text x="125" y="91" font-family="Fira Code, monospace" font-size="10" fill="#5b8fa8" text-anchor="middle">step = +1</text>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">7 / 11</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 8: More Practice — Hand Trace ═══ -->
+        <div id="slide-8" class="slide">
+            <div class="title-bar">
+                <h1>More Practice -- Hand Trace</h1>
+            </div>
+            <div class="content">
+                <p class="header-text">Trace these paths by hand</p>
+
+                <div class="sketch-box">
+                    <p class="body-text"><strong>Path 1: (0, 0) to (3, 2)</strong></p>
+                    <p class="bullet level-1">Row steps: 0 &rarr; 3 (step = +1): (0,0), (1,0), (2,0), (3,0)</p>
+                    <p class="bullet level-1">Col steps: 0 &rarr; 2 (step = +1): (3,1), (3,2)</p>
+                    <p class="bullet level-1">Full: <code style="font-family: 'Fira Code', monospace; font-size: 16px;">(0,0) &rarr; (1,0) &rarr; (2,0) &rarr; (3,0) &rarr; (3,1) &rarr; (3,2)</code></p>
+                </div>
+
+                <div class="sketch-box" style="border-color: #e8a87c; background-color: rgba(232,168,124,0.04);">
+                    <p class="body-text"><strong>Path 2: (2, 2) to (0, 0)</strong></p>
+                    <p class="bullet level-1">Row steps: 2 &rarr; 0 (step = -1): (2,2), (1,2), (0,2)</p>
+                    <p class="bullet level-1">Col steps: 2 &rarr; 0 (step = -1): (0,1), (0,0)</p>
+                    <p class="bullet level-1">Full: <code style="font-family: 'Fira Code', monospace; font-size: 16px;">(2,2) &rarr; (1,2) &rarr; (0,2) &rarr; (0,1) &rarr; (0,0)</code></p>
+                </div>
+
+                <div class="sketch-box" style="border-color: #85c88a; background-color: rgba(133,200,138,0.04);">
+                    <p class="body-text"><strong>Path 3: (1, 0) to (1, 3)</strong></p>
+                    <p class="bullet level-1">Row steps: 1 &rarr; 1 (none needed -- already on correct row!)</p>
+                    <p class="bullet level-1">Col steps: 0 &rarr; 3 (step = +1): (1,1), (1,2), (1,3)</p>
+                    <p class="bullet level-1">Full: <code style="font-family: 'Fira Code', monospace; font-size: 16px;">(1,0) &rarr; (1,1) &rarr; (1,2) &rarr; (1,3)</code></p>
+                </div>
+
+                <div class="illustration" style="margin-top: 8px;">
+                    <svg width="520" height="195" viewBox="0 0 400 150">
+                        <!-- Mini grid for Path 3 visualization -->
+                        <line x1="40" y1="40" x2="340" y2="40" stroke="#2d3436" stroke-width="2" stroke-linecap="round"/>
+                        <line x1="40" y1="100" x2="340" y2="100" stroke="#2d3436" stroke-width="2" stroke-linecap="round"/>
+                        <line x1="40" y1="20" x2="40" y2="120" stroke="#2d3436" stroke-width="2" stroke-linecap="round"/>
+                        <line x1="140" y1="20" x2="140" y2="120" stroke="#2d3436" stroke-width="2" stroke-linecap="round"/>
+                        <line x1="240" y1="20" x2="240" y2="120" stroke="#2d3436" stroke-width="2" stroke-linecap="round"/>
+                        <line x1="340" y1="20" x2="340" y2="120" stroke="#2d3436" stroke-width="2" stroke-linecap="round"/>
+                        <!-- Labels -->
+                        <text x="20" y="44" font-family="Caveat, cursive" font-size="12" fill="#5b8fa8" text-anchor="middle">R0</text>
+                        <text x="20" y="104" font-family="Caveat, cursive" font-size="12" fill="#5b8fa8" text-anchor="middle">R1</text>
+                        <!-- Path 3: straight across row 1 -->
+                        <path d="M40 100 L340 100" fill="none" stroke="#85c88a" stroke-width="4" stroke-linecap="round" stroke-dasharray="8,5" opacity="0.8"/>
+                        <polygon points="335,95 345,100 335,105" fill="#85c88a" opacity="0.8"/>
+                        <circle cx="40" cy="100" r="6" fill="#e8a87c" stroke="#2d3436" stroke-width="1.5"/>
+                        <circle cx="340" cy="100" r="6" fill="#85c88a" stroke="#2d3436" stroke-width="1.5"/>
+                        <text x="40" y="135" font-family="Fira Code, monospace" font-size="10" fill="#e8a87c" text-anchor="middle">(1,0)</text>
+                        <text x="340" y="135" font-family="Fira Code, monospace" font-size="10" fill="#85c88a" text-anchor="middle">(1,3)</text>
+                        <text x="190" y="88" font-family="Caveat, cursive" font-size="14" fill="#85c88a" text-anchor="middle" font-weight="600">Same row = straight line!</text>
+                    </svg>
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">8 / 11</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 9: Edge Cases ═══ -->
+        <div id="slide-9" class="slide">
+            <div class="title-bar">
+                <h1>Edge Cases</h1>
+            </div>
+            <div class="content">
+                <p class="header-text">Special situations the algorithm handles</p>
+
+                <div class="two-col">
+                    <div class="col">
+                        <div class="sketch-box">
+                            <p class="body-text"><strong>Same row -- only column movement:</strong></p>
+                            <p class="bullet">(2, 0) to (2, 3): just move right</p>
+                            <p class="bullet level-1">Path: (2,0) &rarr; (2,1) &rarr; (2,2) &rarr; (2,3)</p>
+                        </div>
+
+                        <div class="sketch-box" style="border-color: #e8a87c; background-color: rgba(232,168,124,0.04);">
+                            <p class="body-text"><strong>Same column -- only row movement:</strong></p>
+                            <p class="bullet">(0, 1) to (3, 1): just move down</p>
+                            <p class="bullet level-1">Path: (0,1) &rarr; (1,1) &rarr; (2,1) &rarr; (3,1)</p>
+                        </div>
+
+                        <div class="sketch-box" style="border-color: #85c88a; background-color: rgba(133,200,138,0.04);">
+                            <p class="body-text"><strong>Same position -- no movement:</strong></p>
+                            <p class="bullet">(1, 1) to (1, 1): path is just [(1, 1)]</p>
+                            <p class="bullet level-1">Manhattan distance = 0</p>
+                        </div>
+
+                        <div class="answer-box">
+                            <p class="body-text" style="margin-left: 8px;"><strong>All of these work with our algorithm!</strong> No special cases needed.</p>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="illustration">
+                            <svg width="325" height="390" viewBox="0 0 250 300">
+                                <!-- Grid - 4 rows x 4 cols -->
+                                <line x1="40" y1="30" x2="220" y2="30" stroke="#2d3436" stroke-width="2" stroke-linecap="round"/>
+                                <line x1="40" y1="90" x2="220" y2="90" stroke="#2d3436" stroke-width="2" stroke-linecap="round"/>
+                                <line x1="40" y1="150" x2="220" y2="150" stroke="#2d3436" stroke-width="2" stroke-linecap="round"/>
+                                <line x1="40" y1="210" x2="220" y2="210" stroke="#2d3436" stroke-width="2" stroke-linecap="round"/>
+                                <line x1="40" y1="10" x2="40" y2="230" stroke="#2d3436" stroke-width="2" stroke-linecap="round"/>
+                                <line x1="100" y1="10" x2="100" y2="230" stroke="#2d3436" stroke-width="2" stroke-linecap="round"/>
+                                <line x1="160" y1="10" x2="160" y2="230" stroke="#2d3436" stroke-width="2" stroke-linecap="round"/>
+                                <line x1="220" y1="10" x2="220" y2="230" stroke="#2d3436" stroke-width="2" stroke-linecap="round"/>
+                                <!-- Case 1: Same row (2,0) to (2,3) - horizontal -->
+                                <path d="M40 150 L220 150" fill="none" stroke="#5b8fa8" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="6,4" opacity="0.7"/>
+                                <polygon points="216,146 224,150 216,154" fill="#5b8fa8" opacity="0.7"/>
+                                <text x="130" y="143" font-family="Caveat, cursive" font-size="12" fill="#5b8fa8" text-anchor="middle" font-weight="600">Same row</text>
+                                <!-- Case 2: Same col (0,1) to (3,1) - vertical -->
+                                <path d="M100 30 L100 210" fill="none" stroke="#e8a87c" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="6,4" opacity="0.7"/>
+                                <polygon points="96,206 100,214 104,206" fill="#e8a87c" opacity="0.7"/>
+                                <text x="122" y="120" font-family="Caveat, cursive" font-size="12" fill="#e8a87c" font-weight="600">Same col</text>
+                                <!-- Case 3: Same position (1,1) - dot -->
+                                <circle cx="100" cy="90" r="10" fill="rgba(133,200,138,0.3)" stroke="#85c88a" stroke-width="2.5"/>
+                                <text x="100" y="80" font-family="Caveat, cursive" font-size="12" fill="#85c88a" text-anchor="middle" font-weight="600">Same spot!</text>
+                                <!-- Row labels -->
+                                <text x="28" y="34" font-family="Caveat, cursive" font-size="11" fill="#636e72" text-anchor="middle">R0</text>
+                                <text x="28" y="94" font-family="Caveat, cursive" font-size="11" fill="#636e72" text-anchor="middle">R1</text>
+                                <text x="28" y="154" font-family="Caveat, cursive" font-size="11" fill="#636e72" text-anchor="middle">R2</text>
+                                <text x="28" y="214" font-family="Caveat, cursive" font-size="11" fill="#636e72" text-anchor="middle">R3</text>
+                                <text x="40" y="255" font-family="Caveat, cursive" font-size="11" fill="#636e72" text-anchor="middle">C0</text>
+                                <text x="100" y="255" font-family="Caveat, cursive" font-size="11" fill="#636e72" text-anchor="middle">C1</text>
+                                <text x="160" y="255" font-family="Caveat, cursive" font-size="11" fill="#636e72" text-anchor="middle">C2</text>
+                                <text x="220" y="255" font-family="Caveat, cursive" font-size="11" fill="#636e72" text-anchor="middle">C3</text>
+                                <!-- Legend -->
+                                <text x="130" y="285" font-family="Caveat, cursive" font-size="14" fill="#636e72" text-anchor="middle">Three edge cases on one grid</text>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">9 / 11</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 10: Your Turn! ═══ -->
+        <div id="slide-10" class="slide">
+            <div class="title-bar">
+                <h1>Your Turn!</h1>
+            </div>
+            <div class="content">
+                <p class="header-text">Activity: Hand-Trace the Algorithm</p>
+
+                <div class="sketch-box">
+                    <div class="activity-step">
+                        <span class="step-number">1</span>
+                        <span class="step-text">Trace the path from <strong>(0, 0)</strong> to <strong>(2, 2)</strong></span>
+                    </div>
+                    <div class="activity-step">
+                        <span class="step-number">2</span>
+                        <span class="step-text">Trace the path from <strong>(3, 3)</strong> to <strong>(0, 1)</strong></span>
+                    </div>
+                    <div class="activity-step">
+                        <span class="step-number">3</span>
+                        <span class="step-text">Trace the path from <strong>(1, 3)</strong> to <strong>(1, 0)</strong></span>
+                    </div>
+                    <div class="activity-step">
+                        <span class="step-number">4</span>
+                        <span class="step-text">Trace the path from <strong>(0, 2)</strong> to <strong>(3, 2)</strong></span>
+                    </div>
+                </div>
+
+                <div class="spacer"></div>
+
+                <div class="sketch-box" style="border-color: #e8a87c; background-color: rgba(232,168,124,0.04);">
+                    <p class="header-text" style="margin-top: 0;">For each path:</p>
+                    <p class="bullet">Write out every coordinate in the path</p>
+                    <p class="bullet">Count the total number of steps</p>
+                    <p class="bullet">Verify: steps = |row difference| + |col difference|</p>
+                </div>
+
+                <div class="spacer"></div>
+
+                <p class="header-text">Checkpoints</p>
+                <div class="sketch-box" style="border-color: #85c88a; background-color: rgba(133,200,138,0.04);">
+                    <div class="checkpoint">
+                        <span class="check-icon"></span>
+                        <span class="step-text">Can you trace a path in all four directions?</span>
+                    </div>
+                    <div class="checkpoint">
+                        <span class="check-icon"></span>
+                        <span class="step-text">Do your step counts match the Manhattan distance?</span>
+                    </div>
+                    <div class="checkpoint">
+                        <span class="check-icon"></span>
+                        <span class="step-text">Can you handle the "same row" and "same column" cases?</span>
+                    </div>
+                </div>
+
+                <div class="illustration" style="margin-top: 8px;">
+                    <svg width="390" height="260" viewBox="0 0 300 200">
+                        <!-- Blank grid for students to trace on -->
+                        <line x1="40" y1="30" x2="260" y2="30" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                        <line x1="40" y1="85" x2="260" y2="85" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                        <line x1="40" y1="140" x2="260" y2="140" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                        <line x1="40" y1="195" x2="260" y2="195" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                        <line x1="40" y1="10" x2="40" y2="195" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                        <line x1="113" y1="10" x2="113" y2="195" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                        <line x1="186" y1="10" x2="186" y2="195" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                        <line x1="260" y1="10" x2="260" y2="195" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                        <!-- Row/Col labels -->
+                        <text x="25" y="34" font-family="Caveat, cursive" font-size="13" fill="#5b8fa8" text-anchor="middle">R0</text>
+                        <text x="25" y="89" font-family="Caveat, cursive" font-size="13" fill="#5b8fa8" text-anchor="middle">R1</text>
+                        <text x="25" y="144" font-family="Caveat, cursive" font-size="13" fill="#5b8fa8" text-anchor="middle">R2</text>
+                        <text x="25" y="199" font-family="Caveat, cursive" font-size="13" fill="#5b8fa8" text-anchor="middle">R3</text>
+                        <text x="40" y="8" font-family="Caveat, cursive" font-size="13" fill="#5b8fa8" text-anchor="middle">C0</text>
+                        <text x="113" y="8" font-family="Caveat, cursive" font-size="13" fill="#5b8fa8" text-anchor="middle">C1</text>
+                        <text x="186" y="8" font-family="Caveat, cursive" font-size="13" fill="#5b8fa8" text-anchor="middle">C2</text>
+                        <text x="260" y="8" font-family="Caveat, cursive" font-size="13" fill="#5b8fa8" text-anchor="middle">C3</text>
+                        <!-- Hint: pencil icon -->
+                        <text x="150" y="220" font-family="Caveat, cursive" font-size="15" fill="#636e72" text-anchor="middle" font-style="italic">Use this grid to trace your paths!</text>
+                    </svg>
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">10 / 11</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 11: Connection to Next Lesson ═══ -->
+        <div id="slide-11" class="slide">
+            <div class="title-bar">
+                <h1>What's Next</h1>
+            </div>
+            <div class="content">
+                <div class="two-col">
+                    <div class="col">
+                        <p class="header-text">What you did today</p>
+                        <div class="sketch-box">
+                            <p class="bullet">Learned the <span class="sketch-highlight">Manhattan distance</span> concept</p>
+                            <p class="bullet">Traced the <span class="sketch-highlight">"rows first, then columns"</span> algorithm by hand</p>
+                            <p class="bullet">Handled all four directions with step values (+1 / -1)</p>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <p class="header-text">Next lesson (Lesson 5)</p>
+                        <div class="sketch-box" style="border-color: #e8a87c; background-color: rgba(232,168,124,0.04);">
+                            <p class="bullet">Implement the Manhattan algorithm as a <strong>Python class</strong></p>
+                            <p class="bullet">Write <code style="font-family: 'Fira Code', monospace;">compute_path(destination)</code> that returns a list of tuples</p>
+                            <p class="bullet">The computer does the tracing for you!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="spacer"></div>
+
+                <div class="insight-box">
+                    You traced by hand today. Next lesson, you'll teach the computer to do the same thing.
+                </div>
+
+                <div class="illustration" style="margin-top: 16px;">
+                    <svg width="585" height="260" viewBox="0 0 450 200">
+                        <!-- Left side: Hand tracing -->
+                        <rect x="20" y="20" width="170" height="140" rx="12" fill="rgba(91,143,168,0.06)" stroke="#5b8fa8" stroke-width="2"/>
+                        <text x="105" y="48" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" text-anchor="middle" font-weight="600">Today: By Hand</text>
+                        <!-- Mini grid -->
+                        <line x1="50" y1="65" x2="170" y2="65" stroke="#2d3436" stroke-width="1.5"/>
+                        <line x1="50" y1="105" x2="170" y2="105" stroke="#2d3436" stroke-width="1.5"/>
+                        <line x1="50" y1="145" x2="170" y2="145" stroke="#2d3436" stroke-width="1.5"/>
+                        <line x1="50" y1="55" x2="50" y2="150" stroke="#2d3436" stroke-width="1.5"/>
+                        <line x1="110" y1="55" x2="110" y2="150" stroke="#2d3436" stroke-width="1.5"/>
+                        <line x1="170" y1="55" x2="170" y2="150" stroke="#2d3436" stroke-width="1.5"/>
+                        <!-- L-path -->
+                        <path d="M50 65 L50 145 L170 145" fill="none" stroke="#e8a87c" stroke-width="3" stroke-linecap="round" stroke-dasharray="6,4"/>
+                        <polygon points="166,141 174,145 166,149" fill="#e8a87c"/>
+                        <!-- Pencil icon -->
+                        <text x="105" y="178" font-family="Caveat, cursive" font-size="13" fill="#636e72" text-anchor="middle">pencil + paper</text>
+
+                        <!-- Arrow -->
+                        <line x1="200" y1="90" x2="250" y2="90" stroke="#b8c5d0" stroke-width="3" stroke-linecap="round"/>
+                        <polygon points="246,84 258,90 246,96" fill="#b8c5d0"/>
+
+                        <!-- Right side: Python code -->
+                        <rect x="260" y="20" width="170" height="140" rx="12" fill="rgba(232,168,124,0.06)" stroke="#e8a87c" stroke-width="2"/>
+                        <text x="345" y="48" font-family="Caveat, cursive" font-size="18" fill="#e8a87c" text-anchor="middle" font-weight="600">Next: Python Class</text>
+                        <!-- Code preview -->
+                        <text x="280" y="72" font-family="Fira Code, monospace" font-size="11" fill="#2d3436">path = manhattan</text>
+                        <text x="280" y="88" font-family="Fira Code, monospace" font-size="11" fill="#2d3436">&nbsp;&nbsp;.compute_path(</text>
+                        <text x="280" y="104" font-family="Fira Code, monospace" font-size="11" fill="#2d3436">&nbsp;&nbsp;&nbsp;&nbsp;(2, 3)</text>
+                        <text x="280" y="120" font-family="Fira Code, monospace" font-size="11" fill="#2d3436">&nbsp;&nbsp;)</text>
+                        <text x="280" y="148" font-family="Fira Code, monospace" font-size="10" fill="#85c88a"># Returns list of</text>
+                        <text x="280" y="162" font-family="Fira Code, monospace" font-size="10" fill="#85c88a"># (row, col) tuples</text>
+                        <text x="345" y="178" font-family="Caveat, cursive" font-size="13" fill="#636e72" text-anchor="middle">computer does it!</text>
+                    </svg>
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">11 / 11</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn" disabled>Next</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const navItems = document.querySelectorAll('.nav-item');
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                if (i === index) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+            currentSlide = index;
+
+            navItems.forEach((item, i) => {
+                if (i === index) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        }
+
+        function nextSlide() {
+            if (currentSlide < slides.length - 1) {
+                showSlide(currentSlide + 1);
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                showSlide(currentSlide - 1);
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            }
+        });
+
+        // Initialize first slide
+        showSlide(0);
+    </script>
+</body>
+</html>

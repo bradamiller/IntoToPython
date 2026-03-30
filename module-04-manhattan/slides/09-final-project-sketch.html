@@ -1,0 +1,1479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module 4 Final Project — Manhattan Navigator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Patrick+Hand&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Patrick Hand', cursive;
+            background-color: #faf8f5;
+            overflow: hidden;
+            color: #2d3436;
+        }
+
+        /* ── Sidebar Navigation ── */
+        .nav-sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 240px;
+            height: 100vh;
+            background-color: #faf8f5;
+            border-right: 3px solid #b8c5d0;
+            padding: 24px 16px;
+            overflow-y: auto;
+            z-index: 1000;
+            background-image:
+                linear-gradient(rgba(180, 200, 220, 0.15) 1px, transparent 1px);
+            background-size: 100% 28px;
+        }
+
+        .nav-header h2 {
+            font-family: 'Caveat', cursive;
+            font-size: 20px;
+            color: #5b8fa8;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .nav-header h3 {
+            font-family: 'Caveat', cursive;
+            font-size: 16px;
+            color: #636e72;
+            margin-bottom: 20px;
+            font-weight: 400;
+        }
+
+        .slide-nav {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .nav-item {
+            color: #2d3436;
+            text-decoration: none;
+            padding: 6px 10px;
+            margin-bottom: 3px;
+            border-radius: 6px;
+            font-size: 15px;
+            line-height: 1.3;
+            transition: all 0.2s;
+            font-family: 'Patrick Hand', cursive;
+        }
+
+        .nav-item:hover {
+            background-color: rgba(91, 143, 168, 0.15);
+        }
+
+        .nav-item.active {
+            background-color: rgba(91, 143, 168, 0.2);
+            font-weight: bold;
+            border-left: 3px solid #5b8fa8;
+        }
+
+        /* ── Slides Container ── */
+        .slides-container {
+            margin-left: 240px;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: calc(100vw - 240px);
+            height: 100vh;
+            background-color: #fdfcfa;
+            display: none;
+            flex-direction: column;
+            /* Notebook paper lines */
+            background-image:
+                linear-gradient(rgba(180, 200, 220, 0.12) 1px, transparent 1px);
+            background-size: 100% 32px;
+            background-position: 0 80px;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        /* ── Title Bar (sketch style) ── */
+        .title-bar {
+            padding: 20px 50px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            position: relative;
+            border-bottom: 3px solid #5b8fa8;
+            background-color: rgba(91, 143, 168, 0.06);
+        }
+
+        .title-bar::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 30px;
+            right: 60px;
+            height: 3px;
+            background-color: rgba(91, 143, 168, 0.15);
+            transform: rotate(-0.3deg);
+        }
+
+        .title-bar h1 {
+            font-family: 'Caveat', cursive;
+            font-size: 36px;
+            font-weight: 700;
+            color: #2d3436;
+            transform: rotate(-0.5deg);
+        }
+
+        /* ── Slide Content ── */
+        .content {
+            flex: 1;
+            padding: 30px 50px;
+            padding-bottom: 80px;
+            overflow-y: auto;
+            max-width: 1100px;
+        }
+
+        /* ── Text Styles ── */
+        .header-text {
+            font-family: 'Caveat', cursive;
+            font-size: 28px;
+            font-weight: 600;
+            color: #5b8fa8;
+            margin-bottom: 12px;
+            margin-top: 8px;
+        }
+
+        .body-text {
+            font-size: 22px;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .bold {
+            font-weight: bold;
+        }
+
+        .bullet {
+            font-size: 22px;
+            margin-bottom: 6px;
+            margin-left: 24px;
+            line-height: 1.4;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .bullet::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 11px;
+            width: 8px;
+            height: 8px;
+            background-color: #5b8fa8;
+            border-radius: 50%;
+            transform: rotate(5deg);
+        }
+
+        .bullet.level-1 {
+            margin-left: 52px;
+            font-size: 20px;
+        }
+
+        .bullet.level-1::before {
+            width: 6px;
+            height: 6px;
+            background-color: #e8a87c;
+            top: 10px;
+        }
+
+        /* ── Code Blocks (sketch style) ── */
+        .code-block {
+            background-color: #f0ede8;
+            border: 2px solid #b8c5d0;
+            border-radius: 12px;
+            padding: 18px 22px;
+            margin: 16px 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 16px;
+            line-height: 1.5;
+            color: #2d3436;
+            overflow-x: auto;
+            position: relative;
+            box-shadow: 3px 3px 0 rgba(91, 143, 168, 0.15);
+            transform: rotate(-0.2deg);
+        }
+
+        .code-block::before {
+            content: '< / >';
+            position: absolute;
+            top: -12px;
+            right: 20px;
+            background-color: #fdfcfa;
+            padding: 2px 10px;
+            font-family: 'Caveat', cursive;
+            font-size: 16px;
+            color: #5b8fa8;
+            border: 2px solid #b8c5d0;
+            border-radius: 8px;
+        }
+
+        /* ── Tables (sketch style) ── */
+        .content-table {
+            width: 90%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 16px auto;
+            font-size: 18px;
+            border: 2px solid #b8c5d0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 3px 3px 0 rgba(91, 143, 168, 0.12);
+        }
+
+        .content-table th {
+            background-color: rgba(91, 143, 168, 0.2);
+            color: #2d3436;
+            padding: 10px 16px;
+            text-align: center;
+            font-family: 'Caveat', cursive;
+            font-size: 22px;
+            font-weight: 600;
+            border-bottom: 2px solid #b8c5d0;
+        }
+
+        .content-table td {
+            padding: 8px 16px;
+            text-align: center;
+            border-bottom: 1px dashed #ccc;
+            font-size: 18px;
+        }
+
+        .content-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .content-table tr:nth-child(even) {
+            background-color: rgba(232, 168, 124, 0.06);
+        }
+
+        .spacer {
+            height: 14px;
+        }
+
+        /* ── Sketch Decorations ── */
+        .sketch-box {
+            border: 2px solid #5b8fa8;
+            border-radius: 14px;
+            padding: 18px;
+            margin: 12px 0;
+            position: relative;
+            background-color: rgba(91, 143, 168, 0.04);
+            box-shadow: 2px 2px 0 rgba(91, 143, 168, 0.1);
+        }
+
+        .sketch-highlight {
+            background: linear-gradient(180deg, transparent 60%, rgba(232, 168, 124, 0.3) 60%);
+            padding: 0 4px;
+        }
+
+        .sketch-arrow {
+            display: inline-block;
+            font-size: 28px;
+            color: #e8a87c;
+            margin: 0 8px;
+        }
+
+        /* ── Illustrations (SVG inline) ── */
+        .illustration {
+            display: flex;
+            justify-content: center;
+            margin: 16px 0;
+        }
+
+        .illustration svg {
+            max-width: 100%;
+        }
+
+        /* ── Question callout ── */
+        .question-box {
+            border: 2px dashed #e8a87c;
+            border-radius: 14px;
+            padding: 16px 20px;
+            margin: 14px 0;
+            background-color: rgba(232, 168, 124, 0.08);
+            position: relative;
+        }
+
+        .question-box::before {
+            content: '?';
+            position: absolute;
+            top: -14px;
+            left: 16px;
+            background-color: #e8a87c;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Caveat', cursive;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .answer-box {
+            border: 2px dashed #85c88a;
+            border-radius: 14px;
+            padding: 16px 20px;
+            margin: 14px 0;
+            background-color: rgba(133, 200, 138, 0.08);
+            position: relative;
+        }
+
+        .answer-box::before {
+            content: '!';
+            position: absolute;
+            top: -14px;
+            left: 16px;
+            background-color: #85c88a;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Caveat', cursive;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        /* ── Key insight callout ── */
+        .insight-box {
+            border: 2px solid #e8a87c;
+            border-radius: 14px;
+            padding: 16px 20px;
+            margin: 14px 0;
+            background-color: rgba(232, 168, 124, 0.08);
+            text-align: center;
+            font-family: 'Caveat', cursive;
+            font-size: 26px;
+            font-weight: 600;
+            color: #2d3436;
+            transform: rotate(-0.3deg);
+            box-shadow: 3px 3px 0 rgba(232, 168, 124, 0.15);
+        }
+
+        /* ── Activity slide styling ── */
+        .activity-step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            padding-left: 8px;
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 32px;
+            height: 32px;
+            background-color: #5b8fa8;
+            color: white;
+            border-radius: 50%;
+            font-family: 'Caveat', cursive;
+            font-size: 20px;
+            font-weight: 700;
+            margin-right: 12px;
+            margin-top: 2px;
+            box-shadow: 2px 2px 0 rgba(91, 143, 168, 0.2);
+        }
+
+        .step-text {
+            font-size: 21px;
+            line-height: 1.4;
+            padding-top: 4px;
+        }
+
+        /* ── Checkpoint style ── */
+        .checkpoint {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 8px;
+            padding-left: 8px;
+        }
+
+        .check-icon {
+            min-width: 26px;
+            height: 26px;
+            border: 2px solid #85c88a;
+            border-radius: 6px;
+            margin-right: 12px;
+            margin-top: 4px;
+            position: relative;
+        }
+
+        .checkpoint .step-text {
+            font-size: 20px;
+        }
+
+        /* ── Navigation ── */
+        .slide-navigation {
+            position: absolute;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background-color: rgba(250, 248, 245, 0.95);
+            padding: 8px 20px;
+            border-radius: 25px;
+            border: 2px solid #b8c5d0;
+            box-shadow: 2px 2px 0 rgba(91, 143, 168, 0.1);
+        }
+
+        .nav-btn {
+            padding: 6px 18px;
+            border: 2px solid #5b8fa8;
+            border-radius: 20px;
+            background-color: rgba(91, 143, 168, 0.1);
+            color: #2d3436;
+            font-size: 16px;
+            font-family: 'Patrick Hand', cursive;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background-color: rgba(91, 143, 168, 0.25);
+        }
+
+        .nav-btn:disabled {
+            border-color: #ccc;
+            color: #aaa;
+            background-color: transparent;
+            cursor: not-allowed;
+        }
+
+        .slide-counter {
+            font-size: 16px;
+            font-family: 'Caveat', cursive;
+            font-weight: 600;
+            color: #5b8fa8;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        /* ── Title Slide Special ── */
+        .slide-title-page {
+            background-image: none;
+            background-color: #fdfcfa;
+        }
+
+        .title-hero {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .title-hero .module-label {
+            font-family: 'Patrick Hand', cursive;
+            font-size: 22px;
+            color: #5b8fa8;
+            margin-bottom: 8px;
+            letter-spacing: 2px;
+        }
+
+        .title-hero .lesson-title {
+            font-family: 'Caveat', cursive;
+            font-size: 64px;
+            font-weight: 700;
+            color: #2d3436;
+            margin-bottom: 24px;
+            transform: rotate(-1deg);
+            position: relative;
+        }
+
+        .title-hero .lesson-title::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 10%;
+            right: 10%;
+            height: 4px;
+            background-color: #e8a87c;
+            border-radius: 2px;
+            transform: rotate(0.5deg);
+        }
+
+        .title-hero .divider-sketch {
+            width: 120px;
+            height: 3px;
+            background: #b8c5d0;
+            margin: 16px auto;
+            border-radius: 2px;
+            transform: rotate(-1deg);
+        }
+
+        .title-content {
+            display: flex;
+            gap: 60px;
+            margin-top: 20px;
+            text-align: left;
+            max-width: 900px;
+        }
+
+        .title-section {
+            flex: 1;
+        }
+
+        .title-section h3 {
+            font-family: 'Caveat', cursive;
+            font-size: 26px;
+            font-weight: 600;
+            color: #5b8fa8;
+            margin-bottom: 10px;
+            border-bottom: 2px solid rgba(91, 143, 168, 0.2);
+            padding-bottom: 4px;
+        }
+
+        .title-section .bullet {
+            font-size: 19px;
+        }
+
+        .title-section .bullet::before {
+            top: 9px;
+        }
+
+        /* ── Grid illustration ── */
+        .grid-illustration {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        /* ── Progression arrow ── */
+        .progression {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .progression-step {
+            border: 2px solid #b8c5d0;
+            border-radius: 14px;
+            padding: 12px 18px;
+            text-align: center;
+            font-size: 18px;
+            background-color: rgba(91, 143, 168, 0.05);
+            min-width: 180px;
+        }
+
+        .progression-step.current {
+            border-color: #e8a87c;
+            background-color: rgba(232, 168, 124, 0.1);
+            box-shadow: 3px 3px 0 rgba(232, 168, 124, 0.15);
+        }
+
+        .progression-step .step-label {
+            font-family: 'Caveat', cursive;
+            font-size: 16px;
+            color: #5b8fa8;
+            font-weight: 600;
+        }
+
+        .progression-arrow {
+            font-size: 28px;
+            color: #b8c5d0;
+        }
+
+        /* ── Two-column layout ── */
+        .two-col {
+            display: flex;
+            gap: 30px;
+            margin-top: 10px;
+        }
+
+        .two-col .col {
+            flex: 1;
+        }
+
+        /* ── Robot SVG ── */
+        .robot-icon {
+            display: inline-block;
+        }
+
+        /* ── Photo panels ── */
+        .photo-comparison {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+            align-items: flex-start;
+            margin: 16px 0;
+        }
+
+        .photo-panel {
+            text-align: center;
+            flex: 1;
+            max-width: 280px;
+        }
+
+        .photo-panel img {
+            width: 100%;
+            border-radius: 12px;
+            border: 3px solid #b8c5d0;
+            box-shadow: 4px 4px 0 rgba(91, 143, 168, 0.15);
+            transform: rotate(-0.5deg);
+        }
+
+        .photo-caption {
+            font-family: 'Caveat', cursive;
+            font-size: 20px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-sidebar">
+        <div class="nav-header">
+            <h2>Module 4: Manhattan</h2>
+            <h3>Lesson 9</h3>
+        </div>
+        <nav class="slide-nav">
+            <a href="#slide-1" class="nav-item" onclick="showSlide(0)">Title & Objectives</a>
+            <a href="#slide-2" class="nav-item" onclick="showSlide(1)">The Complete Navigator</a>
+            <a href="#slide-3" class="nav-item" onclick="showSlide(2)">Main Program Structure</a>
+            <a href="#slide-4" class="nav-item" onclick="showSlide(3)">Complete Main Program</a>
+            <a href="#slide-5" class="nav-item" onclick="showSlide(4)">Project Requirements</a>
+            <a href="#slide-6" class="nav-item" onclick="showSlide(5)">Testing Strategy</a>
+            <a href="#slide-7" class="nav-item" onclick="showSlide(6)">Common Issues & Fixes</a>
+            <a href="#slide-8" class="nav-item" onclick="showSlide(7)">Extension Challenges</a>
+            <a href="#slide-9" class="nav-item" onclick="showSlide(8)">Your Turn!</a>
+            <a href="#slide-10" class="nav-item" onclick="showSlide(9)">Reflection & Looking Ahead</a>
+        </nav>
+    </div>
+
+    <div class="slides-container">
+
+        <!-- ═══ SLIDE 1: Title ═══ -->
+        <div id="slide-1" class="slide slide-title-page">
+            <div class="title-hero">
+                <!-- Robot on grid illustration -->
+                <svg width="104" height="104" viewBox="0 0 80 80" style="margin-bottom: 12px;">
+                    <!-- Mini grid -->
+                    <line x1="10" y1="20" x2="70" y2="20" stroke="#b8c5d0" stroke-width="1.5" stroke-linecap="round"/>
+                    <line x1="10" y1="40" x2="70" y2="40" stroke="#b8c5d0" stroke-width="1.5" stroke-linecap="round"/>
+                    <line x1="10" y1="60" x2="70" y2="60" stroke="#b8c5d0" stroke-width="1.5" stroke-linecap="round"/>
+                    <line x1="15" y1="15" x2="15" y2="65" stroke="#b8c5d0" stroke-width="1.5" stroke-linecap="round"/>
+                    <line x1="40" y1="15" x2="40" y2="65" stroke="#b8c5d0" stroke-width="1.5" stroke-linecap="round"/>
+                    <line x1="65" y1="15" x2="65" y2="65" stroke="#b8c5d0" stroke-width="1.5" stroke-linecap="round"/>
+                    <!-- Robot body -->
+                    <rect x="28" y="30" width="24" height="24" rx="3" fill="#b8c5d0" stroke="#2d3436" stroke-width="2" transform="rotate(-2 40 42)"/>
+                    <text x="40" y="46" font-family="Caveat, cursive" font-size="9" fill="#2d3436" text-anchor="middle" font-weight="600">XRP</text>
+                    <!-- Sensor bar (front facing right) -->
+                    <rect x="50" y="36" width="8" height="14" rx="2" fill="#636e72" stroke="#2d3436" stroke-width="1.5"/>
+                    <rect x="56" y="38" width="4" height="4" rx="1" fill="#e85d5d" stroke="#2d3436" stroke-width="1"/>
+                    <rect x="56" y="46" width="4" height="4" rx="1" fill="#e85d5d" stroke="#2d3436" stroke-width="1"/>
+                    <!-- Path arrow -->
+                    <path d="M15 60 L15 40 L40 40" fill="none" stroke="#e8a87c" stroke-width="2" stroke-dasharray="4,3" stroke-linecap="round"/>
+                    <polygon points="38,37 43,40 38,43" fill="#e8a87c"/>
+                </svg>
+                <div class="module-label">MODULE 4 &middot; LESSON 9</div>
+                <div class="lesson-title">Manhattan Navigator</div>
+                <div class="divider-sketch"></div>
+                <div class="title-content">
+                    <div class="title-section">
+                        <h3>Learning Objectives</h3>
+                        <p class="bullet">Integrate the Manhattan and Navigator classes into one program</p>
+                        <p class="bullet">Navigate to a series of destinations on the grid</p>
+                        <p class="bullet">Debug and refine the complete system</p>
+                        <p class="bullet">Demonstrate separation of concerns in a working project</p>
+                    </div>
+                    <div class="title-section">
+                        <h3>Agenda</h3>
+                        <p class="bullet">Project overview (5 min)</p>
+                        <p class="bullet">Main program design (10 min)</p>
+                        <p class="bullet">Implementation and testing (25 min)</p>
+                        <p class="bullet">Demo and reflection (5 min)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn" disabled>Previous</button>
+                <span class="slide-counter">1 / 10</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 2: Hook — The Complete Robot Navigator ═══ -->
+        <div id="slide-2" class="slide">
+            <div class="title-bar">
+                <h1>The Complete Robot Navigator</h1>
+            </div>
+            <div class="content">
+                <p class="header-text">Look how far you've come!</p>
+
+                <div class="progression">
+                    <div class="progression-step">
+                        <div class="step-label">Lesson 1</div>
+                        Learned (row, col)
+                    </div>
+                    <span class="progression-arrow">&rarr;</span>
+                    <div class="progression-step">
+                        <div class="step-label">Lessons 2-4</div>
+                        Tuples, Lists, Algorithm
+                    </div>
+                    <span class="progression-arrow">&rarr;</span>
+                    <div class="progression-step">
+                        <div class="step-label">Lessons 5-8</div>
+                        Manhattan &amp; Navigator classes
+                    </div>
+                    <span class="progression-arrow">&rarr;</span>
+                    <div class="progression-step current">
+                        <div class="step-label">Today!</div>
+                        Put it ALL together
+                    </div>
+                </div>
+
+                <div class="spacer"></div>
+
+                <div class="illustration">
+                    <svg width="585" height="325" viewBox="0 0 450 250">
+                        <!-- 4x4 grid -->
+                        <line x1="50" y1="40" x2="350" y2="40" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                        <line x1="50" y1="110" x2="350" y2="110" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                        <line x1="50" y1="180" x2="350" y2="180" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                        <line x1="50" y1="250" x2="350" y2="250" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round" opacity="0.3"/>
+                        <line x1="50" y1="20" x2="50" y2="200" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                        <line x1="150" y1="20" x2="150" y2="200" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                        <line x1="250" y1="20" x2="250" y2="200" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                        <line x1="350" y1="20" x2="350" y2="200" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+
+                        <!-- Row labels -->
+                        <text x="30" y="45" font-family="Caveat, cursive" font-size="14" fill="#5b8fa8" text-anchor="middle" font-weight="600">0</text>
+                        <text x="30" y="115" font-family="Caveat, cursive" font-size="14" fill="#5b8fa8" text-anchor="middle" font-weight="600">1</text>
+                        <text x="30" y="185" font-family="Caveat, cursive" font-size="14" fill="#5b8fa8" text-anchor="middle" font-weight="600">2</text>
+                        <!-- Col labels -->
+                        <text x="50" y="15" font-family="Caveat, cursive" font-size="14" fill="#5b8fa8" text-anchor="middle" font-weight="600">0</text>
+                        <text x="150" y="15" font-family="Caveat, cursive" font-size="14" fill="#5b8fa8" text-anchor="middle" font-weight="600">1</text>
+                        <text x="250" y="15" font-family="Caveat, cursive" font-size="14" fill="#5b8fa8" text-anchor="middle" font-weight="600">2</text>
+                        <text x="350" y="15" font-family="Caveat, cursive" font-size="14" fill="#5b8fa8" text-anchor="middle" font-weight="600">3</text>
+
+                        <!-- Path: (0,0) -> (2,3) via dashed line -->
+                        <path d="M50 40 L50 180 L350 180" fill="none" stroke="#e8a87c" stroke-width="3" stroke-dasharray="8,5" stroke-linecap="round" opacity="0.7"/>
+                        <polygon points="345,175 355,180 345,185" fill="#e8a87c" opacity="0.7"/>
+                        <text x="200" y="210" font-family="Caveat, cursive" font-size="13" fill="#e8a87c" text-anchor="middle" font-weight="600">auto-navigate!</text>
+
+                        <!-- Robot at start (0,0) traveling down -->
+                        <rect x="38" y="28" width="24" height="24" rx="3" fill="#b8c5d0" stroke="#2d3436" stroke-width="2"/>
+                        <text x="50" y="44" font-family="Caveat, cursive" font-size="8" fill="#2d3436" text-anchor="middle" font-weight="600">XRP</text>
+                        <rect x="42" y="50" width="16" height="8" rx="2" fill="#636e72" stroke="#2d3436" stroke-width="1"/>
+                        <rect x="44" y="56" width="4" height="4" rx="1" fill="#e85d5d" stroke="#2d3436" stroke-width="1"/>
+                        <rect x="52" y="56" width="4" height="4" rx="1" fill="#e85d5d" stroke="#2d3436" stroke-width="1"/>
+
+                        <!-- Destination flag at (2,3) -->
+                        <rect x="342" y="168" width="16" height="16" rx="4" fill="rgba(133, 200, 138, 0.3)" stroke="#85c88a" stroke-width="2"/>
+                        <text x="350" y="230" font-family="Caveat, cursive" font-size="13" fill="#85c88a" text-anchor="middle" font-weight="600">(2, 3)</text>
+
+                        <!-- Label -->
+                        <text x="390" y="45" font-family="Caveat, cursive" font-size="15" fill="#636e72" font-weight="600">Your robot</text>
+                        <text x="390" y="62" font-family="Caveat, cursive" font-size="15" fill="#636e72" font-weight="600">navigates</text>
+                        <text x="390" y="79" font-family="Caveat, cursive" font-size="15" fill="#636e72" font-weight="600">automatically!</text>
+                    </svg>
+                </div>
+
+                <div class="insight-box">
+                    Today you put it ALL together. Your robot will navigate to multiple destinations on the grid -- automatically!
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">2 / 10</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 3: The Main Program Structure ═══ -->
+        <div id="slide-3" class="slide">
+            <div class="title-bar">
+                <h1>The Main Program Structure</h1>
+            </div>
+            <div class="content">
+                <p class="header-text">Three components working together</p>
+
+                <div class="illustration">
+                    <svg width="650" height="175" viewBox="0 0 500 135">
+                        <!-- Manhattan box -->
+                        <rect x="10" y="20" width="140" height="90" rx="12" fill="rgba(91, 143, 168, 0.1)" stroke="#5b8fa8" stroke-width="2.5" transform="rotate(-0.5 80 65)"/>
+                        <text x="80" y="50" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" text-anchor="middle" font-weight="700">Manhattan</text>
+                        <text x="80" y="72" font-family="Patrick Hand, cursive" font-size="13" fill="#636e72" text-anchor="middle">computes the path</text>
+                        <text x="80" y="92" font-family="Fira Code, monospace" font-size="11" fill="#2d3436" text-anchor="middle">compute_path()</text>
+
+                        <!-- Arrow 1 -->
+                        <path d="M155 65 C175 55, 185 55, 195 65" fill="none" stroke="#e8a87c" stroke-width="2" stroke-linecap="round"/>
+                        <polygon points="192,60 200,65 192,70" fill="#e8a87c"/>
+                        <text x="177" y="48" font-family="Caveat, cursive" font-size="12" fill="#e8a87c" font-weight="600">path</text>
+
+                        <!-- Main Program box -->
+                        <rect x="200" y="10" width="140" height="110" rx="12" fill="rgba(232, 168, 124, 0.12)" stroke="#e8a87c" stroke-width="2.5" transform="rotate(0.3 270 65)"/>
+                        <text x="270" y="40" font-family="Caveat, cursive" font-size="18" fill="#e8a87c" text-anchor="middle" font-weight="700">Main Program</text>
+                        <text x="270" y="62" font-family="Patrick Hand, cursive" font-size="13" fill="#636e72" text-anchor="middle">orchestrates</text>
+                        <text x="270" y="80" font-family="Patrick Hand, cursive" font-size="13" fill="#636e72" text-anchor="middle">everything</text>
+                        <text x="270" y="105" font-family="Fira Code, monospace" font-size="11" fill="#2d3436" text-anchor="middle">for dest in destinations:</text>
+
+                        <!-- Arrow 2 -->
+                        <path d="M345 65 C365 55, 375 55, 385 65" fill="none" stroke="#e8a87c" stroke-width="2" stroke-linecap="round"/>
+                        <polygon points="382,60 390,65 382,70" fill="#e8a87c"/>
+                        <text x="367" y="48" font-family="Caveat, cursive" font-size="12" fill="#e8a87c" font-weight="600">path</text>
+
+                        <!-- Navigator box -->
+                        <rect x="390" y="20" width="140" height="90" rx="12" fill="rgba(133, 200, 138, 0.1)" stroke="#85c88a" stroke-width="2.5" transform="rotate(0.5 460 65)"/>
+                        <text x="460" y="50" font-family="Caveat, cursive" font-size="18" fill="#85c88a" text-anchor="middle" font-weight="700">Navigator</text>
+                        <text x="460" y="72" font-family="Patrick Hand, cursive" font-size="13" fill="#636e72" text-anchor="middle">drives the path</text>
+                        <text x="460" y="92" font-family="Fira Code, monospace" font-size="11" fill="#2d3436" text-anchor="middle">drive_path()</text>
+                    </svg>
+                </div>
+
+                <div class="code-block">
+<span style="color: #636e72;"># 1. Manhattan class -- computes the path</span>
+manhattan = Manhattan((0, 0))
+
+<span style="color: #636e72;"># 2. Navigator class -- drives the path</span>
+navigator = Navigator((0, 0), "N")
+
+<span style="color: #636e72;"># 3. Main program -- orchestrates everything</span>
+destinations = [(2, 3), (0, 1), (3, 3), (1, 0)]
+
+for dest in destinations:
+    path = manhattan.compute_path(dest)
+    navigator.drive_path(path)
+    manhattan.position = navigator.position</div>
+
+                <div class="insight-box">
+                    The main program is simple because the classes do the work!
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">3 / 10</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 4: Complete Main Program ═══ -->
+        <div id="slide-4" class="slide">
+            <div class="title-bar">
+                <h1>Complete Main Program</h1>
+            </div>
+            <div class="content">
+                <div class="two-col">
+                    <div class="col">
+                        <div class="code-block" style="font-size: 14px;">
+from XRPLib.board import Board
+
+<span style="color: #636e72;"># Import your classes (or define above)</span>
+
+board = Board.get_default_board()
+
+<span style="color: #636e72;"># Setup</span>
+start = (0, 0)
+manhattan = Manhattan(start)
+navigator = Navigator(start, "N")
+
+<span style="color: #636e72;"># Destinations to visit</span>
+destinations = [(2, 3), (0, 1),
+                (3, 3), (1, 0)]
+
+board.wait_for_button()
+print("Starting navigation!")
+
+for i in range(len(destinations)):
+    dest = destinations[i]
+    print("Leg", i + 1, "- Going to", dest)
+
+    <span style="color: #636e72;"># Compute the path</span>
+    path = manhattan.compute_path(dest)
+    print("  Path:", path)
+
+    <span style="color: #636e72;"># Drive the path</span>
+    navigator.drive_path(path)
+
+    <span style="color: #636e72;"># Update Manhattan's position</span>
+    manhattan.position = navigator.position
+    print("  Arrived at", dest)
+
+print("All destinations reached!")</div>
+                    </div>
+                    <div class="col">
+                        <div class="illustration">
+                            <svg width="325" height="390" viewBox="0 0 250 300">
+                                <!-- Flow diagram -->
+                                <!-- Setup box -->
+                                <rect x="50" y="5" width="150" height="40" rx="10" fill="rgba(91, 143, 168, 0.1)" stroke="#5b8fa8" stroke-width="2"/>
+                                <text x="125" y="30" font-family="Caveat, cursive" font-size="16" fill="#5b8fa8" text-anchor="middle" font-weight="600">Setup objects</text>
+
+                                <!-- Arrow -->
+                                <line x1="125" y1="45" x2="125" y2="65" stroke="#b8c5d0" stroke-width="2"/>
+                                <polygon points="120,62 125,72 130,62" fill="#b8c5d0"/>
+
+                                <!-- Wait box -->
+                                <rect x="50" y="72" width="150" height="35" rx="10" fill="rgba(91, 143, 168, 0.1)" stroke="#5b8fa8" stroke-width="2"/>
+                                <text x="125" y="95" font-family="Caveat, cursive" font-size="15" fill="#5b8fa8" text-anchor="middle" font-weight="600">wait_for_button()</text>
+
+                                <!-- Arrow -->
+                                <line x1="125" y1="107" x2="125" y2="125" stroke="#b8c5d0" stroke-width="2"/>
+                                <polygon points="120,122 125,132 130,122" fill="#b8c5d0"/>
+
+                                <!-- Loop box -->
+                                <rect x="20" y="130" width="210" height="135" rx="12" fill="rgba(232, 168, 124, 0.08)" stroke="#e8a87c" stroke-width="2.5" stroke-dasharray="6,3"/>
+                                <text x="125" y="152" font-family="Caveat, cursive" font-size="15" fill="#e8a87c" text-anchor="middle" font-weight="700">for each destination:</text>
+
+                                <!-- Inner steps -->
+                                <rect x="40" y="160" width="170" height="28" rx="8" fill="rgba(91, 143, 168, 0.08)" stroke="#5b8fa8" stroke-width="1.5"/>
+                                <text x="125" y="179" font-family="Fira Code, monospace" font-size="10" fill="#2d3436" text-anchor="middle">compute_path(dest)</text>
+
+                                <line x1="125" y1="188" x2="125" y2="198" stroke="#b8c5d0" stroke-width="1.5"/>
+                                <polygon points="121,196 125,203 129,196" fill="#b8c5d0"/>
+
+                                <rect x="40" y="203" width="170" height="28" rx="8" fill="rgba(133, 200, 138, 0.08)" stroke="#85c88a" stroke-width="1.5"/>
+                                <text x="125" y="222" font-family="Fira Code, monospace" font-size="10" fill="#2d3436" text-anchor="middle">drive_path(path)</text>
+
+                                <line x1="125" y1="231" x2="125" y2="238" stroke="#b8c5d0" stroke-width="1.5"/>
+                                <polygon points="121,236 125,243 129,236" fill="#b8c5d0"/>
+
+                                <rect x="40" y="240" width="170" height="20" rx="8" fill="rgba(232, 168, 124, 0.06)" stroke="#e8a87c" stroke-width="1"/>
+                                <text x="125" y="255" font-family="Fira Code, monospace" font-size="9" fill="#2d3436" text-anchor="middle">manhattan.position = navigator.position</text>
+
+                                <!-- Arrow out of loop -->
+                                <line x1="125" y1="265" x2="125" y2="280" stroke="#b8c5d0" stroke-width="2"/>
+                                <polygon points="120,277 125,287 130,277" fill="#b8c5d0"/>
+
+                                <!-- Done box -->
+                                <rect x="50" y="285" width="150" height="30" rx="10" fill="rgba(133, 200, 138, 0.15)" stroke="#85c88a" stroke-width="2"/>
+                                <text x="125" y="305" font-family="Caveat, cursive" font-size="15" fill="#85c88a" text-anchor="middle" font-weight="600">All done!</text>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">4 / 10</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 5: Project Requirements ═══ -->
+        <div id="slide-5" class="slide">
+            <div class="title-bar">
+                <h1>Project Requirements</h1>
+            </div>
+            <div class="content">
+                <p class="header-text">Your final project must:</p>
+
+                <div class="sketch-box">
+                    <div class="activity-step">
+                        <span class="step-number">1</span>
+                        <span class="step-text">Use the <span class="sketch-highlight">Manhattan class</span> to compute paths</span>
+                    </div>
+                    <div class="activity-step">
+                        <span class="step-number">2</span>
+                        <span class="step-text">Use the <span class="sketch-highlight">Navigator class</span> to drive paths</span>
+                    </div>
+                    <div class="activity-step">
+                        <span class="step-number">3</span>
+                        <span class="step-text">Visit at least <strong>4 destinations</strong></span>
+                    </div>
+                    <div class="activity-step">
+                        <span class="step-number">4</span>
+                        <span class="step-text">Start from (0, 0)</span>
+                    </div>
+                    <div class="activity-step">
+                        <span class="step-number">5</span>
+                        <span class="step-text">Print the path for each leg</span>
+                    </div>
+                    <div class="activity-step">
+                        <span class="step-number">6</span>
+                        <span class="step-text">Successfully navigate the physical grid</span>
+                    </div>
+                </div>
+
+                <div class="spacer"></div>
+
+                <p class="header-text">Grading Rubric</p>
+                <table class="content-table">
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Points</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="text-align: left; padding-left: 24px;">Manhattan class works correctly</td>
+                            <td>15</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: left; padding-left: 24px;">Navigator class turns and drives correctly</td>
+                            <td>15</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: left; padding-left: 24px;">Main program visits 4+ destinations</td>
+                            <td>10</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: left; padding-left: 24px;">Code is organized and readable</td>
+                            <td>5</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: left; padding-left: 24px;">Robot completes the course</td>
+                            <td>5</td>
+                        </tr>
+                        <tr style="font-weight: bold;">
+                            <td style="text-align: left; padding-left: 24px;">Total</td>
+                            <td>50</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">5 / 10</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 6: Testing Strategy ═══ -->
+        <div id="slide-6" class="slide">
+            <div class="title-bar">
+                <h1>Testing Strategy</h1>
+            </div>
+            <div class="content">
+                <div class="illustration">
+                    <svg width="650" height="110" viewBox="0 0 500 85">
+                        <!-- Step 1 -->
+                        <rect x="10" y="15" width="140" height="55" rx="10" fill="rgba(91, 143, 168, 0.1)" stroke="#5b8fa8" stroke-width="2"/>
+                        <text x="80" y="38" font-family="Caveat, cursive" font-size="16" fill="#5b8fa8" text-anchor="middle" font-weight="700">Step 1</text>
+                        <text x="80" y="58" font-family="Patrick Hand, cursive" font-size="13" fill="#636e72" text-anchor="middle">Manhattan alone</text>
+                        <!-- Arrow -->
+                        <path d="M155 42 C170 38, 178 38, 188 42" fill="none" stroke="#b8c5d0" stroke-width="2"/>
+                        <polygon points="185,38 193,42 185,46" fill="#b8c5d0"/>
+                        <!-- Step 2 -->
+                        <rect x="195" y="15" width="140" height="55" rx="10" fill="rgba(232, 168, 124, 0.1)" stroke="#e8a87c" stroke-width="2"/>
+                        <text x="265" y="38" font-family="Caveat, cursive" font-size="16" fill="#e8a87c" text-anchor="middle" font-weight="700">Step 2</text>
+                        <text x="265" y="58" font-family="Patrick Hand, cursive" font-size="13" fill="#636e72" text-anchor="middle">One short path</text>
+                        <!-- Arrow -->
+                        <path d="M340 42 C355 38, 363 38, 373 42" fill="none" stroke="#b8c5d0" stroke-width="2"/>
+                        <polygon points="370,38 378,42 370,46" fill="#b8c5d0"/>
+                        <!-- Step 3 -->
+                        <rect x="380" y="15" width="140" height="55" rx="10" fill="rgba(133, 200, 138, 0.1)" stroke="#85c88a" stroke-width="2"/>
+                        <text x="450" y="38" font-family="Caveat, cursive" font-size="16" fill="#85c88a" text-anchor="middle" font-weight="700">Step 3</text>
+                        <text x="450" y="58" font-family="Patrick Hand, cursive" font-size="13" fill="#636e72" text-anchor="middle">Full sequence</text>
+                    </svg>
+                </div>
+
+                <p class="header-text">Step 1: Test Manhattan class alone (no robot)</p>
+                <div class="code-block" style="font-size: 14px; padding: 14px 18px; margin: 10px 0;">
+                    <span style="display:none;">badge</span>
+manhattan = Manhattan((0, 0))
+for dest in [(2,3), (0,1), (3,3), (1,0)]:
+    path = manhattan.compute_path(dest)
+    print(dest, "->", path)
+    manhattan.position = dest</div>
+
+                <div class="spacer"></div>
+
+                <p class="header-text">Step 2: Test Navigator with one short path</p>
+                <div class="sketch-box" style="padding: 14px;">
+                    <p class="bullet">Start with (0, 0) to (1, 0) -- one step</p>
+                    <p class="bullet">Then (0, 0) to (2, 0) -- straight line</p>
+                    <p class="bullet">Then (0, 0) to (1, 1) -- requires one turn</p>
+                </div>
+
+                <div class="spacer"></div>
+
+                <p class="header-text">Step 3: Test full sequence</p>
+                <div class="sketch-box" style="padding: 14px; border-color: #85c88a; background-color: rgba(133, 200, 138, 0.04);">
+                    <p class="bullet">Run all 4 destinations</p>
+                    <p class="bullet">Watch for accumulated heading errors</p>
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">6 / 10</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 7: Common Issues and Fixes ═══ -->
+        <div id="slide-7" class="slide">
+            <div class="title-bar">
+                <h1>Common Issues &amp; Fixes</h1>
+            </div>
+            <div class="content">
+                <div class="two-col">
+                    <div class="col">
+                        <div class="question-box">
+                            <p class="body-text" style="margin-left: 8px; font-size: 20px;"><strong>Issue 1: Robot turns wrong direction</strong></p>
+                            <p class="bullet" style="font-size: 18px;">Does physical starting heading match the code?</p>
+                            <p class="bullet" style="font-size: 18px;">Is <code style="font-family: 'Fira Code', monospace;">turn_to()</code> updating <code style="font-family: 'Fira Code', monospace;">self.heading</code>?</p>
+                            <p class="bullet" style="font-size: 18px;">Print heading before and after each turn</p>
+                        </div>
+
+                        <div class="question-box">
+                            <p class="body-text" style="margin-left: 8px; font-size: 20px;"><strong>Issue 2: Robot overshoots intersections</strong></p>
+                            <p class="bullet" style="font-size: 18px;">Is <code style="font-family: 'Fira Code', monospace;">straight()</code> distance correct for your grid?</p>
+                            <p class="bullet" style="font-size: 18px;">Measure actual distance between intersections</p>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="question-box">
+                            <p class="body-text" style="margin-left: 8px; font-size: 20px;"><strong>Issue 3: Position not updating between legs</strong></p>
+                            <p class="bullet" style="font-size: 18px;">Check: <code style="font-family: 'Fira Code', monospace;">manhattan.position = navigator.position</code></p>
+                            <p class="bullet" style="font-size: 18px;">Without this, ALL paths start from (0, 0)!</p>
+                        </div>
+
+                        <div class="question-box">
+                            <p class="body-text" style="margin-left: 8px; font-size: 20px;"><strong>Issue 4: Path correct on screen, wrong on robot</strong></p>
+                            <p class="bullet" style="font-size: 18px;">This is usually a turning or distance issue</p>
+                            <p class="bullet" style="font-size: 18px;">Test Manhattan output first, then debug Navigator separately</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="spacer"></div>
+
+                <div class="illustration">
+                    <svg width="520" height="110" viewBox="0 0 400 85">
+                        <!-- Debug flow -->
+                        <rect x="5" y="15" width="120" height="50" rx="10" fill="rgba(91, 143, 168, 0.1)" stroke="#5b8fa8" stroke-width="2"/>
+                        <text x="65" y="35" font-family="Caveat, cursive" font-size="14" fill="#5b8fa8" text-anchor="middle" font-weight="600">Test Manhattan</text>
+                        <text x="65" y="52" font-family="Caveat, cursive" font-size="14" fill="#5b8fa8" text-anchor="middle" font-weight="600">(print paths)</text>
+
+                        <path d="M130 40 C145 36, 150 36, 158 40" fill="none" stroke="#e8a87c" stroke-width="2"/>
+                        <polygon points="155,36 163,40 155,44" fill="#e8a87c"/>
+
+                        <rect x="165" y="15" width="120" height="50" rx="10" fill="rgba(232, 168, 124, 0.1)" stroke="#e8a87c" stroke-width="2"/>
+                        <text x="225" y="35" font-family="Caveat, cursive" font-size="14" fill="#e8a87c" text-anchor="middle" font-weight="600">Test Navigator</text>
+                        <text x="225" y="52" font-family="Caveat, cursive" font-size="14" fill="#e8a87c" text-anchor="middle" font-weight="600">(one leg)</text>
+
+                        <path d="M290 40 C305 36, 310 36, 318 40" fill="none" stroke="#e8a87c" stroke-width="2"/>
+                        <polygon points="315,36 323,40 315,44" fill="#e8a87c"/>
+
+                        <rect x="325" y="15" width="120" height="50" rx="10" fill="rgba(133, 200, 138, 0.1)" stroke="#85c88a" stroke-width="2"/>
+                        <text x="385" y="35" font-family="Caveat, cursive" font-size="14" fill="#85c88a" text-anchor="middle" font-weight="600">Test Full</text>
+                        <text x="385" y="52" font-family="Caveat, cursive" font-size="14" fill="#85c88a" text-anchor="middle" font-weight="600">(all legs)</text>
+                    </svg>
+                </div>
+
+                <div class="answer-box">
+                    <p class="body-text" style="margin-left: 8px;"><strong>Key debugging strategy:</strong> Always separate algorithm issues from physical robot issues. Test Manhattan on screen first!</p>
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">7 / 10</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 8: Extension Challenges ═══ -->
+        <div id="slide-8" class="slide">
+            <div class="title-bar">
+                <h1>Extension Challenges</h1>
+            </div>
+            <div class="content">
+                <p class="header-text">If you finish early, try these!</p>
+
+                <div class="two-col">
+                    <div class="col">
+                        <div class="sketch-box" style="border-color: #5b8fa8;">
+                            <p class="body-text" style="font-family: 'Caveat', cursive; font-size: 24px; color: #5b8fa8; font-weight: 600;">Challenge A: Return Home</p>
+                            <p class="bullet" style="font-size: 19px;">After visiting all destinations, compute a path back to (0, 0)</p>
+                            <p class="bullet" style="font-size: 19px;">Add it as the final destination</p>
+                        </div>
+
+                        <div class="sketch-box" style="border-color: #e8a87c; background-color: rgba(232, 168, 124, 0.04);">
+                            <p class="body-text" style="font-family: 'Caveat', cursive; font-size: 24px; color: #e8a87c; font-weight: 600;">Challenge B: Round Trip</p>
+                            <p class="bullet" style="font-size: 19px;">Visit destinations in order, then in reverse</p>
+                            <p class="bullet" style="font-size: 19px;">End up back at (0, 0)</p>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="sketch-box" style="border-color: #85c88a; background-color: rgba(133, 200, 138, 0.04);">
+                            <p class="body-text" style="font-family: 'Caveat', cursive; font-size: 24px; color: #85c88a; font-weight: 600;">Challenge C: Custom Destinations</p>
+                            <p class="bullet" style="font-size: 19px;">Let a partner choose 4 destinations</p>
+                            <p class="bullet" style="font-size: 19px;">Navigate without any code changes (just update the list!)</p>
+                        </div>
+
+                        <div class="sketch-box" style="border-color: #636e72;">
+                            <p class="body-text" style="font-family: 'Caveat', cursive; font-size: 24px; color: #636e72; font-weight: 600;">Challenge D: Distance Tracker</p>
+                            <p class="bullet" style="font-size: 19px;">Count total intersections crossed</p>
+                            <p class="bullet" style="font-size: 19px;">Print summary: "Visited 4 destinations in 18 steps"</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="spacer"></div>
+
+                <div class="illustration">
+                    <svg width="520" height="200" viewBox="0 0 400 155">
+                        <!-- Small grid showing round trip -->
+                        <line x1="40" y1="30" x2="280" y2="30" stroke="#2d3436" stroke-width="2" stroke-linecap="round"/>
+                        <line x1="40" y1="80" x2="280" y2="80" stroke="#2d3436" stroke-width="2" stroke-linecap="round"/>
+                        <line x1="40" y1="130" x2="280" y2="130" stroke="#2d3436" stroke-width="2" stroke-linecap="round"/>
+                        <line x1="40" y1="10" x2="40" y2="150" stroke="#2d3436" stroke-width="2" stroke-linecap="round"/>
+                        <line x1="120" y1="10" x2="120" y2="150" stroke="#2d3436" stroke-width="2" stroke-linecap="round"/>
+                        <line x1="200" y1="10" x2="200" y2="150" stroke="#2d3436" stroke-width="2" stroke-linecap="round"/>
+                        <line x1="280" y1="10" x2="280" y2="150" stroke="#2d3436" stroke-width="2" stroke-linecap="round"/>
+
+                        <!-- Path showing destinations visited in order -->
+                        <path d="M40 30 L40 130 L280 130" fill="none" stroke="#5b8fa8" stroke-width="2.5" stroke-dasharray="6,4" stroke-linecap="round" opacity="0.6"/>
+                        <path d="M280 130 L280 30 L120 30" fill="none" stroke="#e8a87c" stroke-width="2.5" stroke-dasharray="6,4" stroke-linecap="round" opacity="0.6"/>
+
+                        <!-- Destination markers -->
+                        <text x="40" y="25" font-family="Caveat, cursive" font-size="12" fill="#5b8fa8" text-anchor="middle" font-weight="600">start</text>
+                        <text x="280" y="148" font-family="Caveat, cursive" font-size="12" fill="#5b8fa8" text-anchor="middle" font-weight="600">dest 1</text>
+                        <text x="280" y="25" font-family="Caveat, cursive" font-size="12" fill="#e8a87c" text-anchor="middle" font-weight="600">dest 2</text>
+                        <text x="120" y="25" font-family="Caveat, cursive" font-size="12" fill="#85c88a" text-anchor="middle" font-weight="600">dest 3</text>
+
+                        <!-- Robot -->
+                        <rect x="28" y="20" width="20" height="20" rx="3" fill="#b8c5d0" stroke="#2d3436" stroke-width="1.5"/>
+                        <text x="38" y="34" font-family="Caveat, cursive" font-size="7" fill="#2d3436" text-anchor="middle" font-weight="600">XRP</text>
+                        <rect x="32" y="38" width="12" height="6" rx="1.5" fill="#636e72" stroke="#2d3436" stroke-width="1"/>
+                        <rect x="33" y="42" width="3" height="3" rx="1" fill="#e85d5d" stroke="#2d3436" stroke-width="0.8"/>
+                        <rect x="40" y="42" width="3" height="3" rx="1" fill="#e85d5d" stroke="#2d3436" stroke-width="0.8"/>
+
+                        <!-- Legend -->
+                        <line x1="310" y1="50" x2="340" y2="50" stroke="#5b8fa8" stroke-width="2" stroke-dasharray="6,4"/>
+                        <text x="350" y="55" font-family="Patrick Hand, cursive" font-size="13" fill="#636e72">outbound</text>
+                        <line x1="310" y1="70" x2="340" y2="70" stroke="#e8a87c" stroke-width="2" stroke-dasharray="6,4"/>
+                        <text x="350" y="75" font-family="Patrick Hand, cursive" font-size="13" fill="#636e72">return</text>
+                    </svg>
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">8 / 10</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 9: Your Turn! ═══ -->
+        <div id="slide-9" class="slide">
+            <div class="title-bar">
+                <h1>Your Turn!</h1>
+            </div>
+            <div class="content">
+                <p class="header-text">Activity</p>
+
+                <div class="sketch-box">
+                    <div class="activity-step">
+                        <span class="step-number">1</span>
+                        <span class="step-text">Combine your Manhattan and Navigator classes into one file</span>
+                    </div>
+                    <div class="activity-step">
+                        <span class="step-number">2</span>
+                        <span class="step-text">Write the main program with at least 4 destinations</span>
+                    </div>
+                    <div class="activity-step">
+                        <span class="step-number">3</span>
+                        <span class="step-text">Test Manhattan output on screen first (Step 1 from Slide 6)</span>
+                    </div>
+                    <div class="activity-step">
+                        <span class="step-number">4</span>
+                        <span class="step-text">Test with robot one leg at a time (Step 2)</span>
+                    </div>
+                    <div class="activity-step">
+                        <span class="step-number">5</span>
+                        <span class="step-text">Run the full sequence (Step 3)</span>
+                    </div>
+                </div>
+
+                <div class="spacer"></div>
+
+                <p class="header-text">Destination suggestions for a 4x4 grid</p>
+                <div class="sketch-box" style="border-color: #e8a87c; background-color: rgba(232, 168, 124, 0.04);">
+                    <p class="bullet"><code style="font-family: 'Fira Code', monospace;">[(2, 3), (0, 1), (3, 3), (1, 0)]</code></p>
+                    <p class="bullet"><code style="font-family: 'Fira Code', monospace;">[(3, 0), (3, 3), (0, 3), (0, 0)]</code> -- rectangle tour</p>
+                    <p class="bullet"><code style="font-family: 'Fira Code', monospace;">[(1, 1), (2, 2), (1, 3), (3, 1)]</code> -- zigzag</p>
+                </div>
+
+                <div class="spacer"></div>
+
+                <p class="header-text">Checkpoints</p>
+                <div class="sketch-box" style="border-color: #85c88a; background-color: rgba(133, 200, 138, 0.04);">
+                    <div class="checkpoint">
+                        <span class="check-icon"></span>
+                        <span class="step-text">Does Manhattan produce correct paths for all legs?</span>
+                    </div>
+                    <div class="checkpoint">
+                        <span class="check-icon"></span>
+                        <span class="step-text">Does the robot complete at least one leg correctly?</span>
+                    </div>
+                    <div class="checkpoint">
+                        <span class="check-icon"></span>
+                        <span class="step-text">Does the robot complete all 4 legs?</span>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">9 / 10</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 10: Reflection and Looking Ahead ═══ -->
+        <div id="slide-10" class="slide">
+            <div class="title-bar">
+                <h1>Reflection &amp; Looking Ahead</h1>
+            </div>
+            <div class="content">
+                <div class="two-col">
+                    <div class="col">
+                        <p class="header-text">What you accomplished in Module 4</p>
+                        <div class="sketch-box">
+                            <p class="bullet" style="font-size: 19px;">Coordinate systems and (row, col) convention</p>
+                            <p class="bullet" style="font-size: 19px;">Tuples for positions, lists for paths</p>
+                            <p class="bullet" style="font-size: 19px;">Manhattan algorithm for pathfinding</p>
+                            <p class="bullet" style="font-size: 19px;">Testing without hardware</p>
+                            <p class="bullet" style="font-size: 19px;">Navigator class for physical driving</p>
+                            <p class="bullet" style="font-size: 19px;">Separation of concerns: algorithm vs. action</p>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <p class="header-text">Looking ahead to Module 5</p>
+                        <div class="sketch-box" style="border-color: #e8a87c; background-color: rgba(232, 168, 124, 0.04);">
+                            <p class="bullet" style="font-size: 19px;">What if an intersection is <span class="sketch-highlight">BLOCKED</span>?</p>
+                            <p class="bullet" style="font-size: 19px;">Manhattan can't handle obstacles</p>
+                            <p class="bullet" style="font-size: 19px;">Module 5: <strong>Dijkstra's algorithm</strong> -- finds the BEST path around obstacles</p>
+                            <p class="bullet" style="font-size: 19px;">Your Navigator class stays the same -- only the pathfinding changes!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="spacer"></div>
+
+                <div class="illustration">
+                    <svg width="650" height="175" viewBox="0 0 500 135">
+                        <!-- Separation of concerns diagram -->
+                        <!-- Manhattan box (crossed out lightly) -->
+                        <rect x="20" y="20" width="140" height="70" rx="12" fill="rgba(91, 143, 168, 0.08)" stroke="#5b8fa8" stroke-width="2" stroke-dasharray="5,3"/>
+                        <text x="90" y="50" font-family="Caveat, cursive" font-size="17" fill="#5b8fa8" text-anchor="middle" font-weight="600">Manhattan</text>
+                        <text x="90" y="72" font-family="Patrick Hand, cursive" font-size="13" fill="#636e72" text-anchor="middle">swap this out!</text>
+                        <!-- X mark -->
+                        <line x1="30" y1="25" x2="150" y2="85" stroke="#e85d5d" stroke-width="2" opacity="0.4"/>
+                        <line x1="150" y1="25" x2="30" y2="85" stroke="#e85d5d" stroke-width="2" opacity="0.4"/>
+
+                        <!-- Arrow -->
+                        <path d="M165 55 C185 50, 195 50, 210 55" fill="none" stroke="#e8a87c" stroke-width="2.5" stroke-linecap="round"/>
+                        <polygon points="207,50 215,55 207,60" fill="#e8a87c"/>
+
+                        <!-- Dijkstra box (new!) -->
+                        <rect x="220" y="20" width="140" height="70" rx="12" fill="rgba(133, 200, 138, 0.12)" stroke="#85c88a" stroke-width="2.5"/>
+                        <text x="290" y="48" font-family="Caveat, cursive" font-size="17" fill="#85c88a" text-anchor="middle" font-weight="700">Dijkstra</text>
+                        <text x="290" y="68" font-family="Patrick Hand, cursive" font-size="13" fill="#636e72" text-anchor="middle">handles obstacles!</text>
+                        <text x="290" y="12" font-family="Caveat, cursive" font-size="14" fill="#85c88a" text-anchor="middle" font-weight="600">NEW!</text>
+
+                        <!-- Plus sign -->
+                        <text x="375" y="62" font-family="Caveat, cursive" font-size="30" fill="#636e72" text-anchor="middle">+</text>
+
+                        <!-- Navigator box (stays the same) -->
+                        <rect x="395" y="20" width="120" height="70" rx="12" fill="rgba(91, 143, 168, 0.1)" stroke="#5b8fa8" stroke-width="2"/>
+                        <text x="455" y="48" font-family="Caveat, cursive" font-size="17" fill="#5b8fa8" text-anchor="middle" font-weight="600">Navigator</text>
+                        <text x="455" y="68" font-family="Patrick Hand, cursive" font-size="13" fill="#636e72" text-anchor="middle">stays the same!</text>
+
+                        <!-- Bottom label -->
+                        <text x="290" y="120" font-family="Caveat, cursive" font-size="16" fill="#e8a87c" text-anchor="middle" font-weight="600">Separation of concerns makes swapping easy</text>
+                    </svg>
+                </div>
+
+                <div class="insight-box">
+                    You built a modular system. Swapping one component (Manhattan to Dijkstra) is easy because of separation of concerns.
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">10 / 10</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn" disabled>Next</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const navItems = document.querySelectorAll('.nav-item');
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                if (i === index) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+            currentSlide = index;
+
+            navItems.forEach((item, i) => {
+                if (i === index) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        }
+
+        function nextSlide() {
+            if (currentSlide < slides.length - 1) {
+                showSlide(currentSlide + 1);
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                showSlide(currentSlide - 1);
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            }
+        });
+
+        // Initialize first slide
+        showSlide(0);
+    </script>
+</body>
+</html>

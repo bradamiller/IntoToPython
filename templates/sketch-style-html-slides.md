@@ -99,7 +99,7 @@ Style with colored circles using `::before` pseudo-elements instead of default l
     transform: rotate(-0.2deg);
 }
 ```
-Add a `::before` label showing `< / >` in a small bordered pill in the top-right corner.
+Add a `::before` label showing `< / >` in a small bordered pill in the top-right corner. **Hide this badge** on compact/inline code blocks near SVGs (add `display: none` to the `::before` when the code block has inline styles for small sizing).
 
 ### Question Boxes (dashed orange border)
 Use for posing questions to students. Add a `?` circle badge in the top-left using `::before`.
@@ -125,18 +125,28 @@ Empty bordered squares (green) for students to mentally check off. Use for verif
 
 Every slide should include at least one inline SVG illustration. These are key to the sketch feel.
 
-### Robot Icon
-A simple robot with:
-- Rounded rectangle body (`fill="#5b8fa8"`)
-- White circle eyes with dark pupils
-- Orange mouth/smile bar
-- Antenna with orange circle tip
-- Small arm rectangles on sides
-- Circle wheels at bottom (`fill="#b8c5d0"`)
+### Robot Icon (XRP Style — Top-Down View)
+The robot is depicted as a top-down view of the SparkFun XRP robot:
+- Square gray body (`fill="#b8c5d0"`, `stroke="#2d3436"`, `rx="3"`, typically 24x24)
+- "XRP" label text centered on body (Caveat font, 8px, `fill="#2d3436"`)
+- Dark gray sensor bar protruding from the front (`fill="#636e72"`, typically 8x16, `rx="2"`)
+- Two red reflectance sensors (S1/S2) on the bar (`fill="#e85d5d"`, typically 4x4, `rx="1"`)
+- **NO wheels** — the XRP robot does not show wheels in illustrations
+- Sensors should straddle the line being followed (one on each side)
+- Orient the sensor bar based on travel direction (right=bar on right, down=bar on bottom, etc.)
+
+Example (robot traveling right):
+```svg
+<rect x="X" y="Y" width="24" height="24" rx="3" fill="#b8c5d0" stroke="#2d3436" stroke-width="2"/>
+<text x="X+12" y="Y+16" font-family="Caveat, cursive" font-size="8" fill="#2d3436" text-anchor="middle" font-weight="600">XRP</text>
+<rect x="X+22" y="Y+4" width="8" height="16" rx="2" fill="#636e72" stroke="#2d3436" stroke-width="1"/>
+<rect x="X+28" y="Y+6" width="4" height="4" rx="1" fill="#e85d5d" stroke="#2d3436" stroke-width="1"/>
+<rect x="X+28" y="Y+14" width="4" height="4" rx="1" fill="#e85d5d" stroke="#2d3436" stroke-width="1"/>
+```
 
 ### Grid Diagrams
 - Dark lines for the grid paths (`stroke="#2d3436"`, `stroke-width="2.5-3"`)
-- Orange filled circles at intersections (`fill="#e8a87c"`)
+- **NO circles at intersections** — just plain crossing lines like the real grid
 - Row/column labels in Caveat font, teal color
 - Robot icons placed on the grid to show position
 
@@ -226,3 +236,19 @@ When creating slides from an existing `*-outline.md` file:
 3. Add SVG illustrations relevant to each slide's content
 4. Use callout boxes (question, answer, insight) to break up text and add visual interest
 5. Ensure every slide has at least one visual element beyond plain text/bullets
+
+---
+
+## Robot Code Conventions
+
+When showing XRP robot code examples in slides:
+
+- **Never use time-based movement**: No `time.sleep()`, no `set_effort() + sleep`, no timed drives
+- **Clearing intersections**: After every `track_until_cross()`, always call `tracker.drivetrain.straight(8, 0.5)` to drive forward 8 cm (the distance from front sensors to rear turning center). This aligns the robot's turning center over the intersection for correct turns.
+- **`drivetrain.straight(distance, effort)`**: Takes exactly 2 parameters — distance in cm, effort from -1 to 1. There is no units parameter.
+- **Always clear**: Never skip clearing with conditional logic. Every intersection arrival needs clearing.
+- **Pattern**:
+```python
+tracker.track_until_cross()
+tracker.drivetrain.straight(8, 0.5)  # clear intersection
+```

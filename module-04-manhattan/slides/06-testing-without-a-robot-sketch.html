@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Testing Without a Robot - Module 4: Manhattan</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Patrick+Hand&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Patrick Hand', cursive;
+            background-color: #faf8f5;
+            overflow: hidden;
+            color: #2d3436;
+        }
+
+        /* ── Sidebar Navigation ── */
+        .nav-sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 240px;
+            height: 100vh;
+            background-color: #faf8f5;
+            border-right: 3px solid #b8c5d0;
+            padding: 24px 16px;
+            overflow-y: auto;
+            z-index: 1000;
+            background-image:
+                linear-gradient(rgba(180, 200, 220, 0.15) 1px, transparent 1px);
+            background-size: 100% 28px;
+        }
+
+        .nav-header h2 {
+            font-family: 'Caveat', cursive;
+            font-size: 20px;
+            color: #5b8fa8;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .nav-header h3 {
+            font-family: 'Caveat', cursive;
+            font-size: 16px;
+            color: #636e72;
+            margin-bottom: 20px;
+            font-weight: 400;
+        }
+
+        .slide-nav {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .nav-item {
+            color: #2d3436;
+            text-decoration: none;
+            padding: 6px 10px;
+            margin-bottom: 3px;
+            border-radius: 6px;
+            font-size: 15px;
+            line-height: 1.3;
+            transition: all 0.2s;
+            font-family: 'Patrick Hand', cursive;
+        }
+
+        .nav-item:hover {
+            background-color: rgba(91, 143, 168, 0.15);
+        }
+
+        .nav-item.active {
+            background-color: rgba(91, 143, 168, 0.2);
+            font-weight: bold;
+            border-left: 3px solid #5b8fa8;
+        }
+
+        /* ── Slides Container ── */
+        .slides-container {
+            margin-left: 240px;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: calc(100vw - 240px);
+            height: 100vh;
+            background-color: #fdfcfa;
+            display: none;
+            flex-direction: column;
+            /* Notebook paper lines */
+            background-image:
+                linear-gradient(rgba(180, 200, 220, 0.12) 1px, transparent 1px);
+            background-size: 100% 32px;
+            background-position: 0 80px;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        /* ── Title Bar (sketch style) ── */
+        .title-bar {
+            padding: 20px 50px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            position: relative;
+            border-bottom: 3px solid #5b8fa8;
+            background-color: rgba(91, 143, 168, 0.06);
+        }
+
+        .title-bar::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 30px;
+            right: 60px;
+            height: 3px;
+            background-color: rgba(91, 143, 168, 0.15);
+            transform: rotate(-0.3deg);
+        }
+
+        .title-bar h1 {
+            font-family: 'Caveat', cursive;
+            font-size: 36px;
+            font-weight: 700;
+            color: #2d3436;
+            transform: rotate(-0.5deg);
+        }
+
+        /* ── Slide Content ── */
+        .content {
+            flex: 1;
+            padding: 30px 50px;
+            padding-bottom: 80px;
+            overflow-y: auto;
+            max-width: 1100px;
+        }
+
+        /* ── Text Styles ── */
+        .header-text {
+            font-family: 'Caveat', cursive;
+            font-size: 28px;
+            font-weight: 600;
+            color: #5b8fa8;
+            margin-bottom: 12px;
+            margin-top: 8px;
+        }
+
+        .body-text {
+            font-size: 22px;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .bold {
+            font-weight: bold;
+        }
+
+        .bullet {
+            font-size: 22px;
+            margin-bottom: 6px;
+            margin-left: 24px;
+            line-height: 1.4;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .bullet::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 11px;
+            width: 8px;
+            height: 8px;
+            background-color: #5b8fa8;
+            border-radius: 50%;
+            transform: rotate(5deg);
+        }
+
+        .bullet.level-1 {
+            margin-left: 52px;
+            font-size: 20px;
+        }
+
+        .bullet.level-1::before {
+            width: 6px;
+            height: 6px;
+            background-color: #e8a87c;
+            top: 10px;
+        }
+
+        /* ── Code Blocks (sketch style) ── */
+        .code-block {
+            background-color: #f0ede8;
+            border: 2px solid #b8c5d0;
+            border-radius: 12px;
+            padding: 18px 22px;
+            margin: 16px 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 16px;
+            line-height: 1.5;
+            color: #2d3436;
+            overflow-x: auto;
+            position: relative;
+            box-shadow: 3px 3px 0 rgba(91, 143, 168, 0.15);
+            transform: rotate(-0.2deg);
+        }
+
+        .code-block::before {
+            content: '< / >';
+            position: absolute;
+            top: -12px;
+            right: 20px;
+            background-color: #fdfcfa;
+            padding: 2px 10px;
+            font-family: 'Caveat', cursive;
+            font-size: 16px;
+            color: #5b8fa8;
+            border: 2px solid #b8c5d0;
+            border-radius: 8px;
+        }
+
+        .code-block.compact::before {
+            display: none;
+        }
+
+        /* ── Tables (sketch style) ── */
+        .content-table {
+            width: 90%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 16px auto;
+            font-size: 18px;
+            border: 2px solid #b8c5d0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 3px 3px 0 rgba(91, 143, 168, 0.12);
+        }
+
+        .content-table th {
+            background-color: rgba(91, 143, 168, 0.2);
+            color: #2d3436;
+            padding: 10px 16px;
+            text-align: center;
+            font-family: 'Caveat', cursive;
+            font-size: 22px;
+            font-weight: 600;
+            border-bottom: 2px solid #b8c5d0;
+        }
+
+        .content-table td {
+            padding: 8px 16px;
+            text-align: center;
+            border-bottom: 1px dashed #ccc;
+            font-size: 18px;
+        }
+
+        .content-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .content-table tr:nth-child(even) {
+            background-color: rgba(232, 168, 124, 0.06);
+        }
+
+        .spacer {
+            height: 14px;
+        }
+
+        /* ── Sketch Decorations ── */
+        .sketch-box {
+            border: 2px solid #5b8fa8;
+            border-radius: 14px;
+            padding: 18px;
+            margin: 12px 0;
+            position: relative;
+            background-color: rgba(91, 143, 168, 0.04);
+            box-shadow: 2px 2px 0 rgba(91, 143, 168, 0.1);
+        }
+
+        .sketch-highlight {
+            background: linear-gradient(180deg, transparent 60%, rgba(232, 168, 124, 0.3) 60%);
+            padding: 0 4px;
+        }
+
+        .sketch-arrow {
+            display: inline-block;
+            font-size: 28px;
+            color: #e8a87c;
+            margin: 0 8px;
+        }
+
+        /* ── Illustrations (SVG inline) ── */
+        .illustration {
+            display: flex;
+            justify-content: center;
+            margin: 16px 0;
+        }
+
+        .illustration svg {
+            max-width: 100%;
+        }
+
+        /* ── Question callout ── */
+        .question-box {
+            border: 2px dashed #e8a87c;
+            border-radius: 14px;
+            padding: 16px 20px;
+            margin: 14px 0;
+            background-color: rgba(232, 168, 124, 0.08);
+            position: relative;
+        }
+
+        .question-box::before {
+            content: '?';
+            position: absolute;
+            top: -14px;
+            left: 16px;
+            background-color: #e8a87c;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Caveat', cursive;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .answer-box {
+            border: 2px dashed #85c88a;
+            border-radius: 14px;
+            padding: 16px 20px;
+            margin: 14px 0;
+            background-color: rgba(133, 200, 138, 0.08);
+            position: relative;
+        }
+
+        .answer-box::before {
+            content: '!';
+            position: absolute;
+            top: -14px;
+            left: 16px;
+            background-color: #85c88a;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Caveat', cursive;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        /* ── Key insight callout ── */
+        .insight-box {
+            border: 2px solid #e8a87c;
+            border-radius: 14px;
+            padding: 16px 20px;
+            margin: 14px 0;
+            background-color: rgba(232, 168, 124, 0.08);
+            text-align: center;
+            font-family: 'Caveat', cursive;
+            font-size: 26px;
+            font-weight: 600;
+            color: #2d3436;
+            transform: rotate(-0.3deg);
+            box-shadow: 3px 3px 0 rgba(232, 168, 124, 0.15);
+        }
+
+        /* ── Activity slide styling ── */
+        .activity-step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            padding-left: 8px;
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 32px;
+            height: 32px;
+            background-color: #5b8fa8;
+            color: white;
+            border-radius: 50%;
+            font-family: 'Caveat', cursive;
+            font-size: 20px;
+            font-weight: 700;
+            margin-right: 12px;
+            margin-top: 2px;
+            box-shadow: 2px 2px 0 rgba(91, 143, 168, 0.2);
+        }
+
+        .step-text {
+            font-size: 21px;
+            line-height: 1.4;
+            padding-top: 4px;
+        }
+
+        /* ── Checkpoint style ── */
+        .checkpoint {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 8px;
+            padding-left: 8px;
+        }
+
+        .check-icon {
+            min-width: 26px;
+            height: 26px;
+            border: 2px solid #85c88a;
+            border-radius: 6px;
+            margin-right: 12px;
+            margin-top: 4px;
+            position: relative;
+        }
+
+        .checkpoint .step-text {
+            font-size: 20px;
+        }
+
+        /* ── Navigation ── */
+        .slide-navigation {
+            position: absolute;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background-color: rgba(250, 248, 245, 0.95);
+            padding: 8px 20px;
+            border-radius: 25px;
+            border: 2px solid #b8c5d0;
+            box-shadow: 2px 2px 0 rgba(91, 143, 168, 0.1);
+        }
+
+        .nav-btn {
+            padding: 6px 18px;
+            border: 2px solid #5b8fa8;
+            border-radius: 20px;
+            background-color: rgba(91, 143, 168, 0.1);
+            color: #2d3436;
+            font-size: 16px;
+            font-family: 'Patrick Hand', cursive;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background-color: rgba(91, 143, 168, 0.25);
+        }
+
+        .nav-btn:disabled {
+            border-color: #ccc;
+            color: #aaa;
+            background-color: transparent;
+            cursor: not-allowed;
+        }
+
+        .slide-counter {
+            font-size: 16px;
+            font-family: 'Caveat', cursive;
+            font-weight: 600;
+            color: #5b8fa8;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        /* ── Title Slide Special ── */
+        .slide-title-page {
+            background-image: none;
+            background-color: #fdfcfa;
+        }
+
+        .title-hero {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .title-hero .module-label {
+            font-family: 'Patrick Hand', cursive;
+            font-size: 22px;
+            color: #5b8fa8;
+            margin-bottom: 8px;
+            letter-spacing: 2px;
+        }
+
+        .title-hero .lesson-title {
+            font-family: 'Caveat', cursive;
+            font-size: 64px;
+            font-weight: 700;
+            color: #2d3436;
+            margin-bottom: 24px;
+            transform: rotate(-1deg);
+            position: relative;
+        }
+
+        .title-hero .lesson-title::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 10%;
+            right: 10%;
+            height: 4px;
+            background-color: #e8a87c;
+            border-radius: 2px;
+            transform: rotate(0.5deg);
+        }
+
+        .title-hero .divider-sketch {
+            width: 120px;
+            height: 3px;
+            background: #b8c5d0;
+            margin: 16px auto;
+            border-radius: 2px;
+            transform: rotate(-1deg);
+        }
+
+        .title-content {
+            display: flex;
+            gap: 60px;
+            margin-top: 20px;
+            text-align: left;
+            max-width: 900px;
+        }
+
+        .title-section {
+            flex: 1;
+        }
+
+        .title-section h3 {
+            font-family: 'Caveat', cursive;
+            font-size: 26px;
+            font-weight: 600;
+            color: #5b8fa8;
+            margin-bottom: 10px;
+            border-bottom: 2px solid rgba(91, 143, 168, 0.2);
+            padding-bottom: 4px;
+        }
+
+        .title-section .bullet {
+            font-size: 19px;
+        }
+
+        .title-section .bullet::before {
+            top: 9px;
+        }
+
+        /* ── Grid illustration ── */
+        .grid-illustration {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+
+        /* ── Progression arrow ── */
+        .progression {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .progression-step {
+            border: 2px solid #b8c5d0;
+            border-radius: 14px;
+            padding: 12px 18px;
+            text-align: center;
+            font-size: 18px;
+            background-color: rgba(91, 143, 168, 0.05);
+            min-width: 180px;
+        }
+
+        .progression-step.current {
+            border-color: #e8a87c;
+            background-color: rgba(232, 168, 124, 0.1);
+            box-shadow: 3px 3px 0 rgba(232, 168, 124, 0.15);
+        }
+
+        .progression-step .step-label {
+            font-family: 'Caveat', cursive;
+            font-size: 16px;
+            color: #5b8fa8;
+            font-weight: 600;
+        }
+
+        .progression-arrow {
+            font-size: 28px;
+            color: #b8c5d0;
+        }
+
+        /* ── Two-column layout ── */
+        .two-col {
+            display: flex;
+            gap: 30px;
+            margin-top: 10px;
+        }
+
+        .two-col .col {
+            flex: 1;
+        }
+
+        /* ── Robot SVG ── */
+        .robot-icon {
+            display: inline-block;
+        }
+
+        /* ── Bug card styling ── */
+        .bug-card {
+            border: 2px solid #b8c5d0;
+            border-radius: 12px;
+            padding: 14px 18px;
+            margin: 10px 0;
+            background-color: rgba(232, 168, 124, 0.05);
+            box-shadow: 2px 2px 0 rgba(91, 143, 168, 0.1);
+        }
+
+        .bug-card .bug-title {
+            font-family: 'Caveat', cursive;
+            font-size: 22px;
+            font-weight: 600;
+            color: #e8a87c;
+            margin-bottom: 4px;
+        }
+
+        .bug-card .bug-symptom {
+            font-size: 19px;
+            color: #636e72;
+            margin-bottom: 2px;
+        }
+
+        .bug-card .bug-fix {
+            font-size: 19px;
+            color: #85c88a;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-sidebar">
+        <div class="nav-header">
+            <h2>Module 4: Manhattan</h2>
+            <h3>Lesson 6</h3>
+        </div>
+        <nav class="slide-nav">
+            <a href="#slide-1" class="nav-item" onclick="showSlide(0)">Title & Objectives</a>
+            <a href="#slide-2" class="nav-item" onclick="showSlide(1)">Would You Fly Untested?</a>
+            <a href="#slide-3" class="nav-item" onclick="showSlide(2)">Separation of Concerns</a>
+            <a href="#slide-4" class="nav-item" onclick="showSlide(3)">Writing a Test Program</a>
+            <a href="#slide-5" class="nav-item" onclick="showSlide(4)">Expected vs. Actual</a>
+            <a href="#slide-6" class="nav-item" onclick="showSlide(5)">Systematic Test Cases</a>
+            <a href="#slide-7" class="nav-item" onclick="showSlide(6)">Debugging with Print</a>
+            <a href="#slide-8" class="nav-item" onclick="showSlide(7)">Common Bugs</a>
+            <a href="#slide-9" class="nav-item" onclick="showSlide(8)">Your Turn!</a>
+            <a href="#slide-10" class="nav-item" onclick="showSlide(9)">What's Next</a>
+        </nav>
+    </div>
+
+    <div class="slides-container">
+
+        <!-- ═══ SLIDE 1: Title ═══ -->
+        <div class="slide slide-title-page active" id="slide-1">
+            <div class="title-hero">
+                <!-- Robot with magnifying glass / monitor SVG -->
+                <div class="illustration">
+                    <svg width="260" height="130" viewBox="0 0 260 130">
+                        <!-- Monitor -->
+                        <rect x="20" y="10" width="120" height="80" rx="8" fill="#fdfcfa" stroke="#2d3436" stroke-width="2.5" transform="rotate(-0.5 80 50)"/>
+                        <rect x="60" y="90" width="40" height="12" rx="2" fill="#b8c5d0" stroke="#2d3436" stroke-width="1.5"/>
+                        <rect x="45" y="100" width="70" height="6" rx="3" fill="#b8c5d0" stroke="#2d3436" stroke-width="1.5"/>
+                        <!-- Screen content: checkmarks -->
+                        <text x="42" y="38" font-family="Fira Code, monospace" font-size="11" fill="#85c88a">PASS</text>
+                        <text x="82" y="38" font-family="Fira Code, monospace" font-size="11" fill="#85c88a">&#x2713;</text>
+                        <text x="42" y="54" font-family="Fira Code, monospace" font-size="11" fill="#85c88a">PASS</text>
+                        <text x="82" y="54" font-family="Fira Code, monospace" font-size="11" fill="#85c88a">&#x2713;</text>
+                        <text x="42" y="70" font-family="Fira Code, monospace" font-size="11" fill="#e85d5d">FAIL</text>
+                        <text x="82" y="70" font-family="Fira Code, monospace" font-size="11" fill="#e85d5d">&#x2717;</text>
+                        <!-- Robot (top-down, facing right) -->
+                        <rect x="180" y="40" width="32" height="32" rx="4" fill="#b8c5d0" stroke="#2d3436" stroke-width="2.5" transform="rotate(1 196 56)"/>
+                        <text x="196" y="61" font-family="Caveat, cursive" font-size="11" fill="#2d3436" text-anchor="middle" font-weight="600">XRP</text>
+                        <rect x="210" y="46" width="10" height="20" rx="3" fill="#636e72" stroke="#2d3436" stroke-width="1.5"/>
+                        <rect x="218" y="49" width="5" height="5" rx="1" fill="#e85d5d" stroke="#2d3436" stroke-width="1"/>
+                        <rect x="218" y="58" width="5" height="5" rx="1" fill="#e85d5d" stroke="#2d3436" stroke-width="1"/>
+                        <!-- Arrow from robot to monitor -->
+                        <path d="M175 56 C160 56, 150 50, 142 50" stroke="#e8a87c" stroke-width="2" fill="none" stroke-dasharray="6,4"/>
+                        <polygon points="142,46 142,54 135,50" fill="#e8a87c"/>
+                    </svg>
+                </div>
+                <div class="module-label">MODULE 4: MANHATTAN</div>
+                <div class="lesson-title">Testing Without a Robot</div>
+                <div class="divider-sketch"></div>
+                <div class="title-content">
+                    <div class="title-section">
+                        <h3>Learning Objectives</h3>
+                        <div class="bullet">Understand why testing without hardware is important</div>
+                        <div class="bullet">Write test programs that verify algorithm output</div>
+                        <div class="bullet">Compare computed paths against hand-calculated expected paths</div>
+                        <div class="bullet">Build confidence in code before deploying to hardware</div>
+                    </div>
+                    <div class="title-section">
+                        <h3>Agenda</h3>
+                        <div class="bullet">Why test without a robot? (5 min)</div>
+                        <div class="bullet">Writing test programs (10 min)</div>
+                        <div class="bullet">Systematic testing strategy (10 min)</div>
+                        <div class="bullet">Practice: Test your Manhattan class (20 min)</div>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn" disabled>Previous</button>
+                <span class="slide-counter">1 / 10</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 2: Hook — Would You Fly an Untested Airplane? ═══ -->
+        <div class="slide" id="slide-2">
+            <div class="title-bar">
+                <h1>Would You Fly an Untested Airplane?</h1>
+            </div>
+            <div class="content">
+                <div class="question-box">
+                    <p class="body-text" style="margin-top:6px;"><span class="bold">Would a pilot fly a new airplane without testing it on the ground first?</span></p>
+                </div>
+
+                <div class="two-col" style="margin-top:14px;">
+                    <div class="col">
+                        <!-- Airplane SVG -->
+                        <div class="illustration">
+                            <svg width="300" height="180" viewBox="0 0 300 180">
+                                <!-- Airplane silhouette -->
+                                <path d="M40 90 L100 80 L140 40 L150 40 L130 78 L220 70 L250 45 L260 48 L240 75 L270 72 L272 78 L235 82 L130 88 L100 95 L145 130 L138 132 L88 98 L40 100 Z" fill="rgba(91,143,168,0.15)" stroke="#5b8fa8" stroke-width="2" transform="rotate(-2 155 90)"/>
+                                <!-- Checklist -->
+                                <rect x="40" y="120" width="16" height="16" rx="3" fill="none" stroke="#85c88a" stroke-width="2"/>
+                                <text x="62" y="134" font-family="Patrick Hand, cursive" font-size="16" fill="#2d3436">Test engines on ground</text>
+                                <rect x="40" y="145" width="16" height="16" rx="3" fill="none" stroke="#85c88a" stroke-width="2"/>
+                                <text x="62" y="159" font-family="Patrick Hand, cursive" font-size="16" fill="#2d3436">Run simulations first</text>
+                                <!-- Checkmarks -->
+                                <path d="M44 129 L48 133 L54 125" stroke="#85c88a" stroke-width="2" fill="none"/>
+                                <path d="M44 154 L48 158 L54 150" stroke="#85c88a" stroke-width="2" fill="none"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="header-text">Same with robots!</div>
+                        <div class="bullet">Test the algorithm with print statements first</div>
+                        <div class="bullet">Verify the math is correct</div>
+                        <div class="bullet">THEN put it on the robot</div>
+                    </div>
+                </div>
+
+                <div class="insight-box" style="margin-top: 18px;">
+                    "Test on screen before you test on the floor."
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">2 / 10</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 3: The Separation of Concerns ═══ -->
+        <div class="slide" id="slide-3">
+            <div class="title-bar">
+                <h1>The Separation of Concerns</h1>
+            </div>
+            <div class="content">
+                <div class="header-text">Two separate problems:</div>
+
+                <table class="content-table">
+                    <tr>
+                        <th>Problem</th>
+                        <th>Where It Runs</th>
+                        <th>What to Test</th>
+                    </tr>
+                    <tr>
+                        <td>Computing the path</td>
+                        <td>Any computer</td>
+                        <td>Does the path make sense?</td>
+                    </tr>
+                    <tr>
+                        <td>Driving the path</td>
+                        <td>On the robot</td>
+                        <td>Does the robot follow correctly?</td>
+                    </tr>
+                </table>
+
+                <div class="spacer"></div>
+
+                <!-- Separation diagram SVG -->
+                <div class="illustration">
+                    <svg width="520" height="160" viewBox="0 0 520 160">
+                        <!-- Computer box -->
+                        <rect x="20" y="25" width="180" height="110" rx="12" fill="rgba(91,143,168,0.1)" stroke="#5b8fa8" stroke-width="2.5" transform="rotate(-0.5 110 80)"/>
+                        <text x="110" y="55" font-family="Caveat, cursive" font-size="22" fill="#5b8fa8" text-anchor="middle" font-weight="600">Your Computer</text>
+                        <!-- Monitor icon -->
+                        <rect x="70" y="65" width="50" height="35" rx="4" fill="#fdfcfa" stroke="#2d3436" stroke-width="2"/>
+                        <rect x="88" y="100" width="14" height="6" rx="1" fill="#b8c5d0" stroke="#2d3436" stroke-width="1"/>
+                        <text x="95" y="85" font-family="Fira Code, monospace" font-size="9" fill="#85c88a" text-anchor="middle">path=[]</text>
+                        <text x="110" y="120" font-family="Patrick Hand, cursive" font-size="14" fill="#636e72">compute_path()</text>
+
+                        <!-- Arrow -->
+                        <path d="M210 80 C240 80, 270 80, 300 80" stroke="#e8a87c" stroke-width="2.5" fill="none" stroke-dasharray="8,5"/>
+                        <polygon points="300,74 315,80 300,86" fill="#e8a87c"/>
+                        <text x="255" y="70" font-family="Caveat, cursive" font-size="16" fill="#e8a87c" text-anchor="middle">then</text>
+
+                        <!-- Robot box -->
+                        <rect x="320" y="25" width="180" height="110" rx="12" fill="rgba(232,168,124,0.1)" stroke="#e8a87c" stroke-width="2.5" transform="rotate(0.5 410 80)"/>
+                        <text x="410" y="55" font-family="Caveat, cursive" font-size="22" fill="#e8a87c" text-anchor="middle" font-weight="600">The Robot</text>
+                        <!-- Robot icon -->
+                        <rect x="385" y="68" width="26" height="26" rx="3" fill="#b8c5d0" stroke="#2d3436" stroke-width="2"/>
+                        <text x="398" y="86" font-family="Caveat, cursive" font-size="9" fill="#2d3436" text-anchor="middle" font-weight="600">XRP</text>
+                        <rect x="409" y="73" width="8" height="16" rx="2" fill="#636e72" stroke="#2d3436" stroke-width="1"/>
+                        <rect x="415" y="75" width="4" height="4" rx="1" fill="#e85d5d" stroke="#2d3436" stroke-width="1"/>
+                        <rect x="415" y="83" width="4" height="4" rx="1" fill="#e85d5d" stroke="#2d3436" stroke-width="1"/>
+                        <text x="410" y="120" font-family="Patrick Hand, cursive" font-size="14" fill="#636e72">drive the path</text>
+                    </svg>
+                </div>
+
+                <div class="answer-box">
+                    <p class="body-text" style="margin-top:6px;"><span class="bold">The Manhattan class computes paths -- no motors needed!</span></p>
+                    <pre class="code-block compact" style="margin:10px 0 4px 0; padding:12px 16px; font-size:15px; transform:none;">manhattan = Manhattan((0, 0))
+path = manhattan.compute_path((2, 3))
+print(path)   # Just prints -- no robot required!</pre>
+                </div>
+
+                <div class="insight-box">Fix algorithm bugs BEFORE the robot drives into a wall.</div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">3 / 10</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 4: Writing a Test Program ═══ -->
+        <div class="slide" id="slide-4">
+            <div class="title-bar">
+                <h1>Writing a Test Program</h1>
+            </div>
+            <div class="content">
+                <div class="header-text">Basic test structure:</div>
+
+                <pre class="code-block">manhattan = Manhattan((0, 0))
+
+# Test 1: Basic forward path
+path = manhattan.compute_path((2, 3))
+print("Test 1 - (0,0) to (2,3):")
+print("  Path:", path)
+print("  Steps:", len(path) - 1)
+print()</pre>
+
+                <div class="spacer"></div>
+                <div class="header-text">What to check:</div>
+
+                <!-- Checklist SVG -->
+                <div class="illustration">
+                    <svg width="520" height="150" viewBox="0 0 520 150">
+                        <!-- Card 1 -->
+                        <rect x="10" y="10" width="240" height="55" rx="10" fill="rgba(91,143,168,0.08)" stroke="#5b8fa8" stroke-width="2" transform="rotate(-0.3 130 38)"/>
+                        <circle cx="36" cy="37" r="12" fill="#5b8fa8" stroke="#2d3436" stroke-width="1.5"/>
+                        <text x="36" y="42" font-family="Caveat, cursive" font-size="16" fill="white" text-anchor="middle" font-weight="700">1</text>
+                        <text x="58" y="42" font-family="Patrick Hand, cursive" font-size="17" fill="#2d3436">Path starts at correct position?</text>
+
+                        <!-- Card 2 -->
+                        <rect x="270" y="10" width="240" height="55" rx="10" fill="rgba(91,143,168,0.08)" stroke="#5b8fa8" stroke-width="2" transform="rotate(0.4 390 38)"/>
+                        <circle cx="296" cy="37" r="12" fill="#5b8fa8" stroke="#2d3436" stroke-width="1.5"/>
+                        <text x="296" y="42" font-family="Caveat, cursive" font-size="16" fill="white" text-anchor="middle" font-weight="700">2</text>
+                        <text x="318" y="42" font-family="Patrick Hand, cursive" font-size="17" fill="#2d3436">Path ends at the destination?</text>
+
+                        <!-- Card 3 -->
+                        <rect x="10" y="80" width="240" height="55" rx="10" fill="rgba(91,143,168,0.08)" stroke="#5b8fa8" stroke-width="2" transform="rotate(0.3 130 108)"/>
+                        <circle cx="36" cy="107" r="12" fill="#5b8fa8" stroke="#2d3436" stroke-width="1.5"/>
+                        <text x="36" y="112" font-family="Caveat, cursive" font-size="16" fill="white" text-anchor="middle" font-weight="700">3</text>
+                        <text x="58" y="107" font-family="Patrick Hand, cursive" font-size="16" fill="#2d3436">Step count = Manhattan distance?</text>
+
+                        <!-- Card 4 -->
+                        <rect x="270" y="80" width="240" height="55" rx="10" fill="rgba(91,143,168,0.08)" stroke="#5b8fa8" stroke-width="2" transform="rotate(-0.4 390 108)"/>
+                        <circle cx="296" cy="107" r="12" fill="#5b8fa8" stroke="#2d3436" stroke-width="1.5"/>
+                        <text x="296" y="112" font-family="Caveat, cursive" font-size="16" fill="white" text-anchor="middle" font-weight="700">4</text>
+                        <text x="318" y="107" font-family="Patrick Hand, cursive" font-size="16" fill="#2d3436">Each step moves 1 row or 1 col?</text>
+                    </svg>
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">4 / 10</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 5: Expected vs. Actual ═══ -->
+        <div class="slide" id="slide-5">
+            <div class="title-bar">
+                <h1>Expected vs. Actual</h1>
+            </div>
+            <div class="content">
+                <div class="header-text">Compare what you expect with what you get:</div>
+
+                <pre class="code-block"># Expected path (from hand trace)
+expected = [(0,0), (1,0), (2,0), (2,1), (2,2), (2,3)]
+
+# Actual path (from your class)
+manhattan = Manhattan((0, 0))
+actual = manhattan.compute_path((2, 3))
+
+# Compare
+if actual == expected:
+    print("Test 1: PASS")
+else:
+    print("Test 1: FAIL")
+    print("  Expected:", expected)
+    print("  Actual:  ", actual)</pre>
+
+                <div class="spacer"></div>
+
+                <!-- Expected vs Actual SVG diagram -->
+                <div class="illustration">
+                    <svg width="520" height="130" viewBox="0 0 520 130">
+                        <!-- Expected box -->
+                        <rect x="20" y="15" width="200" height="100" rx="12" fill="rgba(133,200,138,0.1)" stroke="#85c88a" stroke-width="2.5" transform="rotate(-0.5 120 65)"/>
+                        <text x="120" y="42" font-family="Caveat, cursive" font-size="22" fill="#85c88a" text-anchor="middle" font-weight="600">Expected</text>
+                        <text x="120" y="65" font-family="Patrick Hand, cursive" font-size="15" fill="#2d3436" text-anchor="middle">Hand-traced on paper</text>
+                        <text x="120" y="85" font-family="Fira Code, monospace" font-size="11" fill="#636e72" text-anchor="middle">[(0,0),(1,0),(2,0)...]</text>
+                        <text x="120" y="105" font-family="Caveat, cursive" font-size="18" fill="#85c88a" text-anchor="middle">You calculate this</text>
+
+                        <!-- VS -->
+                        <text x="260" y="72" font-family="Caveat, cursive" font-size="32" fill="#e8a87c" text-anchor="middle" font-weight="700">vs.</text>
+
+                        <!-- Actual box -->
+                        <rect x="300" y="15" width="200" height="100" rx="12" fill="rgba(91,143,168,0.1)" stroke="#5b8fa8" stroke-width="2.5" transform="rotate(0.5 400 65)"/>
+                        <text x="400" y="42" font-family="Caveat, cursive" font-size="22" fill="#5b8fa8" text-anchor="middle" font-weight="600">Actual</text>
+                        <text x="400" y="65" font-family="Patrick Hand, cursive" font-size="15" fill="#2d3436" text-anchor="middle">From compute_path()</text>
+                        <text x="400" y="85" font-family="Fira Code, monospace" font-size="11" fill="#636e72" text-anchor="middle">[(0,0),(1,0),(2,0)...]</text>
+                        <text x="400" y="105" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" text-anchor="middle">Code calculates this</text>
+                    </svg>
+                </div>
+
+                <div class="insight-box">This is the core of testing: Expected output vs. actual output.</div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">5 / 10</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 6: Systematic Test Cases ═══ -->
+        <div class="slide" id="slide-6">
+            <div class="title-bar">
+                <h1>Systematic Test Cases</h1>
+            </div>
+            <div class="content">
+                <div class="header-text">A reusable test function:</div>
+
+                <pre class="code-block">def run_test(test_name, start, dest, expected):
+    manhattan = Manhattan(start)
+    actual = manhattan.compute_path(dest)
+    if actual == expected:
+        print(test_name, "- PASS")
+    else:
+        print(test_name, "- FAIL")
+        print("  Expected:", expected)
+        print("  Actual:  ", actual)</pre>
+
+                <div class="spacer"></div>
+                <div class="header-text">Test cases to cover:</div>
+
+                <table class="content-table">
+                    <tr>
+                        <th>Test</th>
+                        <th>Start</th>
+                        <th>Dest</th>
+                        <th>Tests</th>
+                    </tr>
+                    <tr>
+                        <td>Forward right</td>
+                        <td>(0,0)</td>
+                        <td>(2,3)</td>
+                        <td>Basic case</td>
+                    </tr>
+                    <tr>
+                        <td>Backward left</td>
+                        <td>(2,3)</td>
+                        <td>(0,0)</td>
+                        <td>Reverse direction</td>
+                    </tr>
+                    <tr>
+                        <td>Same row</td>
+                        <td>(1,0)</td>
+                        <td>(1,3)</td>
+                        <td>Column only</td>
+                    </tr>
+                    <tr>
+                        <td>Same column</td>
+                        <td>(0,2)</td>
+                        <td>(3,2)</td>
+                        <td>Row only</td>
+                    </tr>
+                    <tr>
+                        <td>Same spot</td>
+                        <td>(1,1)</td>
+                        <td>(1,1)</td>
+                        <td>No movement</td>
+                    </tr>
+                    <tr>
+                        <td>One step</td>
+                        <td>(0,0)</td>
+                        <td>(0,1)</td>
+                        <td>Minimal path</td>
+                    </tr>
+                </table>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">6 / 10</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 7: Debugging with Print Statements ═══ -->
+        <div class="slide" id="slide-7">
+            <div class="title-bar">
+                <h1>Debugging with Print Statements</h1>
+            </div>
+            <div class="content">
+                <div class="header-text">If a test fails, add prints inside compute_path:</div>
+
+                <pre class="code-block">def compute_path(self, destination):
+    print("Computing path from", self.position, "to", destination)
+    path = [self.position]
+    current_row = self.position[0]
+    current_col = self.position[1]
+    # ... rest of code ...
+
+    print("Row step:", row_step)
+    print("Col step:", col_step)
+
+    while current_row != dest_row:
+        current_row = current_row + row_step
+        path.append((current_row, current_col))
+        print("  Added:", (current_row, current_col))
+    # ...</pre>
+
+                <div class="spacer"></div>
+
+                <!-- Magnifying glass / debug SVG -->
+                <div class="illustration">
+                    <svg width="480" height="110" viewBox="0 0 480 110">
+                        <!-- Terminal output lines -->
+                        <rect x="20" y="10" width="300" height="90" rx="10" fill="#f0ede8" stroke="#b8c5d0" stroke-width="2" transform="rotate(-0.3 170 55)"/>
+                        <text x="35" y="35" font-family="Fira Code, monospace" font-size="11" fill="#636e72">Computing path from (0,0) to (2,3)</text>
+                        <text x="35" y="52" font-family="Fira Code, monospace" font-size="11" fill="#636e72">Row step: 1  Col step: 1</text>
+                        <text x="35" y="69" font-family="Fira Code, monospace" font-size="11" fill="#5b8fa8">  Added: (1, 0)</text>
+                        <text x="35" y="86" font-family="Fira Code, monospace" font-size="11" fill="#5b8fa8">  Added: (2, 0)</text>
+
+                        <!-- Magnifying glass -->
+                        <circle cx="400" cy="45" r="28" fill="rgba(232,168,124,0.1)" stroke="#e8a87c" stroke-width="3"/>
+                        <line x1="420" y1="67" x2="445" y2="92" stroke="#e8a87c" stroke-width="4" stroke-linecap="round"/>
+                        <text x="400" y="50" font-family="Caveat, cursive" font-size="18" fill="#e8a87c" text-anchor="middle" font-weight="600">debug</text>
+                    </svg>
+                </div>
+
+                <div class="answer-box">
+                    <p class="body-text" style="margin-top:6px;">This lets you see exactly what's happening, step by step.</p>
+                    <p class="body-text"><span class="bold">Remove print statements after debugging!</span></p>
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">7 / 10</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 8: Common Bugs and How to Find Them ═══ -->
+        <div class="slide" id="slide-8">
+            <div class="title-bar">
+                <h1>Common Bugs and How to Find Them</h1>
+            </div>
+            <div class="content">
+                <div class="two-col">
+                    <div class="col">
+                        <div class="bug-card">
+                            <div class="bug-title">Bug 1: Path missing the start</div>
+                            <div class="bug-symptom">Symptom: Path has 5 steps instead of 6</div>
+                            <div class="bug-fix">Fix: path = [self.position] (include start)</div>
+                        </div>
+
+                        <div class="bug-card">
+                            <div class="bug-title">Bug 2: Path goes wrong direction</div>
+                            <div class="bug-symptom">Symptom: (0,0) to (2,3) produces (-1,0), (-2,0)...</div>
+                            <div class="bug-fix">Fix: Check row_step: +1 when dest &gt; current</div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="bug-card">
+                            <div class="bug-title">Bug 3: Infinite loop</div>
+                            <div class="bug-symptom">Symptom: Program never finishes</div>
+                            <div class="bug-fix">Fix: If start == dest for that axis, skip loop</div>
+                        </div>
+
+                        <div class="bug-card">
+                            <div class="bug-title">Bug 4: Off-by-one error</div>
+                            <div class="bug-symptom">Symptom: One step too far or too short</div>
+                            <div class="bug-fix">Fix: Use != not &lt; or &gt; in while condition</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Bug squashing SVG -->
+                <div class="illustration" style="margin-top: 12px;">
+                    <svg width="520" height="120" viewBox="0 0 520 120">
+                        <!-- Bug icon 1 (found) -->
+                        <circle cx="80" cy="50" r="25" fill="rgba(232,93,93,0.15)" stroke="#e85d5d" stroke-width="2"/>
+                        <text x="80" y="46" font-family="Caveat, cursive" font-size="28" fill="#e85d5d" text-anchor="middle">&#x1f41b;</text>
+                        <text x="80" y="95" font-family="Caveat, cursive" font-size="16" fill="#e85d5d" text-anchor="middle" font-weight="600">Find it</text>
+
+                        <!-- Arrow -->
+                        <path d="M115 50 C145 50, 155 50, 185 50" stroke="#e8a87c" stroke-width="2" fill="none" stroke-dasharray="6,4"/>
+                        <polygon points="185,44 198,50 185,56" fill="#e8a87c"/>
+
+                        <!-- Print debug -->
+                        <circle cx="240" cy="50" r="25" fill="rgba(91,143,168,0.15)" stroke="#5b8fa8" stroke-width="2"/>
+                        <text x="240" y="55" font-family="Fira Code, monospace" font-size="12" fill="#5b8fa8" text-anchor="middle">print</text>
+                        <text x="240" y="95" font-family="Caveat, cursive" font-size="16" fill="#5b8fa8" text-anchor="middle" font-weight="600">Debug it</text>
+
+                        <!-- Arrow -->
+                        <path d="M275 50 C305 50, 315 50, 345 50" stroke="#e8a87c" stroke-width="2" fill="none" stroke-dasharray="6,4"/>
+                        <polygon points="345,44 358,50 345,56" fill="#e8a87c"/>
+
+                        <!-- Fix icon -->
+                        <circle cx="400" cy="50" r="25" fill="rgba(133,200,138,0.15)" stroke="#85c88a" stroke-width="2"/>
+                        <text x="400" y="57" font-family="Caveat, cursive" font-size="24" fill="#85c88a" text-anchor="middle" font-weight="700">&#x2713;</text>
+                        <text x="400" y="95" font-family="Caveat, cursive" font-size="16" fill="#85c88a" text-anchor="middle" font-weight="600">Fix it</text>
+
+                        <!-- Arrow -->
+                        <path d="M435 50 C455 50, 455 50, 470 50" stroke="#e8a87c" stroke-width="2" fill="none" stroke-dasharray="6,4"/>
+                        <polygon points="470,44 483,50 470,56" fill="#e8a87c"/>
+
+                        <!-- Re-test -->
+                        <circle cx="510" cy="50" r="0" fill="none"/>
+                        <text x="497" y="57" font-family="Caveat, cursive" font-size="20" fill="#85c88a" font-weight="700">PASS!</text>
+                    </svg>
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">8 / 10</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 9: Your Turn! ═══ -->
+        <div class="slide" id="slide-9">
+            <div class="title-bar">
+                <h1>Your Turn!</h1>
+            </div>
+            <div class="content">
+                <div class="header-text">Activity: Test Your Manhattan Class</div>
+
+                <div class="activity-step">
+                    <span class="step-number">1</span>
+                    <span class="step-text">Create a new file: <code style="font-family:'Fira Code',monospace; background:#f0ede8; padding:2px 6px; border-radius:4px;">test_manhattan.py</code></span>
+                </div>
+                <div class="activity-step">
+                    <span class="step-number">2</span>
+                    <span class="step-text">Copy your Manhattan class into it</span>
+                </div>
+                <div class="activity-step">
+                    <span class="step-number">3</span>
+                    <span class="step-text">Write at least 6 test cases using the table from Slide 6</span>
+                </div>
+                <div class="activity-step">
+                    <span class="step-number">4</span>
+                    <span class="step-text">Run the tests and verify all pass</span>
+                </div>
+                <div class="activity-step">
+                    <span class="step-number">5</span>
+                    <span class="step-text">If any fail, debug using print statements</span>
+                </div>
+
+                <div class="spacer"></div>
+
+                <div class="sketch-box">
+                    <div class="header-text" style="margin-top:0;">Test template:</div>
+                    <pre class="code-block compact" style="margin:8px 0 4px 0; padding:12px 16px; font-size:15px; transform:none;"># Test 1: Basic forward path
+manhattan = Manhattan((0, 0))
+path = manhattan.compute_path((2, 3))
+expected = [(0,0), (1,0), (2,0), (2,1), (2,2), (2,3)]
+print("Test 1:", "PASS" if path == expected else "FAIL")</pre>
+                </div>
+
+                <div class="spacer"></div>
+                <div class="header-text">Checkpoints:</div>
+                <div class="checkpoint">
+                    <div class="check-icon"></div>
+                    <span class="step-text">Do all 6 tests pass?</span>
+                </div>
+                <div class="checkpoint">
+                    <div class="check-icon"></div>
+                    <span class="step-text">Did you test reverse directions?</span>
+                </div>
+                <div class="checkpoint">
+                    <div class="check-icon"></div>
+                    <span class="step-text">Did you test edge cases (same row, same position)?</span>
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">9 / 10</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 10: What's Next ═══ -->
+        <div class="slide" id="slide-10">
+            <div class="title-bar">
+                <h1>Connection to Next Lesson</h1>
+            </div>
+            <div class="content">
+                <div class="two-col">
+                    <div class="col">
+                        <div class="header-text">What you did today:</div>
+                        <div class="bullet">Learned why testing without hardware matters</div>
+                        <div class="bullet">Wrote systematic test programs</div>
+                        <div class="bullet">Verified your Manhattan class against expected outputs</div>
+                        <div class="bullet">Debugged any issues before touching the robot</div>
+                    </div>
+                    <div class="col">
+                        <div class="header-text">Next lesson (Lesson 7):</div>
+                        <div class="bullet">Tackle the <span class="bold">turning challenge</span></div>
+                        <div class="bullet">Learn about headings (N, S, E, W)</div>
+                        <div class="bullet">Figure out turn logic: "I'm facing North, I need to go East -- turn right!"</div>
+                    </div>
+                </div>
+
+                <div class="spacer"></div>
+
+                <!-- Progression diagram -->
+                <div class="illustration">
+                    <svg width="580" height="130" viewBox="0 0 580 130">
+                        <!-- Step 1: Compute -->
+                        <rect x="10" y="20" width="140" height="70" rx="12" fill="rgba(133,200,138,0.15)" stroke="#85c88a" stroke-width="2.5" transform="rotate(-0.5 80 55)"/>
+                        <text x="80" y="48" font-family="Caveat, cursive" font-size="18" fill="#85c88a" text-anchor="middle" font-weight="600">compute_path</text>
+                        <text x="80" y="72" font-family="Caveat, cursive" font-size="16" fill="#636e72" text-anchor="middle">Done!</text>
+
+                        <!-- Arrow -->
+                        <path d="M155 55 C170 55, 175 55, 185 55" stroke="#b8c5d0" stroke-width="2" fill="none"/>
+                        <polygon points="185,49 198,55 185,61" fill="#b8c5d0"/>
+
+                        <!-- Step 2: Test (current - highlighted) -->
+                        <rect x="200" y="20" width="140" height="70" rx="12" fill="rgba(232,168,124,0.15)" stroke="#e8a87c" stroke-width="2.5" transform="rotate(0.3 270 55)"/>
+                        <text x="270" y="48" font-family="Caveat, cursive" font-size="18" fill="#e8a87c" text-anchor="middle" font-weight="600">Test it!</text>
+                        <text x="270" y="72" font-family="Caveat, cursive" font-size="16" fill="#e8a87c" text-anchor="middle" font-weight="600">Today</text>
+                        <rect x="200" y="20" width="140" height="70" rx="12" fill="none" stroke="#e8a87c" stroke-width="3" stroke-dasharray="0"/>
+
+                        <!-- Arrow -->
+                        <path d="M345 55 C360 55, 365 55, 375 55" stroke="#b8c5d0" stroke-width="2" fill="none"/>
+                        <polygon points="375,49 388,55 375,61" fill="#b8c5d0"/>
+
+                        <!-- Step 3: Turning -->
+                        <rect x="390" y="20" width="140" height="70" rx="12" fill="rgba(91,143,168,0.08)" stroke="#b8c5d0" stroke-width="2" transform="rotate(-0.3 460 55)"/>
+                        <text x="460" y="48" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" text-anchor="middle" font-weight="600">Turning Logic</text>
+                        <text x="460" y="72" font-family="Caveat, cursive" font-size="16" fill="#636e72" text-anchor="middle">Next!</text>
+                    </svg>
+                </div>
+
+                <div class="insight-box">
+                    The algorithm is tested and working. Now we need to make the robot actually drive it!
+                </div>
+
+                <!-- Robot ready to go SVG -->
+                <div class="illustration" style="margin-top: 14px;">
+                    <svg width="360" height="100" viewBox="0 0 360 100">
+                        <!-- Small grid snippet -->
+                        <line x1="60" y1="50" x2="300" y2="50" stroke="#2d3436" stroke-width="2.5"/>
+                        <line x1="100" y1="20" x2="100" y2="80" stroke="#2d3436" stroke-width="2.5"/>
+                        <line x1="180" y1="20" x2="180" y2="80" stroke="#2d3436" stroke-width="2.5"/>
+                        <line x1="260" y1="20" x2="260" y2="80" stroke="#2d3436" stroke-width="2.5"/>
+                        <!-- Robot on grid, facing right -->
+                        <rect x="88" y="38" width="24" height="24" rx="3" fill="#b8c5d0" stroke="#2d3436" stroke-width="2"/>
+                        <text x="100" y="54" font-family="Caveat, cursive" font-size="8" fill="#2d3436" text-anchor="middle" font-weight="600">XRP</text>
+                        <rect x="110" y="42" width="8" height="16" rx="2" fill="#636e72" stroke="#2d3436" stroke-width="1"/>
+                        <rect x="116" y="44" width="4" height="4" rx="1" fill="#e85d5d" stroke="#2d3436" stroke-width="1"/>
+                        <rect x="116" y="52" width="4" height="4" rx="1" fill="#e85d5d" stroke="#2d3436" stroke-width="1"/>
+                        <!-- Dashed path showing planned route -->
+                        <path d="M125 50 L180 50 L260 50" stroke="#e8a87c" stroke-width="2" fill="none" stroke-dasharray="8,5"/>
+                        <polygon points="257,44 270,50 257,56" fill="#e8a87c"/>
+                        <!-- Label -->
+                        <text x="200" y="35" font-family="Caveat, cursive" font-size="16" fill="#e8a87c" text-anchor="middle" font-weight="600">Ready to drive!</text>
+                    </svg>
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">10 / 10</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn" disabled>Next</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const navItems = document.querySelectorAll('.nav-item');
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                if (i === index) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+            currentSlide = index;
+
+            navItems.forEach((item, i) => {
+                if (i === index) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        }
+
+        function nextSlide() {
+            if (currentSlide < slides.length - 1) {
+                showSlide(currentSlide + 1);
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                showSlide(currentSlide - 1);
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            }
+        });
+
+        // Initialize first slide
+        showSlide(0);
+    </script>
+</body>
+</html>
