@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Patrick+Hand&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/roughjs@4.6.6/bundled/rough.js"></script>
+    <style>
+        body { margin: 0; padding: 20px; background: transparent; }
+        canvas { display: block; margin-bottom: 40px; }
+        .illust { margin-bottom: 40px; position: relative; background: transparent; }
+    </style>
+</head>
+<body>
+
+<!-- Each illustration is a separate canvas -->
+<div class="illust" id="illust-robot">
+    <canvas id="canvas-robot" width="200" height="200"></canvas>
+</div>
+
+<div class="illust" id="illust-circle-to-grid">
+    <canvas id="canvas-circle-to-grid" width="800" height="280"></canvas>
+</div>
+
+<div class="illust" id="illust-grid-layout">
+    <canvas id="canvas-grid-layout" width="700" height="420"></canvas>
+</div>
+
+<div class="illust" id="illust-progression">
+    <canvas id="canvas-progression" width="800" height="180"></canvas>
+</div>
+
+<div class="illust" id="illust-puzzle-pieces">
+    <canvas id="canvas-puzzle-pieces" width="700" height="160"></canvas>
+</div>
+
+<div class="illust" id="illust-method-cards">
+    <canvas id="canvas-method-cards" width="750" height="160"></canvas>
+</div>
+
+<div class="illust" id="illust-drive-to-intersection">
+    <canvas id="canvas-drive-to-intersection" width="500" height="300"></canvas>
+</div>
+
+<div class="illust" id="illust-drive-and-turn">
+    <canvas id="canvas-drive-and-turn" width="460" height="380"></canvas>
+</div>
+
+<div class="illust" id="illust-code-reuse-arrow">
+    <canvas id="canvas-code-reuse-arrow" width="800" height="140"></canvas>
+</div>
+
+<div class="illust" id="illust-three-intersections">
+    <canvas id="canvas-three-intersections" width="700" height="160"></canvas>
+</div>
+
+<script>
+// ─── Helper Functions ───
+const TEAL = '#5b8fa8';
+const ORANGE = '#e8a87c';
+const GREEN = '#85c88a';
+const DARK = '#2d3436';
+const LIGHT_TEAL = 'rgba(91, 143, 168, 0.15)';
+const LIGHT_ORANGE = 'rgba(232, 168, 124, 0.15)';
+const LIGHT_GREEN = 'rgba(133, 200, 138, 0.15)';
+const GRAY = '#b8c5d0';
+
+function drawText(ctx, text, x, y, opts = {}) {
+    ctx.save();
+    ctx.font = opts.font || "22px 'Caveat', cursive";
+    ctx.fillStyle = opts.color || DARK;
+    ctx.textAlign = opts.align || 'center';
+    ctx.textBaseline = opts.baseline || 'middle';
+    if (opts.rotate) {
+        ctx.translate(x, y);
+        ctx.rotate(opts.rotate * Math.PI / 180);
+        ctx.fillText(text, 0, 0);
+    } else {
+        ctx.fillText(text, x, y);
+    }
+    ctx.restore();
+}
+
+function drawRobot(rc, ctx, x, y, scale = 1) {
+    const s = scale;
+    // Body
+    rc.rectangle(x - 20*s, y - 18*s, 40*s, 35*s, { fill: TEAL, fillStyle: 'solid', stroke: DARK, strokeWidth: 2, roughness: 1.2 });
+    // Eyes
+    rc.circle(x - 8*s, y - 5*s, 10*s, { fill: 'white', fillStyle: 'solid', stroke: DARK, strokeWidth: 1.5, roughness: 0.8 });
+    rc.circle(x + 8*s, y - 5*s, 10*s, { fill: 'white', fillStyle: 'solid', stroke: DARK, strokeWidth: 1.5, roughness: 0.8 });
+    // Pupils
+    rc.circle(x - 8*s, y - 5*s, 4*s, { fill: DARK, fillStyle: 'solid', stroke: DARK, strokeWidth: 1, roughness: 0.5 });
+    rc.circle(x + 8*s, y - 5*s, 4*s, { fill: DARK, fillStyle: 'solid', stroke: DARK, strokeWidth: 1, roughness: 0.5 });
+    // Mouth
+    rc.rectangle(x - 10*s, y + 8*s, 20*s, 4*s, { fill: ORANGE, fillStyle: 'solid', stroke: DARK, strokeWidth: 1.5, roughness: 1 });
+    // Antenna
+    rc.line(x, y - 18*s, x, y - 30*s, { stroke: DARK, strokeWidth: 2, roughness: 1 });
+    rc.circle(x, y - 33*s, 7*s, { fill: ORANGE, fillStyle: 'solid', stroke: DARK, strokeWidth: 1.5, roughness: 0.8 });
+    // Arms
+    rc.rectangle(x - 28*s, y + 2*s, 8*s, 6*s, { fill: TEAL, fillStyle: 'solid', stroke: DARK, strokeWidth: 1.5, roughness: 1.2 });
+    rc.rectangle(x + 20*s, y + 2*s, 8*s, 6*s, { fill: TEAL, fillStyle: 'solid', stroke: DARK, strokeWidth: 1.5, roughness: 1.2 });
+    // Wheels
+    rc.circle(x - 10*s, y + 24*s, 10*s, { fill: GRAY, fillStyle: 'solid', stroke: DARK, strokeWidth: 1.5, roughness: 1 });
+    rc.circle(x + 10*s, y + 24*s, 10*s, { fill: GRAY, fillStyle: 'solid', stroke: DARK, strokeWidth: 1.5, roughness: 1 });
+}
+
+function drawArrow(rc, ctx, x1, y1, x2, y2, color = ORANGE) {
+    rc.line(x1, y1, x2, y2, { stroke: color, strokeWidth: 2.5, roughness: 1.2 });
+    // Arrowhead
+    const angle = Math.atan2(y2 - y1, x2 - x1);
+    const headLen = 12;
+    const p1x = x2 - headLen * Math.cos(angle - 0.4);
+    const p1y = y2 - headLen * Math.sin(angle - 0.4);
+    const p2x = x2 - headLen * Math.cos(angle + 0.4);
+    const p2y = y2 - headLen * Math.sin(angle + 0.4);
+    rc.polygon([[x2, y2], [p1x, p1y], [p2x, p2y]], { fill: color, fillStyle: 'solid', stroke: color, strokeWidth: 1, roughness: 0.5 });
+}
+
+function drawIntersection(rc, x, y, r = 8) {
+    rc.circle(x, y, r * 2, { fill: ORANGE, fillStyle: 'solid', stroke: DARK, strokeWidth: 2, roughness: 0.8 });
+}
+
+// Wait for fonts to load
+document.fonts.ready.then(() => {
+
+// ═══ 1. Robot (title slide) ═══
+{
+    const canvas = document.getElementById('canvas-robot');
+    const ctx = canvas.getContext('2d');
+    const rc = rough.canvas(canvas);
+    drawRobot(rc, ctx, 100, 100, 2.5);
+}
+
+// ═══ 2. Circle to Grid ═══
+{
+    const canvas = document.getElementById('canvas-circle-to-grid');
+    const ctx = canvas.getContext('2d');
+    const rc = rough.canvas(canvas);
+
+    // Module 2 label
+    drawText(ctx, 'Module 2: Circle', 150, 30, { font: "bold 24px 'Caveat', cursive", color: TEAL });
+
+    // Circle
+    rc.ellipse(150, 150, 130, 120, { stroke: DARK, strokeWidth: 2.5, roughness: 1.5, fill: 'transparent' });
+    // Cross on circle
+    drawIntersection(rc, 150, 85, 8);
+    drawText(ctx, '+', 150, 85, { font: "bold 14px 'Caveat'", color: 'white' });
+
+    // Robot on circle
+    drawRobot(rc, ctx, 210, 140, 0.7);
+
+    // Arrow
+    drawText(ctx, 'same code!', 390, 100, { font: "bold 28px 'Caveat', cursive", color: ORANGE });
+    rc.line(310, 140, 470, 140, { stroke: ORANGE, strokeWidth: 3, roughness: 1.5 });
+    drawArrow(rc, ctx, 310, 140, 470, 140, ORANGE);
+
+    // Module 3 label
+    drawText(ctx, 'Module 3: Grid', 620, 30, { font: "bold 24px 'Caveat', cursive", color: TEAL });
+
+    // Grid
+    for (let row = 0; row < 3; row++) {
+        rc.line(500, 80 + row * 60, 740, 80 + row * 60, { stroke: DARK, strokeWidth: 2.5, roughness: 1.2 });
+    }
+    for (let col = 0; col < 4; col++) {
+        rc.line(520 + col * 70, 60, 520 + col * 70, 220, { stroke: DARK, strokeWidth: 2.5, roughness: 1.2 });
+    }
+    // Intersections
+    for (let row = 0; row < 3; row++) {
+        for (let col = 0; col < 4; col++) {
+            drawIntersection(rc, 520 + col * 70, 80 + row * 60, 7);
+        }
+    }
+    // Robot on grid
+    drawRobot(rc, ctx, 555, 145, 0.7);
+}
+
+// ═══ 3. Grid Layout ═══
+{
+    const canvas = document.getElementById('canvas-grid-layout');
+    const ctx = canvas.getContext('2d');
+    const rc = rough.canvas(canvas);
+
+    const startX = 160, startY = 80, spacing = 110;
+
+    // Column labels
+    for (let c = 0; c < 4; c++) {
+        drawText(ctx, `Col ${c}`, startX + c * spacing, 40, { font: "bold 22px 'Caveat', cursive", color: TEAL });
+    }
+    // Row labels
+    for (let r = 0; r < 4; r++) {
+        drawText(ctx, `Row ${r}`, 70, startY + r * spacing, { font: "bold 22px 'Caveat', cursive", color: TEAL });
+    }
+
+    // Horizontal lines
+    for (let r = 0; r < 4; r++) {
+        rc.line(startX - 25, startY + r * spacing, startX + 3 * spacing + 25, startY + r * spacing, { stroke: DARK, strokeWidth: 2.5, roughness: 1.3 });
+    }
+    // Vertical lines
+    for (let c = 0; c < 4; c++) {
+        rc.line(startX + c * spacing, startY - 25, startX + c * spacing, startY + 3 * spacing + 25, { stroke: DARK, strokeWidth: 2.5, roughness: 1.3 });
+    }
+    // Intersections
+    for (let r = 0; r < 4; r++) {
+        for (let c = 0; c < 4; c++) {
+            drawIntersection(rc, startX + c * spacing, startY + r * spacing, 10);
+        }
+    }
+
+    // Robot
+    drawRobot(rc, ctx, startX + 55, startY + spacing + 5, 0.8);
+
+    // Arrow showing robot path
+    rc.line(startX + 70, startY + spacing - 8, startX + spacing - 15, startY + spacing - 8, { stroke: ORANGE, strokeWidth: 2, roughness: 1.5, strokeLineDash: [6, 4] });
+    drawArrow(rc, ctx, startX + 70, startY + spacing - 8, startX + spacing - 12, startY + spacing - 8, ORANGE);
+}
+
+// ═══ 4. Progression (Module 2 → 3 → 4) ═══
+{
+    const canvas = document.getElementById('canvas-progression');
+    const ctx = canvas.getContext('2d');
+    const rc = rough.canvas(canvas);
+
+    // Module 2 box
+    rc.rectangle(30, 20, 200, 120, { fill: LIGHT_TEAL, fillStyle: 'solid', stroke: TEAL, strokeWidth: 2.5, roughness: 1.5 });
+    drawText(ctx, 'Module 2', 130, 50, { font: "bold 22px 'Caveat', cursive", color: TEAL });
+    drawText(ctx, 'Follow a circle,', 130, 80, { font: "20px 'Patrick Hand', cursive", color: DARK });
+    drawText(ctx, 'detect one cross', 130, 105, { font: "20px 'Patrick Hand', cursive", color: DARK });
+
+    // Arrow 1
+    drawArrow(rc, ctx, 240, 80, 290, 80, GRAY);
+
+    // Module 3 box (highlighted)
+    rc.rectangle(300, 15, 200, 130, { fill: LIGHT_ORANGE, fillStyle: 'solid', stroke: ORANGE, strokeWidth: 3, roughness: 1.5 });
+    drawText(ctx, 'Module 3 (now!)', 400, 45, { font: "bold 24px 'Caveat', cursive", color: ORANGE });
+    drawText(ctx, 'Navigate a GRID', 400, 78, { font: "20px 'Patrick Hand', cursive", color: DARK });
+    drawText(ctx, 'of crosses', 400, 103, { font: "20px 'Patrick Hand', cursive", color: DARK });
+
+    // Arrow 2
+    drawArrow(rc, ctx, 510, 80, 560, 80, GRAY);
+
+    // Module 4 box
+    rc.rectangle(570, 20, 200, 120, { fill: LIGHT_GREEN, fillStyle: 'solid', stroke: GREEN, strokeWidth: 2.5, roughness: 1.5 });
+    drawText(ctx, 'Module 4', 670, 50, { font: "bold 22px 'Caveat', cursive", color: GREEN });
+    drawText(ctx, 'Use COORDINATES', 670, 80, { font: "20px 'Patrick Hand', cursive", color: DARK });
+    drawText(ctx, 'for pathfinding', 670, 105, { font: "20px 'Patrick Hand', cursive", color: DARK });
+}
+
+// ═══ 5. Puzzle Pieces ═══
+{
+    const canvas = document.getElementById('canvas-puzzle-pieces');
+    const ctx = canvas.getContext('2d');
+    const rc = rough.canvas(canvas);
+
+    rc.rectangle(30, 25, 180, 100, { fill: LIGHT_TEAL, fillStyle: 'solid', stroke: TEAL, strokeWidth: 2.5, roughness: 1.5 });
+    drawText(ctx, 'Line', 120, 60, { font: "bold 22px 'Caveat', cursive", color: DARK });
+    drawText(ctx, 'Following', 120, 85, { font: "bold 22px 'Caveat', cursive", color: DARK });
+
+    drawText(ctx, '+', 240, 75, { font: "bold 36px 'Caveat', cursive", color: ORANGE });
+
+    rc.rectangle(270, 25, 180, 100, { fill: LIGHT_ORANGE, fillStyle: 'solid', stroke: ORANGE, strokeWidth: 2.5, roughness: 1.5 });
+    drawText(ctx, 'Cross', 360, 60, { font: "bold 22px 'Caveat', cursive", color: DARK });
+    drawText(ctx, 'Detection', 360, 85, { font: "bold 22px 'Caveat', cursive", color: DARK });
+
+    drawText(ctx, '+', 480, 75, { font: "bold 36px 'Caveat', cursive", color: ORANGE });
+
+    rc.rectangle(510, 25, 150, 100, { fill: LIGHT_GREEN, fillStyle: 'solid', stroke: GREEN, strokeWidth: 2.5, roughness: 1.5 });
+    drawText(ctx, 'Turns', 585, 75, { font: "bold 22px 'Caveat', cursive", color: DARK });
+}
+
+// ═══ 6. Method Cards ═══
+{
+    const canvas = document.getElementById('canvas-method-cards');
+    const ctx = canvas.getContext('2d');
+    const rc = rough.canvas(canvas);
+
+    // Card 1
+    rc.rectangle(20, 15, 220, 120, { fill: LIGHT_TEAL, fillStyle: 'solid', stroke: TEAL, strokeWidth: 2.5, roughness: 1.5 });
+    drawText(ctx, 'track_until', 130, 50, { font: "16px 'Courier New', monospace", color: DARK });
+    drawText(ctx, '_cross()', 130, 72, { font: "16px 'Courier New', monospace", color: DARK });
+    drawText(ctx, '→ drives forward', 130, 105, { font: "18px 'Caveat', cursive", color: TEAL });
+
+    // Card 2
+    rc.rectangle(270, 15, 200, 120, { fill: LIGHT_ORANGE, fillStyle: 'solid', stroke: ORANGE, strokeWidth: 2.5, roughness: 1.5 });
+    drawText(ctx, 'turn_right()', 370, 58, { font: "16px 'Courier New', monospace", color: DARK });
+    drawText(ctx, '↻ turns 90°', 370, 100, { font: "18px 'Caveat', cursive", color: ORANGE });
+
+    // Card 3
+    rc.rectangle(500, 15, 200, 120, { fill: LIGHT_GREEN, fillStyle: 'solid', stroke: GREEN, strokeWidth: 2.5, roughness: 1.5 });
+    drawText(ctx, 'turn_left()', 600, 58, { font: "16px 'Courier New', monospace", color: DARK });
+    drawText(ctx, '↺ turns 90°', 600, 100, { font: "18px 'Caveat', cursive", color: GREEN });
+}
+
+// ═══ 7. Drive to Intersection ═══
+{
+    const canvas = document.getElementById('canvas-drive-to-intersection');
+    const ctx = canvas.getContext('2d');
+    const rc = rough.canvas(canvas);
+
+    // Horizontal line
+    rc.line(30, 150, 450, 150, { stroke: DARK, strokeWidth: 3, roughness: 1.3 });
+    // Vertical line at intersection
+    rc.line(320, 60, 320, 250, { stroke: DARK, strokeWidth: 3, roughness: 1.3 });
+    // Intersection dot
+    drawIntersection(rc, 320, 150, 12);
+
+    // Robot at start
+    drawRobot(rc, ctx, 100, 140, 1);
+
+    // Dashed path
+    rc.line(140, 125, 290, 130, { stroke: ORANGE, strokeWidth: 2.5, roughness: 1.5, strokeLineDash: [8, 5] });
+    drawArrow(rc, ctx, 260, 128, 295, 130, ORANGE);
+
+    // Labels
+    drawText(ctx, 'start', 100, 95, { font: "bold 22px 'Caveat', cursive", color: TEAL });
+    drawText(ctx, 'follows line...', 210, 110, { font: "20px 'Caveat', cursive", color: '#636e72' });
+    drawText(ctx, 'sensors detect', 400, 110, { font: "20px 'Caveat', cursive", color: '#636e72' });
+    drawText(ctx, 'the cross!', 400, 135, { font: "20px 'Caveat', cursive", color: '#636e72' });
+    drawText(ctx, 'STOP!', 320, 275, { font: "bold 26px 'Caveat', cursive", color: ORANGE });
+}
+
+// ═══ 8. Drive and Turn ═══
+{
+    const canvas = document.getElementById('canvas-drive-and-turn');
+    const ctx = canvas.getContext('2d');
+    const rc = rough.canvas(canvas);
+
+    // Grid lines
+    rc.line(30, 130, 420, 130, { stroke: DARK, strokeWidth: 3, roughness: 1.3 });
+    rc.line(210, 30, 210, 350, { stroke: DARK, strokeWidth: 3, roughness: 1.3 });
+
+    // Main intersection
+    drawIntersection(rc, 210, 130, 12);
+
+    // Step 1: Drive forward (ghost robot)
+    rc.rectangle(60, 115, 36, 26, { fill: 'rgba(91, 143, 168, 0.3)', fillStyle: 'solid', stroke: TEAL, strokeWidth: 1.5, roughness: 1 });
+    rc.line(105, 115, 185, 118, { stroke: TEAL, strokeWidth: 2, roughness: 1.5, strokeLineDash: [6, 4] });
+    drawArrow(rc, ctx, 155, 117, 185, 118, TEAL);
+    drawText(ctx, '1. drive', 130, 95, { font: "bold 22px 'Caveat', cursive", color: TEAL });
+
+    // Step 2: Turn right (curve)
+    rc.arc(220, 130, 40, 40, -Math.PI/2, Math.PI/2, false, { stroke: ORANGE, strokeWidth: 2.5, roughness: 1.2 });
+    drawText(ctx, '2. turn', 290, 90, { font: "bold 22px 'Caveat', cursive", color: ORANGE });
+    drawText(ctx, 'right', 290, 115, { font: "bold 22px 'Caveat', cursive", color: ORANGE });
+
+    // Step 3: Drive down
+    rc.line(210, 165, 210, 250, { stroke: GREEN, strokeWidth: 2, roughness: 1.5, strokeLineDash: [6, 4] });
+    drawArrow(rc, ctx, 210, 220, 210, 250, GREEN);
+    drawText(ctx, '3. drive', 300, 210, { font: "bold 22px 'Caveat', cursive", color: GREEN });
+    drawText(ctx, 'again!', 300, 235, { font: "bold 22px 'Caveat', cursive", color: GREEN });
+
+    // Next intersection (dashed)
+    rc.circle(210, 290, 18, { stroke: GREEN, strokeWidth: 2, roughness: 1.2, strokeLineDash: [5, 4] });
+    drawText(ctx, 'next intersection', 210, 335, { font: "18px 'Caveat', cursive", color: GREEN });
+}
+
+// ═══ 9. Code Reuse Arrow ═══
+{
+    const canvas = document.getElementById('canvas-code-reuse-arrow');
+    const ctx = canvas.getContext('2d');
+    const rc = rough.canvas(canvas);
+
+    // Module 2 box
+    rc.rectangle(30, 20, 280, 100, { fill: LIGHT_TEAL, fillStyle: 'solid', stroke: TEAL, strokeWidth: 2.5, roughness: 1.5 });
+    drawText(ctx, 'Module 2', 170, 50, { font: "bold 26px 'Caveat', cursive", color: TEAL });
+    drawText(ctx, 'Circle + LineTrack', 170, 85, { font: "20px 'Caveat', cursive", color: '#636e72' });
+
+    // Arrow
+    drawArrow(rc, ctx, 320, 70, 480, 70, ORANGE);
+    drawText(ctx, 'zero changes!', 400, 45, { font: "bold 24px 'Caveat', cursive", color: ORANGE });
+
+    // Module 3 box
+    rc.rectangle(490, 20, 280, 100, { fill: LIGHT_ORANGE, fillStyle: 'solid', stroke: ORANGE, strokeWidth: 2.5, roughness: 1.5 });
+    drawText(ctx, 'Module 3', 630, 50, { font: "bold 26px 'Caveat', cursive", color: ORANGE });
+    drawText(ctx, 'Grid Navigation', 630, 85, { font: "20px 'Caveat', cursive", color: '#636e72' });
+}
+
+// ═══ 10. Three Intersections ═══
+{
+    const canvas = document.getElementById('canvas-three-intersections');
+    const ctx = canvas.getContext('2d');
+    const rc = rough.canvas(canvas);
+
+    // Horizontal line
+    rc.line(30, 80, 660, 80, { stroke: DARK, strokeWidth: 3, roughness: 1.3 });
+
+    // Three intersections
+    for (let i = 0; i < 3; i++) {
+        const x = 200 + i * 170;
+        rc.line(x, 30, x, 130, { stroke: DARK, strokeWidth: 3, roughness: 1.3 });
+        drawIntersection(rc, x, 80, 10);
+        drawText(ctx, `${i + 1}`, x, 20, { font: "18px 'Caveat', cursive", color: '#636e72' });
+    }
+
+    // Robot
+    drawRobot(rc, ctx, 80, 72, 0.8);
+
+    // Dashed arc path
+    rc.line(115, 55, 530, 55, { stroke: ORANGE, strokeWidth: 2, roughness: 2, strokeLineDash: [8, 5] });
+    drawArrow(rc, ctx, 500, 55, 540, 58, ORANGE);
+
+    drawText(ctx, 'for loop!', 340, 38, { font: "bold 24px 'Caveat', cursive", color: ORANGE });
+}
+
+// Signal that all illustrations are rendered
+document.body.setAttribute('data-rendered', 'true');
+
+}); // end fonts.ready
+</script>
+</body>
+</html>
