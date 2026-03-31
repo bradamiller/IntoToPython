@@ -215,6 +215,7 @@
             position: relative;
             box-shadow: 3px 3px 0 rgba(91, 143, 168, 0.15);
             transform: rotate(-0.2deg);
+            white-space: pre;
         }
 
         .code-block::before {
@@ -229,6 +230,10 @@
             color: #5b8fa8;
             border: 2px solid #b8c5d0;
             border-radius: 8px;
+        }
+
+        .code-block.compact::before {
+            display: none;
         }
 
         /* ── Tables (sketch style) ── */
@@ -1097,8 +1102,7 @@ print("All destinations reached!")</div>
                 </div>
 
                 <p class="header-text">Step 1: Test Manhattan class alone (no robot)</p>
-                <div class="code-block" style="font-size: 14px; padding: 14px 18px; margin: 10px 0;">
-                    <span style="display:none;">badge</span>
+                <div class="code-block compact" style="font-size: 14px; padding: 14px 18px; margin: 10px 0;">
 manhattan = Manhattan((0, 0))
 for dest in [(2,3), (0,1), (3,3), (1,0)]:
     path = manhattan.compute_path(dest)

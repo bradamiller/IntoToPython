@@ -215,6 +215,7 @@
             position: relative;
             box-shadow: 3px 3px 0 rgba(91, 143, 168, 0.15);
             transform: rotate(-0.2deg);
+            white-space: pre;
         }
 
         .code-block::before {
@@ -1055,8 +1056,7 @@ else:
                 <pre class="code-block">def compute_path(self, destination):
     print("Computing path from", self.position, "to", destination)
     path = [self.position]
-    current_row = self.position[0]
-    current_col = self.position[1]
+    current_row, current_col = self.position
     # ... rest of code ...
 
     print("Row step:", row_step)

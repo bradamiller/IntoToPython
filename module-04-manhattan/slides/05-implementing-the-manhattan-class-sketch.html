@@ -215,6 +215,7 @@
             position: relative;
             box-shadow: 3px 3px 0 rgba(91, 143, 168, 0.15);
             transform: rotate(-0.2deg);
+            white-space: pre;
         }
 
         .code-block::before {
@@ -821,14 +822,12 @@ print(path)
 
                 <div class="two-col">
                     <div class="col">
-                        <div class="code-block" style="font-size: 14px;">
+                        <div class="code-block compact" style="font-size: 14px;">
 <pre>def compute_path(self, destination):
     path = [self.position]
 
-    current_row = self.position[0]
-    current_col = self.position[1]
-    dest_row = destination[0]
-    dest_col = destination[1]
+    current_row, current_col = self.position
+    dest_row, dest_col = destination
 
     # Which direction for rows?
     if dest_row > current_row:
@@ -1108,7 +1107,7 @@ print(path)
             <div class="content">
                 <div class="two-col">
                     <div class="col" style="flex: 1.4;">
-                        <div class="code-block" style="font-size: 14px;">
+                        <div class="code-block compact" style="font-size: 14px;">
 <pre>class Manhattan:
     def __init__(self, start):
         self.position = start
@@ -1116,10 +1115,8 @@ print(path)
     def compute_path(self, destination):
         path = [self.position]
 
-        current_row = self.position[0]
-        current_col = self.position[1]
-        dest_row = destination[0]
-        dest_col = destination[1]
+        current_row, current_col = self.position
+        dest_row, dest_col = destination
 
         if dest_row > current_row:
             row_step = 1

@@ -215,6 +215,7 @@
             position: relative;
             box-shadow: 3px 3px 0 rgba(91, 143, 168, 0.15);
             transform: rotate(-0.2deg);
+            white-space: pre;
         }
 
         .code-block::before {
@@ -817,12 +818,12 @@
                         <path d="M 60 40 L 60 110 L 60 180 L 160 180 L 260 180 L 360 180" fill="none" stroke="#e8a87c" stroke-width="3" stroke-dasharray="8,5" stroke-linecap="round"/>
 
                         <!-- Step labels -->
-                        <text x="72" y="38" font-family="Fira Code, monospace" font-size="11" fill="#e8a87c">(0,0)</text>
-                        <text x="72" y="108" font-family="Fira Code, monospace" font-size="11" fill="#e8a87c">(1,0)</text>
-                        <text x="72" y="178" font-family="Fira Code, monospace" font-size="11" fill="#e8a87c">(2,0)</text>
-                        <text x="148" y="200" font-family="Fira Code, monospace" font-size="11" fill="#e8a87c">(2,1)</text>
-                        <text x="248" y="200" font-family="Fira Code, monospace" font-size="11" fill="#e8a87c">(2,2)</text>
-                        <text x="348" y="200" font-family="Fira Code, monospace" font-size="11" fill="#85c88a">(2,3)</text>
+                        <text x="72" y="38" font-family="Fira Code, monospace" font-size="14" fill="#2d3436">(0,0)</text>
+                        <text x="72" y="108" font-family="Fira Code, monospace" font-size="14" fill="#2d3436">(1,0)</text>
+                        <text x="72" y="178" font-family="Fira Code, monospace" font-size="14" fill="#2d3436">(2,0)</text>
+                        <text x="148" y="200" font-family="Fira Code, monospace" font-size="14" fill="#2d3436">(2,1)</text>
+                        <text x="248" y="200" font-family="Fira Code, monospace" font-size="14" fill="#2d3436">(2,2)</text>
+                        <text x="348" y="200" font-family="Fira Code, monospace" font-size="14" fill="#2d3436">(2,3)</text>
 
                         <!-- Robot at destination (2,3) facing right -->
                         <rect x="347" y="164" width="26" height="26" rx="3" fill="#b8c5d0" stroke="#2d3436" stroke-width="2" transform="rotate(-1 360 177)"/>
@@ -907,13 +908,13 @@ empty = []</div>
                 <div class="two-col">
                     <div class="col">
                         <div class="header-text">Creating and accessing:</div>
-                        <div class="code-block">colors = ["red", "green", "blue"]
+                        <div class="code-block compact">colors = ["red", "green", "blue"]
 print(colors[0])      # "red"
 print(colors[1])      # "green"
 print(len(colors))    # 3</div>
 
                         <div class="header-text">Adding items with append():</div>
-                        <div class="code-block">colors = ["red", "green"]
+                        <div class="code-block compact">colors = ["red", "green"]
 colors.append("blue")
 print(colors)
 # ["red", "green", "blue"]
@@ -1183,8 +1184,9 @@ print("End:", path[-1])</div>
 
                 <div class="header-text">Iterating through a path:</div>
                 <div class="code-block">for step in path:
+    row, col = step
     print("Visit:", step)
-    print("  Row:", step[0], "Col:", step[1])</div>
+    print("  Row:", row, "Col:", col)</div>
             </div>
             <div class="slide-navigation">
                 <button class="nav-btn" onclick="prevSlide()">&larr; Prev</button>

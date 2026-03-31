@@ -215,6 +215,7 @@
             position: relative;
             box-shadow: 3px 3px 0 rgba(91, 143, 168, 0.15);
             transform: rotate(-0.2deg);
+            white-space: pre;
         }
 
         .code-block::before {
@@ -229,6 +230,10 @@
             color: #5b8fa8;
             border: 2px solid #b8c5d0;
             border-radius: 8px;
+        }
+
+        .code-block.compact::before {
+            display: none;
         }
 
         /* ── Tables (sketch style) ── */
@@ -760,7 +765,7 @@
                     </div>
                 </div>
 
-                <div class="code-block" style="max-width: 580px;">path = [(0,0), (1,0), (2,0), (2,1), (2,2)]
+                <div class="code-block compact" style="max-width: 580px;">path = [(0,0), (1,0), (2,0), (2,1), (2,2)]
 <span style="color: #85c88a;"># How does this become real robot movement?</span></div>
 
                 <div class="insight-box">
@@ -949,8 +954,10 @@ print("Heading:", nav.heading)     <span style="color: #85c88a;"># N</span></div
                 <div class="two-col">
                     <div class="col">
                         <div class="code-block" style="font-size: 15px;">def get_needed_direction(self, next_pos):
-    row_diff = next_pos[0] - self.position[0]
-    col_diff = next_pos[1] - self.position[1]
+    nxt_row, nxt_col = next_pos
+    cur_row, cur_col = self.position
+    row_diff = nxt_row - cur_row
+    col_diff = nxt_col - cur_col
 
     if row_diff == 1:
         return "S"
@@ -1001,7 +1008,7 @@ print("Heading:", nav.heading)     <span style="color: #85c88a;"># N</span></div
                 <div class="spacer"></div>
 
                 <p class="header-text">Example:</p>
-                <div class="code-block" style="max-width: 520px; font-size: 15px; margin: 8px 0;">nav = Navigator((0, 0), "N")
+                <div class="code-block compact" style="max-width: 520px; font-size: 15px; margin: 8px 0;">nav = Navigator((0, 0), "N")
 direction = nav.get_needed_direction((1, 0))
 print(direction)   <span style="color: #85c88a;"># "S" — need to go south (row increases)</span></div>
             </div>
@@ -1107,7 +1114,7 @@ print(direction)   <span style="color: #85c88a;"># "S" — need to go south (row
         self.turn_to(direction)
 
         <span style="color: #85c88a;"># 3. Drive forward one intersection</span>
-        self.drivetrain.straight(30)
+        self.drivetrain.straight(30, 0.5)
 
         <span style="color: #85c88a;"># 4. Update position</span>
         self.position = next_pos
@@ -1118,7 +1125,7 @@ print(direction)   <span style="color: #85c88a;"># "S" — need to go south (row
                 </div>
 
                 <div class="answer-box">
-                    <p class="body-text" style="margin-left: 8px;"><strong>Note:</strong> <code style="font-family: 'Fira Code', monospace;">straight(30)</code> assumes 30 cm between intersections &mdash; adjust for your grid!</p>
+                    <p class="body-text" style="margin-left: 8px;"><strong>Note:</strong> <code style="font-family: 'Fira Code', monospace;">straight(30, 0.5)</code> assumes 30 cm between intersections &mdash; adjust for your grid!</p>
                 </div>
 
                 <!-- Loop visualization SVG -->
@@ -1139,7 +1146,7 @@ print(direction)   <span style="color: #85c88a;"># "S" — need to go south (row
 
                         <rect x="231" y="15" width="90" height="50" rx="10" fill="rgba(133, 200, 138, 0.1)" stroke="#85c88a" stroke-width="2"/>
                         <text x="276" y="35" font-family="Caveat, cursive" font-size="13" fill="#85c88a" text-anchor="middle" font-weight="600">3. Drive</text>
-                        <text x="276" y="52" font-family="Patrick Hand, cursive" font-size="12" fill="#2d3436" text-anchor="middle">straight(30)</text>
+                        <text x="276" y="52" font-family="Patrick Hand, cursive" font-size="12" fill="#2d3436" text-anchor="middle">straight(30, 0.5)</text>
 
                         <polygon points="326,38 338,43 326,48" fill="#e8a87c"/>
 
@@ -1272,7 +1279,7 @@ print("Arrived at destination!")</div>
                     </div>
                     <div class="activity-step">
                         <span class="step-number">4</span>
-                        <span class="step-text">Adjust the <code style="font-family: 'Fira Code', monospace;">straight(30)</code> distance to match your grid spacing</span>
+                        <span class="step-text">Adjust the <code style="font-family: 'Fira Code', monospace;">straight(30, 0.5)</code> distance to match your grid spacing</span>
                     </div>
                 </div>
 

@@ -215,6 +215,7 @@
             position: relative;
             box-shadow: 3px 3px 0 rgba(91, 143, 168, 0.15);
             transform: rotate(-0.2deg);
+            white-space: pre;
         }
 
         .code-block::before {
@@ -686,12 +687,13 @@
             <a href="#slide-2" class="nav-item" onclick="showSlide(1)">Packaging Two Numbers</a>
             <a href="#slide-3" class="nav-item" onclick="showSlide(2)">What Is a Tuple?</a>
             <a href="#slide-4" class="nav-item" onclick="showSlide(3)">Accessing Tuple Elements</a>
-            <a href="#slide-5" class="nav-item" onclick="showSlide(4)">Why Tuples Are Immutable</a>
-            <a href="#slide-6" class="nav-item" onclick="showSlide(5)">Tuples for Robot Coordinates</a>
-            <a href="#slide-7" class="nav-item" onclick="showSlide(6)">Manhattan Distance</a>
-            <a href="#slide-8" class="nav-item" onclick="showSlide(7)">Common Tuple Mistakes</a>
-            <a href="#slide-9" class="nav-item" onclick="showSlide(8)">Your Turn!</a>
-            <a href="#slide-10" class="nav-item" onclick="showSlide(9)">What's Next</a>
+            <a href="#slide-5" class="nav-item" onclick="showSlide(4)">Unpacking &amp; Creating Tuples</a>
+            <a href="#slide-6" class="nav-item" onclick="showSlide(5)">Why Tuples Are Immutable</a>
+            <a href="#slide-7" class="nav-item" onclick="showSlide(6)">Tuples for Robot Coordinates</a>
+            <a href="#slide-8" class="nav-item" onclick="showSlide(7)">Manhattan Distance</a>
+            <a href="#slide-9" class="nav-item" onclick="showSlide(8)">Common Tuple Mistakes</a>
+            <a href="#slide-10" class="nav-item" onclick="showSlide(9)">Your Turn!</a>
+            <a href="#slide-11" class="nav-item" onclick="showSlide(10)">What's Next</a>
         </nav>
     </div>
 
@@ -726,13 +728,14 @@
                         <h3>Learning Objectives</h3>
                         <p class="bullet">Create tuples to represent coordinate pairs</p>
                         <p class="bullet">Access tuple elements using indexing</p>
+                        <p class="bullet">Unpack tuples into separate variables</p>
                         <p class="bullet">Understand why tuples are immutable</p>
                         <p class="bullet">Use tuples to store robot positions</p>
                     </div>
                     <div class="title-section">
                         <h3>Agenda</h3>
                         <p class="bullet">What is a tuple? (10 min)</p>
-                        <p class="bullet">Creating and indexing tuples (10 min)</p>
+                        <p class="bullet">Creating, indexing &amp; unpacking (10 min)</p>
                         <p class="bullet">Tuples for coordinates (10 min)</p>
                         <p class="bullet">Practice exercises (15 min)</p>
                     </div>
@@ -740,7 +743,7 @@
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn" disabled>Previous</button>
-                <span class="slide-counter">1 / 10</span>
+                <span class="slide-counter">1 / 11</span>
                 <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
             </div>
         </div>
@@ -815,7 +818,7 @@ col = 3
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
-                <span class="slide-counter">2 / 10</span>
+                <span class="slide-counter">2 / 11</span>
                 <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
             </div>
         </div>
@@ -882,7 +885,7 @@ destination = (3, 1)</pre>
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
-                <span class="slide-counter">3 / 10</span>
+                <span class="slide-counter">3 / 11</span>
                 <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
             </div>
         </div>
@@ -949,13 +952,98 @@ print("Col:", col)   # Col: 3</pre>
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
-                <span class="slide-counter">4 / 10</span>
+                <span class="slide-counter">4 / 11</span>
                 <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
             </div>
         </div>
 
-        <!-- ═══ SLIDE 5: Why Tuples Are Immutable ═══ -->
+        <!-- ═══ SLIDE 5: Unpacking & Creating Tuples ═══ -->
         <div id="slide-5" class="slide">
+            <div class="title-bar">
+                <h1>Unpacking &amp; Creating Tuples</h1>
+            </div>
+            <div class="content">
+                <p class="header-text">Tuple unpacking: get both values at once</p>
+                <p class="body-text">Instead of using <code>[0]</code> and <code>[1]</code>, unpack into named variables:</p>
+
+                <div class="compare-row">
+                    <div class="compare-box bad">
+                        <p class="compare-label bad">Indexing (verbose)</p>
+                        <pre class="code-block compact" style="margin: 8px 0; font-size: 15px; transform: none;">position = (2, 3)
+row = position[0]
+col = position[1]</pre>
+                    </div>
+                    <div class="compare-box good">
+                        <p class="compare-label good">Unpacking (cleaner)</p>
+                        <pre class="code-block compact" style="margin: 8px 0; font-size: 15px; transform: none;">position = (2, 3)
+row, col = position</pre>
+                    </div>
+                </div>
+
+                <div class="spacer"></div>
+
+                <p class="header-text">Creating a tuple from variables</p>
+                <p class="body-text">Commas create tuples &mdash; parentheses are optional but recommended:</p>
+
+                <pre class="code-block">row = 2
+col = 3
+
+# Both create the same tuple
+position = (row, col)
+position = row, col</pre>
+
+                <div class="spacer"></div>
+
+                <!-- Visual: unpack diagram -->
+                <div class="illustration">
+                    <svg width="585" height="130" viewBox="0 0 450 100">
+                        <!-- Tuple box -->
+                        <rect x="30" y="10" width="120" height="40" rx="10" fill="rgba(91, 143, 168, 0.1)" stroke="#5b8fa8" stroke-width="2"/>
+                        <text x="90" y="35" font-family="Fira Code, monospace" font-size="15" fill="#2d3436" text-anchor="middle">(2, 3)</text>
+                        <!-- Unpack arrows -->
+                        <path d="M70 55 L40 80" fill="none" stroke="#5b8fa8" stroke-width="2"/>
+                        <polygon points="38,75 35,85 45,80" fill="#5b8fa8"/>
+                        <path d="M110 55 L140 80" fill="none" stroke="#e8a87c" stroke-width="2"/>
+                        <polygon points="135,75 145,80 142,70" fill="#e8a87c"/>
+                        <!-- Variable labels -->
+                        <rect x="10" y="82" width="60" height="24" rx="6" fill="rgba(91, 143, 168, 0.15)" stroke="#5b8fa8" stroke-width="1.5"/>
+                        <text x="40" y="99" font-family="Fira Code, monospace" font-size="13" fill="#2d3436" text-anchor="middle">row=2</text>
+                        <rect x="115" y="82" width="60" height="24" rx="6" fill="rgba(232, 168, 124, 0.2)" stroke="#e8a87c" stroke-width="1.5"/>
+                        <text x="145" y="99" font-family="Fira Code, monospace" font-size="13" fill="#2d3436" text-anchor="middle">col=3</text>
+                        <!-- Label -->
+                        <text x="90" y="68" font-family="Caveat, cursive" font-size="14" fill="#636e72" text-anchor="middle">unpacking</text>
+
+                        <!-- Reverse: packing -->
+                        <rect x="270" y="82" width="60" height="24" rx="6" fill="rgba(91, 143, 168, 0.15)" stroke="#5b8fa8" stroke-width="1.5"/>
+                        <text x="300" y="99" font-family="Fira Code, monospace" font-size="13" fill="#2d3436" text-anchor="middle">row=2</text>
+                        <rect x="370" y="82" width="60" height="24" rx="6" fill="rgba(232, 168, 124, 0.2)" stroke="#e8a87c" stroke-width="1.5"/>
+                        <text x="400" y="99" font-family="Fira Code, monospace" font-size="13" fill="#2d3436" text-anchor="middle">col=3</text>
+                        <!-- Pack arrows -->
+                        <path d="M310 80 L340 55" fill="none" stroke="#5b8fa8" stroke-width="2"/>
+                        <polygon points="335,50 345,50 340,60" fill="#5b8fa8"/>
+                        <path d="M390 80 L360 55" fill="none" stroke="#e8a87c" stroke-width="2"/>
+                        <polygon points="355,50 365,50 360,60" fill="#e8a87c"/>
+                        <!-- Tuple result -->
+                        <rect x="290" y="10" width="120" height="40" rx="10" fill="rgba(133, 200, 138, 0.1)" stroke="#85c88a" stroke-width="2"/>
+                        <text x="350" y="35" font-family="Fira Code, monospace" font-size="15" fill="#2d3436" text-anchor="middle">(2, 3)</text>
+                        <!-- Label -->
+                        <text x="350" y="68" font-family="Caveat, cursive" font-size="14" fill="#636e72" text-anchor="middle">creating</text>
+                    </svg>
+                </div>
+
+                <div class="insight-box">
+                    Unpacking gives readable names: <code>row, col = position</code>
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">5 / 11</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 6: Why Tuples Are Immutable ═══ -->
+        <div id="slide-6" class="slide">
             <div class="title-bar">
                 <h1>Why Tuples Are Immutable</h1>
             </div>
@@ -1008,13 +1096,13 @@ new_position = (2, 4)  # New!</pre>
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
-                <span class="slide-counter">5 / 10</span>
+                <span class="slide-counter">6 / 11</span>
                 <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
             </div>
         </div>
 
-        <!-- ═══ SLIDE 6: Tuples for Robot Coordinates ═══ -->
-        <div id="slide-6" class="slide">
+        <!-- ═══ SLIDE 7: Tuples for Robot Coordinates ═══ -->
+        <div id="slide-7" class="slide">
             <div class="title-bar">
                 <h1>Tuples for Robot Coordinates</h1>
             </div>
@@ -1025,10 +1113,14 @@ new_position = (2, 4)  # New!</pre>
                         <pre class="code-block">start = (0, 0)
 destination = (2, 3)
 
+# Unpack to get row and col
+s_row, s_col = start
+d_row, d_col = destination
+
 print("Start:", start)
 print("Going to:", destination)
-print("Start row:", start[0])
-print("Start col:", start[1])</pre>
+print("Start row:", s_row)
+print("Start col:", s_col)</pre>
 
                         <div class="spacer"></div>
 
@@ -1097,34 +1189,37 @@ print(current == other)   # False!</pre>
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
-                <span class="slide-counter">6 / 10</span>
+                <span class="slide-counter">7 / 11</span>
                 <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
             </div>
         </div>
 
-        <!-- ═══ SLIDE 7: Tuple Math — Calculating Distance ═══ -->
-        <div id="slide-7" class="slide">
+        <!-- ═══ SLIDE 8: Tuple Math — Calculating Distance ═══ -->
+        <div id="slide-8" class="slide">
             <div class="title-bar">
                 <h1>Tuple Math &mdash; Manhattan Distance</h1>
             </div>
             <div class="content">
                 <p class="header-text">How far apart are two coordinates?</p>
 
-                <div class="two-col">
-                    <div class="col">
-                        <pre class="code-block">start = (0, 0)
+                <pre class="code-block">start = (0, 0)
 destination = (2, 3)
 
-row_distance = destination[0] - start[0]
-# 2 - 0 = 2
-col_distance = destination[1] - start[1]
-# 3 - 0 = 3
+# Unpack both tuples
+start_row, start_col = start
+dest_row, dest_col = destination
+
+# Calculate each distance
+row_distance = dest_row - start_row
+col_distance = dest_col - start_col
 
 total = row_distance + col_distance
 print("Total steps:", total)  # 5</pre>
 
-                        <div class="spacer"></div>
+                <div class="spacer"></div>
 
+                <div class="two-col">
+                    <div class="col">
                         <div class="answer-box">
                             <p class="body-text" style="margin-left: 8px;"><strong>Manhattan distance</strong> = row difference + column difference = total intersections to cross</p>
                         </div>
@@ -1182,13 +1277,13 @@ print("Total steps:", total)  # 5</pre>
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
-                <span class="slide-counter">7 / 10</span>
+                <span class="slide-counter">8 / 11</span>
                 <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
             </div>
         </div>
 
-        <!-- ═══ SLIDE 8: Common Tuple Mistakes ═══ -->
-        <div id="slide-8" class="slide">
+        <!-- ═══ SLIDE 9: Common Tuple Mistakes ═══ -->
+        <div id="slide-9" class="slide">
             <div class="title-bar">
                 <h1>Common Tuple Mistakes</h1>
             </div>
@@ -1244,13 +1339,13 @@ position = (5, 3)  # New tuple!</pre>
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
-                <span class="slide-counter">8 / 10</span>
+                <span class="slide-counter">9 / 11</span>
                 <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
             </div>
         </div>
 
-        <!-- ═══ SLIDE 9: Your Turn! ═══ -->
-        <div id="slide-9" class="slide">
+        <!-- ═══ SLIDE 10: Your Turn! ═══ -->
+        <div id="slide-10" class="slide">
             <div class="title-bar">
                 <h1>Your Turn!</h1>
             </div>
@@ -1269,7 +1364,7 @@ position = (5, 3)  # New tuple!</pre>
                     </div>
                     <div class="activity-step">
                         <span class="step-number">3</span>
-                        <span class="step-text">Print the row and column of each separately using <code>[0]</code> and <code>[1]</code></span>
+                        <span class="step-text">Unpack each tuple: <code>row, col = home</code></span>
                     </div>
                     <div class="activity-step">
                         <span class="step-number">4</span>
@@ -1345,7 +1440,7 @@ position = (5, 3)  # New tuple!</pre>
                     </div>
                     <div class="checkpoint">
                         <span class="check-icon"></span>
-                        <span class="step-text">Can you access <code>[0]</code> and <code>[1]</code>?</span>
+                        <span class="step-text">Can you unpack with <code>row, col = position</code>?</span>
                     </div>
                     <div class="checkpoint">
                         <span class="check-icon"></span>
@@ -1355,13 +1450,13 @@ position = (5, 3)  # New tuple!</pre>
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
-                <span class="slide-counter">9 / 10</span>
+                <span class="slide-counter">10 / 11</span>
                 <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
             </div>
         </div>
 
-        <!-- ═══ SLIDE 10: Connection to Next Lesson ═══ -->
-        <div id="slide-10" class="slide">
+        <!-- ═══ SLIDE 11: Connection to Next Lesson ═══ -->
+        <div id="slide-11" class="slide">
             <div class="title-bar">
                 <h1>What's Next</h1>
             </div>
@@ -1371,7 +1466,7 @@ position = (5, 3)  # New tuple!</pre>
                         <p class="header-text">What you did today</p>
                         <div class="sketch-box">
                             <p class="bullet">Created tuples to store <span class="sketch-highlight">coordinates</span></p>
-                            <p class="bullet">Accessed elements with <code>[0]</code> and <code>[1]</code></p>
+                            <p class="bullet">Unpacked tuples with <code>row, col = position</code></p>
                             <p class="bullet">Calculated <span class="sketch-highlight">Manhattan distances</span> between positions</p>
                         </div>
                     </div>
@@ -1428,7 +1523,7 @@ position = (5, 3)  # New tuple!</pre>
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
-                <span class="slide-counter">10 / 10</span>
+                <span class="slide-counter">11 / 11</span>
                 <button onclick="nextSlide()" class="nav-btn next-btn" disabled>Next</button>
             </div>
         </div>

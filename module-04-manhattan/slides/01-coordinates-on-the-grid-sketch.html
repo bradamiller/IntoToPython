@@ -215,6 +215,7 @@
             position: relative;
             box-shadow: 3px 3px 0 rgba(91, 143, 168, 0.15);
             transform: rotate(-0.2deg);
+            white-space: pre;
         }
 
         .code-block::before {
@@ -1244,16 +1245,17 @@ go forward...</div>
                 <div class="two-col">
                     <div class="col">
                         <p class="body-text" style="font-family: 'Caveat', cursive; font-size: 24px; color: #5b8fa8;">Today: separate variables</p>
-                        <div class="code-block">row = 2
+                        <div class="code-block compact">row = 2
 col = 3
-print("Position: row", row, "col", col)</div>
+print("Row:", row, "Col:", col)</div>
 
                         <div class="spacer"></div>
                         <p class="body-text" style="font-family: 'Caveat', cursive; font-size: 24px; color: #e8a87c;">Next lesson preview &mdash; Tuples</p>
-                        <div class="code-block">position = (2, 3)
+                        <div class="code-block compact">position = (2, 3)
 print("Position:", position)
-print("Row:", position[0])
-print("Col:", position[1])</div>
+row, col = position
+print("Row:", row)
+print("Col:", col)</div>
                     </div>
                     <div class="col">
                         <!-- Visual: variable boxes -->
