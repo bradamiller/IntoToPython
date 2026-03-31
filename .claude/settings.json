@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(python generate_pptx_lesson07.py)",
-      "mcp__plugin_playwright_playwright__browser_navigate"
+      "mcp__plugin_playwright_playwright__browser_navigate",
+      "mcp__plugin_playwright_playwright__browser_run_code"
     ]
   }
 }
