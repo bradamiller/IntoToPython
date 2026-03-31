@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Worksheet: Implementing the Manhattan Class</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Patrick+Hand&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        /* ── Reset & Base ── */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Patrick Hand', cursive;
+            font-size: 17px;
+            color: #2d3436;
+            background: #fdfcfa;
+            line-height: 1.5;
+            padding: 0;
+        }
+
+        /* ── Page structure for print ── */
+        .page {
+            width: 8.5in;
+            min-height: 11in;
+            margin: 0 auto;
+            padding: 0.5in 0.6in;
+            background: #fdfcfa;
+            position: relative;
+        }
+
+        /* Subtle notebook-paper lines */
+        .page::before {
+            content: '';
+            position: absolute;
+            inset: 0.5in 0.6in;
+            background-image: linear-gradient(rgba(180, 200, 220, 0.1) 1px, transparent 1px);
+            background-size: 100% 28px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .page > * { position: relative; z-index: 1; }
+
+        /* ── Header ── */
+        .worksheet-header {
+            border-bottom: 3px solid #5b8fa8;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+
+        .worksheet-header h1 {
+            font-family: 'Caveat', cursive;
+            font-size: 32px;
+            font-weight: 700;
+            color: #2d3436;
+            transform: rotate(-0.3deg);
+        }
+
+        .worksheet-header .subtitle {
+            font-family: 'Caveat', cursive;
+            font-size: 18px;
+            color: #5b8fa8;
+            font-weight: 600;
+        }
+
+        .student-info {
+            display: flex;
+            gap: 40px;
+            margin-top: 10px;
+            font-size: 17px;
+        }
+
+        .student-info label {
+            font-weight: bold;
+        }
+
+        .student-info .blank {
+            display: inline-block;
+            width: 200px;
+            border-bottom: 2px solid #b8c5d0;
+            margin-left: 6px;
+        }
+
+        /* ── Section Headers ── */
+        .section {
+            margin-top: 22px;
+            margin-bottom: 14px;
+        }
+
+        .section-header {
+            font-family: 'Caveat', cursive;
+            font-size: 24px;
+            font-weight: 600;
+            color: #5b8fa8;
+            margin-bottom: 8px;
+            padding-bottom: 4px;
+            border-bottom: 2px solid rgba(91, 143, 168, 0.25);
+        }
+
+        .section p, .section .instruction {
+            margin-bottom: 8px;
+            font-size: 17px;
+        }
+
+        .instruction {
+            font-style: italic;
+            color: #636e72;
+        }
+
+        /* ── Code blocks ── */
+        .code-block {
+            background: #f0ede8;
+            border: 2px solid #b8c5d0;
+            border-radius: 10px;
+            padding: 14px 18px;
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+            white-space: pre;
+            line-height: 1.45;
+            margin: 10px 0;
+            overflow-x: auto;
+        }
+
+        /* ── Tables ── */
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 10px 0;
+            font-size: 16px;
+            border: 2px solid #b8c5d0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        thead th {
+            background-color: rgba(91, 143, 168, 0.12);
+            font-family: 'Caveat', cursive;
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d3436;
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 2px solid #b8c5d0;
+        }
+
+        tbody td {
+            padding: 7px 12px;
+            border-bottom: 1px solid rgba(184, 197, 208, 0.4);
+            vertical-align: middle;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Answer blank inside tables */
+        .answer {
+            display: inline-block;
+            min-width: 80px;
+            border-bottom: 2px solid #d4a373;
+            color: transparent;
+            text-align: center;
+            padding: 2px 4px;
+        }
+
+        .answer-wide {
+            min-width: 180px;
+        }
+
+        .answer-full {
+            display: block;
+            width: 100%;
+            min-height: 24px;
+            border-bottom: 2px solid #d4a373;
+        }
+
+        /* ── Standalone answer lines ── */
+        .answer-line {
+            display: block;
+            width: 100%;
+            border-bottom: 2px solid #d4a373;
+            min-height: 26px;
+            margin: 6px 0;
+        }
+
+        .answer-lines-3 {
+            margin: 8px 0;
+        }
+        .answer-lines-3 .answer-line { margin: 10px 0; }
+
+        /* ── Inline answer blanks ── */
+        .inline-answer {
+            display: inline-block;
+            min-width: 90px;
+            border-bottom: 2px solid #d4a373;
+            text-align: center;
+            margin: 0 2px;
+        }
+
+        .inline-answer.short { min-width: 50px; }
+        .inline-answer.long { min-width: 140px; }
+        .inline-answer.x-long { min-width: 260px; }
+
+        /* ── Question lists ── */
+        .questions {
+            list-style: none;
+            counter-reset: q;
+            padding-left: 0;
+        }
+
+        .questions li {
+            counter-increment: q;
+            margin-bottom: 8px;
+            padding-left: 28px;
+            position: relative;
+        }
+
+        .questions li::before {
+            content: counter(q) ".";
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+            color: #5b8fa8;
+        }
+
+        /* ── Yes/No choice ── */
+        .choice {
+            display: inline-block;
+            margin-left: 8px;
+            font-weight: bold;
+            color: #636e72;
+        }
+
+        /* ── Insight/tip boxes ── */
+        .tip-box {
+            background-color: rgba(91, 143, 168, 0.08);
+            border: 2px solid rgba(91, 143, 168, 0.3);
+            border-radius: 10px;
+            padding: 10px 16px;
+            margin: 12px 0;
+            font-size: 16px;
+        }
+
+        .tip-box .tip-label {
+            font-family: 'Caveat', cursive;
+            font-weight: 600;
+            color: #5b8fa8;
+            font-size: 18px;
+        }
+
+        /* ── Reflection box ── */
+        .reflection-box {
+            background-color: rgba(232, 168, 124, 0.08);
+            border: 2px solid rgba(232, 168, 124, 0.35);
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin: 14px 0;
+        }
+
+        .reflection-box .reflection-label {
+            font-family: 'Caveat', cursive;
+            font-size: 20px;
+            font-weight: 600;
+            color: #d4a373;
+            margin-bottom: 6px;
+        }
+
+        /* ── Next lesson teaser ── */
+        .next-lesson {
+            margin-top: 20px;
+            padding: 10px 16px;
+            background-color: rgba(91, 143, 168, 0.06);
+            border-left: 4px solid #5b8fa8;
+            border-radius: 0 8px 8px 0;
+            font-size: 16px;
+            color: #636e72;
+        }
+
+        .next-lesson strong { color: #2d3436; }
+
+        /* ── Two-column layout ── */
+        .two-col {
+            display: flex;
+            gap: 24px;
+            align-items: flex-start;
+        }
+
+        .two-col > * { flex: 1; }
+
+        /* ── Code block with blanks ── */
+        .code-blank {
+            display: inline-block;
+            min-width: 100px;
+            border-bottom: 2px solid #d4a373;
+            background: rgba(212, 163, 115, 0.1);
+            margin: 0 2px;
+        }
+
+        /* ── Page break hints ── */
+        .page-break {
+            page-break-before: always;
+            break-before: page;
+        }
+
+        /* ══════════════════════════════════════
+           PRINT STYLES
+           ══════════════════════════════════════ */
+        @media print {
+            body {
+                background: white;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .page {
+                margin: 0;
+                padding: 0.4in 0.5in;
+                width: auto;
+                min-height: auto;
+            }
+
+            .page::before {
+                display: none;
+            }
+
+            .page-break {
+                page-break-before: always;
+                break-before: page;
+            }
+
+            @page {
+                size: letter;
+                margin: 0;
+            }
+        }
+
+        /* ── Screen-only styling ── */
+        @media screen {
+            body {
+                background: #e8e4df;
+                padding: 20px;
+            }
+            .page {
+                box-shadow: 0 2px 20px rgba(0,0,0,0.12);
+                border-radius: 4px;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ════════ PAGE 1 ════════ -->
+<div class="page">
+    <div class="worksheet-header">
+        <div class="subtitle">Module 4: Manhattan &mdash; Lesson 5</div>
+        <h1>Implementing the Manhattan Class</h1>
+        <div class="student-info">
+            <span><label>Name:</label> <span class="blank"></span></span>
+            <span><label>Date:</label> <span class="blank"></span></span>
+        </div>
+    </div>
+
+    <!-- ── Part 1: Code Tracing — compute_path() Step by Step ── -->
+    <div class="section">
+        <div class="section-header">Part 1: Code Tracing &mdash; compute_path() Step by Step</div>
+        <p class="instruction">Study the complete compute_path method, then trace through a specific call below.</p>
+
+        <div class="code-block">class Manhattan:
+    def __init__(self, start):
+        self.position = start
+
+    def compute_path(self, destination):
+        path = [self.position]
+        current_row = self.position[0]
+        current_col = self.position[1]
+        dest_row = destination[0]
+        dest_col = destination[1]
+
+        if dest_row > current_row:
+            row_step = 1
+        else:
+            row_step = -1
+
+        if dest_col > current_col:
+            col_step = 1
+        else:
+            col_step = -1
+
+        while current_row != dest_row:
+            current_row = current_row + row_step
+            path.append((current_row, current_col))
+
+        while current_col != dest_col:
+            current_col = current_col + col_step
+            path.append((current_row, current_col))
+
+        return path</div>
+
+        <p><strong>Trace the call:</strong> <code style="font-family: 'Fira Code', monospace; font-size: 15px; background: #f0ede8; padding: 2px 6px; border-radius: 4px;">Manhattan((0, 0)).compute_path((2, 3))</code></p>
+
+        <p style="margin-top: 10px;"><strong>Setup Variables:</strong></p>
+        <table>
+            <thead>
+                <tr><th>Variable</th><th>Initial Value</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>self.position</td><td><span class="answer"></span></td></tr>
+                <tr><td>current_row</td><td><span class="answer"></span></td></tr>
+                <tr><td>current_col</td><td><span class="answer"></span></td></tr>
+                <tr><td>dest_row</td><td><span class="answer"></span></td></tr>
+                <tr><td>dest_col</td><td><span class="answer"></span></td></tr>
+                <tr><td>row_step</td><td><span class="answer"></span></td></tr>
+                <tr><td>col_step</td><td><span class="answer"></span></td></tr>
+                <tr><td>path (initial)</td><td><span class="answer answer-wide"></span></td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ════════ PAGE 2 ════════ -->
+<div class="page page-break">
+
+    <div class="section">
+        <p><strong>Row while loop trace:</strong></p>
+        <table>
+            <thead>
+                <tr><th style="width: 80px;">Iteration</th><th>current_row (before)</th><th>!= dest_row?</th><th>current_row (after)</th><th>Appended to path</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>1</td><td><span class="answer"></span></td><td><span class="choice">YES / NO</span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
+                <tr><td>2</td><td><span class="answer"></span></td><td><span class="choice">YES / NO</span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
+                <tr><td>Check</td><td><span class="answer"></span></td><td><span class="choice">YES / NO</span></td><td>&mdash; (loop ends)</td><td>&mdash;</td></tr>
+            </tbody>
+        </table>
+
+        <p style="margin-top: 14px;"><strong>Column while loop trace:</strong></p>
+        <table>
+            <thead>
+                <tr><th style="width: 80px;">Iteration</th><th>current_col (before)</th><th>!= dest_col?</th><th>current_col (after)</th><th>Appended to path</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>1</td><td><span class="answer"></span></td><td><span class="choice">YES / NO</span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
+                <tr><td>2</td><td><span class="answer"></span></td><td><span class="choice">YES / NO</span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
+                <tr><td>3</td><td><span class="answer"></span></td><td><span class="choice">YES / NO</span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
+                <tr><td>Check</td><td><span class="answer"></span></td><td><span class="choice">YES / NO</span></td><td>&mdash; (loop ends)</td><td>&mdash;</td></tr>
+            </tbody>
+        </table>
+
+        <p style="margin-top: 12px;"><strong>Final returned path:</strong> <span class="inline-answer x-long"></span></p>
+    </div>
+
+    <!-- ── Part 2: Trace a Reverse Path ── -->
+    <div class="section">
+        <div class="section-header">Part 2: Trace a Reverse Path</div>
+        <p><strong>Trace:</strong> <code style="font-family: 'Fira Code', monospace; font-size: 15px; background: #f0ede8; padding: 2px 6px; border-radius: 4px;">Manhattan((2, 3)).compute_path((0, 1))</code></p>
+
+        <p style="margin-top: 10px;"><strong>Setup Variables:</strong></p>
+        <table>
+            <thead>
+                <tr><th>Variable</th><th>Initial Value</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>current_row</td><td><span class="answer"></span></td></tr>
+                <tr><td>current_col</td><td><span class="answer"></span></td></tr>
+                <tr><td>dest_row</td><td><span class="answer"></span></td></tr>
+                <tr><td>dest_col</td><td><span class="answer"></span></td></tr>
+                <tr><td>row_step</td><td><span class="answer"></span></td></tr>
+                <tr><td>col_step</td><td><span class="answer"></span></td></tr>
+            </tbody>
+        </table>
+
+        <p style="margin-top: 10px;"><strong>Row while loop trace:</strong></p>
+        <table>
+            <thead>
+                <tr><th style="width: 80px;">Iteration</th><th>current_row (before)</th><th>!= dest_row?</th><th>current_row (after)</th><th>Appended to path</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>1</td><td><span class="answer"></span></td><td><span class="choice">YES / NO</span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
+                <tr><td>2</td><td><span class="answer"></span></td><td><span class="choice">YES / NO</span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
+                <tr><td>Check</td><td><span class="answer"></span></td><td><span class="choice">YES / NO</span></td><td>&mdash; (loop ends)</td><td>&mdash;</td></tr>
+            </tbody>
+        </table>
+
+        <p style="margin-top: 10px;"><strong>Column while loop trace:</strong></p>
+        <table>
+            <thead>
+                <tr><th style="width: 80px;">Iteration</th><th>current_col (before)</th><th>!= dest_col?</th><th>current_col (after)</th><th>Appended to path</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>1</td><td><span class="answer"></span></td><td><span class="choice">YES / NO</span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
+                <tr><td>2</td><td><span class="answer"></span></td><td><span class="choice">YES / NO</span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
+                <tr><td>Check</td><td><span class="answer"></span></td><td><span class="choice">YES / NO</span></td><td>&mdash; (loop ends)</td><td>&mdash;</td></tr>
+            </tbody>
+        </table>
+
+        <p style="margin-top: 12px;"><strong>Final returned path:</strong> <span class="inline-answer x-long"></span></p>
+    </div>
+</div>
+
+<!-- ════════ PAGE 3 ════════ -->
+<div class="page page-break">
+
+    <!-- ── Part 3: Fill in the Blanks ── -->
+    <div class="section">
+        <div class="section-header">Part 3: Fill in the Blanks</div>
+        <p class="instruction">Complete the Manhattan class by filling in the missing parts.</p>
+
+        <div class="code-block">class Manhattan:
+    def __init__(self, start):
+        self.position = <span class="code-blank" style="min-width: 80px;"></span>
+
+    def compute_path(self, destination):
+        path = [<span class="code-blank" style="min-width: 110px;"></span>]
+        current_row = self.position[<span class="code-blank" style="min-width: 30px;"></span>]
+        current_col = self.position[<span class="code-blank" style="min-width: 30px;"></span>]
+        dest_row = <span class="code-blank" style="min-width: 120px;"></span>
+        dest_col = <span class="code-blank" style="min-width: 120px;"></span>
+
+        if dest_row > current_row:
+            row_step = <span class="code-blank" style="min-width: 30px;"></span>
+        else:
+            row_step = <span class="code-blank" style="min-width: 30px;"></span>
+
+        if dest_col > current_col:
+            col_step = <span class="code-blank" style="min-width: 30px;"></span>
+        else:
+            col_step = <span class="code-blank" style="min-width: 30px;"></span>
+
+        while <span class="code-blank" style="min-width: 180px;"></span>:
+            current_row = current_row + row_step
+            path.append((<span class="code-blank" style="min-width: 80px;"></span>, <span class="code-blank" style="min-width: 80px;"></span>))
+
+        while <span class="code-blank" style="min-width: 180px;"></span>:
+            current_col = current_col + col_step
+            path.append((<span class="code-blank" style="min-width: 80px;"></span>, <span class="code-blank" style="min-width: 80px;"></span>))
+
+        return <span class="code-blank" style="min-width: 60px;"></span></div>
+    </div>
+
+    <!-- ── Part 4: Predict the Output ── -->
+    <div class="section">
+        <div class="section-header">Part 4: Predict the Output</div>
+        <p class="instruction">For each program, predict what will be printed.</p>
+
+        <p style="margin-top: 10px;"><strong>Program A:</strong></p>
+        <div class="code-block">manhattan = Manhattan((0, 0))
+path = manhattan.compute_path((0, 3))
+print(path)
+print("Steps:", len(path) - 1)</div>
+        <p>Line 1: <span class="inline-answer x-long"></span></p>
+        <p>Line 2: <span class="inline-answer long"></span></p>
+        <p>What kind of edge case is this? <span class="inline-answer x-long"></span></p>
+
+        <p style="margin-top: 14px;"><strong>Program B:</strong></p>
+        <div class="code-block">manhattan = Manhattan((2, 2))
+path = manhattan.compute_path((2, 2))
+print(path)
+print("Steps:", len(path) - 1)</div>
+        <p>Line 1: <span class="inline-answer long"></span></p>
+        <p>Line 2: <span class="inline-answer long"></span></p>
+        <p>Why does the path have only one element? <span class="answer-line"></span></p>
+    </div>
+</div>
+
+<!-- ════════ PAGE 4 ════════ -->
+<div class="page page-break">
+
+    <div class="section">
+        <p><strong>Program C:</strong></p>
+        <div class="code-block">manhattan = Manhattan((0, 0))
+path1 = manhattan.compute_path((2, 3))
+path2 = manhattan.compute_path((1, 1))
+print("Path 1:", path1)
+print("Path 2:", path2)</div>
+        <p>Line 1: <span class="inline-answer x-long"></span></p>
+        <p>Line 2: <span class="inline-answer x-long"></span></p>
+        <p>Do both paths start from the same position? <span class="choice">YES / NO</span></p>
+        <p>Why? <span class="answer-line"></span></p>
+    </div>
+
+    <!-- ── Part 5: Find and Fix the Bug ── -->
+    <div class="section">
+        <div class="section-header">Part 5: Find and Fix the Bug</div>
+        <p class="instruction">Each code snippet has a bug. Identify it, explain the problem, and write the fix.</p>
+
+        <p style="margin-top: 10px;"><strong>Bug 1:</strong> Path starts empty</p>
+        <div class="code-block">def compute_path(self, destination):
+    path = []
+    current_row = self.position[0]
+    ...</div>
+        <p>What is wrong? <span class="answer-line"></span></p>
+        <p>Fix: <span class="answer-line"></span></p>
+
+        <p style="margin-top: 14px;"><strong>Bug 2:</strong> Wrong loop condition</p>
+        <div class="code-block">while current_row < dest_row:
+    current_row = current_row + row_step
+    path.append((current_row, current_col))</div>
+        <p>What is wrong? <span class="answer-line"></span></p>
+        <p>When would this bug cause a problem? Give specific start and destination:</p>
+        <p>Start: (<span class="inline-answer short"></span>, <span class="inline-answer short"></span>) &nbsp; Destination: (<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</p>
+        <p>Fix: <span class="answer-line"></span></p>
+
+        <p style="margin-top: 14px;"><strong>Bug 3:</strong> Swapped coordinates in append</p>
+        <div class="code-block">while current_col != dest_col:
+    current_col = current_col + col_step
+    path.append((current_col, current_row))</div>
+        <p>What is wrong? <span class="answer-line"></span></p>
+        <p>If start is (0, 0) and destination is (2, 3), what would the <strong>incorrect</strong> last three elements be?</p>
+        <p><span class="inline-answer x-long"></span></p>
+        <p>What <strong>should</strong> they be?</p>
+        <p><span class="inline-answer x-long"></span></p>
+    </div>
+</div>
+
+<!-- ════════ PAGE 5 ════════ -->
+<div class="page page-break">
+
+    <!-- ── Reflection ── -->
+    <div class="section">
+        <div class="reflection-box">
+            <div class="reflection-label">Reflection</div>
+            <p><strong>The compute_path() method uses while loops instead of for loops. Why is <code style="font-family: 'Fira Code', monospace; font-size: 15px; background: rgba(232, 168, 124, 0.12); padding: 2px 6px; border-radius: 4px;">while current_row != dest_row</code> better than using a for loop for this problem?</strong></p>
+            <div class="answer-lines-3">
+                <span class="answer-line"></span>
+                <span class="answer-line"></span>
+                <span class="answer-line"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Next Lesson ── -->
+    <div class="next-lesson">
+        <strong>Next Lesson:</strong> We'll learn how to write test programs to verify our Manhattan class works correctly &mdash; without needing a robot!
+    </div>
+</div>
+
+</body>
+</html>

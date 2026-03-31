@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Worksheet: The Manhattan Algorithm</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Patrick+Hand&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        /* ── Reset & Base ── */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Patrick Hand', cursive;
+            font-size: 17px;
+            color: #2d3436;
+            background: #fdfcfa;
+            line-height: 1.5;
+            padding: 0;
+        }
+
+        /* ── Page structure for print ── */
+        .page {
+            width: 8.5in;
+            min-height: 11in;
+            margin: 0 auto;
+            padding: 0.5in 0.6in;
+            background: #fdfcfa;
+            position: relative;
+        }
+
+        /* Subtle notebook-paper lines */
+        .page::before {
+            content: '';
+            position: absolute;
+            inset: 0.5in 0.6in;
+            background-image: linear-gradient(rgba(180, 200, 220, 0.1) 1px, transparent 1px);
+            background-size: 100% 28px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .page > * { position: relative; z-index: 1; }
+
+        /* ── Header ── */
+        .worksheet-header {
+            border-bottom: 3px solid #5b8fa8;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+
+        .worksheet-header h1 {
+            font-family: 'Caveat', cursive;
+            font-size: 32px;
+            font-weight: 700;
+            color: #2d3436;
+            transform: rotate(-0.3deg);
+        }
+
+        .worksheet-header .subtitle {
+            font-family: 'Caveat', cursive;
+            font-size: 18px;
+            color: #5b8fa8;
+            font-weight: 600;
+        }
+
+        .student-info {
+            display: flex;
+            gap: 40px;
+            margin-top: 10px;
+            font-size: 17px;
+        }
+
+        .student-info label {
+            font-weight: bold;
+        }
+
+        .student-info .blank {
+            display: inline-block;
+            width: 200px;
+            border-bottom: 2px solid #b8c5d0;
+            margin-left: 6px;
+        }
+
+        /* ── Section Headers ── */
+        .section {
+            margin-top: 22px;
+            margin-bottom: 14px;
+        }
+
+        .section-header {
+            font-family: 'Caveat', cursive;
+            font-size: 24px;
+            font-weight: 600;
+            color: #5b8fa8;
+            margin-bottom: 8px;
+            padding-bottom: 4px;
+            border-bottom: 2px solid rgba(91, 143, 168, 0.25);
+        }
+
+        .section p, .section .instruction {
+            margin-bottom: 8px;
+            font-size: 17px;
+        }
+
+        .instruction {
+            font-style: italic;
+            color: #636e72;
+        }
+
+        /* ── Tables ── */
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 10px 0;
+            font-size: 16px;
+            border: 2px solid #b8c5d0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        thead th {
+            background-color: rgba(91, 143, 168, 0.12);
+            font-family: 'Caveat', cursive;
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d3436;
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 2px solid #b8c5d0;
+        }
+
+        tbody td {
+            padding: 7px 12px;
+            border-bottom: 1px solid rgba(184, 197, 208, 0.4);
+            vertical-align: middle;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Answer blank inside tables */
+        .answer {
+            display: inline-block;
+            min-width: 80px;
+            border-bottom: 2px solid #d4a373;
+            color: transparent;
+            text-align: center;
+            padding: 2px 4px;
+        }
+
+        .answer-wide {
+            min-width: 180px;
+        }
+
+        .answer-full {
+            display: block;
+            width: 100%;
+            min-height: 24px;
+            border-bottom: 2px solid #d4a373;
+        }
+
+        /* ── Standalone answer lines ── */
+        .answer-line {
+            display: block;
+            width: 100%;
+            border-bottom: 2px solid #d4a373;
+            min-height: 26px;
+            margin: 6px 0;
+        }
+
+        .answer-lines-3 {
+            margin: 8px 0;
+        }
+        .answer-lines-3 .answer-line { margin: 10px 0; }
+
+        /* ── Inline answer blanks ── */
+        .inline-answer {
+            display: inline-block;
+            min-width: 90px;
+            border-bottom: 2px solid #d4a373;
+            text-align: center;
+            margin: 0 2px;
+        }
+
+        .inline-answer.short { min-width: 50px; }
+        .inline-answer.long { min-width: 140px; }
+
+        /* ── SVG Grid Container ── */
+        .grid-container {
+            display: flex;
+            justify-content: center;
+            margin: 14px 0;
+        }
+
+        /* ── Question lists ── */
+        .questions {
+            list-style: none;
+            counter-reset: q;
+            padding-left: 0;
+        }
+
+        .questions li {
+            counter-increment: q;
+            margin-bottom: 8px;
+            padding-left: 28px;
+            position: relative;
+        }
+
+        .questions li::before {
+            content: counter(q) ".";
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+            color: #5b8fa8;
+        }
+
+        /* ── Yes/No choice ── */
+        .choice {
+            display: inline-block;
+            margin-left: 8px;
+            font-weight: bold;
+            color: #636e72;
+        }
+
+        /* ── Insight/tip boxes ── */
+        .tip-box {
+            background-color: rgba(91, 143, 168, 0.08);
+            border: 2px solid rgba(91, 143, 168, 0.3);
+            border-radius: 10px;
+            padding: 10px 16px;
+            margin: 12px 0;
+            font-size: 16px;
+        }
+
+        .tip-box .tip-label {
+            font-family: 'Caveat', cursive;
+            font-weight: 600;
+            color: #5b8fa8;
+            font-size: 18px;
+        }
+
+        /* ── Code blocks ── */
+        .code-block {
+            background: #f0ede8;
+            border: 2px solid #b8c5d0;
+            border-radius: 10px;
+            padding: 14px 18px;
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+            white-space: pre;
+            margin: 10px 0;
+            line-height: 1.5;
+        }
+
+        /* ── Reflection box ── */
+        .reflection-box {
+            background-color: rgba(232, 168, 124, 0.08);
+            border: 2px solid rgba(232, 168, 124, 0.35);
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin: 14px 0;
+        }
+
+        .reflection-box .reflection-label {
+            font-family: 'Caveat', cursive;
+            font-size: 20px;
+            font-weight: 600;
+            color: #d4a373;
+            margin-bottom: 6px;
+        }
+
+        /* ── Next lesson teaser ── */
+        .next-lesson {
+            margin-top: 20px;
+            padding: 10px 16px;
+            background-color: rgba(91, 143, 168, 0.06);
+            border-left: 4px solid #5b8fa8;
+            border-radius: 0 8px 8px 0;
+            font-size: 16px;
+            color: #636e72;
+        }
+
+        .next-lesson strong { color: #2d3436; }
+
+        /* ── Two-column layout ── */
+        .two-col {
+            display: flex;
+            gap: 24px;
+            align-items: flex-start;
+        }
+
+        .two-col > * { flex: 1; }
+
+        /* ── Path trace sub-header ── */
+        .path-header {
+            font-family: 'Caveat', cursive;
+            font-size: 20px;
+            font-weight: 600;
+            color: #2d3436;
+            margin-top: 16px;
+            margin-bottom: 6px;
+        }
+
+        /* ── Page break hints ── */
+        .page-break {
+            page-break-before: always;
+            break-before: page;
+        }
+
+        /* ══════════════════════════════════════
+           PRINT STYLES
+           ══════════════════════════════════════ */
+        @media print {
+            body {
+                background: white;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .page {
+                margin: 0;
+                padding: 0.4in 0.5in;
+                width: auto;
+                min-height: auto;
+            }
+
+            .page::before {
+                display: none;
+            }
+
+            .page-break {
+                page-break-before: always;
+                break-before: page;
+            }
+
+            @page {
+                size: letter;
+                margin: 0;
+            }
+        }
+
+        /* ── Screen-only styling ── */
+        @media screen {
+            body {
+                background: #e8e4df;
+                padding: 20px;
+            }
+            .page {
+                box-shadow: 0 2px 20px rgba(0,0,0,0.12);
+                border-radius: 4px;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ════════ PAGE 1 ════════ -->
+<div class="page">
+    <div class="worksheet-header">
+        <div class="subtitle">Module 4: Manhattan &mdash; Lesson 4</div>
+        <h1>The Manhattan Algorithm</h1>
+        <div class="student-info">
+            <span><label>Name:</label> <span class="blank"></span></span>
+            <span><label>Date:</label> <span class="blank"></span></span>
+        </div>
+    </div>
+
+    <!-- ── Part 1: Manhattan Distance ── -->
+    <div class="section">
+        <div class="section-header">Part 1: Manhattan Distance</div>
+        <p class="instruction">Calculate the Manhattan distance for each pair. Remember: Manhattan distance = |row difference| + |column difference|.</p>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Start</th>
+                    <th>Destination</th>
+                    <th>Row Distance</th>
+                    <th>Col Distance</th>
+                    <th>Manhattan Distance</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>(0, 0)</td>
+                    <td>(2, 3)</td>
+                    <td>|2 &minus; 0| = <span class="inline-answer short"></span></td>
+                    <td>|3 &minus; 0| = <span class="inline-answer short"></span></td>
+                    <td><span class="inline-answer short"></span></td>
+                </tr>
+                <tr>
+                    <td>(3, 3)</td>
+                    <td>(0, 0)</td>
+                    <td>|0 &minus; 3| = <span class="inline-answer short"></span></td>
+                    <td>|0 &minus; 3| = <span class="inline-answer short"></span></td>
+                    <td><span class="inline-answer short"></span></td>
+                </tr>
+                <tr>
+                    <td>(1, 0)</td>
+                    <td>(1, 3)</td>
+                    <td><span class="inline-answer short"></span></td>
+                    <td><span class="inline-answer short"></span></td>
+                    <td><span class="inline-answer short"></span></td>
+                </tr>
+                <tr>
+                    <td>(0, 2)</td>
+                    <td>(3, 2)</td>
+                    <td><span class="inline-answer short"></span></td>
+                    <td><span class="inline-answer short"></span></td>
+                    <td><span class="inline-answer short"></span></td>
+                </tr>
+                <tr>
+                    <td>(2, 1)</td>
+                    <td>(2, 1)</td>
+                    <td><span class="inline-answer short"></span></td>
+                    <td><span class="inline-answer short"></span></td>
+                    <td><span class="inline-answer short"></span></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p style="margin-top: 8px;"><strong>Which pair requires the most steps?</strong> <span class="inline-answer long"></span></p>
+        <p><strong>Which pair requires zero steps? Why?</strong></p>
+        <span class="answer-line"></span>
+    </div>
+
+    <!-- ── Part 2: Determine the Step Values ── -->
+    <div class="section">
+        <div class="section-header">Part 2: Determine the Step Values</div>
+        <p class="instruction">For each start/destination pair, determine whether row_step is +1 or &minus;1, and col_step is +1 or &minus;1.</p>
+
+        <div class="tip-box">
+            <span class="tip-label">Rules:</span>
+            <br>dest row &gt; start row &rarr; row_step = <strong>+1</strong> (moving down)
+            <br>dest row &lt; start row &rarr; row_step = <strong>&minus;1</strong> (moving up)
+            <br>dest col &gt; start col &rarr; col_step = <strong>+1</strong> (moving right)
+            <br>dest col &lt; start col &rarr; col_step = <strong>&minus;1</strong> (moving left)
+        </div>
+
+        <table>
+            <thead>
+                <tr><th>Start</th><th>Destination</th><th>row_step</th><th>col_step</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>(0, 0)</td><td>(3, 2)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>(3, 3)</td><td>(0, 1)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>(1, 3)</td><td>(3, 0)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>(2, 0)</td><td>(0, 3)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>(0, 0)</td><td>(0, 3)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+            </tbody>
+        </table>
+
+        <p style="margin-top: 8px;"><strong>For the last row, start row and destination row are the same. Does the value of row_step matter? Why or why not?</strong></p>
+        <span class="answer-line"></span>
+    </div>
+</div>
+
+<!-- ════════ PAGE 2 ════════ -->
+<div class="page page-break">
+
+    <!-- ── Part 3: Hand-Trace the Algorithm ── -->
+    <div class="section">
+        <div class="section-header">Part 3: Hand-Trace the Algorithm</div>
+        <p class="instruction">For each start/destination pair, trace the Manhattan algorithm (rows first, then columns). Write every position in the path.</p>
+
+        <!-- Path 1 -->
+        <div class="path-header">Path 1: (0, 0) &rarr; (3, 2)</div>
+        <p>row_step = <span class="inline-answer short"></span> &nbsp;&nbsp; col_step = <span class="inline-answer short"></span></p>
+
+        <div class="two-col">
+            <div>
+                <table>
+                    <thead>
+                        <tr><th style="width:50px;">Step</th><th>Action</th><th>Position</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Start</td><td>&mdash;</td><td>(0, 0)</td></tr>
+                        <tr><td>1</td><td>Row <span class="inline-answer short"></span></td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
+                        <tr><td>2</td><td>Row <span class="inline-answer short"></span></td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
+                        <tr><td>3</td><td>Row <span class="inline-answer short"></span></td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div>
+                <table>
+                    <thead>
+                        <tr><th style="width:50px;">Step</th><th>Action</th><th>Position</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>4</td><td>Col <span class="inline-answer short"></span></td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
+                        <tr><td>5</td><td>Col <span class="inline-answer short"></span></td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <p style="margin-top: 8px;"><strong>Complete path:</strong> <span class="inline-answer long"></span> <span class="inline-answer long"></span> <span class="inline-answer long"></span></p>
+        <p><strong>Total steps:</strong> <span class="inline-answer short"></span> &nbsp;&nbsp;
+           <strong>Manhattan distance:</strong> <span class="inline-answer short"></span> &nbsp;&nbsp;
+           <strong>Do they match?</strong> <span class="choice">YES &nbsp;/&nbsp; NO</span></p>
+
+        <!-- Path 2 -->
+        <div class="path-header" style="margin-top: 20px;">Path 2: (3, 3) &rarr; (0, 1)</div>
+        <p>row_step = <span class="inline-answer short"></span> &nbsp;&nbsp; col_step = <span class="inline-answer short"></span></p>
+
+        <div class="two-col">
+            <div>
+                <table>
+                    <thead>
+                        <tr><th style="width:50px;">Step</th><th>Action</th><th>Position</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Start</td><td>&mdash;</td><td>(3, 3)</td></tr>
+                        <tr><td>1</td><td>Row <span class="inline-answer short"></span></td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
+                        <tr><td>2</td><td>Row <span class="inline-answer short"></span></td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
+                        <tr><td>3</td><td>Row <span class="inline-answer short"></span></td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div>
+                <table>
+                    <thead>
+                        <tr><th style="width:50px;">Step</th><th>Action</th><th>Position</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>4</td><td>Col <span class="inline-answer short"></span></td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
+                        <tr><td>5</td><td>Col <span class="inline-answer short"></span></td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <p style="margin-top: 8px;"><strong>Complete path:</strong> <span class="inline-answer long"></span> <span class="inline-answer long"></span> <span class="inline-answer long"></span></p>
+        <p><strong>Total steps:</strong> <span class="inline-answer short"></span> &nbsp;&nbsp;
+           <strong>Manhattan distance:</strong> <span class="inline-answer short"></span> &nbsp;&nbsp;
+           <strong>Do they match?</strong> <span class="choice">YES &nbsp;/&nbsp; NO</span></p>
+    </div>
+</div>
+
+<!-- ════════ PAGE 3 ════════ -->
+<div class="page page-break">
+
+    <div class="section">
+        <div class="section-header">Part 3: Hand-Trace the Algorithm (continued)</div>
+
+        <!-- Path 3 -->
+        <div class="path-header">Path 3: (1, 3) &rarr; (3, 0)</div>
+        <p>row_step = <span class="inline-answer short"></span> &nbsp;&nbsp; col_step = <span class="inline-answer short"></span></p>
+
+        <div class="two-col">
+            <div>
+                <table>
+                    <thead>
+                        <tr><th style="width:50px;">Step</th><th>Action</th><th>Position</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>Start</td><td>&mdash;</td><td>(1, 3)</td></tr>
+                        <tr><td>1</td><td>Row <span class="inline-answer short"></span></td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
+                        <tr><td>2</td><td>Row <span class="inline-answer short"></span></td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div>
+                <table>
+                    <thead>
+                        <tr><th style="width:50px;">Step</th><th>Action</th><th>Position</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>3</td><td>Col <span class="inline-answer short"></span></td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
+                        <tr><td>4</td><td>Col <span class="inline-answer short"></span></td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
+                        <tr><td>5</td><td>Col <span class="inline-answer short"></span></td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <p style="margin-top: 8px;"><strong>Complete path:</strong> <span class="inline-answer long"></span> <span class="inline-answer long"></span> <span class="inline-answer long"></span></p>
+        <p><strong>Total steps:</strong> <span class="inline-answer short"></span> &nbsp;&nbsp;
+           <strong>Manhattan distance:</strong> <span class="inline-answer short"></span> &nbsp;&nbsp;
+           <strong>Do they match?</strong> <span class="choice">YES &nbsp;/&nbsp; NO</span></p>
+
+        <!-- Path 4 -->
+        <div class="path-header" style="margin-top: 20px;">Path 4: (2, 2) &rarr; (2, 0) &nbsp;<em style="font-size: 16px; color: #636e72;">(same row!)</em></div>
+        <p>row_step = <span class="inline-answer short"></span> &nbsp;&nbsp; col_step = <span class="inline-answer short"></span></p>
+        <p><strong>Does the row loop execute?</strong> <span class="choice">YES &nbsp;/&nbsp; NO</span> &nbsp;&nbsp; <strong>Why?</strong> <span class="inline-answer long"></span></p>
+
+        <table>
+            <thead>
+                <tr><th style="width:50px;">Step</th><th>Action</th><th>Position</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Start</td><td>&mdash;</td><td>(2, 2)</td></tr>
+                <tr><td>1</td><td>Col <span class="inline-answer short"></span></td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
+                <tr><td>2</td><td>Col <span class="inline-answer short"></span></td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
+            </tbody>
+        </table>
+
+        <p style="margin-top: 8px;"><strong>Complete path:</strong> <span class="inline-answer long"></span> <span class="inline-answer long"></span></p>
+        <p><strong>Total steps:</strong> <span class="inline-answer short"></span> &nbsp;&nbsp;
+           <strong>Manhattan distance:</strong> <span class="inline-answer short"></span> &nbsp;&nbsp;
+           <strong>Do they match?</strong> <span class="choice">YES &nbsp;/&nbsp; NO</span></p>
+
+        <!-- Path 5 -->
+        <div class="path-header" style="margin-top: 20px;">Path 5: (0, 1) &rarr; (3, 1) &nbsp;<em style="font-size: 16px; color: #636e72;">(same column!)</em></div>
+        <p>row_step = <span class="inline-answer short"></span> &nbsp;&nbsp; col_step = <span class="inline-answer short"></span></p>
+        <p><strong>Does the column loop execute?</strong> <span class="choice">YES &nbsp;/&nbsp; NO</span> &nbsp;&nbsp; <strong>Why?</strong> <span class="inline-answer long"></span></p>
+
+        <table>
+            <thead>
+                <tr><th style="width:50px;">Step</th><th>Action</th><th>Position</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Start</td><td>&mdash;</td><td>(0, 1)</td></tr>
+                <tr><td>1</td><td>Row <span class="inline-answer short"></span></td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
+                <tr><td>2</td><td>Row <span class="inline-answer short"></span></td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
+                <tr><td>3</td><td>Row <span class="inline-answer short"></span></td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
+            </tbody>
+        </table>
+
+        <p style="margin-top: 8px;"><strong>Complete path:</strong> <span class="inline-answer long"></span> <span class="inline-answer long"></span></p>
+        <p><strong>Total steps:</strong> <span class="inline-answer short"></span> &nbsp;&nbsp;
+           <strong>Manhattan distance:</strong> <span class="inline-answer short"></span> &nbsp;&nbsp;
+           <strong>Do they match?</strong> <span class="choice">YES &nbsp;/&nbsp; NO</span></p>
+    </div>
+</div>
+
+<!-- ════════ PAGE 4 ════════ -->
+<div class="page page-break">
+
+    <!-- ── Part 4: Draw the Paths on the Grid ── -->
+    <div class="section">
+        <div class="section-header">Part 4: Draw the Paths on the Grid</div>
+        <p class="instruction">Using the paths you traced in Part 3, draw each path on the grid below. Use arrows to show direction. Label each path with its number (1&ndash;5).</p>
+
+        <div class="grid-container">
+            <svg width="380" height="370" viewBox="0 0 380 370" font-family="Patrick Hand, cursive">
+                <!-- Column headers -->
+                <text x="100" y="24" font-family="Caveat, cursive" font-size="17" fill="#5b8fa8" text-anchor="middle" font-weight="600">Col 0</text>
+                <text x="180" y="24" font-family="Caveat, cursive" font-size="17" fill="#5b8fa8" text-anchor="middle" font-weight="600">Col 1</text>
+                <text x="260" y="24" font-family="Caveat, cursive" font-size="17" fill="#5b8fa8" text-anchor="middle" font-weight="600">Col 2</text>
+                <text x="340" y="24" font-family="Caveat, cursive" font-size="17" fill="#5b8fa8" text-anchor="middle" font-weight="600">Col 3</text>
+                <!-- Row headers -->
+                <text x="40" y="58" font-family="Caveat, cursive" font-size="17" fill="#5b8fa8" text-anchor="middle" font-weight="600">Row 0</text>
+                <text x="40" y="138" font-family="Caveat, cursive" font-size="17" fill="#5b8fa8" text-anchor="middle" font-weight="600">Row 1</text>
+                <text x="40" y="218" font-family="Caveat, cursive" font-size="17" fill="#5b8fa8" text-anchor="middle" font-weight="600">Row 2</text>
+                <text x="40" y="298" font-family="Caveat, cursive" font-size="17" fill="#5b8fa8" text-anchor="middle" font-weight="600">Row 3</text>
+
+                <!-- Vertical grid lines -->
+                <line x1="100" y1="35" x2="100" y2="310" stroke="#2d3436" stroke-width="2"/>
+                <line x1="180" y1="35" x2="180" y2="310" stroke="#2d3436" stroke-width="2"/>
+                <line x1="260" y1="35" x2="260" y2="310" stroke="#2d3436" stroke-width="2"/>
+                <line x1="340" y1="35" x2="340" y2="310" stroke="#2d3436" stroke-width="2"/>
+                <!-- Horizontal grid lines -->
+                <line x1="80" y1="50" x2="355" y2="50" stroke="#2d3436" stroke-width="2"/>
+                <line x1="80" y1="130" x2="355" y2="130" stroke="#2d3436" stroke-width="2"/>
+                <line x1="80" y1="210" x2="355" y2="210" stroke="#2d3436" stroke-width="2"/>
+                <line x1="80" y1="290" x2="355" y2="290" stroke="#2d3436" stroke-width="2"/>
+
+                <!-- Coordinate labels at each intersection -->
+                <!-- Row 0 -->
+                <text x="100" y="68" font-family="Fira Code, monospace" font-size="12" fill="#636e72" text-anchor="middle">(0,0)</text>
+                <text x="180" y="68" font-family="Fira Code, monospace" font-size="12" fill="#636e72" text-anchor="middle">(0,1)</text>
+                <text x="260" y="68" font-family="Fira Code, monospace" font-size="12" fill="#636e72" text-anchor="middle">(0,2)</text>
+                <text x="340" y="68" font-family="Fira Code, monospace" font-size="12" fill="#636e72" text-anchor="middle">(0,3)</text>
+                <!-- Row 1 -->
+                <text x="100" y="148" font-family="Fira Code, monospace" font-size="12" fill="#636e72" text-anchor="middle">(1,0)</text>
+                <text x="180" y="148" font-family="Fira Code, monospace" font-size="12" fill="#636e72" text-anchor="middle">(1,1)</text>
+                <text x="260" y="148" font-family="Fira Code, monospace" font-size="12" fill="#636e72" text-anchor="middle">(1,2)</text>
+                <text x="340" y="148" font-family="Fira Code, monospace" font-size="12" fill="#636e72" text-anchor="middle">(1,3)</text>
+                <!-- Row 2 -->
+                <text x="100" y="228" font-family="Fira Code, monospace" font-size="12" fill="#636e72" text-anchor="middle">(2,0)</text>
+                <text x="180" y="228" font-family="Fira Code, monospace" font-size="12" fill="#636e72" text-anchor="middle">(2,1)</text>
+                <text x="260" y="228" font-family="Fira Code, monospace" font-size="12" fill="#636e72" text-anchor="middle">(2,2)</text>
+                <text x="340" y="228" font-family="Fira Code, monospace" font-size="12" fill="#636e72" text-anchor="middle">(2,3)</text>
+                <!-- Row 3 -->
+                <text x="100" y="308" font-family="Fira Code, monospace" font-size="12" fill="#636e72" text-anchor="middle">(3,0)</text>
+                <text x="180" y="308" font-family="Fira Code, monospace" font-size="12" fill="#636e72" text-anchor="middle">(3,1)</text>
+                <text x="260" y="308" font-family="Fira Code, monospace" font-size="12" fill="#636e72" text-anchor="middle">(3,2)</text>
+                <text x="340" y="308" font-family="Fira Code, monospace" font-size="12" fill="#636e72" text-anchor="middle">(3,3)</text>
+            </svg>
+        </div>
+
+        <p style="margin-top: 8px;"><strong>What shape do most of the paths make?</strong> <span class="inline-answer long"></span></p>
+        <p><strong>Which paths are straight lines instead of L-shapes?</strong> <span class="inline-answer long"></span></p>
+    </div>
+
+    <!-- ── Part 5: Verify Your Understanding ── -->
+    <div class="section">
+        <div class="section-header">Part 5: Verify Your Understanding</div>
+
+        <ol class="questions">
+            <li>The Manhattan algorithm always moves <span class="inline-answer"></span> first, then <span class="inline-answer"></span>.</li>
+            <li>If the destination row is SMALLER than the start row, the robot moves <span class="inline-answer"></span> (up/down).</li>
+            <li>If the destination column is LARGER than the start column, the robot moves <span class="inline-answer"></span> (left/right).</li>
+            <li>When start and destination are in the same row, the row loop <span class="inline-answer long"></span> (executes / does not execute).</li>
+            <li>When start and destination are the same position, the path contains <span class="inline-answer short"></span> position(s).</li>
+            <li>The number of steps in a path always equals the <span class="inline-answer long"></span>.</li>
+        </ol>
+    </div>
+
+    <!-- ── Reflection ── -->
+    <div class="section">
+        <div class="reflection-box">
+            <div class="reflection-label">Reflection</div>
+            <p><strong>You traced 5 different paths by hand today. In the next lesson, you will write a Python class that does this automatically. Why is it important to trace the algorithm by hand BEFORE writing code?</strong></p>
+            <div class="answer-lines-3">
+                <span class="answer-line"></span>
+                <span class="answer-line"></span>
+                <span class="answer-line"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Next Lesson ── -->
+    <div class="next-lesson">
+        <strong>Next Lesson:</strong> We'll implement the Manhattan algorithm as a Python class with a <strong>compute_path()</strong> method!
+    </div>
+</div>
+
+</body>
+</html>

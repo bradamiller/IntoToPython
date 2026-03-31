@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Worksheet: Lists</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Patrick+Hand&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        /* ── Reset & Base ── */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Patrick Hand', cursive;
+            font-size: 17px;
+            color: #2d3436;
+            background: #fdfcfa;
+            line-height: 1.5;
+            padding: 0;
+        }
+
+        /* ── Page structure for print ── */
+        .page {
+            width: 8.5in;
+            min-height: 11in;
+            margin: 0 auto;
+            padding: 0.5in 0.6in;
+            background: #fdfcfa;
+            position: relative;
+        }
+
+        /* Subtle notebook-paper lines */
+        .page::before {
+            content: '';
+            position: absolute;
+            inset: 0.5in 0.6in;
+            background-image: linear-gradient(rgba(180, 200, 220, 0.1) 1px, transparent 1px);
+            background-size: 100% 28px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .page > * { position: relative; z-index: 1; }
+
+        /* ── Header ── */
+        .worksheet-header {
+            border-bottom: 3px solid #5b8fa8;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+
+        .worksheet-header h1 {
+            font-family: 'Caveat', cursive;
+            font-size: 32px;
+            font-weight: 700;
+            color: #2d3436;
+            transform: rotate(-0.3deg);
+        }
+
+        .worksheet-header .subtitle {
+            font-family: 'Caveat', cursive;
+            font-size: 18px;
+            color: #5b8fa8;
+            font-weight: 600;
+        }
+
+        .student-info {
+            display: flex;
+            gap: 40px;
+            margin-top: 10px;
+            font-size: 17px;
+        }
+
+        .student-info label {
+            font-weight: bold;
+        }
+
+        .student-info .blank {
+            display: inline-block;
+            width: 200px;
+            border-bottom: 2px solid #b8c5d0;
+            margin-left: 6px;
+        }
+
+        /* ── Section Headers ── */
+        .section {
+            margin-top: 22px;
+            margin-bottom: 14px;
+        }
+
+        .section-header {
+            font-family: 'Caveat', cursive;
+            font-size: 24px;
+            font-weight: 600;
+            color: #5b8fa8;
+            margin-bottom: 8px;
+            padding-bottom: 4px;
+            border-bottom: 2px solid rgba(91, 143, 168, 0.25);
+        }
+
+        .section p, .section .instruction {
+            margin-bottom: 8px;
+            font-size: 17px;
+        }
+
+        .instruction {
+            font-style: italic;
+            color: #636e72;
+        }
+
+        /* ── Tables ── */
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 10px 0;
+            font-size: 16px;
+            border: 2px solid #b8c5d0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        thead th {
+            background-color: rgba(91, 143, 168, 0.12);
+            font-family: 'Caveat', cursive;
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d3436;
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 2px solid #b8c5d0;
+        }
+
+        tbody td {
+            padding: 7px 12px;
+            border-bottom: 1px solid rgba(184, 197, 208, 0.4);
+            vertical-align: middle;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Answer blank inside tables */
+        .answer {
+            display: inline-block;
+            min-width: 80px;
+            border-bottom: 2px solid #d4a373;
+            color: transparent;
+            text-align: center;
+            padding: 2px 4px;
+        }
+
+        .answer-wide {
+            min-width: 180px;
+        }
+
+        .answer-full {
+            display: block;
+            width: 100%;
+            min-height: 24px;
+            border-bottom: 2px solid #d4a373;
+        }
+
+        /* ── Standalone answer lines ── */
+        .answer-line {
+            display: block;
+            width: 100%;
+            border-bottom: 2px solid #d4a373;
+            min-height: 26px;
+            margin: 6px 0;
+        }
+
+        .answer-lines-3 {
+            margin: 8px 0;
+        }
+        .answer-lines-3 .answer-line { margin: 10px 0; }
+
+        /* ── Inline answer blanks ── */
+        .inline-answer {
+            display: inline-block;
+            min-width: 90px;
+            border-bottom: 2px solid #d4a373;
+            text-align: center;
+            margin: 0 2px;
+        }
+
+        .inline-answer.short { min-width: 50px; }
+        .inline-answer.long { min-width: 140px; }
+        .inline-answer.x-long { min-width: 220px; }
+
+        /* ── Code blocks ── */
+        .code-block {
+            background: #f0ede8;
+            border: 2px solid #b8c5d0;
+            border-radius: 10px;
+            padding: 14px 18px;
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+            white-space: pre;
+            margin: 10px 0;
+            line-height: 1.6;
+        }
+
+        /* ── Question lists ── */
+        .questions {
+            list-style: none;
+            counter-reset: q;
+            padding-left: 0;
+        }
+
+        .questions li {
+            counter-increment: q;
+            margin-bottom: 8px;
+            padding-left: 28px;
+            position: relative;
+        }
+
+        .questions li::before {
+            content: counter(q) ".";
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+            color: #5b8fa8;
+        }
+
+        /* ── Tip boxes ── */
+        .tip-box {
+            background-color: rgba(91, 143, 168, 0.08);
+            border: 2px solid rgba(91, 143, 168, 0.3);
+            border-radius: 10px;
+            padding: 10px 16px;
+            margin: 12px 0;
+            font-size: 16px;
+        }
+
+        .tip-box .tip-label {
+            font-family: 'Caveat', cursive;
+            font-weight: 600;
+            color: #5b8fa8;
+            font-size: 18px;
+        }
+
+        /* ── Reflection box ── */
+        .reflection-box {
+            background-color: rgba(232, 168, 124, 0.08);
+            border: 2px solid rgba(232, 168, 124, 0.35);
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin: 14px 0;
+        }
+
+        .reflection-box .reflection-label {
+            font-family: 'Caveat', cursive;
+            font-size: 20px;
+            font-weight: 600;
+            color: #d4a373;
+            margin-bottom: 6px;
+        }
+
+        /* ── Next lesson teaser ── */
+        .next-lesson {
+            margin-top: 20px;
+            padding: 10px 16px;
+            background-color: rgba(91, 143, 168, 0.06);
+            border-left: 4px solid #5b8fa8;
+            border-radius: 0 8px 8px 0;
+            font-size: 16px;
+            color: #636e72;
+        }
+
+        .next-lesson strong { color: #2d3436; }
+
+        /* ── Two-column layout ── */
+        .two-col {
+            display: flex;
+            gap: 24px;
+            align-items: flex-start;
+        }
+
+        .two-col > * { flex: 1; }
+
+        /* ── Page break hints ── */
+        .page-break {
+            page-break-before: always;
+            break-before: page;
+        }
+
+        /* ══════════════════════════════════════
+           PRINT STYLES
+           ══════════════════════════════════════ */
+        @media print {
+            body {
+                background: white;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .page {
+                margin: 0;
+                padding: 0.4in 0.5in;
+                width: auto;
+                min-height: auto;
+            }
+
+            .page::before {
+                display: none;
+            }
+
+            .page-break {
+                page-break-before: always;
+                break-before: page;
+            }
+
+            @page {
+                size: letter;
+                margin: 0;
+            }
+        }
+
+        /* ── Screen-only styling ── */
+        @media screen {
+            body {
+                background: #e8e4df;
+                padding: 20px;
+            }
+            .page {
+                box-shadow: 0 2px 20px rgba(0,0,0,0.12);
+                border-radius: 4px;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ════════ PAGE 1 ════════ -->
+<div class="page">
+    <div class="worksheet-header">
+        <div class="subtitle">Module 4: Manhattan &mdash; Lesson 3</div>
+        <h1>Lists</h1>
+        <div class="student-info">
+            <span><label>Name:</label> <span class="blank"></span></span>
+            <span><label>Date:</label> <span class="blank"></span></span>
+        </div>
+    </div>
+
+    <!-- ── Part 1: Creating Lists ── -->
+    <div class="section">
+        <div class="section-header">Part 1: Creating Lists</div>
+        <p class="instruction">Write the Python code for each description.</p>
+
+        <table>
+            <thead>
+                <tr><th>Description</th><th>Code</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>An empty list</td><td>path = <span class="answer"></span></td></tr>
+                <tr><td>A list with three numbers: 1, 2, 3</td><td>numbers = <span class="answer answer-wide"></span></td></tr>
+                <tr><td>A list with two strings: "hello", "world"</td><td>words = <span class="answer answer-wide"></span></td></tr>
+                <tr><td>A list with one tuple: (0, 0)</td><td>path = <span class="answer answer-wide"></span></td></tr>
+            </tbody>
+        </table>
+
+        <p><strong>What characters surround a list's values?</strong> <span class="inline-answer short"></span></p>
+        <p><strong>Tuple uses ( ) and list uses [ ]. Why does the difference matter?</strong></p>
+        <span class="answer-line"></span>
+    </div>
+
+    <!-- ── Part 2: List vs. Tuple ── -->
+    <div class="section">
+        <div class="section-header">Part 2: List vs. Tuple</div>
+        <p class="instruction">Fill in the comparison table.</p>
+
+        <table>
+            <thead>
+                <tr><th>Feature</th><th>Tuple</th><th>List</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Bracket type</td><td>( )</td><td><span class="answer"></span></td></tr>
+                <tr><td>Can you change it after creation?</td><td>No (immutable)</td><td><span class="answer answer-wide"></span></td></tr>
+                <tr><td>Best used for</td><td>Fixed data like a coordinate</td><td><span class="answer answer-wide"></span></td></tr>
+                <tr><td>Example</td><td>(2, 3)</td><td><span class="answer answer-wide"></span></td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ── Part 3: Append Exercises ── -->
+    <div class="section">
+        <div class="section-header">Part 3: Append Exercises</div>
+        <p class="instruction">Trace what happens to the list after each append() call.</p>
+
+        <div class="code-block">path = []
+path.append((0, 0))
+path.append((1, 0))
+path.append((2, 0))</div>
+
+        <table>
+            <thead>
+                <tr><th>After line</th><th>Contents of path</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>path = []</td><td>[]</td></tr>
+                <tr><td>path.append((0, 0))</td><td><span class="answer answer-wide"></span></td></tr>
+                <tr><td>path.append((1, 0))</td><td><span class="answer answer-wide"></span></td></tr>
+                <tr><td>path.append((2, 0))</td><td><span class="answer answer-wide"></span></td></tr>
+            </tbody>
+        </table>
+
+        <p><strong>How many items are in the list at the end?</strong> <span class="inline-answer short"></span></p>
+        <p><strong>What does path[0] return?</strong> <span class="inline-answer"></span> &nbsp;&nbsp;
+           <strong>What does path[2] return?</strong> <span class="inline-answer"></span></p>
+        <p><strong>What does len(path) return?</strong> <span class="inline-answer short"></span></p>
+    </div>
+</div>
+
+<!-- ════════ PAGE 2 ════════ -->
+<div class="page page-break">
+
+    <!-- ── Part 4: Iteration Tracing ── -->
+    <div class="section">
+        <div class="section-header">Part 4: Iteration Tracing</div>
+        <p class="instruction">Trace the output of this code.</p>
+
+        <div class="code-block">colors = ["red", "green", "blue"]
+for color in colors:
+    print(color)</div>
+
+        <p><strong>Output:</strong></p>
+        <ol class="questions">
+            <li><span class="inline-answer long"></span></li>
+            <li><span class="inline-answer long"></span></li>
+            <li><span class="inline-answer long"></span></li>
+        </ol>
+
+        <p class="instruction" style="margin-top: 14px;">Now trace this code with a list of tuples.</p>
+
+        <div class="code-block">path = [(0, 0), (1, 0), (2, 0)]
+for step in path:
+    print("Visit:", step)</div>
+
+        <p><strong>Output:</strong></p>
+        <ol class="questions">
+            <li><span class="inline-answer long"></span></li>
+            <li><span class="inline-answer long"></span></li>
+            <li><span class="inline-answer long"></span></li>
+        </ol>
+    </div>
+
+    <!-- ── Part 5: Accessing Tuples Inside a List ── -->
+    <div class="section">
+        <div class="section-header">Part 5: Accessing Tuples Inside a List</div>
+        <p class="instruction">Given this list of tuples, evaluate each expression.</p>
+
+        <div class="code-block">path = [(0, 0), (1, 0), (2, 0), (2, 1), (2, 2)]</div>
+
+        <table>
+            <thead>
+                <tr><th>Expression</th><th>Value</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>path[0]</td><td><span class="answer"></span></td></tr>
+                <tr><td>path[3]</td><td><span class="answer"></span></td></tr>
+                <tr><td>path[0][0]</td><td><span class="answer short"></span></td></tr>
+                <tr><td>path[0][1]</td><td><span class="answer short"></span></td></tr>
+                <tr><td>path[3][0]</td><td><span class="answer short"></span></td></tr>
+                <tr><td>path[3][1]</td><td><span class="answer short"></span></td></tr>
+                <tr><td>len(path)</td><td><span class="answer short"></span></td></tr>
+                <tr><td>path[-1]</td><td><span class="answer"></span></td></tr>
+            </tbody>
+        </table>
+
+        <p><strong>Explain what path[3][1] means in words:</strong></p>
+        <span class="answer-line"></span>
+    </div>
+
+    <!-- ── Part 6: Building a Path Step by Step ── -->
+    <div class="section">
+        <div class="section-header">Part 6: Building a Path Step by Step</div>
+        <p class="instruction">The robot needs to go from (0, 0) to (2, 3) by moving down 2 rows, then right 3 columns. Write the append statements.</p>
+
+        <div class="code-block">path = []
+path.append(<span class="inline-answer long"></span>)    # Starting position
+path.append(<span class="inline-answer long"></span>)    # One row down
+path.append(<span class="inline-answer long"></span>)    # Two rows down
+path.append(<span class="inline-answer long"></span>)    # One column right
+path.append(<span class="inline-answer long"></span>)    # Two columns right
+path.append(<span class="inline-answer long"></span>)    # Three columns right (destination)</div>
+
+        <p><strong>Write out the final path list:</strong> path = <span class="inline-answer x-long"></span></p>
+    </div>
+</div>
+
+<!-- ════════ PAGE 3 ════════ -->
+<div class="page page-break">
+
+    <!-- ── Part 7: Loop-Based Path Building ── -->
+    <div class="section">
+        <div class="section-header">Part 7: Loop-Based Path Building</div>
+        <p class="instruction">Trace this code.</p>
+
+        <div class="code-block">path = []
+for row in range(4):
+    path.append((row, 0))
+print(path)</div>
+
+        <table>
+            <thead>
+                <tr><th>Iteration</th><th>row</th><th>Appended</th><th>List after append</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>1</td><td>0</td><td>(0, 0)</td><td>[(0, 0)]</td></tr>
+                <tr><td>2</td><td><span class="answer short"></span></td><td><span class="answer"></span></td><td><span class="answer answer-wide"></span></td></tr>
+                <tr><td>3</td><td><span class="answer short"></span></td><td><span class="answer"></span></td><td><span class="answer answer-wide"></span></td></tr>
+                <tr><td>4</td><td><span class="answer short"></span></td><td><span class="answer"></span></td><td><span class="answer answer-wide"></span></td></tr>
+            </tbody>
+        </table>
+
+        <p><strong>Final output:</strong> <span class="inline-answer x-long"></span></p>
+
+        <p class="instruction" style="margin-top: 14px;">Now trace this code.</p>
+
+        <div class="code-block">path = []
+for col in range(3):
+    path.append((2, col))
+print(path)</div>
+
+        <table>
+            <thead>
+                <tr><th>Iteration</th><th>col</th><th>Appended</th><th>List after append</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>1</td><td><span class="answer short"></span></td><td><span class="answer"></span></td><td><span class="answer answer-wide"></span></td></tr>
+                <tr><td>2</td><td><span class="answer short"></span></td><td><span class="answer"></span></td><td><span class="answer answer-wide"></span></td></tr>
+                <tr><td>3</td><td><span class="answer short"></span></td><td><span class="answer"></span></td><td><span class="answer answer-wide"></span></td></tr>
+            </tbody>
+        </table>
+
+        <p><strong>Final output:</strong> <span class="inline-answer x-long"></span></p>
+    </div>
+
+    <!-- ── Part 8: Iterating Through a Path ── -->
+    <div class="section">
+        <div class="section-header">Part 8: Iterating Through a Path</div>
+        <p class="instruction">Trace the output of this code.</p>
+
+        <div class="code-block">path = [(0, 0), (1, 0), (1, 1), (1, 2)]
+print("Path has", len(path), "positions")
+for step in path:
+    row = step[0]
+    col = step[1]
+    print("Row:", row, "Col:", col)</div>
+
+        <p><strong>Output:</strong></p>
+        <ol class="questions">
+            <li><span class="inline-answer x-long"></span></li>
+            <li><span class="inline-answer x-long"></span></li>
+            <li><span class="inline-answer x-long"></span></li>
+            <li><span class="inline-answer x-long"></span></li>
+            <li><span class="inline-answer x-long"></span></li>
+        </ol>
+    </div>
+</div>
+
+<!-- ════════ PAGE 4 ════════ -->
+<div class="page page-break">
+
+    <!-- ── Part 9: Spot the Error ── -->
+    <div class="section">
+        <div class="section-header">Part 9: Spot the Error</div>
+        <p class="instruction">Find the bug in each code snippet and explain how to fix it.</p>
+
+        <p><strong>Error 1:</strong></p>
+        <div class="code-block">path = []
+for i in range(3):
+    position = (i, 0)
+path.append(position)    # Something is wrong with the indentation</div>
+        <p><strong>Problem:</strong> <span class="inline-answer x-long"></span></p>
+        <p><strong>Fix:</strong> <span class="inline-answer x-long"></span></p>
+
+        <p style="margin-top: 14px;"><strong>Error 2:</strong></p>
+        <div class="code-block">path = []
+print(path[0])</div>
+        <p><strong>Problem:</strong> <span class="inline-answer x-long"></span></p>
+        <p><strong>Fix:</strong> <span class="inline-answer x-long"></span></p>
+
+        <p style="margin-top: 14px;"><strong>Error 3:</strong></p>
+        <div class="code-block">path = ((0, 0), (1, 0), (2, 0))   # Storing a path
+path.append((3, 0))</div>
+        <p><strong>Problem:</strong> <span class="inline-answer x-long"></span></p>
+        <p><strong>Fix:</strong> <span class="inline-answer x-long"></span></p>
+    </div>
+
+    <!-- ── Part 10: Code Writing ── -->
+    <div class="section">
+        <div class="section-header">Part 10: Code Writing</div>
+        <p class="instruction">Write a program that: 1. Creates an empty list called path. 2. Uses a for loop with range(5) to add coordinates. 3. Prints each step.</p>
+
+        <div class="code-block">path = <span class="inline-answer"></span>
+
+for row in range(<span class="inline-answer short"></span>):
+    path.append(<span class="inline-answer long"></span>)
+
+for step in path:
+    print(<span class="inline-answer long"></span>)</div>
+    </div>
+
+    <!-- ── Reflection ── -->
+    <div class="section">
+        <div class="reflection-box">
+            <div class="reflection-label">Reflection</div>
+            <p><strong>A tuple is ONE position. A list of tuples is a PATH.</strong> Explain in your own words why we need both data structures.</p>
+            <div class="answer-lines-3">
+                <span class="answer-line"></span>
+                <span class="answer-line"></span>
+                <span class="answer-line"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Next Lesson ── -->
+    <div class="next-lesson">
+        <strong>Next Lesson:</strong> We'll learn the <strong>Manhattan algorithm</strong> &mdash; how to automatically calculate a path from any start to any destination!
+    </div>
+</div>
+
+</body>
+</html>

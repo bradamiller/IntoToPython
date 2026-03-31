@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Worksheet: Coordinates on the Grid</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Patrick+Hand&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        /* ── Reset & Base ── */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Patrick Hand', cursive;
+            font-size: 17px;
+            color: #2d3436;
+            background: #fdfcfa;
+            line-height: 1.5;
+            padding: 0;
+        }
+
+        /* ── Page structure for print ── */
+        .page {
+            width: 8.5in;
+            min-height: 11in;
+            margin: 0 auto;
+            padding: 0.5in 0.6in;
+            background: #fdfcfa;
+            position: relative;
+        }
+
+        /* Subtle notebook-paper lines */
+        .page::before {
+            content: '';
+            position: absolute;
+            inset: 0.5in 0.6in;
+            background-image: linear-gradient(rgba(180, 200, 220, 0.1) 1px, transparent 1px);
+            background-size: 100% 28px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .page > * { position: relative; z-index: 1; }
+
+        /* ── Header ── */
+        .worksheet-header {
+            border-bottom: 3px solid #5b8fa8;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+
+        .worksheet-header h1 {
+            font-family: 'Caveat', cursive;
+            font-size: 32px;
+            font-weight: 700;
+            color: #2d3436;
+            transform: rotate(-0.3deg);
+        }
+
+        .worksheet-header .subtitle {
+            font-family: 'Caveat', cursive;
+            font-size: 18px;
+            color: #5b8fa8;
+            font-weight: 600;
+        }
+
+        .student-info {
+            display: flex;
+            gap: 40px;
+            margin-top: 10px;
+            font-size: 17px;
+        }
+
+        .student-info label {
+            font-weight: bold;
+        }
+
+        .student-info .blank {
+            display: inline-block;
+            width: 200px;
+            border-bottom: 2px solid #b8c5d0;
+            margin-left: 6px;
+        }
+
+        /* ── Section Headers ── */
+        .section {
+            margin-top: 22px;
+            margin-bottom: 14px;
+        }
+
+        .section-header {
+            font-family: 'Caveat', cursive;
+            font-size: 24px;
+            font-weight: 600;
+            color: #5b8fa8;
+            margin-bottom: 8px;
+            padding-bottom: 4px;
+            border-bottom: 2px solid rgba(91, 143, 168, 0.25);
+        }
+
+        .section p, .section .instruction {
+            margin-bottom: 8px;
+            font-size: 17px;
+        }
+
+        .instruction {
+            font-style: italic;
+            color: #636e72;
+        }
+
+        /* ── Tables ── */
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 10px 0;
+            font-size: 16px;
+            border: 2px solid #b8c5d0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        thead th {
+            background-color: rgba(91, 143, 168, 0.12);
+            font-family: 'Caveat', cursive;
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d3436;
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 2px solid #b8c5d0;
+        }
+
+        tbody td {
+            padding: 7px 12px;
+            border-bottom: 1px solid rgba(184, 197, 208, 0.4);
+            vertical-align: middle;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Answer blank inside tables */
+        .answer {
+            display: inline-block;
+            min-width: 80px;
+            border-bottom: 2px solid #d4a373;
+            color: transparent; /* hide placeholder text in print */
+            text-align: center;
+            padding: 2px 4px;
+        }
+
+        .answer-wide {
+            min-width: 180px;
+        }
+
+        .answer-full {
+            display: block;
+            width: 100%;
+            min-height: 24px;
+            border-bottom: 2px solid #d4a373;
+        }
+
+        /* ── Standalone answer lines ── */
+        .answer-line {
+            display: block;
+            width: 100%;
+            border-bottom: 2px solid #d4a373;
+            min-height: 26px;
+            margin: 6px 0;
+        }
+
+        .answer-lines-3 {
+            margin: 8px 0;
+        }
+        .answer-lines-3 .answer-line { margin: 10px 0; }
+
+        /* ── Inline answer blanks ── */
+        .inline-answer {
+            display: inline-block;
+            min-width: 90px;
+            border-bottom: 2px solid #d4a373;
+            text-align: center;
+            margin: 0 2px;
+        }
+
+        .inline-answer.short { min-width: 50px; }
+        .inline-answer.long { min-width: 140px; }
+
+        /* ── SVG Grid Container ── */
+        .grid-container {
+            display: flex;
+            justify-content: center;
+            margin: 14px 0;
+        }
+
+        /* ── Question lists ── */
+        .questions {
+            list-style: none;
+            counter-reset: q;
+            padding-left: 0;
+        }
+
+        .questions li {
+            counter-increment: q;
+            margin-bottom: 8px;
+            padding-left: 28px;
+            position: relative;
+        }
+
+        .questions li::before {
+            content: counter(q) ".";
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+            color: #5b8fa8;
+        }
+
+        /* ── Yes/No choice ── */
+        .choice {
+            display: inline-block;
+            margin-left: 8px;
+            font-weight: bold;
+            color: #636e72;
+        }
+
+        /* ── Insight/tip boxes ── */
+        .tip-box {
+            background-color: rgba(91, 143, 168, 0.08);
+            border: 2px solid rgba(91, 143, 168, 0.3);
+            border-radius: 10px;
+            padding: 10px 16px;
+            margin: 12px 0;
+            font-size: 16px;
+        }
+
+        .tip-box .tip-label {
+            font-family: 'Caveat', cursive;
+            font-weight: 600;
+            color: #5b8fa8;
+            font-size: 18px;
+        }
+
+        /* ── Reflection box ── */
+        .reflection-box {
+            background-color: rgba(232, 168, 124, 0.08);
+            border: 2px solid rgba(232, 168, 124, 0.35);
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin: 14px 0;
+        }
+
+        .reflection-box .reflection-label {
+            font-family: 'Caveat', cursive;
+            font-size: 20px;
+            font-weight: 600;
+            color: #d4a373;
+            margin-bottom: 6px;
+        }
+
+        /* ── Next lesson teaser ── */
+        .next-lesson {
+            margin-top: 20px;
+            padding: 10px 16px;
+            background-color: rgba(91, 143, 168, 0.06);
+            border-left: 4px solid #5b8fa8;
+            border-radius: 0 8px 8px 0;
+            font-size: 16px;
+            color: #636e72;
+        }
+
+        .next-lesson strong { color: #2d3436; }
+
+        /* ── Two-column layout ── */
+        .two-col {
+            display: flex;
+            gap: 24px;
+            align-items: flex-start;
+        }
+
+        .two-col > * { flex: 1; }
+
+        /* ── Page break hints ── */
+        .page-break {
+            page-break-before: always;
+            break-before: page;
+        }
+
+        /* ══════════════════════════════════════
+           PRINT STYLES
+           ══════════════════════════════════════ */
+        @media print {
+            body {
+                background: white;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .page {
+                margin: 0;
+                padding: 0.4in 0.5in;
+                width: auto;
+                min-height: auto;
+            }
+
+            .page::before {
+                display: none; /* remove notebook lines in print for cleaner PDF */
+            }
+
+            .page-break {
+                page-break-before: always;
+                break-before: page;
+            }
+
+            @page {
+                size: letter;
+                margin: 0;
+            }
+        }
+
+        /* ── Screen-only styling ── */
+        @media screen {
+            body {
+                background: #e8e4df;
+                padding: 20px;
+            }
+            .page {
+                box-shadow: 0 2px 20px rgba(0,0,0,0.12);
+                border-radius: 4px;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ════════ PAGE 1 ════════ -->
+<div class="page">
+    <div class="worksheet-header">
+        <div class="subtitle">Module 4: Manhattan &mdash; Lesson 1</div>
+        <h1>Coordinates on the Grid</h1>
+        <div class="student-info">
+            <span><label>Name:</label> <span class="blank"></span></span>
+            <span><label>Date:</label> <span class="blank"></span></span>
+        </div>
+    </div>
+
+    <!-- ── Part 1: Label the Grid ── -->
+    <div class="section">
+        <div class="section-header">Part 1: Label the Grid</div>
+        <p class="instruction">Write the correct (row, col) coordinate at every intersection on this 4&times;4 grid.</p>
+
+        <div class="grid-container">
+            <svg width="380" height="370" viewBox="0 0 380 370" font-family="Patrick Hand, cursive">
+                <!-- Column headers -->
+                <text x="100" y="24" font-family="Caveat, cursive" font-size="17" fill="#5b8fa8" text-anchor="middle" font-weight="600">Col 0</text>
+                <text x="180" y="24" font-family="Caveat, cursive" font-size="17" fill="#5b8fa8" text-anchor="middle" font-weight="600">Col 1</text>
+                <text x="260" y="24" font-family="Caveat, cursive" font-size="17" fill="#5b8fa8" text-anchor="middle" font-weight="600">Col 2</text>
+                <text x="340" y="24" font-family="Caveat, cursive" font-size="17" fill="#5b8fa8" text-anchor="middle" font-weight="600">Col 3</text>
+                <!-- Row headers -->
+                <text x="40" y="58" font-family="Caveat, cursive" font-size="17" fill="#5b8fa8" text-anchor="middle" font-weight="600">Row 0</text>
+                <text x="40" y="138" font-family="Caveat, cursive" font-size="17" fill="#5b8fa8" text-anchor="middle" font-weight="600">Row 1</text>
+                <text x="40" y="218" font-family="Caveat, cursive" font-size="17" fill="#5b8fa8" text-anchor="middle" font-weight="600">Row 2</text>
+                <text x="40" y="298" font-family="Caveat, cursive" font-size="17" fill="#5b8fa8" text-anchor="middle" font-weight="600">Row 3</text>
+
+                <!-- Vertical grid lines -->
+                <line x1="100" y1="35" x2="100" y2="310" stroke="#2d3436" stroke-width="2"/>
+                <line x1="180" y1="35" x2="180" y2="310" stroke="#2d3436" stroke-width="2"/>
+                <line x1="260" y1="35" x2="260" y2="310" stroke="#2d3436" stroke-width="2"/>
+                <line x1="340" y1="35" x2="340" y2="310" stroke="#2d3436" stroke-width="2"/>
+                <!-- Horizontal grid lines -->
+                <line x1="80" y1="50" x2="355" y2="50" stroke="#2d3436" stroke-width="2"/>
+                <line x1="80" y1="130" x2="355" y2="130" stroke="#2d3436" stroke-width="2"/>
+                <line x1="80" y1="210" x2="355" y2="210" stroke="#2d3436" stroke-width="2"/>
+                <line x1="80" y1="290" x2="355" y2="290" stroke="#2d3436" stroke-width="2"/>
+
+                <!-- Answer blanks at each intersection (dashed underlines) -->
+                <!-- Row 0 -->
+                <line x1="75" y1="74" x2="125" y2="74" stroke="#d4a373" stroke-width="1.5" stroke-dasharray="3,2"/>
+                <line x1="155" y1="74" x2="205" y2="74" stroke="#d4a373" stroke-width="1.5" stroke-dasharray="3,2"/>
+                <line x1="235" y1="74" x2="285" y2="74" stroke="#d4a373" stroke-width="1.5" stroke-dasharray="3,2"/>
+                <line x1="315" y1="74" x2="365" y2="74" stroke="#d4a373" stroke-width="1.5" stroke-dasharray="3,2"/>
+                <!-- Row 1 -->
+                <line x1="75" y1="154" x2="125" y2="154" stroke="#d4a373" stroke-width="1.5" stroke-dasharray="3,2"/>
+                <line x1="155" y1="154" x2="205" y2="154" stroke="#d4a373" stroke-width="1.5" stroke-dasharray="3,2"/>
+                <line x1="235" y1="154" x2="285" y2="154" stroke="#d4a373" stroke-width="1.5" stroke-dasharray="3,2"/>
+                <line x1="315" y1="154" x2="365" y2="154" stroke="#d4a373" stroke-width="1.5" stroke-dasharray="3,2"/>
+                <!-- Row 2 -->
+                <line x1="75" y1="234" x2="125" y2="234" stroke="#d4a373" stroke-width="1.5" stroke-dasharray="3,2"/>
+                <line x1="155" y1="234" x2="205" y2="234" stroke="#d4a373" stroke-width="1.5" stroke-dasharray="3,2"/>
+                <line x1="235" y1="234" x2="285" y2="234" stroke="#d4a373" stroke-width="1.5" stroke-dasharray="3,2"/>
+                <line x1="315" y1="234" x2="365" y2="234" stroke="#d4a373" stroke-width="1.5" stroke-dasharray="3,2"/>
+                <!-- Row 3 -->
+                <line x1="75" y1="314" x2="125" y2="314" stroke="#d4a373" stroke-width="1.5" stroke-dasharray="3,2"/>
+                <line x1="155" y1="314" x2="205" y2="314" stroke="#d4a373" stroke-width="1.5" stroke-dasharray="3,2"/>
+                <line x1="235" y1="314" x2="285" y2="314" stroke="#d4a373" stroke-width="1.5" stroke-dasharray="3,2"/>
+                <line x1="315" y1="314" x2="365" y2="314" stroke="#d4a373" stroke-width="1.5" stroke-dasharray="3,2"/>
+            </svg>
+        </div>
+
+        <p><strong>How many total intersections are on a 4&times;4 grid?</strong> <span class="inline-answer short"></span></p>
+    </div>
+
+    <!-- ── Part 2: Reading Coordinates ── -->
+    <div class="section">
+        <div class="section-header">Part 2: Reading Coordinates</div>
+        <p class="instruction">For each description, write the coordinate.</p>
+
+        <table>
+            <thead>
+                <tr><th>Description</th><th>Coordinate (row, col)</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Top-left corner</td><td>(<span class="answer short"></span>, <span class="answer short"></span>)</td></tr>
+                <tr><td>Bottom-right corner</td><td>(<span class="answer short"></span>, <span class="answer short"></span>)</td></tr>
+                <tr><td>Second row, third column</td><td>(<span class="answer short"></span>, <span class="answer short"></span>)</td></tr>
+                <tr><td>Top-right corner</td><td>(<span class="answer short"></span>, <span class="answer short"></span>)</td></tr>
+                <tr><td>Third row, first column</td><td>(<span class="answer short"></span>, <span class="answer short"></span>)</td></tr>
+                <tr><td>Bottom-left corner</td><td>(<span class="answer short"></span>, <span class="answer short"></span>)</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ── Part 3: Identifying Positions ── -->
+    <div class="section">
+        <div class="section-header">Part 3: Identifying Positions</div>
+        <p class="instruction">For each coordinate, describe the position on the grid.</p>
+
+        <table>
+            <thead>
+                <tr><th style="width: 120px;">Coordinate</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>(0, 0)</td><td><span class="answer answer-wide"></span></td></tr>
+                <tr><td>(1, 2)</td><td><span class="answer answer-wide"></span></td></tr>
+                <tr><td>(3, 3)</td><td><span class="answer answer-wide"></span></td></tr>
+                <tr><td>(0, 3)</td><td><span class="answer answer-wide"></span></td></tr>
+                <tr><td>(2, 1)</td><td><span class="answer answer-wide"></span></td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ── Part 4: Row vs. Column ── -->
+    <div class="section">
+        <div class="section-header">Part 4: Row vs. Column</div>
+
+        <ol class="questions">
+            <li><strong>In the coordinate (2, 3), which number is the row?</strong> <span class="inline-answer short"></span></li>
+            <li><strong>In the coordinate (2, 3), which number is the column?</strong> <span class="inline-answer short"></span></li>
+            <li><strong>Which comes first in our convention &mdash; row or column?</strong> <span class="inline-answer"></span></li>
+            <li><strong>Does the row number tell you how far DOWN or how far RIGHT?</strong> <span class="inline-answer"></span></li>
+            <li><strong>Does the column number tell you how far DOWN or how far RIGHT?</strong> <span class="inline-answer"></span></li>
+            <li><strong>Are (2, 3) and (3, 2) the same position?</strong> <span class="choice">YES &nbsp;/&nbsp; NO</span></li>
+            <li><strong>If they are different, explain how:</strong><br><span class="answer-line"></span></li>
+        </ol>
+    </div>
+</div>
+
+<!-- ════════ PAGE 2 ════════ -->
+<div class="page page-break">
+
+    <!-- ── Part 5: Neighbors on the Grid ── -->
+    <div class="section">
+        <div class="section-header">Part 5: Neighbors on the Grid</div>
+        <p class="instruction">For each coordinate, write the neighbors. If a neighbor doesn't exist (off the grid), write &ldquo;NONE.&rdquo;</p>
+
+        <p style="margin-top: 10px;"><strong>Position (1, 2) on a 4&times;4 grid:</strong></p>
+        <table>
+            <thead>
+                <tr><th>Direction</th><th>Neighbor Coordinate</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Above (one row up)</td><td>(<span class="answer short"></span>, <span class="answer short"></span>)</td></tr>
+                <tr><td>Below (one row down)</td><td>(<span class="answer short"></span>, <span class="answer short"></span>)</td></tr>
+                <tr><td>Left (one column left)</td><td>(<span class="answer short"></span>, <span class="answer short"></span>)</td></tr>
+                <tr><td>Right (one column right)</td><td>(<span class="answer short"></span>, <span class="answer short"></span>)</td></tr>
+            </tbody>
+        </table>
+
+        <p style="margin-top: 12px;"><strong>Position (0, 0) on a 4&times;4 grid:</strong></p>
+        <table>
+            <thead>
+                <tr><th>Direction</th><th>Neighbor Coordinate</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Above</td><td><span class="inline-answer long"></span></td></tr>
+                <tr><td>Below</td><td>(<span class="answer short"></span>, <span class="answer short"></span>)</td></tr>
+                <tr><td>Left</td><td><span class="inline-answer long"></span></td></tr>
+                <tr><td>Right</td><td>(<span class="answer short"></span>, <span class="answer short"></span>)</td></tr>
+            </tbody>
+        </table>
+
+        <p style="margin-top: 12px;"><strong>Position (3, 3) on a 4&times;4 grid:</strong></p>
+        <table>
+            <thead>
+                <tr><th>Direction</th><th>Neighbor Coordinate</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Above</td><td>(<span class="answer short"></span>, <span class="answer short"></span>)</td></tr>
+                <tr><td>Below</td><td><span class="inline-answer long"></span></td></tr>
+                <tr><td>Left</td><td>(<span class="answer short"></span>, <span class="answer short"></span>)</td></tr>
+                <tr><td>Right</td><td><span class="inline-answer long"></span></td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ── Part 6: Movement on the Grid ── -->
+    <div class="section">
+        <div class="section-header">Part 6: Movement on the Grid</div>
+        <p class="instruction">Starting at (0, 0), follow these directions and write the coordinate after each move.</p>
+
+        <table>
+            <thead>
+                <tr><th style="width: 60px;">Step</th><th>Direction</th><th style="width: 170px;">New Coordinate</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>Start</td><td>&mdash;</td><td>(0, 0)</td></tr>
+                <tr><td>1</td><td>Move one row down</td><td>(<span class="answer short"></span>, <span class="answer short"></span>)</td></tr>
+                <tr><td>2</td><td>Move one row down</td><td>(<span class="answer short"></span>, <span class="answer short"></span>)</td></tr>
+                <tr><td>3</td><td>Move one column right</td><td>(<span class="answer short"></span>, <span class="answer short"></span>)</td></tr>
+                <tr><td>4</td><td>Move one column right</td><td>(<span class="answer short"></span>, <span class="answer short"></span>)</td></tr>
+                <tr><td>5</td><td>Move one column right</td><td>(<span class="answer short"></span>, <span class="answer short"></span>)</td></tr>
+            </tbody>
+        </table>
+
+        <div style="margin-top: 10px;">
+            <p><strong>Where did you end up?</strong> (<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</p>
+            <p><strong>How many rows did you move?</strong> <span class="inline-answer short"></span> &nbsp;&nbsp;
+               <strong>How many columns did you move?</strong> <span class="inline-answer short"></span> &nbsp;&nbsp;
+               <strong>Total steps taken:</strong> <span class="inline-answer short"></span></p>
+        </div>
+    </div>
+
+    <!-- ── Part 7: Counting Steps ── -->
+    <div class="section">
+        <div class="section-header">Part 7: Counting Steps Between Coordinates</div>
+        <p class="instruction">For each pair, count how many row steps and column steps are needed.</p>
+
+        <table>
+            <thead>
+                <tr><th>Start</th><th>End</th><th>Row Steps</th><th>Col Steps</th><th>Total</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>(0, 0)</td><td>(2, 3)</td><td><span class="answer short"></span></td><td><span class="answer short"></span></td><td><span class="answer short"></span></td></tr>
+                <tr><td>(0, 0)</td><td>(3, 0)</td><td><span class="answer short"></span></td><td><span class="answer short"></span></td><td><span class="answer short"></span></td></tr>
+                <tr><td>(1, 1)</td><td>(3, 3)</td><td><span class="answer short"></span></td><td><span class="answer short"></span></td><td><span class="answer short"></span></td></tr>
+                <tr><td>(2, 3)</td><td>(0, 0)</td><td><span class="answer short"></span></td><td><span class="answer short"></span></td><td><span class="answer short"></span></td></tr>
+                <tr><td>(0, 0)</td><td>(0, 0)</td><td><span class="answer short"></span></td><td><span class="answer short"></span></td><td><span class="answer short"></span></td></tr>
+            </tbody>
+        </table>
+
+        <p style="margin-top: 8px;"><strong>How do you calculate total steps from two coordinates?</strong></p>
+        <span class="answer-line"></span>
+    </div>
+</div>
+
+<!-- ════════ PAGE 3 ════════ -->
+<div class="page page-break">
+
+    <!-- ── Part 8: Real-World Connections ── -->
+    <div class="section">
+        <div class="section-header">Part 8: Real-World Connections</div>
+
+        <ol class="questions">
+            <li><strong>Name another system that uses coordinates</strong> (like Battleship, chess, maps, etc.):<br>
+                <span class="answer-line"></span></li>
+            <li><strong>In that system, what are the two values that identify a position?</strong><br>
+                a. <span class="inline-answer long"></span> &nbsp;&nbsp; b. <span class="inline-answer long"></span></li>
+            <li><strong>Why do we start counting at 0 instead of 1 in our grid?</strong><br>
+                <span class="answer-line"></span></li>
+        </ol>
+    </div>
+
+    <!-- ── Reflection ── -->
+    <div class="section">
+        <div class="reflection-box">
+            <div class="reflection-label">Reflection</div>
+            <p><strong>Why is a coordinate system useful for a robot navigating on a grid?</strong></p>
+            <div class="answer-lines-3">
+                <span class="answer-line"></span>
+                <span class="answer-line"></span>
+                <span class="answer-line"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Next Lesson ── -->
+    <div class="next-lesson">
+        <strong>Next Lesson:</strong> We'll learn about <strong>tuples</strong> &mdash; Python's way to store coordinate pairs like (2, 3) in code!
+    </div>
+</div>
+
+</body>
+</html>

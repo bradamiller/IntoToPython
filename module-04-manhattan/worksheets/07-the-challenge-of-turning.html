@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Worksheet: The Challenge of Turning</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Patrick+Hand&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        /* ── Reset & Base ── */
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Patrick Hand', cursive;
+            font-size: 17px;
+            color: #2d3436;
+            background: #fdfcfa;
+            line-height: 1.5;
+            padding: 0;
+        }
+
+        /* ── Page structure for print ── */
+        .page {
+            width: 8.5in;
+            min-height: 11in;
+            margin: 0 auto;
+            padding: 0.5in 0.6in;
+            background: #fdfcfa;
+            position: relative;
+        }
+
+        /* Subtle notebook-paper lines */
+        .page::before {
+            content: '';
+            position: absolute;
+            inset: 0.5in 0.6in;
+            background-image: linear-gradient(rgba(180, 200, 220, 0.1) 1px, transparent 1px);
+            background-size: 100% 28px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .page > * { position: relative; z-index: 1; }
+
+        /* ── Header ── */
+        .worksheet-header {
+            border-bottom: 3px solid #5b8fa8;
+            padding-bottom: 12px;
+            margin-bottom: 20px;
+        }
+
+        .worksheet-header h1 {
+            font-family: 'Caveat', cursive;
+            font-size: 32px;
+            font-weight: 700;
+            color: #2d3436;
+            transform: rotate(-0.3deg);
+        }
+
+        .worksheet-header .subtitle {
+            font-family: 'Caveat', cursive;
+            font-size: 18px;
+            color: #5b8fa8;
+            font-weight: 600;
+        }
+
+        .student-info {
+            display: flex;
+            gap: 40px;
+            margin-top: 10px;
+            font-size: 17px;
+        }
+
+        .student-info label {
+            font-weight: bold;
+        }
+
+        .student-info .blank {
+            display: inline-block;
+            width: 200px;
+            border-bottom: 2px solid #b8c5d0;
+            margin-left: 6px;
+        }
+
+        /* ── Section Headers ── */
+        .section {
+            margin-top: 22px;
+            margin-bottom: 14px;
+        }
+
+        .section-header {
+            font-family: 'Caveat', cursive;
+            font-size: 24px;
+            font-weight: 600;
+            color: #5b8fa8;
+            margin-bottom: 8px;
+            padding-bottom: 4px;
+            border-bottom: 2px solid rgba(91, 143, 168, 0.25);
+        }
+
+        .section p, .section .instruction {
+            margin-bottom: 8px;
+            font-size: 17px;
+        }
+
+        .instruction {
+            font-style: italic;
+            color: #636e72;
+        }
+
+        /* ── Tables ── */
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 10px 0;
+            font-size: 16px;
+            border: 2px solid #b8c5d0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        thead th {
+            background-color: rgba(91, 143, 168, 0.12);
+            font-family: 'Caveat', cursive;
+            font-size: 18px;
+            font-weight: 600;
+            color: #2d3436;
+            padding: 8px 12px;
+            text-align: left;
+            border-bottom: 2px solid #b8c5d0;
+        }
+
+        tbody td {
+            padding: 7px 12px;
+            border-bottom: 1px solid rgba(184, 197, 208, 0.4);
+            vertical-align: middle;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Answer blank inside tables */
+        .answer {
+            display: inline-block;
+            min-width: 80px;
+            border-bottom: 2px solid #d4a373;
+            color: transparent;
+            text-align: center;
+            padding: 2px 4px;
+        }
+
+        .answer-wide {
+            min-width: 180px;
+        }
+
+        .answer-full {
+            display: block;
+            width: 100%;
+            min-height: 24px;
+            border-bottom: 2px solid #d4a373;
+        }
+
+        /* ── Standalone answer lines ── */
+        .answer-line {
+            display: block;
+            width: 100%;
+            border-bottom: 2px solid #d4a373;
+            min-height: 26px;
+            margin: 6px 0;
+        }
+
+        .answer-lines-3 {
+            margin: 8px 0;
+        }
+        .answer-lines-3 .answer-line { margin: 10px 0; }
+
+        /* ── Inline answer blanks ── */
+        .inline-answer {
+            display: inline-block;
+            min-width: 90px;
+            border-bottom: 2px solid #d4a373;
+            text-align: center;
+            margin: 0 2px;
+        }
+
+        .inline-answer.short { min-width: 50px; }
+        .inline-answer.long { min-width: 140px; }
+
+        /* ── Code blocks ── */
+        .code-block {
+            background: #f0ede8;
+            border: 2px solid #b8c5d0;
+            border-radius: 10px;
+            padding: 14px 18px;
+            font-family: 'Fira Code', monospace;
+            font-size: 14px;
+            white-space: pre;
+            margin: 10px 0;
+            line-height: 1.5;
+        }
+
+        /* ── Question lists ── */
+        .questions {
+            list-style: none;
+            counter-reset: q;
+            padding-left: 0;
+        }
+
+        .questions li {
+            counter-increment: q;
+            margin-bottom: 8px;
+            padding-left: 28px;
+            position: relative;
+        }
+
+        .questions li::before {
+            content: counter(q) ".";
+            position: absolute;
+            left: 0;
+            font-weight: bold;
+            color: #5b8fa8;
+        }
+
+        /* ── Yes/No choice ── */
+        .choice {
+            display: inline-block;
+            margin-left: 8px;
+            font-weight: bold;
+            color: #636e72;
+        }
+
+        /* ── Insight/tip boxes ── */
+        .tip-box {
+            background-color: rgba(91, 143, 168, 0.08);
+            border: 2px solid rgba(91, 143, 168, 0.3);
+            border-radius: 10px;
+            padding: 10px 16px;
+            margin: 12px 0;
+            font-size: 16px;
+        }
+
+        .tip-box .tip-label {
+            font-family: 'Caveat', cursive;
+            font-weight: 600;
+            color: #5b8fa8;
+            font-size: 18px;
+        }
+
+        /* ── Reflection box ── */
+        .reflection-box {
+            background-color: rgba(232, 168, 124, 0.08);
+            border: 2px solid rgba(232, 168, 124, 0.35);
+            border-radius: 10px;
+            padding: 12px 16px;
+            margin: 14px 0;
+        }
+
+        .reflection-box .reflection-label {
+            font-family: 'Caveat', cursive;
+            font-size: 20px;
+            font-weight: 600;
+            color: #d4a373;
+            margin-bottom: 6px;
+        }
+
+        /* ── Next lesson teaser ── */
+        .next-lesson {
+            margin-top: 20px;
+            padding: 10px 16px;
+            background-color: rgba(91, 143, 168, 0.06);
+            border-left: 4px solid #5b8fa8;
+            border-radius: 0 8px 8px 0;
+            font-size: 16px;
+            color: #636e72;
+        }
+
+        .next-lesson strong { color: #2d3436; }
+
+        /* ── Two-column layout ── */
+        .two-col {
+            display: flex;
+            gap: 24px;
+            align-items: flex-start;
+        }
+
+        .two-col > * { flex: 1; }
+
+        /* ── SVG Grid Container ── */
+        .grid-container {
+            display: flex;
+            justify-content: center;
+            margin: 14px 0;
+        }
+
+        /* ── Orientation diagram pairs ── */
+        .orientation-pair {
+            display: flex;
+            gap: 18px;
+            align-items: center;
+            margin: 6px 0 4px 0;
+        }
+
+        .orientation-box {
+            border: 2px solid #b8c5d0;
+            border-radius: 8px;
+            background: #fdfcfa;
+            text-align: center;
+            padding: 4px;
+        }
+
+        .orientation-box .label {
+            font-family: 'Caveat', cursive;
+            font-size: 15px;
+            font-weight: 600;
+            color: #5b8fa8;
+        }
+
+        /* ── Page break hints ── */
+        .page-break {
+            page-break-before: always;
+            break-before: page;
+        }
+
+        /* ══════════════════════════════════════
+           PRINT STYLES
+           ══════════════════════════════════════ */
+        @media print {
+            body {
+                background: white;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+
+            .page {
+                margin: 0;
+                padding: 0.4in 0.5in;
+                width: auto;
+                min-height: auto;
+            }
+
+            .page::before {
+                display: none;
+            }
+
+            .page-break {
+                page-break-before: always;
+                break-before: page;
+            }
+
+            @page {
+                size: letter;
+                margin: 0;
+            }
+        }
+
+        /* ── Screen-only styling ── */
+        @media screen {
+            body {
+                background: #e8e4df;
+                padding: 20px;
+            }
+            .page {
+                box-shadow: 0 2px 20px rgba(0,0,0,0.12);
+                border-radius: 4px;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ════════ PAGE 1 ════════ -->
+<div class="page">
+    <div class="worksheet-header">
+        <div class="subtitle">Module 4: Manhattan &mdash; Lesson 7</div>
+        <h1>The Challenge of Turning</h1>
+        <div class="student-info">
+            <span><label>Name:</label> <span class="blank"></span></span>
+            <span><label>Date:</label> <span class="blank"></span></span>
+        </div>
+    </div>
+
+    <!-- ── Part 1: Direction from Coordinates ── -->
+    <div class="section">
+        <div class="section-header">Part 1: Direction from Coordinates</div>
+        <p class="instruction">Given two consecutive coordinates, determine the direction (N, S, E, W).</p>
+
+        <div class="tip-box">
+            <div class="tip-label">Remember:</div>
+            <ul style="margin: 4px 0 0 20px;">
+                <li>Row increases by 1 &rarr; <strong>South</strong> (moving down)</li>
+                <li>Row decreases by 1 &rarr; <strong>North</strong> (moving up)</li>
+                <li>Col increases by 1 &rarr; <strong>East</strong> (moving right)</li>
+                <li>Col decreases by 1 &rarr; <strong>West</strong> (moving left)</li>
+            </ul>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Current Position</th>
+                    <th>Next Position</th>
+                    <th>row_diff</th>
+                    <th>col_diff</th>
+                    <th>Direction</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td>(0, 0)</td><td>(1, 0)</td><td>1 - 0 = <span class="inline-answer short"></span></td><td>0 - 0 = <span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>(2, 3)</td><td>(1, 3)</td><td>1 - 2 = <span class="inline-answer short"></span></td><td>3 - 3 = <span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>(1, 1)</td><td>(1, 2)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>(3, 2)</td><td>(3, 1)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>(0, 3)</td><td>(1, 3)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>(2, 0)</td><td>(2, 1)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>(3, 1)</td><td>(2, 1)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>(0, 2)</td><td>(0, 1)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ── Part 2: The Turn Table ── -->
+    <div class="section">
+        <div class="section-header">Part 2: The Turn Table</div>
+        <p class="instruction">Fill in the complete turn table. For each current heading and needed direction, write: None, Right 90, Left 90, or 180.</p>
+
+        <div class="tip-box">
+            <div class="tip-label">Hints:</div>
+            <ul style="margin: 4px 0 0 20px;">
+                <li>Right turns go clockwise: N &rarr; E &rarr; S &rarr; W &rarr; N</li>
+                <li>Left turns go counterclockwise: N &rarr; W &rarr; S &rarr; E &rarr; N</li>
+            </ul>
+        </div>
+
+        <table>
+            <thead>
+                <tr><th>Current Heading</th><th>Need N</th><th>Need S</th><th>Need E</th><th>Need W</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><strong>N</strong></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
+                <tr><td><strong>S</strong></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
+                <tr><td><strong>E</strong></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
+                <tr><td><strong>W</strong></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
+            </tbody>
+        </table>
+
+        <p>How many cells say &ldquo;None&rdquo;? <span class="inline-answer short"></span> &nbsp; Why? <span class="inline-answer long"></span></p>
+        <p>How many cells say &ldquo;180&rdquo;? <span class="inline-answer short"></span> &nbsp; What pattern? <span class="inline-answer long"></span></p>
+    </div>
+</div>
+
+<!-- ════════ PAGE 2 ════════ -->
+<div class="page page-break">
+
+    <!-- ── Part 3: Determine the Turn ── -->
+    <div class="section">
+        <div class="section-header">Part 3: Determine the Turn</div>
+        <p class="instruction">For each scenario, determine what turn the robot needs to make.</p>
+
+        <table>
+            <thead>
+                <tr><th style="width: 70px;">Scenario</th><th>Current Heading</th><th>Needed Direction</th><th>Turn</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>1</td><td>N</td><td>E</td><td><span class="answer"></span></td></tr>
+                <tr><td>2</td><td>E</td><td>E</td><td><span class="answer"></span></td></tr>
+                <tr><td>3</td><td>S</td><td>N</td><td><span class="answer"></span></td></tr>
+                <tr><td>4</td><td>W</td><td>S</td><td><span class="answer"></span></td></tr>
+                <tr><td>5</td><td>E</td><td>N</td><td><span class="answer"></span></td></tr>
+                <tr><td>6</td><td>N</td><td>W</td><td><span class="answer"></span></td></tr>
+                <tr><td>7</td><td>S</td><td>W</td><td><span class="answer"></span></td></tr>
+                <tr><td>8</td><td>W</td><td>E</td><td><span class="answer"></span></td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- ── Part 4: Trace a Path with Heading Updates ── -->
+    <div class="section">
+        <div class="section-header">Part 4: Trace a Path with Heading Updates</div>
+        <p><strong>Path:</strong> [(0, 0), (1, 0), (2, 0), (2, 1), (2, 2), (2, 3)]</p>
+        <p><strong>Starting heading:</strong> North</p>
+
+        <table>
+            <thead>
+                <tr><th style="width:45px;">Step</th><th>From</th><th>To</th><th>Needed Direction</th><th>Current Heading</th><th>Turn</th><th>New Heading</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>1</td><td>(0, 0)</td><td>(1, 0)</td><td><span class="inline-answer short"></span></td><td>N</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>2</td><td>(1, 0)</td><td>(2, 0)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>3</td><td>(2, 0)</td><td>(2, 1)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>4</td><td>(2, 1)</td><td>(2, 2)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>5</td><td>(2, 2)</td><td>(2, 3)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+            </tbody>
+        </table>
+
+        <p>How many turns were needed? <span class="inline-answer short"></span></p>
+        <p>How many times was no turn needed? <span class="inline-answer short"></span></p>
+        <p>At which step did the robot change from row to column movement? Step <span class="inline-answer short"></span></p>
+    </div>
+
+    <!-- ── Part 5: Trace a Second Path ── -->
+    <div class="section">
+        <div class="section-header">Part 5: Trace a Second Path</div>
+        <p><strong>Path:</strong> [(2, 3), (1, 3), (0, 3), (0, 2), (0, 1), (0, 0)]</p>
+        <p><strong>Starting heading:</strong> South</p>
+
+        <table>
+            <thead>
+                <tr><th style="width:45px;">Step</th><th>From</th><th>To</th><th>Needed Direction</th><th>Current Heading</th><th>Turn</th><th>New Heading</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>1</td><td>(2, 3)</td><td>(1, 3)</td><td><span class="inline-answer short"></span></td><td>S</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>2</td><td>(1, 3)</td><td>(0, 3)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>3</td><td>(0, 3)</td><td>(0, 2)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>4</td><td>(0, 2)</td><td>(0, 1)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>5</td><td>(0, 1)</td><td>(0, 0)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+            </tbody>
+        </table>
+
+        <p>Final heading after completing path: <span class="inline-answer short"></span></p>
+    </div>
+</div>
+
+<!-- ════════ PAGE 3 ════════ -->
+<div class="page page-break">
+
+    <!-- ── Part 6: Trace a Third Path ── -->
+    <div class="section">
+        <div class="section-header">Part 6: Trace a Third Path</div>
+        <p><strong>Path:</strong> [(1, 1), (1, 2), (1, 3), (2, 3), (3, 3)]</p>
+        <p><strong>Starting heading:</strong> North</p>
+
+        <table>
+            <thead>
+                <tr><th style="width:45px;">Step</th><th>From</th><th>To</th><th>Needed Direction</th><th>Current Heading</th><th>Turn</th><th>New Heading</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>1</td><td>(1, 1)</td><td>(1, 2)</td><td><span class="inline-answer short"></span></td><td>N</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>2</td><td>(1, 2)</td><td>(1, 3)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>3</td><td>(1, 3)</td><td>(2, 3)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>4</td><td>(2, 3)</td><td>(3, 3)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+            </tbody>
+        </table>
+
+        <p>Final heading: <span class="inline-answer short"></span></p>
+        <p>Does the first step require a turn? <span class="inline-answer short"></span> &nbsp; Why? <span class="inline-answer long"></span></p>
+    </div>
+
+    <!-- ── Part 7: Robot Orientation Diagrams ── -->
+    <div class="section">
+        <div class="section-header">Part 7: Robot Orientation Diagrams</div>
+        <p class="instruction">For each scenario, look at the before/after diagrams showing the robot&rsquo;s facing direction. Write the turn needed.</p>
+
+        <!-- Scenario A: Facing North, need to go East -->
+        <p style="margin-top: 10px;"><strong>Scenario A:</strong> Facing North, need to go East</p>
+        <div class="orientation-pair">
+            <div class="orientation-box">
+                <div class="label">Before Turn</div>
+                <svg width="80" height="80" viewBox="0 0 80 80">
+                    <circle cx="40" cy="44" r="22" fill="none" stroke="#2d3436" stroke-width="2"/>
+                    <!-- Arrow pointing North (up) -->
+                    <line x1="40" y1="44" x2="40" y2="16" stroke="#5b8fa8" stroke-width="3"/>
+                    <polygon points="40,10 34,20 46,20" fill="#5b8fa8"/>
+                    <text x="40" y="76" font-family="Caveat, cursive" font-size="14" fill="#636e72" text-anchor="middle">N</text>
+                </svg>
+            </div>
+            <svg width="30" height="30" viewBox="0 0 30 30">
+                <line x1="4" y1="15" x2="22" y2="15" stroke="#d4a373" stroke-width="2.5"/>
+                <polygon points="26,15 19,10 19,20" fill="#d4a373"/>
+            </svg>
+            <div class="orientation-box">
+                <div class="label">After Turn</div>
+                <svg width="80" height="80" viewBox="0 0 80 80">
+                    <circle cx="40" cy="44" r="22" fill="none" stroke="#2d3436" stroke-width="2"/>
+                    <!-- Arrow pointing East (right) -->
+                    <line x1="40" y1="44" x2="68" y2="44" stroke="#5b8fa8" stroke-width="3"/>
+                    <polygon points="74,44 64,38 64,50" fill="#5b8fa8"/>
+                    <text x="40" y="76" font-family="Caveat, cursive" font-size="14" fill="#636e72" text-anchor="middle">E</text>
+                </svg>
+            </div>
+            <span style="margin-left: 12px;">Turn: <span class="inline-answer"></span></span>
+        </div>
+
+        <!-- Scenario B: Facing East, need to go South -->
+        <p style="margin-top: 10px;"><strong>Scenario B:</strong> Facing East, need to go South</p>
+        <div class="orientation-pair">
+            <div class="orientation-box">
+                <div class="label">Before Turn</div>
+                <svg width="80" height="80" viewBox="0 0 80 80">
+                    <circle cx="40" cy="44" r="22" fill="none" stroke="#2d3436" stroke-width="2"/>
+                    <!-- Arrow pointing East (right) -->
+                    <line x1="40" y1="44" x2="68" y2="44" stroke="#5b8fa8" stroke-width="3"/>
+                    <polygon points="74,44 64,38 64,50" fill="#5b8fa8"/>
+                    <text x="40" y="76" font-family="Caveat, cursive" font-size="14" fill="#636e72" text-anchor="middle">E</text>
+                </svg>
+            </div>
+            <svg width="30" height="30" viewBox="0 0 30 30">
+                <line x1="4" y1="15" x2="22" y2="15" stroke="#d4a373" stroke-width="2.5"/>
+                <polygon points="26,15 19,10 19,20" fill="#d4a373"/>
+            </svg>
+            <div class="orientation-box">
+                <div class="label">After Turn</div>
+                <svg width="80" height="80" viewBox="0 0 80 80">
+                    <circle cx="40" cy="44" r="22" fill="none" stroke="#2d3436" stroke-width="2"/>
+                    <!-- Arrow pointing South (down) -->
+                    <line x1="40" y1="44" x2="40" y2="72" stroke="#5b8fa8" stroke-width="3"/>
+                    <polygon points="40,78 34,68 46,68" fill="#5b8fa8"/>
+                    <text x="40" y="76" font-family="Caveat, cursive" font-size="14" fill="#636e72" text-anchor="middle">S</text>
+                </svg>
+            </div>
+            <span style="margin-left: 12px;">Turn: <span class="inline-answer"></span></span>
+        </div>
+
+        <!-- Scenario C: Facing West, need to go East -->
+        <p style="margin-top: 10px;"><strong>Scenario C:</strong> Facing West, need to go East</p>
+        <div class="orientation-pair">
+            <div class="orientation-box">
+                <div class="label">Before Turn</div>
+                <svg width="80" height="80" viewBox="0 0 80 80">
+                    <circle cx="40" cy="44" r="22" fill="none" stroke="#2d3436" stroke-width="2"/>
+                    <!-- Arrow pointing West (left) -->
+                    <line x1="40" y1="44" x2="12" y2="44" stroke="#5b8fa8" stroke-width="3"/>
+                    <polygon points="6,44 16,38 16,50" fill="#5b8fa8"/>
+                    <text x="40" y="76" font-family="Caveat, cursive" font-size="14" fill="#636e72" text-anchor="middle">W</text>
+                </svg>
+            </div>
+            <svg width="30" height="30" viewBox="0 0 30 30">
+                <line x1="4" y1="15" x2="22" y2="15" stroke="#d4a373" stroke-width="2.5"/>
+                <polygon points="26,15 19,10 19,20" fill="#d4a373"/>
+            </svg>
+            <div class="orientation-box">
+                <div class="label">After Turn</div>
+                <svg width="80" height="80" viewBox="0 0 80 80">
+                    <circle cx="40" cy="44" r="22" fill="none" stroke="#2d3436" stroke-width="2"/>
+                    <!-- Arrow pointing East (right) -->
+                    <line x1="40" y1="44" x2="68" y2="44" stroke="#5b8fa8" stroke-width="3"/>
+                    <polygon points="74,44 64,38 64,50" fill="#5b8fa8"/>
+                    <text x="40" y="76" font-family="Caveat, cursive" font-size="14" fill="#636e72" text-anchor="middle">E</text>
+                </svg>
+            </div>
+            <span style="margin-left: 12px;">Turn: <span class="inline-answer"></span></span>
+        </div>
+
+        <!-- Scenario D: Facing South, need to go South -->
+        <p style="margin-top: 10px;"><strong>Scenario D:</strong> Facing South, need to go South</p>
+        <div class="orientation-pair">
+            <div class="orientation-box">
+                <div class="label">Before Turn</div>
+                <svg width="80" height="80" viewBox="0 0 80 80">
+                    <circle cx="40" cy="44" r="22" fill="none" stroke="#2d3436" stroke-width="2"/>
+                    <!-- Arrow pointing South (down) -->
+                    <line x1="40" y1="44" x2="40" y2="72" stroke="#5b8fa8" stroke-width="3"/>
+                    <polygon points="40,78 34,68 46,68" fill="#5b8fa8"/>
+                    <text x="40" y="76" font-family="Caveat, cursive" font-size="14" fill="#636e72" text-anchor="middle">S</text>
+                </svg>
+            </div>
+            <svg width="30" height="30" viewBox="0 0 30 30">
+                <line x1="4" y1="15" x2="22" y2="15" stroke="#d4a373" stroke-width="2.5"/>
+                <polygon points="26,15 19,10 19,20" fill="#d4a373"/>
+            </svg>
+            <div class="orientation-box">
+                <div class="label">After Turn</div>
+                <svg width="80" height="80" viewBox="0 0 80 80">
+                    <circle cx="40" cy="44" r="22" fill="none" stroke="#2d3436" stroke-width="2"/>
+                    <!-- Arrow pointing South (down) -->
+                    <line x1="40" y1="44" x2="40" y2="72" stroke="#5b8fa8" stroke-width="3"/>
+                    <polygon points="40,78 34,68 46,68" fill="#5b8fa8"/>
+                    <text x="40" y="76" font-family="Caveat, cursive" font-size="14" fill="#636e72" text-anchor="middle">S</text>
+                </svg>
+            </div>
+            <span style="margin-left: 12px;">Turn: <span class="inline-answer"></span></span>
+        </div>
+    </div>
+</div>
+
+<!-- ════════ PAGE 4 ════════ -->
+<div class="page page-break">
+
+    <!-- ── Part 8: Turn Logic in Code ── -->
+    <div class="section">
+        <div class="section-header">Part 8: Turn Logic in Code</div>
+        <p class="instruction">Fill in the blanks to complete the turn-logic dictionaries and function.</p>
+
+        <div class="code-block">right_turns = {"N": "<span class="inline-answer short"></span>", "E": "<span class="inline-answer short"></span>", "S": "<span class="inline-answer short"></span>", "W": "<span class="inline-answer short"></span>"}
+left_turns  = {"N": "<span class="inline-answer short"></span>", "W": "<span class="inline-answer short"></span>", "S": "<span class="inline-answer short"></span>", "E": "<span class="inline-answer short"></span>"}
+
+def get_turn(current_heading, needed_direction):
+    if current_heading == needed_direction:
+        return "<span class="inline-answer"></span>"
+    elif right_turns[<span class="inline-answer"></span>] == needed_direction:
+        return "<span class="inline-answer"></span>"
+    elif left_turns[<span class="inline-answer"></span>] == needed_direction:
+        return "<span class="inline-answer"></span>"
+    else:
+        return "<span class="inline-answer"></span>"</div>
+
+        <p style="margin-top: 14px;"><strong>Test your understanding:</strong></p>
+        <ol class="questions">
+            <li>What does <code style="font-family: 'Fira Code', monospace; font-size: 14px;">get_turn("E", "N")</code> return? <span class="inline-answer"></span></li>
+            <li>What does <code style="font-family: 'Fira Code', monospace; font-size: 14px;">get_turn("W", "W")</code> return? <span class="inline-answer"></span></li>
+            <li>What does <code style="font-family: 'Fira Code', monospace; font-size: 14px;">get_turn("N", "S")</code> return? <span class="inline-answer"></span></li>
+        </ol>
+    </div>
+
+    <!-- ── Reflection ── -->
+    <div class="section">
+        <div class="reflection-box">
+            <div class="reflection-label">Reflection</div>
+            <p>The Manhattan algorithm tells the robot <strong>WHERE</strong> to go, but the turning logic tells it <strong>HOW</strong> to get there. Why do you think we separated these two problems instead of solving them together?</p>
+            <div class="answer-lines-3">
+                <span class="answer-line"></span>
+                <span class="answer-line"></span>
+                <span class="answer-line"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ── Next Lesson ── -->
+    <div class="next-lesson">
+        <strong>Next Lesson:</strong> We&rsquo;ll implement the turning logic in a <strong>Navigator class</strong> that can drive the robot along any path!
+    </div>
+</div>
+
+</body>
+</html>
