@@ -18,7 +18,7 @@ This is the capstone exercise for Module 4. Your robot starts at `(0, 0)` facing
 ### Set Up
 - Create a `Board` object using `Board.get_default_board()`.
 - Create a `Manhattan` object starting at `(0, 0)`.
-- Create a `Navigator` object starting at `(0, 0)` heading `"N"`.
+- Create a `Navigator` object starting at `(0, 0)` with heading `0` (North).
 - Define a list of 4+ destination tuples.
 
 ### The Main Loop
@@ -28,7 +28,7 @@ Write a `for` loop that goes through each destination:
 3. Print the path and number of steps.
 4. Drive the path using `navigator.drive_path(path)`.
 5. **Update** `manhattan.position = navigator.position` (critical — without this, every path starts from (0, 0)).
-6. Print arrival confirmation.
+6. Print arrival confirmation with heading using `HEADING_NAMES[navigator.heading]`.
 
 ### Wait for Button
 Add `board.wait_for_button()` before the loop starts so you can place the robot on the grid before it moves.
@@ -44,9 +44,8 @@ Follow these levels in order:
 
 ### Level 2: Single Leg on Robot
 - Enable driving but use only **one destination**.
-- Place the robot at (0, 0) facing North.
-- Verify it arrives at the correct cell.
-- Adjust `straight()` distance if needed.
+- Place the robot at (0, 0) facing North on a grid line.
+- Verify it follows the line and arrives at the correct cell.
 
 ### Level 3: Full Sequence
 - Enable all destinations.

@@ -1,8 +1,68 @@
 # Lesson 9: Final Project - SOLUTION
 # Multi-destination grid navigation with the XRP robot.
 
+from XRPLib.reflectance import Reflectance
 from XRPLib.differential_drive import DifferentialDrive
 from XRPLib.board import Board
+import time
+
+
+# ===== LineSensor Class (from Module 2) =====
+
+class LineSensor:
+    def __init__(self):
+        self.reflectance = Reflectance.get_default_reflectance()
+        self.threshold = 0.5
+
+    def get_left(self):
+        return self.reflectance.get_left()
+
+    def get_right(self):
+        return self.reflectance.get_right()
+
+    def get_error(self):
+        return self.get_left() - self.get_right()
+
+    def is_at_cross(self):
+        return self.get_left() > self.threshold and self.get_right() > self.threshold
+
+    def is_off_line(self):
+        return self.get_left() < self.threshold and self.get_right() < self.threshold
+
+
+# ===== LineTrack Class (from Module 2) =====
+
+class LineTrack:
+    def __init__(self):
+        self.sensor = LineSensor()
+        self.drivetrain = DifferentialDrive.get_default_differential_drive()
+        self.base_effort = 0.4
+        self.Kp = 0.5
+
+    def track_until_cross(self):
+        while not self.sensor.is_at_cross():
+            error = self.sensor.get_error()
+            correction = error * self.Kp
+            self.drivetrain.arcade(self.base_effort, -correction)
+        self.drivetrain.stop()
+
+    def turn_right(self):
+        self.drivetrain.arcade(self.base_effort, 0)
+        time.sleep(0.3)
+        self.drivetrain.arcade(0, 0.3)
+        time.sleep(0.3)
+        while self.sensor.is_off_line():
+            pass
+        self.drivetrain.stop()
+
+    def turn_left(self):
+        self.drivetrain.arcade(self.base_effort, 0)
+        time.sleep(0.3)
+        self.drivetrain.arcade(0, -0.3)
+        time.sleep(0.3)
+        while self.sensor.is_off_line():
+            pass
+        self.drivetrain.stop()
 
 
 # ===== Manhattan Class =====
@@ -10,12 +70,9 @@ from XRPLib.board import Board
 class Manhattan:
 
     def __init__(self, start):
-        """Create a Manhattan navigator starting at the given position."""
         self.position = start
 
     def compute_path(self, destination):
-        """Compute a Manhattan path from current position to destination.
-        Returns a list of (row, col) tuples."""
         path = [self.position]
 
         current_row = self.position[0]
@@ -45,52 +102,45 @@ class Manhattan:
 
 
 # ===== Navigator Class =====
+# Headings: 0 = North, 1 = East, 2 = South, 3 = West
+
+HEADING_NAMES = ["N", "E", "S", "W"]
+
 
 class Navigator:
 
     def __init__(self, start, heading):
-        """Create a Navigator at the given start position and heading."""
         self.position = start
         self.heading = heading
-        self.drivetrain = DifferentialDrive.get_default_differential_drive()
+        self.line_track = LineTrack()
 
-    def get_needed_direction(self, next_pos):
-        """Determine direction (N/S/E/W) to move from current position to next_pos."""
+    def get_needed_heading(self, next_pos):
         row_diff = next_pos[0] - self.position[0]
         col_diff = next_pos[1] - self.position[1]
-        if row_diff == 1:
-            return "S"
-        elif row_diff == -1:
-            return "N"
+        if row_diff == -1:
+            return 0  # North
         elif col_diff == 1:
-            return "E"
+            return 1  # East
+        elif row_diff == 1:
+            return 2  # South
         elif col_diff == -1:
-            return "W"
+            return 3  # West
 
-    def turn_to(self, direction):
-        """Turn the robot to face the given direction."""
-        right_turns = {"N": "E", "E": "S", "S": "W", "W": "N"}
-        left_turns = {"N": "W", "W": "S", "S": "E", "E": "N"}
-
-        if self.heading == direction:
-            pass
-        elif right_turns[self.heading] == direction:
-            self.drivetrain.turn(90)
-            self.heading = direction
-        elif left_turns[self.heading] == direction:
-            self.drivetrain.turn(-90)
-            self.heading = direction
-        else:
-            self.drivetrain.turn(180)
-            self.heading = direction
+    def turn_to(self, needed_heading):
+        turns = (needed_heading - self.heading) % 4
+        for i in range(turns):
+            self.line_track.turn_right()
+        self.heading = needed_heading
 
     def drive_path(self, path):
-        """Drive the robot along the given path."""
         for i in range(1, len(path)):
             next_pos = path[i]
-            direction = self.get_needed_direction(next_pos)
-            self.turn_to(direction)
-            self.drivetrain.straight(20)
+            needed = self.get_needed_heading(next_pos)
+            turns = (needed - self.heading) % 4
+            if turns == 0:
+                self.line_track.drivetrain.straight(8)
+            self.turn_to(needed)
+            self.line_track.track_until_cross()
             self.position = next_pos
 
 
@@ -99,14 +149,14 @@ class Navigator:
 board = Board.get_default_board()
 
 manhattan = Manhattan((0, 0))
-navigator = Navigator((0, 0), "N")
+navigator = Navigator((0, 0), 0)  # Start heading North
 
 # Four destinations that form a tour of the grid
 destinations = [(3, 0), (3, 3), (0, 3), (0, 0)]
 
 print("=== XRP Grid Navigation: Final Project ===")
 print("Starting at:", manhattan.position)
-print("Heading:", navigator.heading)
+print("Heading:", HEADING_NAMES[navigator.heading])
 print("Destinations:", destinations)
 print()
 
@@ -131,7 +181,7 @@ for dest in destinations:
     manhattan.position = navigator.position
 
     print("Arrived at:", navigator.position)
-    print("Heading:", navigator.heading)
+    print("Heading:", HEADING_NAMES[navigator.heading])
     print()
 
 print("=== All destinations reached! ===")

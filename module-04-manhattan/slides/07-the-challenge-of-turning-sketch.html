@@ -697,9 +697,9 @@
                 <div class="title-content">
                     <div class="title-section">
                         <h3>Learning Objectives</h3>
-                        <p class="bullet">Understand heading as a direction the robot faces (N, S, E, W)</p>
-                        <p class="bullet">Determine the required direction from consecutive coordinates</p>
-                        <p class="bullet">Calculate what turn is needed given current heading and desired direction</p>
+                        <p class="bullet">Understand heading as a number 0&ndash;3 (N, E, S, W clockwise)</p>
+                        <p class="bullet">Determine the needed heading from consecutive coordinates</p>
+                        <p class="bullet">Use modular arithmetic to count right turns needed</p>
                         <p class="bullet">Work through turning logic on paper before coding</p>
                     </div>
                     <div class="title-section">
@@ -781,15 +781,16 @@
                 <h1>What Is Heading?</h1>
             </div>
             <div class="content">
-                <p class="body-text"><span class="sketch-highlight">Heading</span> = the direction the robot is currently facing</p>
+                <p class="body-text"><span class="sketch-highlight">Heading</span> = the direction the robot is currently facing, stored as a <strong>number 0&ndash;3</strong> going clockwise</p>
 
                 <div class="two-col">
                     <div class="col">
-                        <p class="header-text">Four Cardinal Directions</p>
+                        <p class="header-text">Headings as Numbers (Clockwise)</p>
                         <table class="content-table">
                             <thead>
                                 <tr>
-                                    <th>Heading</th>
+                                    <th>Number</th>
+                                    <th>Letter</th>
                                     <th>Meaning</th>
                                     <th>Row &Delta;</th>
                                     <th>Col &Delta;</th>
@@ -797,25 +798,29 @@
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td><strong>N</strong></td>
+                                    <td><strong>0</strong></td>
+                                    <td>N</td>
                                     <td>Facing up</td>
                                     <td>-1</td>
                                     <td>0</td>
                                 </tr>
                                 <tr>
-                                    <td><strong>S</strong></td>
-                                    <td>Facing down</td>
-                                    <td>+1</td>
-                                    <td>0</td>
-                                </tr>
-                                <tr>
-                                    <td><strong>E</strong></td>
+                                    <td><strong>1</strong></td>
+                                    <td>E</td>
                                     <td>Facing right</td>
                                     <td>0</td>
                                     <td>+1</td>
                                 </tr>
                                 <tr>
-                                    <td><strong>W</strong></td>
+                                    <td><strong>2</strong></td>
+                                    <td>S</td>
+                                    <td>Facing down</td>
+                                    <td>+1</td>
+                                    <td>0</td>
+                                </tr>
+                                <tr>
+                                    <td><strong>3</strong></td>
+                                    <td>W</td>
                                     <td>Facing left</td>
                                     <td>0</td>
                                     <td>-1</td>
@@ -824,12 +829,13 @@
                         </table>
 
                         <div class="spacer"></div>
-                        <p class="body-text">We use strings: <code style="font-family: 'Fira Code', monospace;">"N"</code>, <code style="font-family: 'Fira Code', monospace;">"S"</code>, <code style="font-family: 'Fira Code', monospace;">"E"</code>, <code style="font-family: 'Fira Code', monospace;">"W"</code></p>
+                        <div class="code-block compact" style="display: inline-block; padding: 10px 18px; font-size: 17px;">HEADING_NAMES = ["N", "E", "S", "W"]</div>
+                        <p class="body-text" style="margin-top: 8px;">Use <code style="font-family: 'Fira Code', monospace;">HEADING_NAMES[heading]</code> to display the letter</p>
                     </div>
                     <div class="col">
                         <p class="header-text">Compass Diagram</p>
                         <div class="illustration">
-                            <svg width="286" height="286" viewBox="0 0 220 220">
+                            <svg width="312" height="286" viewBox="0 0 240 220">
                                 <!-- Compass circle -->
                                 <circle cx="110" cy="110" r="85" fill="rgba(91, 143, 168, 0.06)" stroke="#b8c5d0" stroke-width="2.5" transform="rotate(-1 110 110)"/>
                                 <!-- Cross lines -->
@@ -838,19 +844,19 @@
                                 <!-- N arrow -->
                                 <line x1="110" y1="110" x2="110" y2="38" stroke="#e85d5d" stroke-width="3" stroke-linecap="round"/>
                                 <polygon points="104,42 110,26 116,42" fill="#e85d5d"/>
-                                <text x="110" y="18" font-family="Caveat, cursive" font-size="22" fill="#e85d5d" text-anchor="middle" font-weight="700">N</text>
-                                <!-- S -->
-                                <line x1="110" y1="110" x2="110" y2="182" stroke="#5b8fa8" stroke-width="2.5" stroke-linecap="round"/>
-                                <polygon points="104,178 110,194 116,178" fill="#5b8fa8"/>
-                                <text x="110" y="214" font-family="Caveat, cursive" font-size="22" fill="#5b8fa8" text-anchor="middle" font-weight="700">S</text>
-                                <!-- E -->
+                                <text x="110" y="18" font-family="Caveat, cursive" font-size="22" fill="#e85d5d" text-anchor="middle" font-weight="700">0 (N)</text>
+                                <!-- E (1) -->
                                 <line x1="110" y1="110" x2="182" y2="110" stroke="#85c88a" stroke-width="2.5" stroke-linecap="round"/>
                                 <polygon points="178,104 194,110 178,116" fill="#85c88a"/>
-                                <text x="206" y="115" font-family="Caveat, cursive" font-size="22" fill="#85c88a" text-anchor="middle" font-weight="700">E</text>
-                                <!-- W -->
+                                <text x="206" y="115" font-family="Caveat, cursive" font-size="22" fill="#85c88a" text-anchor="middle" font-weight="700">1 (E)</text>
+                                <!-- S (2) -->
+                                <line x1="110" y1="110" x2="110" y2="182" stroke="#5b8fa8" stroke-width="2.5" stroke-linecap="round"/>
+                                <polygon points="104,178 110,194 116,178" fill="#5b8fa8"/>
+                                <text x="110" y="214" font-family="Caveat, cursive" font-size="22" fill="#5b8fa8" text-anchor="middle" font-weight="700">2 (S)</text>
+                                <!-- W (3) -->
                                 <line x1="110" y1="110" x2="38" y2="110" stroke="#e8a87c" stroke-width="2.5" stroke-linecap="round"/>
                                 <polygon points="42,104 26,110 42,116" fill="#e8a87c"/>
-                                <text x="14" y="115" font-family="Caveat, cursive" font-size="22" fill="#e8a87c" text-anchor="middle" font-weight="700">W</text>
+                                <text x="14" y="115" font-family="Caveat, cursive" font-size="22" fill="#e8a87c" text-anchor="middle" font-weight="700">3 (W)</text>
                                 <!-- Center dot -->
                                 <circle cx="110" cy="110" r="5" fill="#2d3436"/>
                                 <!-- Row/col labels -->
@@ -864,7 +870,7 @@
                 </div>
 
                 <div class="answer-box">
-                    <p class="body-text" style="margin-left: 8px;"><strong>Key idea:</strong> The robot always starts facing a known direction (e.g., <code style="font-family: 'Fira Code', monospace;">"N"</code> or <code style="font-family: 'Fira Code', monospace;">"E"</code>).</p>
+                    <p class="body-text" style="margin-left: 8px;"><strong>Key idea:</strong> The robot always starts facing a known heading (e.g., <code style="font-family: 'Fira Code', monospace;">0</code> for North). Numbers go clockwise &mdash; one right turn adds 1.</p>
                 </div>
             </div>
             <div class="slide-navigation">
@@ -901,29 +907,29 @@ col_diff = nxt_col - cur_col   # 0</pre>
                                 <tr>
                                     <th>row_diff</th>
                                     <th>col_diff</th>
-                                    <th>Direction</th>
+                                    <th>Heading</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td>+1</td>
-                                    <td>0</td>
-                                    <td>South (down)</td>
-                                </tr>
-                                <tr>
                                     <td>-1</td>
                                     <td>0</td>
-                                    <td>North (up)</td>
+                                    <td>0 &mdash; North (up)</td>
                                 </tr>
                                 <tr>
                                     <td>0</td>
                                     <td>+1</td>
-                                    <td>East (right)</td>
+                                    <td>1 &mdash; East (right)</td>
+                                </tr>
+                                <tr>
+                                    <td>+1</td>
+                                    <td>0</td>
+                                    <td>2 &mdash; South (down)</td>
                                 </tr>
                                 <tr>
                                     <td>0</td>
                                     <td>-1</td>
-                                    <td>West (left)</td>
+                                    <td>3 &mdash; West (left)</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -959,7 +965,7 @@ col_diff = nxt_col - cur_col   # 0</pre>
                 </div>
 
                 <div class="answer-box">
-                    <p class="body-text" style="margin-left: 8px;"><strong>Example:</strong> (2,0) &rarr; (2,1) &mdash; row_diff=0, col_diff=+1 &rarr; <span class="sketch-highlight">East</span></p>
+                    <p class="body-text" style="margin-left: 8px;"><strong>Example:</strong> (2,0) &rarr; (2,1) &mdash; row_diff=0, col_diff=+1 &rarr; heading <span class="sketch-highlight">1 (East)</span></p>
                 </div>
             </div>
             <div class="slide-navigation">
@@ -975,11 +981,11 @@ col_diff = nxt_col - cur_col   # 0</pre>
                 <h1>What Turn Is Needed?</h1>
             </div>
             <div class="content">
-                <p class="body-text">The turn depends on: <span class="sketch-highlight">current heading</span> AND <span class="sketch-highlight">needed direction</span>.</p>
+                <p class="body-text">How many right turns? Use <span class="sketch-highlight">modular arithmetic</span>: <code style="font-family: 'Fira Code', monospace;">(needed - current) % 4</code></p>
 
                 <div class="illustration">
                     <svg width="754" height="195" viewBox="0 0 580 150">
-                        <!-- Example 1: N facing, need E = Right turn -->
+                        <!-- Example 1: current 0(N), need 1(E) = 1 right turn -->
                         <g transform="translate(0,0)">
                             <rect x="10" y="10" width="120" height="130" rx="12" fill="rgba(91, 143, 168, 0.06)" stroke="#b8c5d0" stroke-width="2"/>
                             <!-- Robot facing N — PNG version -->
@@ -993,10 +999,11 @@ col_diff = nxt_col - cur_col   # 0</pre>
                             <!-- Curved turn arrow -->
                             <path d="M68 36 C90 20, 100 45, 85 58" fill="none" stroke="#e8a87c" stroke-width="2.5" stroke-linecap="round"/>
                             <polygon points="82,54 90,60 80,62" fill="#e8a87c"/>
-                            <text x="65" y="105" font-family="Caveat, cursive" font-size="16" fill="#e8a87c" text-anchor="middle" font-weight="700">RIGHT</text>
-                            <text x="65" y="125" font-family="Caveat, cursive" font-size="12" fill="#636e72" text-anchor="middle">N &rarr; E</text>
+                            <text x="65" y="100" font-family="Caveat, cursive" font-size="15" fill="#e8a87c" text-anchor="middle" font-weight="700">1 right turn</text>
+                            <text x="65" y="118" font-family="Fira Code, monospace" font-size="11" fill="#636e72" text-anchor="middle">(1-0)%4 = 1</text>
+                            <text x="65" y="136" font-family="Caveat, cursive" font-size="12" fill="#636e72" text-anchor="middle">0(N) &rarr; 1(E)</text>
                         </g>
-                        <!-- Example 2: N facing, need W = Left turn -->
+                        <!-- Example 2: current 0(N), need 3(W) = 3 right turns -->
                         <g transform="translate(150,0)">
                             <rect x="10" y="10" width="120" height="130" rx="12" fill="rgba(91, 143, 168, 0.06)" stroke="#b8c5d0" stroke-width="2"/>
                             <!-- Robot facing N — PNG version -->
@@ -1006,13 +1013,14 @@ col_diff = nxt_col - cur_col   # 0</pre>
                             <!-- Need W arrow -->
                             <path d="M46 62 C30 62, 25 62, 15 62" fill="none" stroke="#e8a87c" stroke-width="2" stroke-dasharray="4,3"/>
                             <polygon points="19,58 10,62 19,66" fill="#e8a87c"/>
-                            <!-- Curved turn arrow left -->
+                            <!-- Curved turn arrow left (3 right turns = same as 1 left) -->
                             <path d="M56 36 C34 20, 24 45, 39 58" fill="none" stroke="#e8a87c" stroke-width="2.5" stroke-linecap="round"/>
                             <polygon points="42,54 34,60 44,62" fill="#e8a87c"/>
-                            <text x="65" y="105" font-family="Caveat, cursive" font-size="16" fill="#5b8fa8" text-anchor="middle" font-weight="700">LEFT</text>
-                            <text x="65" y="125" font-family="Caveat, cursive" font-size="12" fill="#636e72" text-anchor="middle">N &rarr; W</text>
+                            <text x="65" y="100" font-family="Caveat, cursive" font-size="15" fill="#5b8fa8" text-anchor="middle" font-weight="700">3 right turns</text>
+                            <text x="65" y="118" font-family="Fira Code, monospace" font-size="11" fill="#636e72" text-anchor="middle">(3-0)%4 = 3</text>
+                            <text x="65" y="136" font-family="Caveat, cursive" font-size="12" fill="#636e72" text-anchor="middle">0(N) &rarr; 3(W)</text>
                         </g>
-                        <!-- Example 3: N facing, need S = 180 -->
+                        <!-- Example 3: current 0(N), need 2(S) = 2 right turns -->
                         <g transform="translate(300,0)">
                             <rect x="10" y="10" width="120" height="130" rx="12" fill="rgba(91, 143, 168, 0.06)" stroke="#b8c5d0" stroke-width="2"/>
                             <!-- Robot facing N — PNG version -->
@@ -1025,10 +1033,11 @@ col_diff = nxt_col - cur_col   # 0</pre>
                             <!-- U-turn arrow -->
                             <path d="M70 36 C105 15, 108 85, 70 78" fill="none" stroke="#e8a87c" stroke-width="2.5" stroke-linecap="round"/>
                             <polygon points="74,76 66,82 72,72" fill="#e8a87c"/>
-                            <text x="65" y="115" font-family="Caveat, cursive" font-size="16" fill="#e85d5d" text-anchor="middle" font-weight="700">180&deg;</text>
-                            <text x="65" y="132" font-family="Caveat, cursive" font-size="12" fill="#636e72" text-anchor="middle">N &rarr; S</text>
+                            <text x="65" y="100" font-family="Caveat, cursive" font-size="15" fill="#e85d5d" text-anchor="middle" font-weight="700">2 right turns</text>
+                            <text x="65" y="118" font-family="Fira Code, monospace" font-size="11" fill="#636e72" text-anchor="middle">(2-0)%4 = 2</text>
+                            <text x="65" y="136" font-family="Caveat, cursive" font-size="12" fill="#636e72" text-anchor="middle">0(N) &rarr; 2(S)</text>
                         </g>
-                        <!-- Example 4: E facing, need E = None -->
+                        <!-- Example 4: current 1(E), need 1(E) = 0 turns -->
                         <g transform="translate(450,0)">
                             <rect x="10" y="10" width="120" height="130" rx="12" fill="rgba(91, 143, 168, 0.06)" stroke="#b8c5d0" stroke-width="2"/>
                             <!-- Robot facing E — PNG version -->
@@ -1038,55 +1047,58 @@ col_diff = nxt_col - cur_col   # 0</pre>
                             <polygon points="106,58 115,62 106,66" fill="#85c88a"/>
                             <!-- Checkmark -->
                             <path d="M50 86 L58 94 L74 78" fill="none" stroke="#85c88a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                            <text x="65" y="115" font-family="Caveat, cursive" font-size="16" fill="#85c88a" text-anchor="middle" font-weight="700">NONE</text>
-                            <text x="65" y="132" font-family="Caveat, cursive" font-size="12" fill="#636e72" text-anchor="middle">E &rarr; E</text>
+                            <text x="65" y="108" font-family="Caveat, cursive" font-size="15" fill="#85c88a" text-anchor="middle" font-weight="700">0 (no turn)</text>
+                            <text x="65" y="126" font-family="Fira Code, monospace" font-size="11" fill="#636e72" text-anchor="middle">(1-1)%4 = 0</text>
+                            <text x="65" y="140" font-family="Caveat, cursive" font-size="12" fill="#636e72" text-anchor="middle">1(E) &rarr; 1(E)</text>
                         </g>
                     </svg>
                 </div>
 
                 <div class="spacer"></div>
-                <p class="header-text">Complete Turn Table</p>
+                <p class="header-text">Right Turns Needed: (needed - current) % 4</p>
                 <table class="content-table">
                     <thead>
                         <tr>
-                            <th>Current</th>
-                            <th>Need N</th>
-                            <th>Need S</th>
-                            <th>Need E</th>
-                            <th>Need W</th>
+                            <th>Current \\ Needed</th>
+                            <th>0 (N)</th>
+                            <th>1 (E)</th>
+                            <th>2 (S)</th>
+                            <th>3 (W)</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
-                            <td><strong>N</strong></td>
-                            <td>None</td>
-                            <td>180&deg;</td>
-                            <td>Right</td>
-                            <td>Left</td>
+                            <td><strong>0 (N)</strong></td>
+                            <td style="color: #85c88a; font-weight: bold;">0</td>
+                            <td>1</td>
+                            <td>2</td>
+                            <td>3</td>
                         </tr>
                         <tr>
-                            <td><strong>S</strong></td>
-                            <td>180&deg;</td>
-                            <td>None</td>
-                            <td>Left</td>
-                            <td>Right</td>
+                            <td><strong>1 (E)</strong></td>
+                            <td>3</td>
+                            <td style="color: #85c88a; font-weight: bold;">0</td>
+                            <td>1</td>
+                            <td>2</td>
                         </tr>
                         <tr>
-                            <td><strong>E</strong></td>
-                            <td>Left</td>
-                            <td>Right</td>
-                            <td>None</td>
-                            <td>180&deg;</td>
+                            <td><strong>2 (S)</strong></td>
+                            <td>2</td>
+                            <td>3</td>
+                            <td style="color: #85c88a; font-weight: bold;">0</td>
+                            <td>1</td>
                         </tr>
                         <tr>
-                            <td><strong>W</strong></td>
-                            <td>Right</td>
-                            <td>Left</td>
-                            <td>180&deg;</td>
-                            <td>None</td>
+                            <td><strong>3 (W)</strong></td>
+                            <td>1</td>
+                            <td>2</td>
+                            <td>3</td>
+                            <td style="color: #85c88a; font-weight: bold;">0</td>
                         </tr>
                     </tbody>
                 </table>
+
+                <div class="insight-box">One formula replaces the entire table: <code style="font-family: 'Fira Code', monospace;">(needed - current) % 4</code></div>
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
@@ -1101,75 +1113,58 @@ col_diff = nxt_col - cur_col   # 0</pre>
                 <h1>Turn Logic in Python</h1>
             </div>
             <div class="content">
-                <p class="header-text">One way to code it:</p>
+                <p class="header-text">With numbers, the code is incredibly simple:</p>
 
-                <div class="code-block">
-<pre>def get_turn(current_heading, needed_direction):
-    if current_heading == needed_direction:
-        return "none"
+                <div class="two-col">
+                    <div class="col">
+                        <div class="code-block">
+<pre>def count_right_turns(current, needed):
+    return (needed - current) % 4</pre>
+                        </div>
 
-    right_turns = {"N": "E", "E": "S", "S": "W", "W": "N"}
-    left_turns  = {"N": "W", "W": "S", "S": "E", "E": "N"}
+                        <div class="spacer"></div>
+                        <p class="body-text">Then the robot executes:</p>
 
-    if right_turns[current_heading] == needed_direction:
-        return "right"
-    elif left_turns[current_heading] == needed_direction:
-        return "left"
-    else:
-        return "around"</pre>
+                        <div class="code-block">
+<pre>turns = count_right_turns(heading, needed)
+for i in range(turns):
+    turn_right()      # sensor-based
+heading = needed</pre>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="illustration">
+                            <svg width="338" height="280" viewBox="0 0 260 215">
+                                <!-- Visual: the mod 4 clock -->
+                                <circle cx="130" cy="100" r="70" fill="rgba(91, 143, 168, 0.06)" stroke="#b8c5d0" stroke-width="2.5" transform="rotate(-1 130 100)"/>
+                                <!-- 0(N) at top -->
+                                <text x="130" y="30" font-family="Caveat, cursive" font-size="20" fill="#e85d5d" text-anchor="middle" font-weight="700">0 (N)</text>
+                                <!-- 1(E) at right -->
+                                <text x="215" y="105" font-family="Caveat, cursive" font-size="20" fill="#85c88a" text-anchor="middle" font-weight="700">1 (E)</text>
+                                <!-- 2(S) at bottom -->
+                                <text x="130" y="185" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle" font-weight="700">2 (S)</text>
+                                <!-- 3(W) at left -->
+                                <text x="45" y="105" font-family="Caveat, cursive" font-size="20" fill="#e8a87c" text-anchor="middle" font-weight="700">3 (W)</text>
+                                <!-- Clockwise arrows between positions -->
+                                <path d="M145,40 C170,42, 190,60, 195,82" fill="none" stroke="#e8a87c" stroke-width="2.5" stroke-linecap="round"/>
+                                <polygon points="192,78 200,86 190,86" fill="#e8a87c"/>
+                                <path d="M195,118 C190,140, 170,158, 145,162" fill="none" stroke="#e8a87c" stroke-width="2.5" stroke-linecap="round"/>
+                                <polygon points="148,158 142,168 150,166" fill="#e8a87c"/>
+                                <path d="M115,168 C90,162, 72,142, 68,120" fill="none" stroke="#e8a87c" stroke-width="2.5" stroke-linecap="round"/>
+                                <polygon points="72,124 64,116 66,126" fill="#e8a87c"/>
+                                <path d="M68,82 C72,60, 90,42, 115,38" fill="none" stroke="#e8a87c" stroke-width="2.5" stroke-linecap="round"/>
+                                <polygon points="112,42 118,32 116,42" fill="#e8a87c"/>
+                                <!-- Center: +1 each step -->
+                                <text x="130" y="98" font-family="Caveat, cursive" font-size="16" fill="#636e72" text-anchor="middle" font-weight="600">each right</text>
+                                <text x="130" y="114" font-family="Caveat, cursive" font-size="16" fill="#636e72" text-anchor="middle" font-weight="600">turn = +1</text>
+                                <!-- Label -->
+                                <text x="130" y="208" font-family="Caveat, cursive" font-size="16" fill="#636e72" text-anchor="middle">wraps around with % 4</text>
+                            </svg>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="illustration">
-                    <svg width="624" height="182" viewBox="0 0 480 140">
-                        <!-- Visual: dictionaries as circular diagrams -->
-                        <!-- Right turns circle -->
-                        <g transform="translate(120, 70)">
-                            <circle cx="0" cy="0" r="50" fill="rgba(91, 143, 168, 0.08)" stroke="#5b8fa8" stroke-width="2" transform="rotate(-1 0 0)"/>
-                            <text x="0" y="-56" font-family="Caveat, cursive" font-size="16" fill="#5b8fa8" text-anchor="middle" font-weight="600">right_turns</text>
-                            <!-- N at top -->
-                            <text x="0" y="-30" font-family="Caveat, cursive" font-size="16" fill="#2d3436" text-anchor="middle" font-weight="700">N</text>
-                            <!-- E at right -->
-                            <text x="35" y="5" font-family="Caveat, cursive" font-size="16" fill="#2d3436" text-anchor="middle" font-weight="700">E</text>
-                            <!-- S at bottom -->
-                            <text x="0" y="40" font-family="Caveat, cursive" font-size="16" fill="#2d3436" text-anchor="middle" font-weight="700">S</text>
-                            <!-- W at left -->
-                            <text x="-35" y="5" font-family="Caveat, cursive" font-size="16" fill="#2d3436" text-anchor="middle" font-weight="700">W</text>
-                            <!-- Clockwise arrows -->
-                            <path d="M8,-28 C25,-25, 30,-10, 30,-2" fill="none" stroke="#e8a87c" stroke-width="2" stroke-linecap="round"/>
-                            <polygon points="28,0 34,-2 30,-8" fill="#e8a87c"/>
-                            <path d="M30,10 C28,25, 15,35, 6,35" fill="none" stroke="#e8a87c" stroke-width="2" stroke-linecap="round"/>
-                            <polygon points="8,33 2,38 10,38" fill="#e8a87c"/>
-                            <path d="M-8,35 C-25,30, -30,15, -30,5" fill="none" stroke="#e8a87c" stroke-width="2" stroke-linecap="round"/>
-                            <polygon points="-28,8 -34,2 -30,10" fill="#e8a87c"/>
-                            <path d="M-30,-5 C-28,-20, -15,-28, -6,-30" fill="none" stroke="#e8a87c" stroke-width="2" stroke-linecap="round"/>
-                            <polygon points="-8,-28 -2,-33 -10,-33" fill="#e8a87c"/>
-                        </g>
-
-                        <!-- Left turns circle -->
-                        <g transform="translate(360, 70)">
-                            <circle cx="0" cy="0" r="50" fill="rgba(232, 168, 124, 0.08)" stroke="#e8a87c" stroke-width="2" transform="rotate(1 0 0)"/>
-                            <text x="0" y="-56" font-family="Caveat, cursive" font-size="16" fill="#e8a87c" text-anchor="middle" font-weight="600">left_turns</text>
-                            <text x="0" y="-30" font-family="Caveat, cursive" font-size="16" fill="#2d3436" text-anchor="middle" font-weight="700">N</text>
-                            <text x="35" y="5" font-family="Caveat, cursive" font-size="16" fill="#2d3436" text-anchor="middle" font-weight="700">E</text>
-                            <text x="0" y="40" font-family="Caveat, cursive" font-size="16" fill="#2d3436" text-anchor="middle" font-weight="700">S</text>
-                            <text x="-35" y="5" font-family="Caveat, cursive" font-size="16" fill="#2d3436" text-anchor="middle" font-weight="700">W</text>
-                            <!-- Counter-clockwise arrows -->
-                            <path d="M-8,-28 C-25,-25, -30,-10, -30,-2" fill="none" stroke="#5b8fa8" stroke-width="2" stroke-linecap="round"/>
-                            <polygon points="-28,0 -34,-2 -30,-8" fill="#5b8fa8"/>
-                            <path d="M-30,10 C-28,25, -15,35, -6,35" fill="none" stroke="#5b8fa8" stroke-width="2" stroke-linecap="round"/>
-                            <polygon points="-8,33 -2,38 -10,38" fill="#5b8fa8"/>
-                            <path d="M8,35 C25,30, 30,15, 30,5" fill="none" stroke="#5b8fa8" stroke-width="2" stroke-linecap="round"/>
-                            <polygon points="28,8 34,2 30,10" fill="#5b8fa8"/>
-                            <path d="M30,-5 C28,-20, 15,-28, 6,-30" fill="none" stroke="#5b8fa8" stroke-width="2" stroke-linecap="round"/>
-                            <polygon points="8,-28 2,-33 10,-33" fill="#5b8fa8"/>
-                        </g>
-
-                        <!-- Center label -->
-                        <text x="240" y="75" font-family="Caveat, cursive" font-size="20" fill="#636e72" text-anchor="middle" font-weight="600">vs.</text>
-                    </svg>
-                </div>
-
-                <div class="insight-box">This function encodes the entire turn table from the previous slide!</div>
+                <div class="insight-box">Two lines of code replace all those dictionaries and if/elif chains!</div>
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
@@ -1184,7 +1179,7 @@ col_diff = nxt_col - cur_col   # 0</pre>
                 <h1>Walking Through a Path</h1>
             </div>
             <div class="content">
-                <div class="code-block compact" style="display: inline-block; padding: 10px 18px; margin-bottom: 10px; font-size: 17px;">Path: [(0,0), (1,0), (2,0), (2,1), (2,2)] &nbsp; Starting heading: North</div>
+                <div class="code-block compact" style="display: inline-block; padding: 10px 18px; margin-bottom: 10px; font-size: 17px;">Path: [(0,0), (1,0), (2,0), (2,1), (2,2)] &nbsp; Starting heading: 0 (N)</div>
 
                 <table class="content-table" style="width: 100%;">
                     <thead>
@@ -1192,9 +1187,9 @@ col_diff = nxt_col - cur_col   # 0</pre>
                             <th>Step</th>
                             <th>From</th>
                             <th>To</th>
-                            <th>Direction</th>
-                            <th>Heading</th>
-                            <th>Turn</th>
+                            <th>Needed</th>
+                            <th>Current</th>
+                            <th>Right Turns</th>
                             <th>New Heading</th>
                         </tr>
                     </thead>
@@ -1203,37 +1198,37 @@ col_diff = nxt_col - cur_col   # 0</pre>
                             <td>1</td>
                             <td>(0,0)</td>
                             <td>(1,0)</td>
-                            <td>South</td>
-                            <td>North</td>
-                            <td style="color: #e85d5d; font-weight: bold;">180&deg;</td>
-                            <td>South</td>
+                            <td>2 (S)</td>
+                            <td>0 (N)</td>
+                            <td style="color: #e85d5d; font-weight: bold;">(2-0)%4 = 2</td>
+                            <td>2 (S)</td>
                         </tr>
                         <tr>
                             <td>2</td>
                             <td>(1,0)</td>
                             <td>(2,0)</td>
-                            <td>South</td>
-                            <td>South</td>
-                            <td style="color: #85c88a; font-weight: bold;">None</td>
-                            <td>South</td>
+                            <td>2 (S)</td>
+                            <td>2 (S)</td>
+                            <td style="color: #85c88a; font-weight: bold;">(2-2)%4 = 0</td>
+                            <td>2 (S)</td>
                         </tr>
                         <tr>
                             <td>3</td>
                             <td>(2,0)</td>
                             <td>(2,1)</td>
-                            <td>East</td>
-                            <td>South</td>
-                            <td style="color: #5b8fa8; font-weight: bold;">Left</td>
-                            <td>East</td>
+                            <td>1 (E)</td>
+                            <td>2 (S)</td>
+                            <td style="color: #5b8fa8; font-weight: bold;">(1-2)%4 = 3</td>
+                            <td>1 (E)</td>
                         </tr>
                         <tr>
                             <td>4</td>
                             <td>(2,1)</td>
                             <td>(2,2)</td>
-                            <td>East</td>
-                            <td>East</td>
-                            <td style="color: #85c88a; font-weight: bold;">None</td>
-                            <td>East</td>
+                            <td>1 (E)</td>
+                            <td>1 (E)</td>
+                            <td style="color: #85c88a; font-weight: bold;">(1-1)%4 = 0</td>
+                            <td>1 (E)</td>
                         </tr>
                     </tbody>
                 </table>
@@ -1258,23 +1253,23 @@ col_diff = nxt_col - cur_col   # 0</pre>
                         <!-- Path: down from (0,0) to (2,0) then right to (2,2) -->
                         <path d="M80 40 L80 200 L240 200" fill="none" stroke="#5b8fa8" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="8,5" opacity="0.7"/>
                         <polygon points="235,195 245,200 235,205" fill="#5b8fa8" opacity="0.7"/>
-                        <!-- Step labels -->
-                        <text x="68" y="90" font-family="Caveat, cursive" font-size="16" fill="#e85d5d" font-weight="600">180&deg;</text>
-                        <text x="90" y="160" font-family="Caveat, cursive" font-size="16" fill="#85c88a" font-weight="600">none</text>
+                        <!-- Step labels with right-turn counts -->
+                        <text x="56" y="90" font-family="Caveat, cursive" font-size="15" fill="#e85d5d" font-weight="600">2 rights</text>
+                        <text x="90" y="160" font-family="Caveat, cursive" font-size="15" fill="#85c88a" font-weight="600">0 turns</text>
                         <!-- Turn indicator at (2,0) -->
                         <path d="M84 195 C88 180, 105 195, 95 205" fill="none" stroke="#e8a87c" stroke-width="2" stroke-linecap="round"/>
-                        <text x="105" y="188" font-family="Caveat, cursive" font-size="16" fill="#5b8fa8" font-weight="600">left</text>
-                        <text x="180" y="218" font-family="Caveat, cursive" font-size="16" fill="#85c88a" font-weight="600">none</text>
+                        <text x="105" y="188" font-family="Caveat, cursive" font-size="15" fill="#5b8fa8" font-weight="600">3 rights</text>
+                        <text x="180" y="218" font-family="Caveat, cursive" font-size="15" fill="#85c88a" font-weight="600">0 turns</text>
                         <!-- Robot at start (facing north, ghost) — PNG version -->
                         <image href="images/xrp-top-down.png" x="62" y="20" width="36" height="36" opacity="0.5" transform="rotate(180, 80, 38)"/>
                         <!-- Robot at end (facing east) — PNG version -->
                         <image href="images/xrp-top-down.png" x="222" y="182" width="36" height="36" transform="rotate(-90, 240, 200)"/>
                         <!-- Annotations on right side -->
-                        <text x="340" y="50" font-family="Caveat, cursive" font-size="14" fill="#636e72" font-weight="600">Notice:</text>
-                        <text x="340" y="72" font-family="Patrick Hand, cursive" font-size="14" fill="#e85d5d">Step 1: facing wrong way!</text>
-                        <text x="340" y="94" font-family="Patrick Hand, cursive" font-size="14" fill="#85c88a">Step 2: already correct</text>
-                        <text x="340" y="116" font-family="Patrick Hand, cursive" font-size="14" fill="#5b8fa8">Step 3: row &rarr; column</text>
-                        <text x="340" y="138" font-family="Patrick Hand, cursive" font-size="14" fill="#85c88a">Step 4: same direction</text>
+                        <text x="340" y="50" font-family="Caveat, cursive" font-size="14" fill="#636e72" font-weight="600">Formula at each step:</text>
+                        <text x="340" y="72" font-family="Patrick Hand, cursive" font-size="14" fill="#e85d5d">Step 1: (2-0)%4 = 2 rights</text>
+                        <text x="340" y="94" font-family="Patrick Hand, cursive" font-size="14" fill="#85c88a">Step 2: (2-2)%4 = 0 turns</text>
+                        <text x="340" y="116" font-family="Patrick Hand, cursive" font-size="14" fill="#5b8fa8">Step 3: (1-2)%4 = 3 rights</text>
+                        <text x="340" y="138" font-family="Patrick Hand, cursive" font-size="14" fill="#85c88a">Step 4: (1-1)%4 = 0 turns</text>
                     </svg>
                 </div>
             </div>
@@ -1291,35 +1286,28 @@ col_diff = nxt_col - cur_col   # 0</pre>
                 <h1>Updating Heading After Turning</h1>
             </div>
             <div class="content">
-                <p class="body-text">After each turn, the heading changes:</p>
+                <p class="body-text">After turning, what is the new heading? It is simply the <span class="sketch-highlight">needed heading</span>!</p>
 
                 <div class="two-col">
                     <div class="col">
+                        <p class="header-text">The whole process:</p>
                         <div class="code-block">
-<pre># After turning right
-if turn == "right":
-    right_turns = {
-        "N": "E", "E": "S",
-        "S": "W", "W": "N"
-    }
-    heading = right_turns[heading]
-
-# After turning left
-elif turn == "left":
-    left_turns = {
-        "N": "W", "W": "S",
-        "S": "E", "E": "N"
-    }
-    heading = left_turns[heading]
-
-# After turning around
-elif turn == "around":
-    around = {
-        "N": "S", "S": "N",
-        "E": "W", "W": "E"
-    }
-    heading = around[heading]</pre>
+<pre>needed = get_needed_heading(current_pos, next_pos)
+turns = count_right_turns(heading, needed)
+for i in range(turns):
+    turn_right()
+heading = needed</pre>
                         </div>
+
+                        <div class="spacer"></div>
+
+                        <div class="answer-box">
+                            <p class="body-text" style="margin-left: 8px;"><strong>Why so simple?</strong> We always turn right until we face the needed direction. So the new heading IS the needed heading. No dictionary lookups required!</p>
+                        </div>
+
+                        <div class="spacer"></div>
+
+                        <div class="code-block compact" style="padding: 10px 18px; font-size: 17px;">heading = needed &nbsp; # That's it!</div>
                     </div>
                     <div class="col">
                         <div class="illustration">
@@ -1327,16 +1315,16 @@ elif turn == "around":
                                 <!-- Diagram: heading update flow -->
                                 <!-- Step boxes -->
                                 <rect x="10" y="10" width="240" height="50" rx="12" fill="rgba(91, 143, 168, 0.08)" stroke="#5b8fa8" stroke-width="2"/>
-                                <text x="130" y="30" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" text-anchor="middle" font-weight="700">1. Determine turn needed</text>
-                                <text x="130" y="48" font-family="Patrick Hand, cursive" font-size="14" fill="#636e72" text-anchor="middle">get_turn(heading, direction)</text>
+                                <text x="130" y="30" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" text-anchor="middle" font-weight="700">1. Count right turns</text>
+                                <text x="130" y="48" font-family="Fira Code, monospace" font-size="12" fill="#636e72" text-anchor="middle">(needed - heading) % 4</text>
 
                                 <!-- Arrow -->
                                 <line x1="130" y1="60" x2="130" y2="85" stroke="#b8c5d0" stroke-width="2.5" stroke-linecap="round"/>
                                 <polygon points="124,81 130,92 136,81" fill="#b8c5d0"/>
 
                                 <rect x="10" y="95" width="240" height="50" rx="12" fill="rgba(232, 168, 124, 0.08)" stroke="#e8a87c" stroke-width="2"/>
-                                <text x="130" y="115" font-family="Caveat, cursive" font-size="18" fill="#e8a87c" text-anchor="middle" font-weight="700">2. Execute the turn</text>
-                                <text x="130" y="133" font-family="Patrick Hand, cursive" font-size="14" fill="#636e72" text-anchor="middle">robot turns right / left / around</text>
+                                <text x="130" y="115" font-family="Caveat, cursive" font-size="18" fill="#e8a87c" text-anchor="middle" font-weight="700">2. Execute right turns</text>
+                                <text x="130" y="133" font-family="Fira Code, monospace" font-size="12" fill="#636e72" text-anchor="middle">for i in range(turns): turn_right()</text>
 
                                 <!-- Arrow -->
                                 <line x1="130" y1="145" x2="130" y2="170" stroke="#b8c5d0" stroke-width="2.5" stroke-linecap="round"/>
@@ -1344,7 +1332,7 @@ elif turn == "around":
 
                                 <rect x="10" y="180" width="240" height="50" rx="12" fill="rgba(133, 200, 138, 0.08)" stroke="#85c88a" stroke-width="2"/>
                                 <text x="130" y="200" font-family="Caveat, cursive" font-size="18" fill="#85c88a" text-anchor="middle" font-weight="700">3. Update heading</text>
-                                <text x="130" y="218" font-family="Patrick Hand, cursive" font-size="14" fill="#636e72" text-anchor="middle">heading = new direction</text>
+                                <text x="130" y="218" font-family="Fira Code, monospace" font-size="12" fill="#636e72" text-anchor="middle">heading = needed</text>
                             </svg>
                         </div>
 
@@ -1370,15 +1358,15 @@ elif turn == "around":
                 <div class="sketch-box">
                     <div class="activity-step">
                         <span class="step-number">1</span>
-                        <span class="step-text"><strong>Path 1:</strong> [(0,0), (0,1), (0,2), (1,2), (2,2)], starting heading: East<br/>What turns are needed at each step? What is the heading after each step?</span>
+                        <span class="step-text"><strong>Path 1:</strong> [(0,0), (0,1), (0,2), (1,2), (2,2)], starting heading: 1 (E)<br/>For each step, compute the needed heading (0&ndash;3), then use <code style="font-family: 'Fira Code', monospace;">(needed - current) % 4</code> to find right-turn count.</span>
                     </div>
                     <div class="activity-step">
                         <span class="step-number">2</span>
-                        <span class="step-text"><strong>Path 2:</strong> [(2,3), (1,3), (0,3), (0,2), (0,1), (0,0)], starting heading: South<br/>This path goes up and then left &mdash; multiple direction changes!</span>
+                        <span class="step-text"><strong>Path 2:</strong> [(2,3), (1,3), (0,3), (0,2), (0,1), (0,0)], starting heading: 2 (S)<br/>This path goes up and then left &mdash; watch the formula handle negative differences!</span>
                     </div>
                     <div class="activity-step">
                         <span class="step-number">3</span>
-                        <span class="step-text"><strong>Path 3:</strong> [(1,1), (1,2), (1,3), (2,3), (3,3)], starting heading: North<br/>What's the first turn needed?</span>
+                        <span class="step-text"><strong>Path 3:</strong> [(1,1), (1,2), (1,3), (2,3), (3,3)], starting heading: 0 (N)<br/>How many right turns for the first step? Use the formula!</span>
                     </div>
                 </div>
 
@@ -1422,15 +1410,15 @@ elif turn == "around":
                 <div class="sketch-box" style="border-color: #85c88a; background-color: rgba(133, 200, 138, 0.04);">
                     <div class="checkpoint">
                         <span class="check-icon"></span>
-                        <span class="step-text">Can you determine direction from two coordinates?</span>
+                        <span class="step-text">Can you determine the needed heading (0&ndash;3) from two coordinates?</span>
                     </div>
                     <div class="checkpoint">
                         <span class="check-icon"></span>
-                        <span class="step-text">Can you look up the correct turn in the turn table?</span>
+                        <span class="step-text">Can you compute right turns with <code style="font-family: 'Fira Code', monospace;">(needed - current) % 4</code>?</span>
                     </div>
                     <div class="checkpoint">
                         <span class="check-icon"></span>
-                        <span class="step-text">Do you update the heading after each turn?</span>
+                        <span class="step-text">Do you set <code style="font-family: 'Fira Code', monospace;">heading = needed</code> after each turn?</span>
                     </div>
                 </div>
             </div>
@@ -1451,9 +1439,9 @@ elif turn == "around":
                     <div class="col">
                         <p class="header-text">What you did today</p>
                         <div class="sketch-box">
-                            <p class="bullet">Understood <span class="sketch-highlight">heading</span> as a direction concept</p>
-                            <p class="bullet">Determined direction from <span class="sketch-highlight">coordinate differences</span></p>
-                            <p class="bullet">Used a <span class="sketch-highlight">turn table</span> to find the right turn</p>
+                            <p class="bullet">Understood <span class="sketch-highlight">heading</span> as numbers 0&ndash;3 (N, E, S, W clockwise)</p>
+                            <p class="bullet">Determined needed heading from <span class="sketch-highlight">coordinate differences</span></p>
+                            <p class="bullet">Used <span class="sketch-highlight">modular arithmetic</span> (<code style="font-family: 'Fira Code', monospace;">% 4</code>) to count right turns</p>
                             <p class="bullet">Walked through complete paths updating heading</p>
                         </div>
                     </div>
@@ -1469,7 +1457,7 @@ elif turn == "around":
 
                 <div class="spacer"></div>
 
-                <div class="insight-box">The hard part is the LOGIC, not the code. You solved the logic today &mdash; tomorrow you'll just translate it into Python.</div>
+                <div class="insight-box">The key insight: <code style="font-family: 'Fira Code', monospace;">(needed - current) % 4</code> &mdash; one formula replaces all dictionaries. Tomorrow you'll code it!</div>
 
                 <div class="illustration" style="margin-top: 20px;">
                     <svg width="572" height="156" viewBox="0 0 440 120">

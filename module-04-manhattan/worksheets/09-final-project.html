@@ -460,8 +460,8 @@
                         <text x="216" y="22" font-family="Caveat, cursive" font-size="17" fill="#5b8fa8" text-anchor="middle" font-weight="600">Navigator</text>
                         <line x1="164" y1="28" x2="268" y2="28" stroke="#b8c5d0" stroke-width="1"/>
                         <text x="168" y="44" font-family="Fira Code, monospace" font-size="11" fill="#2d3436">.position</text>
-                        <text x="168" y="58" font-family="Fira Code, monospace" font-size="11" fill="#2d3436">.heading</text>
-                        <text x="168" y="72" font-family="Fira Code, monospace" font-size="11" fill="#2d3436">.drivetrain</text>
+                        <text x="168" y="58" font-family="Fira Code, monospace" font-size="11" fill="#2d3436">.heading (0-3)</text>
+                        <text x="168" y="72" font-family="Fira Code, monospace" font-size="11" fill="#2d3436">.line_track</text>
                         <line x1="164" y1="78" x2="268" y2="78" stroke="#b8c5d0" stroke-width="1"/>
                         <text x="168" y="94" font-family="Fira Code, monospace" font-size="11" fill="#2d3436">.drive_path()</text>
                         <text x="174" y="112" font-family="Patrick Hand, cursive" font-size="13" fill="#636e72">calls</text>
@@ -611,10 +611,9 @@ Create Navigator at (<span class="inline-answer short"></span>, <span class="inl
                     <th style="width: 50px;">Step</th>
                     <th>From</th>
                     <th>To</th>
-                    <th>Needed Direction</th>
+                    <th>Needed Heading</th>
                     <th>Current Heading</th>
-                    <th>Turn</th>
-                    <th>Degrees</th>
+                    <th>Right Turns</th>
                     <th>New Heading</th>
                 </tr>
             </thead>
@@ -623,7 +622,6 @@ Create Navigator at (<span class="inline-answer short"></span>, <span class="inl
                     <td>1</td>
                     <td>(<span class="answer short"></span>, <span class="answer short"></span>)</td>
                     <td>(<span class="answer short"></span>, <span class="answer short"></span>)</td>
-                    <td><span class="answer"></span></td>
                     <td><span class="answer"></span></td>
                     <td><span class="answer"></span></td>
                     <td><span class="answer short"></span></td>
@@ -635,7 +633,6 @@ Create Navigator at (<span class="inline-answer short"></span>, <span class="inl
                     <td>(<span class="answer short"></span>, <span class="answer short"></span>)</td>
                     <td><span class="answer"></span></td>
                     <td><span class="answer"></span></td>
-                    <td><span class="answer"></span></td>
                     <td><span class="answer short"></span></td>
                     <td><span class="answer"></span></td>
                 </tr>
@@ -643,7 +640,6 @@ Create Navigator at (<span class="inline-answer short"></span>, <span class="inl
                     <td>3</td>
                     <td>(<span class="answer short"></span>, <span class="answer short"></span>)</td>
                     <td>(<span class="answer short"></span>, <span class="answer short"></span>)</td>
-                    <td><span class="answer"></span></td>
                     <td><span class="answer"></span></td>
                     <td><span class="answer"></span></td>
                     <td><span class="answer short"></span></td>
@@ -655,7 +651,6 @@ Create Navigator at (<span class="inline-answer short"></span>, <span class="inl
                     <td>(<span class="answer short"></span>, <span class="answer short"></span>)</td>
                     <td><span class="answer"></span></td>
                     <td><span class="answer"></span></td>
-                    <td><span class="answer"></span></td>
                     <td><span class="answer short"></span></td>
                     <td><span class="answer"></span></td>
                 </tr>
@@ -663,7 +658,6 @@ Create Navigator at (<span class="inline-answer short"></span>, <span class="inl
                     <td>5</td>
                     <td>(<span class="answer short"></span>, <span class="answer short"></span>)</td>
                     <td>(<span class="answer short"></span>, <span class="answer short"></span>)</td>
-                    <td><span class="answer"></span></td>
                     <td><span class="answer"></span></td>
                     <td><span class="answer"></span></td>
                     <td><span class="answer short"></span></td>
@@ -675,12 +669,12 @@ Create Navigator at (<span class="inline-answer short"></span>, <span class="inl
                     <td>(<span class="answer short"></span>, <span class="answer short"></span>)</td>
                     <td><span class="answer"></span></td>
                     <td><span class="answer"></span></td>
-                    <td><span class="answer"></span></td>
                     <td><span class="answer short"></span></td>
                     <td><span class="answer"></span></td>
                 </tr>
             </tbody>
         </table>
+        <p class="instruction" style="margin-top: 4px;"><em>Headings: 0 = North, 1 = East, 2 = South, 3 = West. Right turns = (needed - current) % 4</em></p>
         <p class="instruction" style="margin-top: 4px;">(Add more rows if needed on the back of this page.)</p>
 
         <div style="margin-top: 14px;">
@@ -729,8 +723,8 @@ Create Navigator at (<span class="inline-answer short"></span>, <span class="inl
             <li>Placed robot at (0, 0) facing North on the grid</li>
             <li>Ran program with only destination 1</li>
             <li>Robot turned correctly at each step</li>
-            <li>Robot arrived at correct cell</li>
-            <li>Adjusted <code>straight()</code> distance if needed. Distance used: <span class="inline-answer short"></span> cm</li>
+            <li>Robot followed the line to the next intersection</li>
+            <li>Robot arrived at the correct cell</li>
         </ul>
 
         <div class="subsection-header">Level 3: Full Sequence</div>
@@ -758,8 +752,10 @@ Create Navigator at (<span class="inline-answer short"></span>, <span class="inl
         <div class="section-header">Part E: Code Template</div>
         <p class="instruction">Complete the main program below. The Manhattan and Navigator classes are provided for you.</p>
 
-        <div class="code-block" style="font-size: 12.5px; line-height: 1.45;">from XRPLib.differential_drive import DifferentialDrive
-from XRPLib.board import Board
+        <div class="code-block" style="font-size: 12.5px; line-height: 1.45;">from XRPLib.board import Board
+from line_track import LineTrack
+
+HEADING_NAMES = ["N", "E", "S", "W"]
 
 
 class Manhattan:
@@ -768,10 +764,8 @@ class Manhattan:
 
     def compute_path(self, destination):
         path = [self.position]
-        current_row = self.position[0]
-        current_col = self.position[1]
-        dest_row = destination[0]
-        dest_col = destination[1]
+        current_row, current_col = self.position
+        dest_row, dest_col = destination
         if dest_row &gt; current_row:
             row_step = 1
         else:
@@ -800,41 +794,37 @@ class Manhattan:
     def __init__(self, start, heading):
         self.position = start
         self.heading = heading
-        self.drivetrain = DifferentialDrive.get_default_differential_drive()
+        self.line_track = LineTrack()
 
-    def get_needed_direction(self, next_pos):
+    def get_needed_heading(self, next_pos):
         row_diff = next_pos[0] - self.position[0]
         col_diff = next_pos[1] - self.position[1]
         if row_diff == 1:
-            return "S"
+            return 2
         elif row_diff == -1:
-            return "N"
+            return 0
         elif col_diff == 1:
-            return "E"
+            return 1
         elif col_diff == -1:
-            return "W"
+            return 3
 
-    def turn_to(self, direction):
-        right_turns = {"N": "E", "E": "S", "S": "W", "W": "N"}
-        left_turns = {"N": "W", "W": "S", "S": "E", "E": "N"}
-        if self.heading == direction:
-            pass
-        elif right_turns[self.heading] == direction:
-            self.drivetrain.turn(90)
-            self.heading = direction
-        elif left_turns[self.heading] == direction:
-            self.drivetrain.turn(-90)
-            self.heading = direction
-        else:
-            self.drivetrain.turn(180)
-            self.heading = direction
+    def turn_to(self, needed):
+        right_turns = (needed - self.heading) % 4
+        if right_turns == 1:
+            self.line_track.turn(90)
+        elif right_turns == 2:
+            self.line_track.turn(180)
+        elif right_turns == 3:
+            self.line_track.turn(-90)
+        self.heading = needed
 
     def drive_path(self, path):
         for i in range(1, len(path)):
             next_pos = path[i]
-            direction = self.get_needed_direction(next_pos)
-            self.turn_to(direction)
-            self.drivetrain.straight(20)
+            needed = self.get_needed_heading(next_pos)
+            self.turn_to(needed)
+            self.line_track.track_until_cross()
+            self.line_track.straight(8)
             self.position = next_pos
 
 
@@ -846,7 +836,7 @@ board = <span class="todo-blank">&nbsp;</span>
 # TODO: Create a Manhattan object starting at (0, 0)
 manhattan = <span class="todo-blank">&nbsp;</span>
 
-# TODO: Create a Navigator object starting at (0, 0) heading North
+# TODO: Create a Navigator object starting at (0, 0) heading North (0)
 navigator = <span class="todo-blank">&nbsp;</span>
 
 # TODO: Define your list of 4+ destinations
@@ -877,7 +867,7 @@ for <span class="todo-blank" style="min-width: 80px;">&nbsp;</span> in <span cla
     <span class="todo-blank">&nbsp;</span>
 
     print("Arrived at:", navigator.position)
-    print("Heading:", navigator.heading)
+    print("Heading:", HEADING_NAMES[navigator.heading])
     print()
 
 print("=== All destinations reached! ===")

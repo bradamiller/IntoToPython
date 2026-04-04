@@ -14,8 +14,8 @@
   |   Manhattan     |          |   Navigator     |
   |-----------------|          |-----------------|
   | .position       |          | .position       |
-  |                 |          | .heading        |
-  |                 |          | .drivetrain     |
+  |                 |          | .heading (0-3)  |
+  |                 |          | .line_track     |
   |-----------------|          |-----------------|
   | .compute_path() | -------> | .drive_path()   |
   |   returns _____ |  path    |   calls _______ |
@@ -123,14 +123,17 @@ Total: _____ steps.
 
 **Trace each step:**
 
-| Step | From | To | Needed Direction | Current Heading | Turn | Degrees | New Heading |
-|---|---|---|---|---|---|---|---|
-| 1 | (__, __) | (__, __) | __________ | __________ | __________ | __________ | __________ |
-| 2 | (__, __) | (__, __) | __________ | __________ | __________ | __________ | __________ |
-| 3 | (__, __) | (__, __) | __________ | __________ | __________ | __________ | __________ |
-| 4 | (__, __) | (__, __) | __________ | __________ | __________ | __________ | __________ |
-| 5 | (__, __) | (__, __) | __________ | __________ | __________ | __________ | __________ |
-| 6 | (__, __) | (__, __) | __________ | __________ | __________ | __________ | __________ |
+| Step | From | To | Needed Heading | Current Heading | Right Turns | New Heading |
+|---|---|---|---|---|---|---|
+| 1 | (__, __) | (__, __) | __________ | __________ | __________ | __________ |
+| 2 | (__, __) | (__, __) | __________ | __________ | __________ | __________ |
+| 3 | (__, __) | (__, __) | __________ | __________ | __________ | __________ |
+| 4 | (__, __) | (__, __) | __________ | __________ | __________ | __________ |
+| 5 | (__, __) | (__, __) | __________ | __________ | __________ | __________ |
+| 6 | (__, __) | (__, __) | __________ | __________ | __________ | __________ |
+
+*Headings: 0 = North, 1 = East, 2 = South, 3 = West*
+*Right turns = (needed - current) % 4*
 
 (Add more rows if needed on the back of this page.)
 
@@ -169,8 +172,8 @@ _____________________________________________
 - [ ] Placed robot at (0, 0) facing North on the grid
 - [ ] Ran program with only destination 1
 - [ ] Robot turned correctly at each step
+- [ ] Robot followed the line to the next intersection
 - [ ] Robot arrived at the correct cell
-- [ ] Adjusted `straight()` distance if needed. Distance used: _____ cm
 
 ### Level 3: Full Sequence
 - [ ] Ran program with all 4+ destinations
@@ -193,8 +196,10 @@ ____________________________________________________________________
 Complete the main program below. The Manhattan and Navigator classes are provided for you.
 
 ```python
-from XRPLib.differential_drive import DifferentialDrive
 from XRPLib.board import Board
+from line_track import LineTrack
+
+HEADING_NAMES = ["N", "E", "S", "W"]
 
 
 class Manhattan:
@@ -203,10 +208,8 @@ class Manhattan:
 
     def compute_path(self, destination):
         path = [self.position]
-        current_row = self.position[0]
-        current_col = self.position[1]
-        dest_row = destination[0]
-        dest_col = destination[1]
+        current_row, current_col = self.position
+        dest_row, dest_col = destination
         if dest_row > current_row:
             row_step = 1
         else:
@@ -228,41 +231,37 @@ class Navigator:
     def __init__(self, start, heading):
         self.position = start
         self.heading = heading
-        self.drivetrain = DifferentialDrive.get_default_differential_drive()
+        self.line_track = LineTrack()
 
-    def get_needed_direction(self, next_pos):
+    def get_needed_heading(self, next_pos):
         row_diff = next_pos[0] - self.position[0]
         col_diff = next_pos[1] - self.position[1]
         if row_diff == 1:
-            return "S"
+            return 2
         elif row_diff == -1:
-            return "N"
+            return 0
         elif col_diff == 1:
-            return "E"
+            return 1
         elif col_diff == -1:
-            return "W"
+            return 3
 
-    def turn_to(self, direction):
-        right_turns = {"N": "E", "E": "S", "S": "W", "W": "N"}
-        left_turns = {"N": "W", "W": "S", "S": "E", "E": "N"}
-        if self.heading == direction:
-            pass
-        elif right_turns[self.heading] == direction:
-            self.drivetrain.turn(90)
-            self.heading = direction
-        elif left_turns[self.heading] == direction:
-            self.drivetrain.turn(-90)
-            self.heading = direction
-        else:
-            self.drivetrain.turn(180)
-            self.heading = direction
+    def turn_to(self, needed):
+        right_turns = (needed - self.heading) % 4
+        if right_turns == 1:
+            self.line_track.turn(90)
+        elif right_turns == 2:
+            self.line_track.turn(180)
+        elif right_turns == 3:
+            self.line_track.turn(-90)
+        self.heading = needed
 
     def drive_path(self, path):
         for i in range(1, len(path)):
             next_pos = path[i]
-            direction = self.get_needed_direction(next_pos)
-            self.turn_to(direction)
-            self.drivetrain.straight(20)
+            needed = self.get_needed_heading(next_pos)
+            self.turn_to(needed)
+            self.line_track.track_until_cross()
+            self.line_track.straight(8)
             self.position = next_pos
 
 
@@ -274,7 +273,7 @@ board = _______________________________________________
 # TODO: Create a Manhattan object starting at (0, 0)
 manhattan = _______________________________________________
 
-# TODO: Create a Navigator object starting at (0, 0) heading North
+# TODO: Create a Navigator object starting at (0, 0) heading North (0)
 navigator = _______________________________________________
 
 # TODO: Define your list of 4+ destinations
@@ -305,7 +304,7 @@ for __________ in __________:
     _______________________________________________
 
     print("Arrived at:", navigator.position)
-    print("Heading:", navigator.heading)
+    print("Heading:", HEADING_NAMES[navigator.heading])
     print()
 
 print("=== All destinations reached! ===")

@@ -8,8 +8,8 @@
 
 - `compute_path()` returns: **A list of (row, col) tuples representing each position along the path**
 - What two things does `drive_path()` do at each step?
-  1. **Turn the robot to face the needed direction (using turn_to)**
-  2. **Drive one cell forward (using drivetrain.straight(20))**
+  1. **Turn the robot to face the needed heading (using turn_to)**
+  2. **Follow the line to the next intersection (using track_until_cross + straight(8) to clear)**
 
 ---
 
@@ -22,7 +22,7 @@
 **3. Flow diagram blanks:**
 
 - Create Manhattan at (**0**, **0**)
-- Create Navigator at (**0**, **0**) heading **"N"**
+- Create Navigator at (**0**, **0**) heading **0**
 - Compute **path** using Manhattan
 - Drive **path** using Navigator
 - Update manhattan.**position** = navigator.**position**
@@ -59,18 +59,21 @@
 
 **Computed path:** [(0, 0), (1, 0), (2, 0)]
 
-| Step | From | To | Needed Direction | Current Heading | Turn | Degrees | New Heading |
-|---|---|---|---|---|---|---|---|
-| 1 | (0, 0) | (1, 0) | S | N | Reverse | 180 | S |
-| 2 | (1, 0) | (2, 0) | S | S | None | 0 | S |
+*Headings: 0 = North, 1 = East, 2 = South, 3 = West*
+*Right turns = (needed - current) % 4*
+
+| Step | From | To | Needed Heading | Current Heading | Right Turns | New Heading |
+|---|---|---|---|---|---|---|
+| 1 | (0, 0) | (1, 0) | 2 (S) | 0 (N) | (2-0)%4 = 2 | 2 (S) |
+| 2 | (1, 0) | (2, 0) | 2 (S) | 2 (S) | (2-2)%4 = 0 | 2 (S) |
 
 **After this leg:**
 
 - Navigator position: **(2, 0)**
-- Navigator heading: **S**
+- Navigator heading: **2 (S)**
 - Manhattan position must be updated to: **(2, 0)**
 
-**What heading will the Navigator have at the START of leg 2?** **S** (the heading carries over)
+**What heading will the Navigator have at the START of leg 2?** **2 (S)** (the heading carries over)
 
 ---
 
@@ -111,8 +114,6 @@ Heading: W
 Final position: (0, 0)
 ```
 
-**For `straight()` distance:** **20** cm (default; students may adjust based on their grid)
-
 ---
 
 ## Part E: Code Template
@@ -126,8 +127,8 @@ board = Board.get_default_board()
 # Create a Manhattan object starting at (0, 0)
 manhattan = Manhattan((0, 0))
 
-# Create a Navigator object starting at (0, 0) heading North
-navigator = Navigator((0, 0), "N")
+# Create a Navigator object starting at (0, 0) heading North (0)
+navigator = Navigator((0, 0), 0)
 
 # Define your list of 4+ destinations
 destinations = [(2, 0), (2, 3), (0, 3), (0, 0)]
@@ -157,7 +158,7 @@ for dest in destinations:
     manhattan.position = navigator.position
 
     print("Arrived at:", navigator.position)
-    print("Heading:", navigator.heading)
+    print("Heading:", HEADING_NAMES[navigator.heading])
     print()
 
 print("=== All destinations reached! ===")
@@ -168,7 +169,7 @@ print("Final position:", navigator.position)
 
 1. `Board.get_default_board()`
 2. `Manhattan((0, 0))`
-3. `Navigator((0, 0), "N")`
+3. `Navigator((0, 0), 0)`
 4. `[(2, 0), (2, 3), (0, 3), (0, 0)]` *(answers will vary)*
 5. `board.wait_for_button()`
 6. `dest` in `destinations`
@@ -183,4 +184,4 @@ print("Final position:", navigator.position)
 
 **What was the hardest part of putting the whole system together?**
 
-Sample answer: The hardest part is usually remembering to update `manhattan.position` after each leg. Without that line, every path computation starts from (0, 0) regardless of where the robot actually is, so the second leg's path is wrong and the robot drives to the wrong place. The testing strategy of Level 1 (Manhattan only, no robot) helps catch this -- you can see in the print output whether each path starts from the correct position. Another common difficulty is debugging physical robot movement: the robot may drift slightly on turns, causing it to miss grid intersections. Testing with a single leg first (Level 2) before running the full sequence (Level 3) helps isolate these physical issues from logic bugs.
+Sample answer: The hardest part is usually remembering to update `manhattan.position` after each leg. Without that line, every path computation starts from (0, 0) regardless of where the robot actually is, so the second leg's path is wrong and the robot drives to the wrong place. The testing strategy of Level 1 (Manhattan only, no robot) helps catch this -- you can see in the print output whether each path starts from the correct position. Another common difficulty is debugging physical robot movement: the robot may drift slightly on turns, causing it to miss grid lines. Testing with a single leg first (Level 2) before running the full sequence (Level 3) helps isolate these physical issues from logic bugs.

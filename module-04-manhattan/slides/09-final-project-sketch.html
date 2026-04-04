@@ -822,7 +822,7 @@
                 <p class="header-text">Three components working together</p>
 
                 <div class="illustration">
-                    <svg width="760" height="175" viewBox="0 0 595 135">
+                    <svg width="780" height="180" viewBox="0 0 610 140">
                         <!-- Manhattan box -->
                         <rect x="10" y="20" width="150" height="95" rx="12" fill="rgba(91, 143, 168, 0.1)" stroke="#5b8fa8" stroke-width="2.5" transform="rotate(-0.5 85 67)"/>
                         <text x="85" y="48" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle" font-weight="700">Manhattan</text>
@@ -847,10 +847,11 @@
                         <text x="435" y="50" font-family="Caveat, cursive" font-size="14" fill="#e8a87c" font-weight="600">path</text>
 
                         <!-- Navigator box -->
-                        <rect x="465" y="20" width="115" height="95" rx="12" fill="rgba(133, 200, 138, 0.1)" stroke="#85c88a" stroke-width="2.5" transform="rotate(0.5 522 67)"/>
+                        <rect x="465" y="20" width="125" height="95" rx="12" fill="rgba(133, 200, 138, 0.1)" stroke="#85c88a" stroke-width="2.5" transform="rotate(0.5 522 67)"/>
                         <text x="522" y="48" font-family="Caveat, cursive" font-size="20" fill="#85c88a" text-anchor="middle" font-weight="700">Navigator</text>
                         <text x="522" y="70" font-family="Patrick Hand, cursive" font-size="14" fill="#636e72" text-anchor="middle">drives the path</text>
-                        <text x="522" y="95" font-family="Fira Code, monospace" font-size="12" fill="#2d3436" text-anchor="middle">drive_path()</text>
+                        <text x="522" y="88" font-family="Fira Code, monospace" font-size="11" fill="#2d3436" text-anchor="middle">line_track</text>
+                        <text x="522" y="105" font-family="Fira Code, monospace" font-size="11" fill="#2d3436" text-anchor="middle">heading: 0-3</text>
                     </svg>
                 </div>
 
@@ -859,7 +860,7 @@
 manhattan = Manhattan((0, 0))
 
 <span style="color: #636e72;"># 2. Navigator class -- drives the path</span>
-navigator = Navigator((0, 0), "N")
+navigator = Navigator((0, 0), 0)  <span style="color: #636e72;"># heading 0 = North</span>
 
 <span style="color: #636e72;"># 3. Main program -- orchestrates everything</span>
 destinations = [(2, 3), (0, 1), (3, 3), (1, 0)]
@@ -893,12 +894,13 @@ from XRPLib.board import Board
 
 <span style="color: #636e72;"># Import your classes (or define above)</span>
 
+HEADING_NAMES = ["N", "E", "S", "W"]
 board = Board.get_default_board()
 
 <span style="color: #636e72;"># Setup</span>
 start = (0, 0)
 manhattan = Manhattan(start)
-navigator = Navigator(start, "N")
+navigator = Navigator(start, 0)  <span style="color: #636e72;"># 0 = North</span>
 
 <span style="color: #636e72;"># Destinations to visit</span>
 destinations = [(2, 3), (0, 1),
@@ -920,7 +922,8 @@ for i in range(len(destinations)):
 
     <span style="color: #636e72;"># Update Manhattan's position</span>
     manhattan.position = navigator.position
-    print("  Arrived at", dest)
+    heading = HEADING_NAMES[navigator.heading]
+    print("  Arrived at", dest, "facing", heading)
 
 print("All destinations reached!")</div>
                     </div>
@@ -1141,8 +1144,8 @@ for dest in [(2,3), (0,1), (3,3), (1,0)]:
 
                         <div class="question-box">
                             <p class="body-text" style="margin-left: 8px; font-size: 20px;"><strong>Issue 2: Robot overshoots intersections</strong></p>
-                            <p class="bullet" style="font-size: 18px;">Is <code style="font-family: 'Fira Code', monospace;">straight()</code> distance correct for your grid?</p>
-                            <p class="bullet" style="font-size: 18px;">Measure actual distance between intersections</p>
+                            <p class="bullet" style="font-size: 18px;">Is <code style="font-family: 'Fira Code', monospace;">track_until_cross()</code> detecting the cross reliably?</p>
+                            <p class="bullet" style="font-size: 18px;">Check line-following parameters and <code style="font-family: 'Fira Code', monospace;">straight(8)</code> clearing distance</p>
                         </div>
                     </div>
                     <div class="col">
@@ -1353,7 +1356,7 @@ for dest in [(2,3), (0,1), (3,3), (1,0)]:
                             <p class="bullet" style="font-size: 19px;">Tuples for positions, lists for paths</p>
                             <p class="bullet" style="font-size: 19px;">Manhattan algorithm for pathfinding</p>
                             <p class="bullet" style="font-size: 19px;">Testing without hardware</p>
-                            <p class="bullet" style="font-size: 19px;">Navigator class for physical driving</p>
+                            <p class="bullet" style="font-size: 19px;">Navigator class with numeric headings and LineTrack</p>
                             <p class="bullet" style="font-size: 19px;">Separation of concerns: algorithm vs. action</p>
                         </div>
                     </div>
@@ -1371,7 +1374,7 @@ for dest in [(2,3), (0,1), (3,3), (1,0)]:
                 <div class="spacer"></div>
 
                 <div class="illustration">
-                    <svg width="700" height="175" viewBox="0 0 535 135">
+                    <svg width="720" height="175" viewBox="0 0 545 135">
                         <!-- Separation of concerns diagram -->
                         <!-- Manhattan box (crossed out lightly) -->
                         <rect x="20" y="20" width="140" height="70" rx="12" fill="rgba(91, 143, 168, 0.08)" stroke="#5b8fa8" stroke-width="2" stroke-dasharray="5,3"/>
@@ -1395,9 +1398,10 @@ for dest in [(2,3), (0,1), (3,3), (1,0)]:
                         <text x="375" y="62" font-family="Caveat, cursive" font-size="30" fill="#636e72" text-anchor="middle">+</text>
 
                         <!-- Navigator box (stays the same) -->
-                        <rect x="395" y="20" width="120" height="70" rx="12" fill="rgba(91, 143, 168, 0.1)" stroke="#5b8fa8" stroke-width="2"/>
-                        <text x="455" y="48" font-family="Caveat, cursive" font-size="17" fill="#5b8fa8" text-anchor="middle" font-weight="600">Navigator</text>
-                        <text x="455" y="68" font-family="Patrick Hand, cursive" font-size="13" fill="#636e72" text-anchor="middle">stays the same!</text>
+                        <rect x="395" y="15" width="130" height="80" rx="12" fill="rgba(91, 143, 168, 0.1)" stroke="#5b8fa8" stroke-width="2"/>
+                        <text x="460" y="40" font-family="Caveat, cursive" font-size="17" fill="#5b8fa8" text-anchor="middle" font-weight="600">Navigator</text>
+                        <text x="460" y="57" font-family="Patrick Hand, cursive" font-size="13" fill="#636e72" text-anchor="middle">stays the same!</text>
+                        <text x="460" y="76" font-family="Fira Code, monospace" font-size="10" fill="#2d3436" text-anchor="middle">LineTrack + heading 0-3</text>
 
                         <!-- Bottom label -->
                         <text x="290" y="120" font-family="Caveat, cursive" font-size="16" fill="#e8a87c" text-anchor="middle" font-weight="600">Separation of concerns makes swapping easy</text>

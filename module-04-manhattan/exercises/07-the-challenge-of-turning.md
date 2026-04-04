@@ -4,67 +4,72 @@
 
 ## Overview
 
-The Manhattan class tells the robot **where** to go. Now you need to figure out **how** — specifically, which direction to face before each step. You will implement two functions: `get_needed_direction()` and `get_turn()`.
+The Manhattan class tells the robot **where** to go. Now you need to figure out **how** — specifically, which direction to face before each step. You will implement two functions: `get_needed_heading()` and `count_right_turns()`.
 
 ## What You Will Do
 
-### Part 1: get_needed_direction()
+### Part 1: get_needed_heading()
 
-Given the robot's current position and the next position (one step away), return the compass direction the robot needs to face: `"N"`, `"S"`, `"E"`, or `"W"`.
+Given the robot's current position and the next position (one step away), return the heading number the robot needs:
 
-**Logic:**
-- Compare rows: if the next row is greater, the robot moves south (`"S"`). If smaller, north (`"N"`).
-- Compare columns: if the next column is greater, the robot moves east (`"E"`). If smaller, west (`"W"`).
+| Heading | Direction | row_diff | col_diff |
+|---|---|---|---|
+| 0 | North | -1 | 0 |
+| 1 | East | 0 | +1 |
+| 2 | South | +1 | 0 |
+| 3 | West | 0 | -1 |
 
-Fill in the function body using `if`/`elif` statements.
+Fill in the function body using `if`/`elif` statements that check `row_diff` and `col_diff`, returning the appropriate heading number (0, 1, 2, or 3).
 
-### Part 2: get_turn()
+### Part 2: count_right_turns()
 
-Given the direction the robot is currently **facing** and the direction it **needs** to face, return the turn required: `"NONE"`, `"RIGHT"`, `"LEFT"`, or `"REVERSE"`.
+Given the heading the robot is currently facing (a number 0-3) and the heading it needs to face (also 0-3), return the number of right turns required: 0, 1, 2, or 3.
 
-**Logic:**
-- Same direction → `"NONE"`
-- Opposite direction (N↔S, E↔W) → `"REVERSE"`
-- Clockwise one step (N→E, E→S, S→W, W→N) → `"RIGHT"`
-- Otherwise → `"LEFT"`
+**The formula:** `(needed - current) % 4`
 
-Use a `right_turns` dictionary to check clockwise relationships.
+- 0 = no turn needed (already facing the right way)
+- 1 = one right turn (90 degrees clockwise)
+- 2 = two right turns (180 degrees)
+- 3 = three right turns (270 degrees clockwise)
+
+This single line replaces all the dictionary lookups!
 
 ### Part 3: Test Your Functions
 Uncomment the test code and verify:
-- `get_needed_direction((0,0), (1,0))` returns `"S"`
-- `get_needed_direction((1,0), (0,0))` returns `"N"`
-- `get_turn("N", "E")` returns `"RIGHT"`
-- `get_turn("N", "S")` returns `"REVERSE"`
+- `get_needed_heading((0,0), (1,0))` returns `2` (South)
+- `get_needed_heading((1,0), (0,0))` returns `0` (North)
+- `count_right_turns(0, 1)` returns `1` (one right turn: N to E)
+- `count_right_turns(0, 2)` returns `2` (two right turns: N to S)
 - All other test cases pass.
 
 ## Key Concepts
 
-- **Direction from coordinates:** The difference between two adjacent positions tells you which compass direction to move.
-- **Turn table:** A 4×4 lookup from (current heading, needed direction) to turn type.
-- **Right turns go clockwise:** N → E → S → W → N.
-- **Left turns go counterclockwise:** N → W → S → E → N.
+- **Heading as a number:** 0=North, 1=East, 2=South, 3=West (clockwise order).
+- **`HEADING_NAMES = ["N", "E", "S", "W"]`** for display: `HEADING_NAMES[heading]` gives the letter.
+- **Direction from coordinates:** The difference between two adjacent positions tells you which heading number is needed.
+- **Modular arithmetic:** `(needed - current) % 4` gives the number of right turns. No dictionaries needed!
+- **Updating heading:** After turning, the new heading is simply `needed` (the heading you turned to face).
 
 ## Expected Output
 
 ```
-===== Testing get_needed_direction =====
-(0,0) to (1,0): S
-(1,0) to (0,0): N
-(0,0) to (0,1): E
-(0,1) to (0,0): W
+===== Testing get_needed_heading =====
+(0,0) to (1,0): 2 (S)
+(1,0) to (0,0): 0 (N)
+(0,0) to (0,1): 1 (E)
+(0,1) to (0,0): 3 (W)
 
-===== Testing get_turn =====
-Facing N, need N: NONE
-Facing N, need S: REVERSE
-Facing N, need E: RIGHT
-Facing N, need W: LEFT
-Facing E, need S: RIGHT
-Facing W, need N: RIGHT
+===== Testing count_right_turns =====
+Heading 0 (N), need 0 (N): 0 right turns
+Heading 0 (N), need 2 (S): 2 right turns
+Heading 0 (N), need 1 (E): 1 right turns
+Heading 0 (N), need 3 (W): 3 right turns
+Heading 1 (E), need 2 (S): 1 right turns
+Heading 3 (W), need 0 (N): 1 right turns
 ```
 
 ## When You Are Done
 
-- Do all direction and turn tests pass?
-- Can you trace through a full path by hand, tracking the heading at each step?
+- Do all heading and turn-count tests pass?
+- Can you trace through a full path by hand, tracking the heading number at each step?
 - These functions will become methods in the Navigator class in Lesson 8.

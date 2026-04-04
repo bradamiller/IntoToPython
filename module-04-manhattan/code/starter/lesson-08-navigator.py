@@ -1,17 +1,79 @@
 # Lesson 8: Implementing the Navigator Class - STARTER
-# The Navigator class drives the robot along a Manhattan path.
+# The Navigator class drives the robot along a Manhattan path
+# using LineTrack for line following and turning.
 #
 # Team: ________________________
 # Date: ________________________
 #
 # The Navigator needs to:
-#   1. Know its current position and heading
-#   2. Figure out which direction to go for the next step
-#   3. Turn the robot to face that direction
-#   4. Drive forward one grid cell
+#   1. Know its current position and heading (0=N, 1=E, 2=S, 3=W)
+#   2. Figure out which heading is needed for the next step
+#   3. Turn right the correct number of times using LineTrack
+#   4. Follow the line to the next intersection
 #   5. Repeat for every step in the path
 
+from XRPLib.reflectance import Reflectance
 from XRPLib.differential_drive import DifferentialDrive
+from XRPLib.board import Board
+import time
+
+
+# ===== LineSensor Class (from Module 2) =====
+
+class LineSensor:
+    def __init__(self):
+        self.reflectance = Reflectance.get_default_reflectance()
+        self.threshold = 0.5
+
+    def get_left(self):
+        return self.reflectance.get_left()
+
+    def get_right(self):
+        return self.reflectance.get_right()
+
+    def get_error(self):
+        return self.get_left() - self.get_right()
+
+    def is_at_cross(self):
+        return self.get_left() > self.threshold and self.get_right() > self.threshold
+
+    def is_off_line(self):
+        return self.get_left() < self.threshold and self.get_right() < self.threshold
+
+
+# ===== LineTrack Class (from Module 2) =====
+
+class LineTrack:
+    def __init__(self):
+        self.sensor = LineSensor()
+        self.drivetrain = DifferentialDrive.get_default_differential_drive()
+        self.base_effort = 0.4
+        self.Kp = 0.5
+
+    def track_until_cross(self):
+        while not self.sensor.is_at_cross():
+            error = self.sensor.get_error()
+            correction = error * self.Kp
+            self.drivetrain.arcade(self.base_effort, -correction)
+        self.drivetrain.stop()
+
+    def turn_right(self):
+        self.drivetrain.arcade(self.base_effort, 0)
+        time.sleep(0.3)
+        self.drivetrain.arcade(0, 0.3)
+        time.sleep(0.3)
+        while self.sensor.is_off_line():
+            pass
+        self.drivetrain.stop()
+
+    def turn_left(self):
+        self.drivetrain.arcade(self.base_effort, 0)
+        time.sleep(0.3)
+        self.drivetrain.arcade(0, -0.3)
+        time.sleep(0.3)
+        while self.sensor.is_off_line():
+            pass
+        self.drivetrain.stop()
 
 
 # ===== Manhattan Class (complete — from Lesson 5) =====
@@ -19,12 +81,9 @@ from XRPLib.differential_drive import DifferentialDrive
 class Manhattan:
 
     def __init__(self, start):
-        """Create a Manhattan navigator starting at the given position."""
         self.position = start
 
     def compute_path(self, destination):
-        """Compute a Manhattan path from current position to destination.
-        Returns a list of (row, col) tuples."""
         path = [self.position]
 
         current_row = self.position[0]
@@ -54,6 +113,10 @@ class Manhattan:
 
 
 # ===== Navigator Class (YOU COMPLETE THIS) =====
+# Headings: 0 = North, 1 = East, 2 = South, 3 = West
+
+HEADING_NAMES = ["N", "E", "S", "W"]
+
 
 class Navigator:
 
@@ -61,62 +124,56 @@ class Navigator:
         """Create a Navigator at the given start position and heading.
 
         start:   a (row, col) tuple
-        heading: "N", "S", "E", or "W"
+        heading: 0, 1, 2, or 3 (N, E, S, W)
 
         Attributes to set:
           - self.position = the starting position
-          - self.heading  = the starting heading
-          - self.drivetrain = DifferentialDrive.get_default_differential_drive()
+          - self.heading  = the starting heading number
+          - self.line_track = LineTrack()
         """
         # TODO: Set self.position to start
         # TODO: Set self.heading to heading
-        # TODO: Set self.drivetrain using DifferentialDrive
+        # TODO: Set self.line_track to a new LineTrack object
         pass
 
-    def get_needed_direction(self, next_pos):
-        """Determine direction (N/S/E/W) to move from current position to next_pos.
+    def get_needed_heading(self, next_pos):
+        """Determine heading number to move from current position to next_pos.
 
         next_pos: a (row, col) tuple one step away from self.position
 
-        Returns: "N", "S", "E", or "W"
+        Returns: 0, 1, 2, or 3
 
         Logic:
           - row_diff = next_pos[0] - self.position[0]
           - col_diff = next_pos[1] - self.position[1]
-          - row_diff == 1  --> "S"
-          - row_diff == -1 --> "N"
-          - col_diff == 1  --> "E"
-          - col_diff == -1 --> "W"
+          - row_diff == -1 --> 0 (North)
+          - col_diff == 1  --> 1 (East)
+          - row_diff == 1  --> 2 (South)
+          - col_diff == -1 --> 3 (West)
         """
         # TODO: Calculate row_diff and col_diff
-        # TODO: Return the correct direction based on the diff values
+        # TODO: Return the correct heading number based on the diff values
         pass
 
-    def turn_to(self, direction):
-        """Turn the robot to face the given direction.
+    def turn_to(self, needed_heading):
+        """Turn the robot to face the needed heading.
 
-        direction: "N", "S", "E", or "W"
+        needed_heading: 0, 1, 2, or 3
 
         Logic:
-          - If already facing the right direction, do nothing
-          - If direction is a right turn from current heading, turn 90 degrees
-          - If direction is a left turn from current heading, turn -90 degrees
-          - Otherwise (opposite direction), turn 180 degrees
-          - Always update self.heading after turning
+          - Calculate: turns = (needed_heading - self.heading) % 4
+          - Turn right that many times using self.line_track.turn_right()
+          - Update self.heading = needed_heading
 
-        Hints:
-          right_turns = {"N": "E", "E": "S", "S": "W", "W": "N"}
-          left_turns  = {"N": "W", "W": "S", "S": "E", "E": "N"}
-          self.drivetrain.turn(90)   # right turn
-          self.drivetrain.turn(-90)  # left turn
-          self.drivetrain.turn(180)  # U-turn
+        Examples:
+          - 0 turns: already facing the right way (no turn)
+          - 1 turn:  one right turn
+          - 2 turns: two right turns (180 degrees)
+          - 3 turns: three right turns (same as one left turn)
         """
-        # TODO: Define right_turns and left_turns dictionaries
-        # TODO: Check if heading == direction (no turn needed)
-        # TODO: Check if right_turns[self.heading] == direction (turn right)
-        # TODO: Check if left_turns[self.heading] == direction (turn left)
-        # TODO: Otherwise turn 180
-        # TODO: Update self.heading = direction after any turn
+        # TODO: Calculate the number of right turns needed
+        # TODO: Use a for loop to call self.line_track.turn_right() that many times
+        # TODO: Update self.heading to needed_heading
         pass
 
     def drive_path(self, path):
@@ -125,16 +182,18 @@ class Navigator:
         path: a list of (row, col) tuples from Manhattan.compute_path()
 
         Logic:
-          - Loop from index 1 to the end of the path (skip index 0, we are already there)
+          - Loop from index 1 to the end of the path (skip index 0, we are there)
           - For each step:
             1. Get the next position from the path
-            2. Determine the needed direction using get_needed_direction()
-            3. Turn to face that direction using turn_to()
-            4. Drive forward one cell using self.drivetrain.straight(20)
-            5. Update self.position to the new position
+            2. Determine the needed heading using get_needed_heading()
+            3. Calculate how many turns are needed
+            4. If 0 turns needed, clear the intersection: straight(8)
+            5. Turn to face the right direction using turn_to()
+            6. Follow the line to the next intersection: track_until_cross()
+            7. Update self.position to the new position
         """
         # TODO: Write the for loop
-        # TODO: For each step, get direction, turn, drive, update position
+        # TODO: For each step, get heading, clear if straight, turn, track, update
         pass
 
 
@@ -148,9 +207,9 @@ print()
 
 # Step 2: Create Navigator and test
 # TODO: Uncomment these lines after completing the Navigator class
-# navigator = Navigator((0, 0), "N")
+# navigator = Navigator((0, 0), 0)
 # print("Navigator position:", navigator.position)
-# print("Navigator heading:", navigator.heading)
+# print("Navigator heading:", HEADING_NAMES[navigator.heading])
 # print()
 
 # Step 3: Test the full integration
@@ -158,4 +217,4 @@ print()
 # print("--- Driving path ---")
 # navigator.drive_path(path)
 # print("Final position:", navigator.position)
-# print("Final heading:", navigator.heading)
+# print("Final heading:", HEADING_NAMES[navigator.heading])

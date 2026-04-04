@@ -5,17 +5,20 @@
 
 ---
 
-## Part 1: Direction from Coordinates
+## Part 1: Heading from Coordinates
 
-Given two consecutive coordinates, determine the direction the robot must travel (N, S, E, or W).
+Given two consecutive coordinates, determine the **heading number** the robot needs. We use numbers for headings:
 
-**Remember:**
-- Row increases by 1 --> South (moving down)
-- Row decreases by 1 --> North (moving up)
-- Col increases by 1 --> East (moving right)
-- Col decreases by 1 --> West (moving left)
+| Heading Number | Direction | row_diff | col_diff |
+|---|---|---|---|
+| 0 | North (up) | -1 | 0 |
+| 1 | East (right) | 0 | +1 |
+| 2 | South (down) | +1 | 0 |
+| 3 | West (left) | 0 | -1 |
 
-| Current Position | Next Position | row_diff | col_diff | Direction |
+**`HEADING_NAMES = ["N", "E", "S", "W"]`** — index 0 is North, 1 is East, etc.
+
+| Current Position | Next Position | row_diff | col_diff | Heading (number and name) |
 |---|---|---|---|---|
 | (0, 0) | (1, 0) | 1 - 0 = _____ | 0 - 0 = _____ | __________ |
 | (2, 3) | (1, 3) | 1 - 2 = _____ | 3 - 3 = _____ | __________ |
@@ -28,64 +31,64 @@ Given two consecutive coordinates, determine the direction the robot must travel
 
 ---
 
-## Part 2: The Turn Table
+## Part 2: The Right Turns Table
 
-Fill in the complete turn table. For each combination of current heading and needed direction, write the turn: **None**, **Right 90**, **Left 90**, or **180**.
+Using only right turns, how many right turns does it take to go from the current heading to the needed heading? Fill in each cell with **0**, **1**, **2**, or **3**.
 
-**Hints:**
-- Right turns go clockwise: N --> E --> S --> W --> N
-- Left turns go counterclockwise: N --> W --> S --> E --> N
+**The formula:** `turns = (needed - current) % 4`
 
-| Current Heading | Need N | Need S | Need E | Need W |
+| Current \ Needed | 0 (N) | 1 (E) | 2 (S) | 3 (W) |
 |---|---|---|---|---|
-| N | __________ | __________ | __________ | __________ |
-| S | __________ | __________ | __________ | __________ |
-| E | __________ | __________ | __________ | __________ |
-| W | __________ | __________ | __________ | __________ |
+| **0 (N)** | _____ | _____ | _____ | _____ |
+| **1 (E)** | _____ | _____ | _____ | _____ |
+| **2 (S)** | _____ | _____ | _____ | _____ |
+| **3 (W)** | _____ | _____ | _____ | _____ |
 
-**How many cells say "None"?** __________  **Why?** ____________________________
+**How many cells have 0 right turns?** __________  **Why?** ____________________________
 
-**How many cells say "180"?** __________  **What pattern do you notice about where they appear?**
+**What does 2 right turns mean physically?** ____________________________
 
-____________________________________________________________________
+**Do you notice a pattern in the table?** ____________________________
 
 ---
 
-## Part 3: Determine the Turn
+## Part 3: Determine the Number of Right Turns
 
-For each scenario, use the turn table from Part 2 to determine what turn the robot must make.
+For each scenario, use the formula `turns = (needed - current) % 4` to calculate the number of right turns.
 
-| Scenario | Current Heading | Needed Direction | Turn |
-|---|---|---|---|
-| 1 | N | E | __________ |
-| 2 | E | E | __________ |
-| 3 | S | N | __________ |
-| 4 | W | S | __________ |
-| 5 | E | N | __________ |
-| 6 | N | W | __________ |
-| 7 | S | W | __________ |
-| 8 | W | E | __________ |
+| Scenario | Current Heading | Needed Heading | (needed - current) | % 4 | Right Turns |
+|---|---|---|---|---|---|
+| 1 | 0 (N) | 1 (E) | 1 - 0 = _____ | _____ % 4 = _____ | _____ |
+| 2 | 1 (E) | 1 (E) | 1 - 1 = _____ | _____ % 4 = _____ | _____ |
+| 3 | 2 (S) | 0 (N) | 0 - 2 = _____ | _____ % 4 = _____ | _____ |
+| 4 | 3 (W) | 2 (S) | 2 - 3 = _____ | _____ % 4 = _____ | _____ |
+| 5 | 1 (E) | 0 (N) | 0 - 1 = _____ | _____ % 4 = _____ | _____ |
+| 6 | 0 (N) | 3 (W) | 3 - 0 = _____ | _____ % 4 = _____ | _____ |
+| 7 | 2 (S) | 3 (W) | 3 - 2 = _____ | _____ % 4 = _____ | _____ |
+| 8 | 3 (W) | 1 (E) | 1 - 3 = _____ | _____ % 4 = _____ | _____ |
+
+**Why does the `% 4` make negative numbers work correctly?** ____________________________
 
 ---
 
 ## Part 4: Trace a Path with Heading Updates
 
 **Path:** [(0, 0), (1, 0), (2, 0), (2, 1), (2, 2), (2, 3)]
-**Starting heading:** North
+**Starting heading:** 0 (N)
 
-For each step, determine the needed direction, the turn, and the new heading after turning.
+For each step, determine the needed heading, the number of right turns, and the new heading.
 
-| Step | From | To | Needed Direction | Current Heading | Turn | New Heading |
+| Step | From | To | Needed Heading | Current Heading | Right Turns | New Heading |
 |---|---|---|---|---|---|---|
-| 1 | (0, 0) | (1, 0) | __________ | N | __________ | __________ |
+| 1 | (0, 0) | (1, 0) | __________ | 0 (N) | __________ | __________ |
 | 2 | (1, 0) | (2, 0) | __________ | __________ | __________ | __________ |
 | 3 | (2, 0) | (2, 1) | __________ | __________ | __________ | __________ |
 | 4 | (2, 1) | (2, 2) | __________ | __________ | __________ | __________ |
 | 5 | (2, 2) | (2, 3) | __________ | __________ | __________ | __________ |
 
-**How many turns were needed?** __________
+**How many steps required turning?** __________
 
-**How many times was no turn needed?** __________
+**How many steps required zero turns?** __________
 
 **At which step did the robot change from row movement to column movement?** Step __________
 
@@ -94,11 +97,11 @@ For each step, determine the needed direction, the turn, and the new heading aft
 ## Part 5: Trace a Second Path
 
 **Path:** [(2, 3), (1, 3), (0, 3), (0, 2), (0, 1), (0, 0)]
-**Starting heading:** South
+**Starting heading:** 2 (S)
 
-| Step | From | To | Needed Direction | Current Heading | Turn | New Heading |
+| Step | From | To | Needed Heading | Current Heading | Right Turns | New Heading |
 |---|---|---|---|---|---|---|
-| 1 | (2, 3) | (1, 3) | __________ | S | __________ | __________ |
+| 1 | (2, 3) | (1, 3) | __________ | 2 (S) | __________ | __________ |
 | 2 | (1, 3) | (0, 3) | __________ | __________ | __________ | __________ |
 | 3 | (0, 3) | (0, 2) | __________ | __________ | __________ | __________ |
 | 4 | (0, 2) | (0, 1) | __________ | __________ | __________ | __________ |
@@ -111,18 +114,18 @@ For each step, determine the needed direction, the turn, and the new heading aft
 ## Part 6: Trace a Third Path
 
 **Path:** [(1, 1), (1, 2), (1, 3), (2, 3), (3, 3)]
-**Starting heading:** North
+**Starting heading:** 0 (N)
 
-| Step | From | To | Needed Direction | Current Heading | Turn | New Heading |
+| Step | From | To | Needed Heading | Current Heading | Right Turns | New Heading |
 |---|---|---|---|---|---|---|
-| 1 | (1, 1) | (1, 2) | __________ | N | __________ | __________ |
+| 1 | (1, 1) | (1, 2) | __________ | 0 (N) | __________ | __________ |
 | 2 | (1, 2) | (1, 3) | __________ | __________ | __________ | __________ |
 | 3 | (1, 3) | (2, 3) | __________ | __________ | __________ | __________ |
 | 4 | (2, 3) | (3, 3) | __________ | __________ | __________ | __________ |
 
 **What is the robot's final heading?** __________
 
-**Does the first step require a turn? Why?**
+**Does the first step require turning? Why?**
 
 ____________________________________________________________________
 
@@ -130,21 +133,9 @@ ____________________________________________________________________
 
 ## Part 7: Robot Orientation Diagrams
 
-For each scenario, draw an arrow inside the box showing which way the robot is facing. Then draw a curved arrow showing the turn it needs to make, and draw the final facing direction.
+For each scenario, draw an arrow inside the box showing which way the robot is facing. Then draw a curved arrow showing the turn(s) it needs to make, and draw the final facing direction.
 
-**Scenario A:** Facing North, need to go East
-
-```
-  Before turn:        After turn:
-  +-------+           +-------+
-  |       |           |       |
-  |  [?]  |           |  [?]  |
-  |       |           |       |
-  +-------+           +-------+
-  Turn: __________
-```
-
-**Scenario B:** Facing East, need to go South
+**Scenario A:** Facing 0 (N), need heading 1 (E)
 
 ```
   Before turn:        After turn:
@@ -153,22 +144,10 @@ For each scenario, draw an arrow inside the box showing which way the robot is f
   |  [?]  |           |  [?]  |
   |       |           |       |
   +-------+           +-------+
-  Turn: __________
+  Right turns needed: __________
 ```
 
-**Scenario C:** Facing West, need to go East
-
-```
-  Before turn:        After turn:
-  +-------+           +-------+
-  |       |           |       |
-  |  [?]  |           |  [?]  |
-  |       |           |       |
-  +-------+           +-------+
-  Turn: __________
-```
-
-**Scenario D:** Facing South, need to go South
+**Scenario B:** Facing 1 (E), need heading 2 (S)
 
 ```
   Before turn:        After turn:
@@ -177,41 +156,70 @@ For each scenario, draw an arrow inside the box showing which way the robot is f
   |  [?]  |           |  [?]  |
   |       |           |       |
   +-------+           +-------+
-  Turn: __________
+  Right turns needed: __________
+```
+
+**Scenario C:** Facing 3 (W), need heading 1 (E)
+
+```
+  Before turn:        After turn:
+  +-------+           +-------+
+  |       |           |       |
+  |  [?]  |           |  [?]  |
+  |       |           |       |
+  +-------+           +-------+
+  Right turns needed: __________
+```
+
+**Scenario D:** Facing 2 (S), need heading 2 (S)
+
+```
+  Before turn:        After turn:
+  +-------+           +-------+
+  |       |           |       |
+  |  [?]  |           |  [?]  |
+  |       |           |       |
+  +-------+           +-------+
+  Right turns needed: __________
 ```
 
 ---
 
-## Part 8: Turn Logic in Code
+## Part 8: Heading and Turning Logic in Code
 
-Fill in the blanks to complete the turn logic:
+Fill in the blanks to complete the heading and turning functions:
 
 ```python
-right_turns = {"N": "___", "E": "___", "S": "___", "W": "___"}
-left_turns  = {"N": "___", "W": "___", "S": "___", "E": "___"}
+HEADING_NAMES = ["N", "E", "S", "W"]
 
-def get_turn(current_heading, needed_direction):
-    if current_heading == needed_direction:
-        return "________"
-    elif right_turns[__________] == needed_direction:
-        return "________"
-    elif left_turns[__________] == needed_direction:
-        return "________"
-    else:
-        return "________"
+def get_needed_heading(current_pos, next_pos):
+    row_diff = next_pos[0] - current_pos[0]
+    col_diff = next_pos[1] - current_pos[1]
+
+    if row_diff == -1:
+        return _____      # North
+    elif col_diff == _____:
+        return _____      # East
+    elif row_diff == _____:
+        return _____      # South
+    elif col_diff == _____:
+        return _____      # West
+
+def count_right_turns(current, needed):
+    return (__________ - __________) % _____
 ```
 
-**Test your understanding -- what does `get_turn("E", "N")` return?** __________
+**Test your understanding -- what does `count_right_turns(1, 0)` return?** __________
 
-**What does `get_turn("W", "W")` return?** __________
+**What does `count_right_turns(3, 3)` return?** __________
 
-**What does `get_turn("N", "S")` return?** __________
+**What does `count_right_turns(0, 2)` return?** __________
 
 ---
 
 ## Reflection
 
-**The Manhattan algorithm tells the robot WHERE to go, but the turning logic tells it HOW to get there. Why do you think we separated these two problems instead of solving them together?**
+**The Manhattan algorithm tells the robot WHERE to go, but the turning logic tells it HOW to get there. Why is using numbers and a formula better than using strings and dictionaries?**
 
 _________________________________________________________________
 

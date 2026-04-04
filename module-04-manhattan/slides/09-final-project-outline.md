@@ -25,7 +25,7 @@
 - Tuples for coordinates
 - Lists for paths
 - Manhattan class to compute paths
-- Navigator class to drive paths
+- Navigator class to drive paths using LineTrack
 
 **Today:** Put it ALL together. Your robot will navigate to multiple destinations on the grid — automatically!
 
@@ -39,7 +39,7 @@
 manhattan = Manhattan((0, 0))
 
 # 2. Navigator class — drives the path
-navigator = Navigator((0, 0), "N")
+navigator = Navigator((0, 0), 0)  # heading North
 
 # 3. Main program — orchestrates everything
 destinations = [(2, 3), (0, 1), (3, 3), (1, 0)]
@@ -57,6 +57,9 @@ for dest in destinations:
 ## Slide 4: Complete Main Program
 ```python
 from XRPLib.board import Board
+from line_track import LineTrack
+
+HEADING_NAMES = ["N", "E", "S", "W"]
 
 # Import your classes (or define them above)
 
@@ -65,7 +68,7 @@ board = Board.get_default_board()
 # Setup
 start = (0, 0)
 manhattan = Manhattan(start)
-navigator = Navigator(start, "N")
+navigator = Navigator(start, 0)  # heading North
 
 # Destinations to visit
 destinations = [(2, 3), (0, 1), (3, 3), (1, 0)]
@@ -87,6 +90,7 @@ for i in range(len(destinations)):
     # Update Manhattan's position
     manhattan.position = navigator.position
     print("  Arrived at", dest)
+    print("  Heading:", HEADING_NAMES[navigator.heading])
 
 print("All destinations reached!")
 ```
@@ -143,16 +147,17 @@ for dest in [(2,3), (0,1), (3,3), (1,0)]:
 - Check: Is turn_to() updating self.heading?
 - Fix: Print heading before and after each turn
 
-**Issue 2: Robot overshoots intersections**
-- Check: Is straight() distance correct for your grid?
-- Fix: Measure actual distance between intersections, adjust parameter
+**Issue 2: Robot drifts off the line**
+- Check: Is the robot starting centered on a grid line?
+- Fix: track_until_cross() follows the line, so starting position matters
+- Fix: Make sure straight(8) clears the intersection fully
 
 **Issue 3: Manhattan position not updating between legs**
 - Check: `manhattan.position = navigator.position` after each leg
 - Without this, all paths start from (0, 0)!
 
 **Issue 4: Path correct on screen, wrong on robot**
-- This is usually a turning or distance issue, not an algorithm issue
+- This is usually a turning or line-following issue, not an algorithm issue
 - Test Manhattan class output first, then debug Navigator separately
 
 ---

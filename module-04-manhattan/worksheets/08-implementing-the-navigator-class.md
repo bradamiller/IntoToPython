@@ -31,23 +31,25 @@ ____________________________________________________________________
 
 ____________________________________________________________________
 
-**4. What object does the Navigator use to physically move the robot? How does it get that object?**
+**4. What object does the Navigator use to physically move the robot? Where does that object come from?**
 
 ____________________________________________________________________
 
 ---
 
-## Part B: `get_needed_direction()` Exercises
+## Part B: `get_needed_heading()` Exercises
 
-Given the Navigator's current position and the next position, determine the direction (N, S, E, or W).
+Given the Navigator's current position and the next position, determine the needed heading number.
+
+**Heading numbers:** 0 = N, 1 = E, 2 = S, 3 = W
 
 **Remember:**
-- Row increases --> South
-- Row decreases --> North
-- Col increases --> East
-- Col decreases --> West
+- Row increases --> South (heading 2)
+- Row decreases --> North (heading 0)
+- Col increases --> East (heading 1)
+- Col decreases --> West (heading 3)
 
-| Navigator Position | Next Position | row_diff | col_diff | Direction |
+| Navigator Position | Next Position | row_diff | col_diff | Heading |
 |---|---|---|---|---|
 | (0, 0) | (1, 0) | 1 - 0 = ____ | 0 - 0 = ____ | __________ |
 | (2, 1) | (1, 1) | 1 - 2 = ____ | 1 - 1 = ____ | __________ |
@@ -62,30 +64,24 @@ Given the Navigator's current position and the next position, determine the dire
 
 ## Part C: `turn_to()` Exercises
 
-For each scenario, determine what happens when `turn_to()` is called.
+For each scenario, compute the number of right turns using the formula: `turns = (needed - current) % 4`
 
-**Turn rules:**
-- Same direction --> no turn (0 degrees)
-- Right turn (clockwise) --> `drivetrain.turn(90)`
-- Left turn (counterclockwise) --> `drivetrain.turn(-90)`
-- Opposite direction --> `drivetrain.turn(180)`
-
-| Current Heading | Needed Direction | Turn Type | Degrees | New Heading |
+| Current Heading | Needed Heading | Formula | Right Turns | New Heading |
 |---|---|---|---|---|
-| N | E | Right | 90 | E |
-| N | S | __________ | __________ | __________ |
-| E | E | __________ | __________ | __________ |
-| E | N | __________ | __________ | __________ |
-| S | W | __________ | __________ | __________ |
-| S | N | __________ | __________ | __________ |
-| W | S | __________ | __________ | __________ |
-| W | E | __________ | __________ | __________ |
-| N | W | __________ | __________ | __________ |
-| E | W | __________ | __________ | __________ |
+| 0 (N) | 1 (E) | (1 - 0) % 4 = 1 | 1 | 1 (E) |
+| 0 (N) | 2 (S) | (2 - 0) % 4 = ____ | __________ | __________ |
+| 1 (E) | 1 (E) | (1 - 1) % 4 = ____ | __________ | __________ |
+| 1 (E) | 0 (N) | (0 - 1) % 4 = ____ | __________ | __________ |
+| 2 (S) | 3 (W) | (3 - 2) % 4 = ____ | __________ | __________ |
+| 2 (S) | 0 (N) | (0 - 2) % 4 = ____ | __________ | __________ |
+| 3 (W) | 2 (S) | (2 - 3) % 4 = ____ | __________ | __________ |
+| 3 (W) | 1 (E) | (1 - 3) % 4 = ____ | __________ | __________ |
+| 0 (N) | 3 (W) | (3 - 0) % 4 = ____ | __________ | __________ |
+| 1 (E) | 3 (W) | (3 - 1) % 4 = ____ | __________ | __________ |
 
-**How many of the 10 scenarios above required NO turn?** __________
+**How many of the 10 scenarios above required 0 right turns?** __________
 
-**How many required a 180-degree turn?** __________
+**How many required 2 right turns (a 180)?** __________
 
 ---
 
@@ -95,14 +91,14 @@ Trace through the entire `drive_path()` method for the given path. Fill in every
 
 **Path:** `[(0, 0), (1, 0), (2, 0), (2, 1), (2, 2)]`
 **Starting position:** (0, 0)
-**Starting heading:** N
+**Starting heading:** 0 (N)
 
-| Step (i) | next_pos | Needed Direction | Current Heading | Turn | Degrees | New Heading | New Position |
-|---|---|---|---|---|---|---|---|
-| 1 | (1, 0) | __________ | N | __________ | __________ | __________ | (1, 0) |
-| 2 | (2, 0) | __________ | __________ | __________ | __________ | __________ | (2, 0) |
-| 3 | (2, 1) | __________ | __________ | __________ | __________ | __________ | (2, 1) |
-| 4 | (2, 2) | __________ | __________ | __________ | __________ | __________ | (2, 2) |
+| Step (i) | next_pos | Needed Heading | Current Heading | Right Turns | New Heading | New Position |
+|---|---|---|---|---|---|---|
+| 1 | (1, 0) | __________ | 0 (N) | __________ | __________ | (1, 0) |
+| 2 | (2, 0) | __________ | __________ | __________ | __________ | (2, 0) |
+| 3 | (2, 1) | __________ | __________ | __________ | __________ | (2, 1) |
+| 4 | (2, 2) | __________ | __________ | __________ | __________ | (2, 2) |
 
 **Final position:** __________  **Final heading:** __________
 
@@ -112,15 +108,15 @@ Trace through the entire `drive_path()` method for the given path. Fill in every
 
 **Path:** `[(3, 3), (3, 2), (3, 1), (2, 1), (1, 1), (0, 1)]`
 **Starting position:** (3, 3)
-**Starting heading:** E
+**Starting heading:** 1 (E)
 
-| Step (i) | next_pos | Needed Direction | Current Heading | Turn | Degrees | New Heading | New Position |
-|---|---|---|---|---|---|---|---|
-| 1 | (3, 2) | __________ | E | __________ | __________ | __________ | (3, 2) |
-| 2 | (3, 1) | __________ | __________ | __________ | __________ | __________ | (3, 1) |
-| 3 | (2, 1) | __________ | __________ | __________ | __________ | __________ | (2, 1) |
-| 4 | (1, 1) | __________ | __________ | __________ | __________ | __________ | (1, 1) |
-| 5 | (0, 1) | __________ | __________ | __________ | __________ | __________ | (0, 1) |
+| Step (i) | next_pos | Needed Heading | Current Heading | Right Turns | New Heading | New Position |
+|---|---|---|---|---|---|---|
+| 1 | (3, 2) | __________ | 1 (E) | __________ | __________ | (3, 2) |
+| 2 | (3, 1) | __________ | __________ | __________ | __________ | (3, 1) |
+| 3 | (2, 1) | __________ | __________ | __________ | __________ | (2, 1) |
+| 4 | (1, 1) | __________ | __________ | __________ | __________ | (1, 1) |
+| 5 | (0, 1) | __________ | __________ | __________ | __________ | (0, 1) |
 
 **Final position:** __________  **Final heading:** __________
 
@@ -131,51 +127,50 @@ Trace through the entire `drive_path()` method for the given path. Fill in every
 Fill in the blanks to complete the Navigator class.
 
 ```python
-from XRPLib.differential_drive import DifferentialDrive
+from line_track import LineTrack
+
+HEADING_NAMES = ["N", "E", "S", "W"]
 
 class Navigator:
 
     def __init__(self, start, heading):
         self.position = __________
         self.heading = __________
-        self.drivetrain = DifferentialDrive.get_default_differential_drive()
+        self.line_track = __________
 
-    def get_needed_direction(self, next_pos):
+    def get_needed_heading(self, next_pos):
         row_diff = next_pos[____] - self.position[____]
         col_diff = next_pos[____] - self.position[____]
-        if row_diff == 1:
-            return "____"
-        elif row_diff == -1:
-            return "____"
+        if row_diff == -1:
+            return ____
         elif col_diff == 1:
-            return "____"
+            return ____
+        elif row_diff == 1:
+            return ____
         elif col_diff == -1:
-            return "____"
+            return ____
 
-    def turn_to(self, direction):
-        right_turns = {"N": "E", "E": "S", "S": "____", "W": "____"}
-        left_turns = {"N": "W", "W": "S", "S": "____", "E": "____"}
-
-        if self.heading == direction:
-            pass  # No turn needed
-        elif right_turns[__________] == direction:
-            self.drivetrain.turn(____)
-            self.heading = __________
-        elif left_turns[__________] == direction:
-            self.drivetrain.turn(____)
-            self.heading = __________
-        else:
-            self.drivetrain.turn(____)
-            self.heading = __________
+    def turn_to(self, needed_heading):
+        turns = (__________ - __________) % ____
+        for i in range(________):
+            self.line_track.______________()
+        self.heading = __________
 
     def drive_path(self, path):
         for i in range(____, len(path)):
             next_pos = path[____]
-            direction = self.get_needed_direction(____________)
+            needed = self.get_needed_heading(____________)
+            turns = (needed - self.heading) % 4
+            if turns == ____:
+                self.line_track.drivetrain.straight(____)
             self.turn_to(____________)
-            self.drivetrain.straight(20)
+            self.line_track.track_until_cross()
             self.position = ____________
 ```
+
+**Why does `drive_path()` call `self.line_track.drivetrain.straight(8)` when `turns == 0`?**
+
+____________________________________________________________________
 
 **Why does the loop start at `range(1, ...)` instead of `range(0, ...)`?**
 
@@ -185,7 +180,7 @@ ____________________________________________________________________
 
 ## Reflection
 
-**The Manhattan class plans the path and the Navigator class drives the path. Why is it better to have two separate classes instead of one class that does both?**
+**The Navigator class reuses your LineTrack class from Module 2. Why is this a good design choice?**
 
 ____________________________________________________________________
 
@@ -202,110 +197,107 @@ ____________________________________________________________________
 ## Answer Key
 
 ### Part A
-1. `position` (tuple) -- current (row, col) on the grid; `heading` (string) -- direction robot faces (N/S/E/W); `drivetrain` (DifferentialDrive) -- controls the robot's motors
-2. `get_needed_direction(next_pos)` -- returns N/S/E/W; `turn_to(direction)` -- turns robot to face direction; `drive_path(path)` -- drives through entire path
+1. `position` (tuple) -- current (row, col) on the grid; `heading` (int) -- direction robot faces (0=N, 1=E, 2=S, 3=W); `line_track` (LineTrack) -- controls robot movement using line tracking from Module 2
+2. `get_needed_heading(next_pos)` -- returns heading number 0-3; `turn_to(needed_heading)` -- turns robot using right turns; `drive_path(path)` -- drives through entire path
 3. The Navigator tracks its own position because it updates after each drive. The Manhattan class tracks position for path planning. Each class manages its own state.
-4. It uses a `DifferentialDrive` object, obtained by calling `DifferentialDrive.get_default_differential_drive()` in `__init__`.
+4. It uses a `LineTrack` object, created by calling `LineTrack()` in `__init__`. The LineTrack class (from Module 2) provides `turn_right()` and `track_until_cross()` for physical movement.
 
 ### Part B
 
-| Navigator Position | Next Position | row_diff | col_diff | Direction |
+| Navigator Position | Next Position | row_diff | col_diff | Heading |
 |---|---|---|---|---|
-| (0, 0) | (1, 0) | 1 | 0 | S |
-| (2, 1) | (1, 1) | -1 | 0 | N |
-| (1, 2) | (1, 3) | 0 | 1 | E |
-| (3, 3) | (3, 2) | 0 | -1 | W |
-| (0, 1) | (1, 1) | 1 | 0 | S |
-| (2, 0) | (2, 1) | 0 | 1 | E |
-| (3, 2) | (2, 2) | -1 | 0 | N |
-| (1, 3) | (1, 2) | 0 | -1 | W |
+| (0, 0) | (1, 0) | 1 | 0 | 2 (S) |
+| (2, 1) | (1, 1) | -1 | 0 | 0 (N) |
+| (1, 2) | (1, 3) | 0 | 1 | 1 (E) |
+| (3, 3) | (3, 2) | 0 | -1 | 3 (W) |
+| (0, 1) | (1, 1) | 1 | 0 | 2 (S) |
+| (2, 0) | (2, 1) | 0 | 1 | 1 (E) |
+| (3, 2) | (2, 2) | -1 | 0 | 0 (N) |
+| (1, 3) | (1, 2) | 0 | -1 | 3 (W) |
 
 ### Part C
 
-| Current Heading | Needed Direction | Turn Type | Degrees | New Heading |
+| Current Heading | Needed Heading | Formula | Right Turns | New Heading |
 |---|---|---|---|---|
-| N | E | Right | 90 | E |
-| N | S | 180 | 180 | S |
-| E | E | None | 0 | E |
-| E | N | Left | -90 | N |
-| S | W | Right | 90 | W |
-| S | N | 180 | 180 | N |
-| W | S | Left | -90 | S |
-| W | E | 180 | 180 | E |
-| N | W | Left | -90 | W |
-| E | W | 180 | 180 | W |
+| 0 (N) | 1 (E) | (1 - 0) % 4 = 1 | 1 | 1 (E) |
+| 0 (N) | 2 (S) | (2 - 0) % 4 = 2 | 2 | 2 (S) |
+| 1 (E) | 1 (E) | (1 - 1) % 4 = 0 | 0 | 1 (E) |
+| 1 (E) | 0 (N) | (0 - 1) % 4 = 3 | 3 | 0 (N) |
+| 2 (S) | 3 (W) | (3 - 2) % 4 = 1 | 1 | 3 (W) |
+| 2 (S) | 0 (N) | (0 - 2) % 4 = 2 | 2 | 0 (N) |
+| 3 (W) | 2 (S) | (2 - 3) % 4 = 3 | 3 | 2 (S) |
+| 3 (W) | 1 (E) | (1 - 3) % 4 = 2 | 2 | 1 (E) |
+| 0 (N) | 3 (W) | (3 - 0) % 4 = 3 | 3 | 3 (W) |
+| 1 (E) | 3 (W) | (3 - 1) % 4 = 2 | 2 | 3 (W) |
 
-No turn: 1 scenario. 180-degree turn: 3 scenarios.
+0 right turns: 1 scenario. 2 right turns (180): 4 scenarios.
 
 ### Part D -- First Path
 
-| Step | next_pos | Needed Direction | Current Heading | Turn | Degrees | New Heading | New Position |
-|---|---|---|---|---|---|---|---|
-| 1 | (1, 0) | S | N | 180 | 180 | S | (1, 0) |
-| 2 | (2, 0) | S | S | None | 0 | S | (2, 0) |
-| 3 | (2, 1) | E | S | Left | -90 | E | (2, 1) |
-| 4 | (2, 2) | E | E | None | 0 | E | (2, 2) |
+| Step | next_pos | Needed Heading | Current Heading | Right Turns | New Heading | New Position |
+|---|---|---|---|---|---|---|
+| 1 | (1, 0) | 2 (S) | 0 (N) | (2-0)%4 = 2 | 2 (S) | (1, 0) |
+| 2 | (2, 0) | 2 (S) | 2 (S) | (2-2)%4 = 0 | 2 (S) | (2, 0) |
+| 3 | (2, 1) | 1 (E) | 2 (S) | (1-2)%4 = 3 | 1 (E) | (2, 1) |
+| 4 | (2, 2) | 1 (E) | 1 (E) | (1-1)%4 = 0 | 1 (E) | (2, 2) |
 
-Final position: (2, 2). Final heading: E.
+Final position: (2, 2). Final heading: 1 (E).
 
 ### Part D -- Second Path
 
-| Step | next_pos | Needed Direction | Current Heading | Turn | Degrees | New Heading | New Position |
-|---|---|---|---|---|---|---|---|
-| 1 | (3, 2) | W | E | 180 | 180 | W | (3, 2) |
-| 2 | (3, 1) | W | W | None | 0 | W | (3, 1) |
-| 3 | (2, 1) | N | W | Right | 90 | N | (2, 1) |
-| 4 | (1, 1) | N | N | None | 0 | N | (1, 1) |
-| 5 | (0, 1) | N | N | None | 0 | N | (0, 1) |
+| Step | next_pos | Needed Heading | Current Heading | Right Turns | New Heading | New Position |
+|---|---|---|---|---|---|---|
+| 1 | (3, 2) | 3 (W) | 1 (E) | (3-1)%4 = 2 | 3 (W) | (3, 2) |
+| 2 | (3, 1) | 3 (W) | 3 (W) | (3-3)%4 = 0 | 3 (W) | (3, 1) |
+| 3 | (2, 1) | 0 (N) | 3 (W) | (0-3)%4 = 1 | 0 (N) | (2, 1) |
+| 4 | (1, 1) | 0 (N) | 0 (N) | (0-0)%4 = 0 | 0 (N) | (1, 1) |
+| 5 | (0, 1) | 0 (N) | 0 (N) | (0-0)%4 = 0 | 0 (N) | (0, 1) |
 
-Final position: (0, 1). Final heading: N.
+Final position: (0, 1). Final heading: 0 (N).
 
 ### Part E
 ```python
-from XRPLib.differential_drive import DifferentialDrive
+from line_track import LineTrack
+
+HEADING_NAMES = ["N", "E", "S", "W"]
 
 class Navigator:
 
     def __init__(self, start, heading):
         self.position = start
         self.heading = heading
-        self.drivetrain = DifferentialDrive.get_default_differential_drive()
+        self.line_track = LineTrack()
 
-    def get_needed_direction(self, next_pos):
+    def get_needed_heading(self, next_pos):
         row_diff = next_pos[0] - self.position[0]
         col_diff = next_pos[1] - self.position[1]
-        if row_diff == 1:
-            return "S"
-        elif row_diff == -1:
-            return "N"
+        if row_diff == -1:
+            return 0
         elif col_diff == 1:
-            return "E"
+            return 1
+        elif row_diff == 1:
+            return 2
         elif col_diff == -1:
-            return "W"
+            return 3
 
-    def turn_to(self, direction):
-        right_turns = {"N": "E", "E": "S", "S": "W", "W": "N"}
-        left_turns = {"N": "W", "W": "S", "S": "E", "E": "N"}
-
-        if self.heading == direction:
-            pass
-        elif right_turns[self.heading] == direction:
-            self.drivetrain.turn(90)
-            self.heading = direction
-        elif left_turns[self.heading] == direction:
-            self.drivetrain.turn(-90)
-            self.heading = direction
-        else:
-            self.drivetrain.turn(180)
-            self.heading = direction
+    def turn_to(self, needed_heading):
+        turns = (needed_heading - self.heading) % 4
+        for i in range(turns):
+            self.line_track.turn_right()
+        self.heading = needed_heading
 
     def drive_path(self, path):
         for i in range(1, len(path)):
             next_pos = path[i]
-            direction = self.get_needed_direction(next_pos)
-            self.turn_to(direction)
-            self.drivetrain.straight(20)
+            needed = self.get_needed_heading(next_pos)
+            turns = (needed - self.heading) % 4
+            if turns == 0:
+                self.line_track.drivetrain.straight(8)
+            self.turn_to(needed)
+            self.line_track.track_until_cross()
             self.position = next_pos
 ```
+
+`straight(8)` is called when turns == 0 because the robot is already facing the right direction but is still sitting on the previous intersection. It needs to drive forward 8 cm to clear the intersection before `track_until_cross()` starts looking for the next crossing line.
 
 The loop starts at 1 because index 0 is the starting position -- the robot is already there and does not need to drive to it.

@@ -691,7 +691,7 @@
             <a href="#slide-2" class="nav-item" onclick="showSlide(1)">From Algorithm to Action</a>
             <a href="#slide-3" class="nav-item" onclick="showSlide(2)">Navigator Class Design</a>
             <a href="#slide-4" class="nav-item" onclick="showSlide(3)">The __init__ Method</a>
-            <a href="#slide-5" class="nav-item" onclick="showSlide(4)">get_needed_direction()</a>
+            <a href="#slide-5" class="nav-item" onclick="showSlide(4)">get_needed_heading()</a>
             <a href="#slide-6" class="nav-item" onclick="showSlide(5)">turn_to()</a>
             <a href="#slide-7" class="nav-item" onclick="showSlide(6)">drive_path()</a>
             <a href="#slide-8" class="nav-item" onclick="showSlide(7)">Putting It All Together</a>
@@ -718,7 +718,7 @@
                         <p class="bullet">Design the Navigator class with position and heading</p>
                         <p class="bullet">Implement drive_path() to turn and drive through a path</p>
                         <p class="bullet">Track and update heading as the robot moves</p>
-                        <p class="bullet">Integrate with DifferentialDrive for physical movement</p>
+                        <p class="bullet">Reuse LineTrack from Module 2 for physical movement</p>
                     </div>
                     <div class="title-section">
                         <h3>Agenda</h3>
@@ -819,16 +819,15 @@
                         <div class="sketch-box">
                             <p class="header-text" style="margin-top: 0; font-size: 24px;">Data (stored in __init__)</p>
                             <p class="bullet"><code style="font-family: 'Fira Code', monospace;">self.position</code> &mdash; current (row, col) tuple</p>
-                            <p class="bullet"><code style="font-family: 'Fira Code', monospace;">self.heading</code> &mdash; current direction ("N", "S", "E", "W")</p>
-                            <p class="bullet"><code style="font-family: 'Fira Code', monospace;">self.drivetrain</code> &mdash; the DifferentialDrive object</p>
+                            <p class="bullet"><code style="font-family: 'Fira Code', monospace;">self.heading</code> &mdash; current heading number (0=N, 1=E, 2=S, 3=W)</p>
+                            <p class="bullet"><code style="font-family: 'Fira Code', monospace;">self.line_track</code> &mdash; the LineTrack object</p>
                         </div>
                     </div>
                     <div class="col">
                         <div class="sketch-box" style="border-color: #e8a87c; background-color: rgba(232, 168, 124, 0.04);">
                             <p class="header-text" style="margin-top: 0; font-size: 24px; color: #e8a87c;">Methods</p>
-                            <p class="bullet"><code style="font-family: 'Fira Code', monospace;">get_needed_direction(next_pos)</code></p>
-                            <p class="bullet"><code style="font-family: 'Fira Code', monospace;">turn_to(direction)</code></p>
-                            <p class="bullet"><code style="font-family: 'Fira Code', monospace;">drive_one_step()</code></p>
+                            <p class="bullet"><code style="font-family: 'Fira Code', monospace;">get_needed_heading(next_pos)</code></p>
+                            <p class="bullet"><code style="font-family: 'Fira Code', monospace;">turn_to(needed_heading)</code></p>
                             <p class="bullet"><code style="font-family: 'Fira Code', monospace;">drive_path(path)</code></p>
                         </div>
                     </div>
@@ -846,12 +845,12 @@
                         <line x1="90" y1="50" x2="310" y2="50" stroke="#5b8fa8" stroke-width="1.5" stroke-dasharray="4,3"/>
                         <!-- Data section -->
                         <text x="100" y="72" font-family="Fira Code, monospace" font-size="12" fill="#2d3436">position: (row, col)</text>
-                        <text x="100" y="90" font-family="Fira Code, monospace" font-size="12" fill="#2d3436">heading: "N"/"S"/"E"/"W"</text>
-                        <text x="100" y="108" font-family="Fira Code, monospace" font-size="12" fill="#2d3436">drivetrain: DiffDrive</text>
+                        <text x="100" y="90" font-family="Fira Code, monospace" font-size="12" fill="#2d3436">heading: 0-3 (N/E/S/W)</text>
+                        <text x="100" y="108" font-family="Fira Code, monospace" font-size="12" fill="#2d3436">line_track: LineTrack</text>
                         <!-- Divider -->
                         <line x1="90" y1="118" x2="310" y2="118" stroke="#e8a87c" stroke-width="1.5" stroke-dasharray="4,3"/>
                         <!-- Methods section -->
-                        <text x="100" y="138" font-family="Fira Code, monospace" font-size="12" fill="#636e72">get_needed_direction()</text>
+                        <text x="100" y="138" font-family="Fira Code, monospace" font-size="12" fill="#636e72">get_needed_heading()</text>
                         <text x="100" y="156" font-family="Fira Code, monospace" font-size="12" fill="#636e72">turn_to()</text>
                         <text x="100" y="174" font-family="Fira Code, monospace" font-size="12" fill="#636e72">drive_path()</text>
 
@@ -874,18 +873,20 @@
                 <h1>The __init__ Method</h1>
             </div>
             <div class="content">
-                <div class="code-block">from XRPLib.differential_drive import DifferentialDrive
+                <div class="code-block">from line_track import LineTrack
+
+HEADING_NAMES = ["N", "E", "S", "W"]
 
 class Navigator:
     def __init__(self, start, heading):
         self.position = start
-        self.heading = heading
-        self.drivetrain = DifferentialDrive.get_default_differential_drive()</div>
+        self.heading = heading  <span style="color: #85c88a;"># 0=N, 1=E, 2=S, 3=W</span>
+        self.line_track = LineTrack()</div>
 
                 <p class="header-text">Usage:</p>
-                <div class="code-block">nav = Navigator((0, 0), "N")
-print("Position:", nav.position)   <span style="color: #85c88a;"># (0, 0)</span>
-print("Heading:", nav.heading)     <span style="color: #85c88a;"># N</span></div>
+                <div class="code-block">nav = Navigator((0, 0), 0)
+print("Position:", nav.position)         <span style="color: #85c88a;"># (0, 0)</span>
+print("Heading:", HEADING_NAMES[nav.heading])  <span style="color: #85c88a;"># N</span></div>
 
                 <div class="answer-box">
                     <p class="body-text" style="margin-left: 8px;"><strong>Important:</strong> The starting heading must match how you physically place the robot on the grid!</p>
@@ -893,7 +894,7 @@ print("Heading:", nav.heading)     <span style="color: #85c88a;"># N</span></div
 
                 <!-- SVG: robot on grid with compass directions -->
                 <div class="illustration">
-                    <svg width="546" height="234" viewBox="0 0 420 180">
+                    <svg width="572" height="234" viewBox="0 0 440 180">
                         <!-- Grid lines -->
                         <line x1="60" y1="50" x2="340" y2="50" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
                         <line x1="60" y1="130" x2="340" y2="130" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
@@ -911,12 +912,12 @@ print("Heading:", nav.heading)     <span style="color: #85c88a;"># N</span></div
                         <!-- Robot at (0,0) facing North — PNG version -->
                         <image href="images/xrp-top-down.png" x="82" y="30" width="35" height="35" transform="rotate(180, 99, 47)"/>
 
-                        <!-- Compass showing heading = "N" -->
+                        <!-- Compass showing heading = 0 (N) -->
                         <circle cx="370" cy="90" r="35" fill="rgba(232, 168, 124, 0.08)" stroke="#e8a87c" stroke-width="2"/>
-                        <text x="370" y="62" font-family="Caveat, cursive" font-size="14" fill="#e8a87c" text-anchor="middle" font-weight="700">N</text>
-                        <text x="370" y="132" font-family="Caveat, cursive" font-size="16" fill="#636e72" text-anchor="middle">S</text>
-                        <text x="338" y="94" font-family="Caveat, cursive" font-size="16" fill="#636e72" text-anchor="middle">W</text>
-                        <text x="402" y="94" font-family="Caveat, cursive" font-size="16" fill="#636e72" text-anchor="middle">E</text>
+                        <text x="370" y="62" font-family="Caveat, cursive" font-size="14" fill="#e8a87c" text-anchor="middle" font-weight="700">0 (N)</text>
+                        <text x="370" y="132" font-family="Caveat, cursive" font-size="14" fill="#636e72" text-anchor="middle">2 (S)</text>
+                        <text x="330" y="94" font-family="Caveat, cursive" font-size="14" fill="#636e72" text-anchor="middle">3 (W)</text>
+                        <text x="410" y="94" font-family="Caveat, cursive" font-size="14" fill="#636e72" text-anchor="middle">1 (E)</text>
                         <!-- North arrow -->
                         <line x1="370" y1="95" x2="370" y2="68" stroke="#e8a87c" stroke-width="2.5" stroke-linecap="round"/>
                         <polygon points="365,72 370,62 375,72" fill="#e8a87c"/>
@@ -933,30 +934,28 @@ print("Heading:", nav.heading)     <span style="color: #85c88a;"># N</span></div
             </div>
         </div>
 
-        <!-- ═══ SLIDE 5: get_needed_direction() ═══ -->
+        <!-- ═══ SLIDE 5: get_needed_heading() ═══ -->
         <div id="slide-5" class="slide">
             <div class="title-bar">
-                <h1>get_needed_direction()</h1>
+                <h1>get_needed_heading()</h1>
             </div>
             <div class="content">
-                <p class="header-text">Determine direction from current position to next position:</p>
+                <p class="header-text">Determine heading number from current position to next position:</p>
 
                 <div class="two-col">
                     <div class="col">
-                        <div class="code-block" style="font-size: 15px;">def get_needed_direction(self, next_pos):
-    nxt_row, nxt_col = next_pos
-    cur_row, cur_col = self.position
-    row_diff = nxt_row - cur_row
-    col_diff = nxt_col - cur_col
+                        <div class="code-block" style="font-size: 15px;">def get_needed_heading(self, next_pos):
+    row_diff = next_pos[0] - self.position[0]
+    col_diff = next_pos[1] - self.position[1]
 
-    if row_diff == 1:
-        return "S"
-    elif row_diff == -1:
-        return "N"
+    if row_diff == -1:
+        return 0    <span style="color: #85c88a;"># North</span>
     elif col_diff == 1:
-        return "E"
+        return 1    <span style="color: #85c88a;"># East</span>
+    elif row_diff == 1:
+        return 2    <span style="color: #85c88a;"># South</span>
     elif col_diff == -1:
-        return "W"</div>
+        return 3    <span style="color: #85c88a;"># West</span></div>
                     </div>
                     <div class="col">
                         <!-- Direction diagram -->
@@ -966,27 +965,27 @@ print("Heading:", nav.heading)     <span style="color: #85c88a;"># N</span></div
                                 <circle cx="110" cy="100" r="6" fill="#5b8fa8" stroke="#2d3436" stroke-width="1.5"/>
                                 <text x="110" y="100" font-family="Caveat, cursive" font-size="10" fill="white" text-anchor="middle" dy="3" font-weight="600">pos</text>
 
-                                <!-- North arrow (row -1) -->
+                                <!-- North arrow (row -1) = 0 -->
                                 <line x1="110" y1="88" x2="110" y2="35" stroke="#e8a87c" stroke-width="2.5" stroke-linecap="round"/>
                                 <polygon points="105,40 110,28 115,40" fill="#e8a87c"/>
-                                <text x="110" y="20" font-family="Caveat, cursive" font-size="16" fill="#e8a87c" text-anchor="middle" font-weight="700">"N"</text>
-                                <text x="140" y="55" font-family="Fira Code, monospace" font-size="10" fill="#636e72">row -1</text>
+                                <text x="110" y="20" font-family="Caveat, cursive" font-size="16" fill="#e8a87c" text-anchor="middle" font-weight="700">0 (N)</text>
+                                <text x="143" y="55" font-family="Fira Code, monospace" font-size="10" fill="#636e72">row -1</text>
 
-                                <!-- South arrow (row +1) -->
+                                <!-- South arrow (row +1) = 2 -->
                                 <line x1="110" y1="112" x2="110" y2="165" stroke="#e8a87c" stroke-width="2.5" stroke-linecap="round"/>
                                 <polygon points="105,160 110,172 115,160" fill="#e8a87c"/>
-                                <text x="110" y="192" font-family="Caveat, cursive" font-size="16" fill="#e8a87c" text-anchor="middle" font-weight="700">"S"</text>
-                                <text x="140" y="150" font-family="Fira Code, monospace" font-size="10" fill="#636e72">row +1</text>
+                                <text x="110" y="192" font-family="Caveat, cursive" font-size="16" fill="#e8a87c" text-anchor="middle" font-weight="700">2 (S)</text>
+                                <text x="143" y="150" font-family="Fira Code, monospace" font-size="10" fill="#636e72">row +1</text>
 
-                                <!-- East arrow (col +1) -->
+                                <!-- East arrow (col +1) = 1 -->
                                 <line x1="122" y1="100" x2="175" y2="100" stroke="#5b8fa8" stroke-width="2.5" stroke-linecap="round"/>
                                 <polygon points="170,95 182,100 170,105" fill="#5b8fa8"/>
-                                <text x="196" y="104" font-family="Caveat, cursive" font-size="16" fill="#5b8fa8" text-anchor="middle" font-weight="700">"E"</text>
+                                <text x="198" y="104" font-family="Caveat, cursive" font-size="16" fill="#5b8fa8" text-anchor="middle" font-weight="700">1 (E)</text>
 
-                                <!-- West arrow (col -1) -->
+                                <!-- West arrow (col -1) = 3 -->
                                 <line x1="98" y1="100" x2="45" y2="100" stroke="#5b8fa8" stroke-width="2.5" stroke-linecap="round"/>
                                 <polygon points="50,95 38,100 50,105" fill="#5b8fa8"/>
-                                <text x="24" y="104" font-family="Caveat, cursive" font-size="16" fill="#5b8fa8" text-anchor="middle" font-weight="700">"W"</text>
+                                <text x="22" y="104" font-family="Caveat, cursive" font-size="16" fill="#5b8fa8" text-anchor="middle" font-weight="700">3 (W)</text>
 
                                 <text x="62" y="82" font-family="Fira Code, monospace" font-size="10" fill="#636e72">col -1</text>
                                 <text x="158" y="82" font-family="Fira Code, monospace" font-size="10" fill="#636e72">col +1</text>
@@ -998,9 +997,9 @@ print("Heading:", nav.heading)     <span style="color: #85c88a;"># N</span></div
                 <div class="spacer"></div>
 
                 <p class="header-text">Example:</p>
-                <div class="code-block compact" style="max-width: 520px; font-size: 15px; margin: 8px 0;">nav = Navigator((0, 0), "N")
-direction = nav.get_needed_direction((1, 0))
-print(direction)   <span style="color: #85c88a;"># "S" — need to go south (row increases)</span></div>
+                <div class="code-block compact" style="max-width: 580px; font-size: 15px; margin: 8px 0;">nav = Navigator((0, 0), 0)
+direction = nav.get_needed_heading((1, 0))
+print(direction)   <span style="color: #85c88a;"># 2 — South (row increases)</span></div>
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
@@ -1015,63 +1014,57 @@ print(direction)   <span style="color: #85c88a;"># "S" — need to go south (row
                 <h1>turn_to()</h1>
             </div>
             <div class="content">
-                <p class="header-text">Turn the robot to face the desired direction:</p>
+                <p class="header-text">Turn the robot to face the needed heading:</p>
 
                 <div class="two-col">
                     <div class="col">
-                        <div class="code-block" style="font-size: 14px; padding: 14px 18px;">def turn_to(self, direction):
-    if self.heading == direction:
-        return  <span style="color: #85c88a;"># Already facing right way</span>
+                        <div class="code-block" style="font-size: 15px; padding: 14px 18px;">def turn_to(self, needed_heading):
+    turns = (needed_heading - self.heading) % 4
+    for i in range(turns):
+        self.line_track.turn_right()
+    self.heading = needed_heading</div>
 
-    right_turns = {
-        "N": "E", "E": "S",
-        "S": "W", "W": "N"
-    }
-    left_turns = {
-        "N": "W", "W": "S",
-        "S": "E", "E": "N"
-    }
+                        <div class="answer-box">
+                            <p class="body-text" style="margin-left: 8px;"><strong>Key idea:</strong> <code style="font-family: 'Fira Code', monospace;">turn_right()</code> is the sensor-based turn from Module 2 that finds the outbound line. No dictionaries needed &mdash; just count right turns!</p>
+                        </div>
 
-    if right_turns[self.heading] == direction:
-        self.drivetrain.turn(90)
-        self.heading = direction
-    elif left_turns[self.heading] == direction:
-        self.drivetrain.turn(-90)
-        self.heading = direction
-    else:  <span style="color: #85c88a;"># 180 degree turn</span>
-        self.drivetrain.turn(180)
-        self.heading = direction</div>
+                        <p class="header-text" style="font-size: 22px;">Examples:</p>
+                        <div class="code-block compact" style="font-size: 14px; margin: 6px 0; max-width: 420px;">heading=0 (N), needed=1 (E)
+turns = (1 - 0) % 4 = 1  <span style="color: #85c88a;"># one right turn</span>
+
+heading=0 (N), needed=3 (W)
+turns = (3 - 0) % 4 = 3  <span style="color: #85c88a;"># three right turns</span></div>
                     </div>
                     <div class="col">
-                        <!-- Turn diagram -->
+                        <!-- Turn diagram - clockwise numbered -->
                         <div class="illustration">
                             <svg width="312" height="286" viewBox="0 0 240 220">
                                 <!-- Center compass -->
                                 <circle cx="120" cy="100" r="55" fill="rgba(91, 143, 168, 0.06)" stroke="#b8c5d0" stroke-width="2"/>
 
-                                <!-- N/S/E/W labels -->
-                                <text x="120" y="38" font-family="Caveat, cursive" font-size="18" fill="#2d3436" text-anchor="middle" font-weight="700">N</text>
-                                <text x="120" y="172" font-family="Caveat, cursive" font-size="18" fill="#2d3436" text-anchor="middle" font-weight="700">S</text>
-                                <text x="183" y="106" font-family="Caveat, cursive" font-size="18" fill="#2d3436" text-anchor="middle" font-weight="700">E</text>
-                                <text x="57" y="106" font-family="Caveat, cursive" font-size="18" fill="#2d3436" text-anchor="middle" font-weight="700">W</text>
+                                <!-- 0=N, 1=E, 2=S, 3=W labels -->
+                                <text x="120" y="38" font-family="Caveat, cursive" font-size="17" fill="#2d3436" text-anchor="middle" font-weight="700">0 (N)</text>
+                                <text x="120" y="172" font-family="Caveat, cursive" font-size="17" fill="#2d3436" text-anchor="middle" font-weight="700">2 (S)</text>
+                                <text x="188" y="106" font-family="Caveat, cursive" font-size="17" fill="#2d3436" text-anchor="middle" font-weight="700">1 (E)</text>
+                                <text x="52" y="106" font-family="Caveat, cursive" font-size="17" fill="#2d3436" text-anchor="middle" font-weight="700">3 (W)</text>
 
-                                <!-- Right turn arc (N to E = +90) -->
+                                <!-- Clockwise arc from N to E (1 turn) -->
                                 <path d="M125 52 C158 52, 168 70, 170 95" fill="none" stroke="#85c88a" stroke-width="2.5" stroke-dasharray="5,3"/>
                                 <polygon points="167,90 175,98 165,98" fill="#85c88a"/>
-                                <text x="172" y="62" font-family="Caveat, cursive" font-size="13" fill="#85c88a" font-weight="600">+90</text>
+                                <text x="168" y="58" font-family="Caveat, cursive" font-size="13" fill="#85c88a" font-weight="600">1 turn</text>
 
-                                <!-- Left turn arc (N to W = -90) -->
+                                <!-- Full clockwise arc N->E->S->W (3 turns) -->
                                 <path d="M115 52 C82 52, 72 70, 70 95" fill="none" stroke="#e8a87c" stroke-width="2.5" stroke-dasharray="5,3"/>
                                 <polygon points="73,90 65,98 75,98" fill="#e8a87c"/>
-                                <text x="48" y="62" font-family="Caveat, cursive" font-size="13" fill="#e8a87c" font-weight="600">-90</text>
+                                <text x="42" y="58" font-family="Caveat, cursive" font-size="13" fill="#e8a87c" font-weight="600">3 turns</text>
 
-                                <!-- 180 arc (N to S) -->
+                                <!-- 2 turns arc (N to S) -->
                                 <path d="M130 48 C200 48, 200 155, 125 158" fill="none" stroke="#5b8fa8" stroke-width="2.5" stroke-dasharray="5,3"/>
                                 <polygon points="130,154 122,164 122,152" fill="#5b8fa8"/>
-                                <text x="210" y="106" font-family="Caveat, cursive" font-size="13" fill="#5b8fa8" font-weight="600">180</text>
+                                <text x="210" y="106" font-family="Caveat, cursive" font-size="13" fill="#5b8fa8" font-weight="600">2 turns</text>
 
                                 <!-- Key insight -->
-                                <text x="120" y="200" font-family="Caveat, cursive" font-size="15" fill="#e8a87c" text-anchor="middle" font-weight="600">Updates self.heading after turning!</text>
+                                <text x="120" y="200" font-family="Caveat, cursive" font-size="15" fill="#e8a87c" text-anchor="middle" font-weight="600">Always turn right! Modular arithmetic does the rest.</text>
                             </svg>
                         </div>
                     </div>
@@ -1092,61 +1085,57 @@ print(direction)   <span style="color: #85c88a;"># "S" — need to go south (row
             <div class="content">
                 <p class="header-text">The main method &mdash; drive through every step in the path:</p>
 
-                <div class="code-block">def drive_path(self, path):
-    for next_pos in path:
-        if next_pos == self.position:
-            continue   <span style="color: #85c88a;"># Skip the starting position</span>
+                <div class="code-block" style="font-size: 15px;">def drive_path(self, path):
+    for i in range(1, len(path)):
+        next_pos = path[i]
+        needed = self.get_needed_heading(next_pos)
+        turns = (needed - self.heading) % 4
 
-        <span style="color: #85c88a;"># 1. Figure out which way to face</span>
-        direction = self.get_needed_direction(next_pos)
+        if turns == 0:
+            <span style="color: #85c88a;"># Going straight — clear the intersection first</span>
+            self.line_track.drivetrain.straight(8)
 
-        <span style="color: #85c88a;"># 2. Turn if needed</span>
-        self.turn_to(direction)
-
-        <span style="color: #85c88a;"># 3. Drive forward one intersection</span>
-        self.drivetrain.straight(30, 0.5)
-
-        <span style="color: #85c88a;"># 4. Update position</span>
-        self.position = next_pos
-        print("Arrived at", self.position)</div>
-
-                <div class="insight-box">
-                    The loop: For each coordinate in the path, turn to face it, drive forward, update position.
-                </div>
+        self.turn_to(needed)
+        self.line_track.track_until_cross()
+        self.position = next_pos</div>
 
                 <div class="answer-box">
-                    <p class="body-text" style="margin-left: 8px;"><strong>Note:</strong> <code style="font-family: 'Fira Code', monospace;">straight(30, 0.5)</code> assumes 30 cm between intersections &mdash; adjust for your grid!</p>
+                    <p class="body-text" style="margin-left: 8px;"><strong>Why straight(8)?</strong> When going straight (0 turns), the robot is still sitting on the cross it just detected. We drive 8 cm to clear it, so <code style="font-family: 'Fira Code', monospace;">track_until_cross()</code> finds the NEXT intersection.</p>
+                </div>
+
+                <div class="insight-box">
+                    The loop: For each step &mdash; clear if straight, turn to heading, track to next cross, update position.
                 </div>
 
                 <!-- Loop visualization SVG -->
                 <div class="illustration">
                     <svg width="650" height="104" viewBox="0 0 500 80">
                         <!-- Step boxes connected by arrows -->
-                        <rect x="5" y="15" width="90" height="50" rx="10" fill="rgba(91, 143, 168, 0.1)" stroke="#5b8fa8" stroke-width="2"/>
-                        <text x="50" y="35" font-family="Caveat, cursive" font-size="13" fill="#5b8fa8" text-anchor="middle" font-weight="600">1. Direction</text>
-                        <text x="50" y="52" font-family="Patrick Hand, cursive" font-size="12" fill="#2d3436" text-anchor="middle">which way?</text>
+                        <rect x="5" y="15" width="95" height="50" rx="10" fill="rgba(91, 143, 168, 0.1)" stroke="#5b8fa8" stroke-width="2"/>
+                        <text x="52" y="35" font-family="Caveat, cursive" font-size="13" fill="#5b8fa8" text-anchor="middle" font-weight="600">1. Heading</text>
+                        <text x="52" y="52" font-family="Patrick Hand, cursive" font-size="12" fill="#2d3436" text-anchor="middle">which way?</text>
 
-                        <polygon points="100,38 112,43 100,48" fill="#e8a87c"/>
+                        <polygon points="105,38 117,43 105,48" fill="#e8a87c"/>
 
-                        <rect x="118" y="15" width="90" height="50" rx="10" fill="rgba(232, 168, 124, 0.1)" stroke="#e8a87c" stroke-width="2"/>
-                        <text x="163" y="35" font-family="Caveat, cursive" font-size="13" fill="#e8a87c" text-anchor="middle" font-weight="600">2. Turn</text>
-                        <text x="163" y="52" font-family="Patrick Hand, cursive" font-size="12" fill="#2d3436" text-anchor="middle">face it</text>
+                        <rect x="123" y="15" width="95" height="50" rx="10" fill="rgba(232, 168, 124, 0.1)" stroke="#e8a87c" stroke-width="2"/>
+                        <text x="170" y="35" font-family="Caveat, cursive" font-size="13" fill="#e8a87c" text-anchor="middle" font-weight="600">2. Clear/Turn</text>
+                        <text x="170" y="52" font-family="Patrick Hand, cursive" font-size="12" fill="#2d3436" text-anchor="middle">straight(8) + turn</text>
 
-                        <polygon points="213,38 225,43 213,48" fill="#e8a87c"/>
+                        <polygon points="223,38 235,43 223,48" fill="#e8a87c"/>
 
-                        <rect x="231" y="15" width="90" height="50" rx="10" fill="rgba(133, 200, 138, 0.1)" stroke="#85c88a" stroke-width="2"/>
-                        <text x="276" y="35" font-family="Caveat, cursive" font-size="13" fill="#85c88a" text-anchor="middle" font-weight="600">3. Drive</text>
-                        <text x="276" y="52" font-family="Patrick Hand, cursive" font-size="12" fill="#2d3436" text-anchor="middle">straight(30, 0.5)</text>
+                        <rect x="241" y="15" width="110" height="50" rx="10" fill="rgba(133, 200, 138, 0.1)" stroke="#85c88a" stroke-width="2"/>
+                        <text x="296" y="35" font-family="Caveat, cursive" font-size="13" fill="#85c88a" text-anchor="middle" font-weight="600">3. Track</text>
+                        <text x="296" y="52" font-family="Patrick Hand, cursive" font-size="12" fill="#2d3436" text-anchor="middle">track_until_cross()</text>
 
-                        <polygon points="326,38 338,43 326,48" fill="#e8a87c"/>
+                        <polygon points="356,38 368,43 356,48" fill="#e8a87c"/>
 
-                        <rect x="344" y="15" width="90" height="50" rx="10" fill="rgba(91, 143, 168, 0.1)" stroke="#5b8fa8" stroke-width="2"/>
-                        <text x="389" y="35" font-family="Caveat, cursive" font-size="13" fill="#5b8fa8" text-anchor="middle" font-weight="600">4. Update</text>
-                        <text x="389" y="52" font-family="Patrick Hand, cursive" font-size="12" fill="#2d3436" text-anchor="middle">position</text>
+                        <rect x="374" y="15" width="90" height="50" rx="10" fill="rgba(91, 143, 168, 0.1)" stroke="#5b8fa8" stroke-width="2"/>
+                        <text x="419" y="35" font-family="Caveat, cursive" font-size="13" fill="#5b8fa8" text-anchor="middle" font-weight="600">4. Update</text>
+                        <text x="419" y="52" font-family="Patrick Hand, cursive" font-size="12" fill="#2d3436" text-anchor="middle">position</text>
 
                         <!-- Loop back arrow -->
-                        <path d="M440 40 C460 40, 470 10, 460 0 C450 -5, 20 -5, 10 0 C0 5, 0 25, 5 35" fill="none" stroke="#b8c5d0" stroke-width="2" stroke-dasharray="5,3"/>
-                        <text x="240" y="-2" font-family="Caveat, cursive" font-size="12" fill="#636e72" text-anchor="middle">next position in path</text>
+                        <path d="M470 40 C490 40, 495 10, 485 0 C475 -5, 20 -5, 10 0 C0 5, 0 25, 5 35" fill="none" stroke="#b8c5d0" stroke-width="2" stroke-dasharray="5,3"/>
+                        <text x="250" y="-2" font-family="Caveat, cursive" font-size="12" fill="#636e72" text-anchor="middle">next position in path</text>
                     </svg>
                 </div>
             </div>
@@ -1167,9 +1156,10 @@ print(direction)   <span style="color: #85c88a;"># "S" — need to go south (row
 
                 <div class="two-col">
                     <div class="col">
-                        <div class="code-block" style="font-size: 14px; padding: 14px 18px;">from XRPLib.differential_drive \
-    import DifferentialDrive
-from XRPLib.board import Board
+                        <div class="code-block" style="font-size: 14px; padding: 14px 18px;">from XRPLib.board import Board
+from line_track import LineTrack
+
+HEADING_NAMES = ["N", "E", "S", "W"]
 
 class Manhattan:
     <span style="color: #85c88a;"># ... (from Lesson 5)</span>
@@ -1180,7 +1170,7 @@ class Navigator:
 <span style="color: #85c88a;"># Main program</span>
 board = Board.get_default_board()
 manhattan = Manhattan((0, 0))
-nav = Navigator((0, 0), "N")
+nav = Navigator((0, 0), 0)
 
 board.wait_for_button()
 
@@ -1190,7 +1180,8 @@ path = manhattan.compute_path(destination)
 print("Path:", path)
 
 nav.drive_path(path)
-print("Arrived at destination!")</div>
+print("Arrived at", nav.position)
+print("Heading:", HEADING_NAMES[nav.heading])</div>
                     </div>
                     <div class="col">
                         <!-- SVG: robot navigating grid path -->
@@ -1264,7 +1255,7 @@ print("Arrived at destination!")</div>
                     </div>
                     <div class="activity-step">
                         <span class="step-number">4</span>
-                        <span class="step-text">Adjust the <code style="font-family: 'Fira Code', monospace;">straight(30, 0.5)</code> distance to match your grid spacing</span>
+                        <span class="step-text">Verify the robot clears each intersection properly (the <code style="font-family: 'Fira Code', monospace;">straight(8)</code> clearing distance)</span>
                     </div>
                 </div>
 
@@ -1274,7 +1265,7 @@ print("Arrived at destination!")</div>
                 <div class="sketch-box" style="border-color: #e8a87c; background-color: rgba(232, 168, 124, 0.04);">
                     <p class="bullet">Print the heading and turn at each step</p>
                     <p class="bullet">Start with a 2-step path before trying longer ones</p>
-                    <p class="bullet">Make sure the robot's physical starting heading matches <code style="font-family: 'Fira Code', monospace;">"N"</code> (or whichever you chose)</p>
+                    <p class="bullet">Make sure the robot's physical starting heading matches <code style="font-family: 'Fira Code', monospace;">0</code> (North) or whichever you chose</p>
                 </div>
 
                 <div class="spacer"></div>
@@ -1322,7 +1313,7 @@ print("Arrived at destination!")</div>
                         <p class="header-text">What you did today</p>
                         <div class="sketch-box">
                             <p class="bullet">Implemented the <span class="sketch-highlight">Navigator class</span> with drive_path()</p>
-                            <p class="bullet">Integrated <span class="sketch-highlight">turning logic</span> with physical robot movement</p>
+                            <p class="bullet">Integrated <span class="sketch-highlight">LineTrack</span> from Module 2 with Navigator turning logic</p>
                             <p class="bullet">Tested on real paths on the grid</p>
                         </div>
                     </div>

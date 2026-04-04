@@ -2,134 +2,142 @@
 
 ---
 
-## Part 1: Direction from Coordinates
+## Part 1: Heading from Coordinates
 
-| Current Position | Next Position | row_diff | col_diff | Direction |
+| Current Position | Next Position | row_diff | col_diff | Heading (number and name) |
 |---|---|---|---|---|
-| (0, 0) | (1, 0) | 1 - 0 = **1** | 0 - 0 = **0** | **S** |
-| (2, 3) | (1, 3) | 1 - 2 = **-1** | 3 - 3 = **0** | **N** |
-| (1, 1) | (1, 2) | **0** | **1** | **E** |
-| (3, 2) | (3, 1) | **0** | **-1** | **W** |
-| (0, 3) | (1, 3) | **1** | **0** | **S** |
-| (2, 0) | (2, 1) | **0** | **1** | **E** |
-| (3, 1) | (2, 1) | **-1** | **0** | **N** |
-| (0, 2) | (0, 1) | **0** | **-1** | **W** |
+| (0, 0) | (1, 0) | 1 - 0 = **1** | 0 - 0 = **0** | **2 (S)** |
+| (2, 3) | (1, 3) | 1 - 2 = **-1** | 3 - 3 = **0** | **0 (N)** |
+| (1, 1) | (1, 2) | **0** | **1** | **1 (E)** |
+| (3, 2) | (3, 1) | **0** | **-1** | **3 (W)** |
+| (0, 3) | (1, 3) | **1** | **0** | **2 (S)** |
+| (2, 0) | (2, 1) | **0** | **1** | **1 (E)** |
+| (3, 1) | (2, 1) | **-1** | **0** | **0 (N)** |
+| (0, 2) | (0, 1) | **0** | **-1** | **3 (W)** |
 
 ---
 
-## Part 2: The Turn Table
+## Part 2: The Right Turns Table
 
-| Current Heading | Need N | Need S | Need E | Need W |
+| Current \ Needed | 0 (N) | 1 (E) | 2 (S) | 3 (W) |
 |---|---|---|---|---|
-| **N** | **None** | **180** | **Right 90** | **Left 90** |
-| **S** | **180** | **None** | **Left 90** | **Right 90** |
-| **E** | **Left 90** | **Right 90** | **None** | **180** |
-| **W** | **Right 90** | **Left 90** | **180** | **None** |
+| **0 (N)** | **0** | **1** | **2** | **3** |
+| **1 (E)** | **3** | **0** | **1** | **2** |
+| **2 (S)** | **2** | **3** | **0** | **1** |
+| **3 (W)** | **1** | **2** | **3** | **0** |
 
-- How many cells say "None"? **4** — Why? **Each heading already faces one of the four directions, so when the needed direction matches the current heading, no turn is needed. The 4 "None" cells fall along the diagonal.**
-- How many cells say "180"? **4** — What pattern? **They are always opposite pairs: N↔S and E↔W. The 180 cells also fall along the anti-diagonal.**
+- How many cells have 0 right turns? **4** — Why? **When the current heading equals the needed heading, `(needed - current) % 4 = 0`. These fall along the diagonal.**
+- What does 2 right turns mean physically? **A 180-degree turn (two right turns = turning completely around).**
+- Do you notice a pattern in the table? **Each row is the same sequence [0, 1, 2, 3] shifted. The values only depend on the difference between the headings, not the headings themselves.**
 
 ---
 
-## Part 3: Determine the Turn
+## Part 3: Determine the Number of Right Turns
 
-| Scenario | Current Heading | Needed Direction | Turn |
-|---|---|---|---|
-| 1 | N | E | **Right 90** |
-| 2 | E | E | **None** |
-| 3 | S | N | **180** |
-| 4 | W | S | **Left 90** |
-| 5 | E | N | **Left 90** |
-| 6 | N | W | **Left 90** |
-| 7 | S | W | **Right 90** |
-| 8 | W | E | **180** |
+| Scenario | Current Heading | Needed Heading | (needed - current) | % 4 | Right Turns |
+|---|---|---|---|---|---|
+| 1 | 0 (N) | 1 (E) | 1 - 0 = **1** | **1** % 4 = **1** | **1** |
+| 2 | 1 (E) | 1 (E) | 1 - 1 = **0** | **0** % 4 = **0** | **0** |
+| 3 | 2 (S) | 0 (N) | 0 - 2 = **-2** | **-2** % 4 = **2** | **2** |
+| 4 | 3 (W) | 2 (S) | 2 - 3 = **-1** | **-1** % 4 = **3** | **3** |
+| 5 | 1 (E) | 0 (N) | 0 - 1 = **-1** | **-1** % 4 = **3** | **3** |
+| 6 | 0 (N) | 3 (W) | 3 - 0 = **3** | **3** % 4 = **3** | **3** |
+| 7 | 2 (S) | 3 (W) | 3 - 2 = **1** | **1** % 4 = **1** | **1** |
+| 8 | 3 (W) | 1 (E) | 1 - 3 = **-2** | **-2** % 4 = **2** | **2** |
+
+- Why does the `% 4` make negative numbers work correctly? **In Python, the modulo operator always returns a non-negative result when the divisor is positive. So `-1 % 4 = 3` and `-2 % 4 = 2`, which correctly gives the number of clockwise right turns. A result of 3 means "3 right turns" (which is equivalent to 1 left turn, but we only use right turns).**
 
 ---
 
 ## Part 4: Trace a Path with Heading Updates
 
-Path: [(0, 0), (1, 0), (2, 0), (2, 1), (2, 2), (2, 3)], Starting heading: North
+Path: [(0, 0), (1, 0), (2, 0), (2, 1), (2, 2), (2, 3)], Starting heading: 0 (N)
 
-| Step | From | To | Needed Direction | Current Heading | Turn | New Heading |
+| Step | From | To | Needed Heading | Current Heading | Right Turns | New Heading |
 |---|---|---|---|---|---|---|
-| 1 | (0, 0) | (1, 0) | **S** | N | **180** | **S** |
-| 2 | (1, 0) | (2, 0) | **S** | **S** | **None** | **S** |
-| 3 | (2, 0) | (2, 1) | **E** | **S** | **Left 90** | **E** |
-| 4 | (2, 1) | (2, 2) | **E** | **E** | **None** | **E** |
-| 5 | (2, 2) | (2, 3) | **E** | **E** | **None** | **E** |
+| 1 | (0, 0) | (1, 0) | **2 (S)** | 0 (N) | **(2-0)%4 = 2** | **2 (S)** |
+| 2 | (1, 0) | (2, 0) | **2 (S)** | **2 (S)** | **(2-2)%4 = 0** | **2 (S)** |
+| 3 | (2, 0) | (2, 1) | **1 (E)** | **2 (S)** | **(1-2)%4 = 3** | **1 (E)** |
+| 4 | (2, 1) | (2, 2) | **1 (E)** | **1 (E)** | **(1-1)%4 = 0** | **1 (E)** |
+| 5 | (2, 2) | (2, 3) | **1 (E)** | **1 (E)** | **(1-1)%4 = 0** | **1 (E)** |
 
-- How many turns were needed? **2** (the 180 at step 1 and the left turn at step 3)
-- How many times was no turn needed? **3** (steps 2, 4, 5)
+- How many steps required turning? **2** (step 1 with 2 right turns and step 3 with 3 right turns)
+- How many steps required zero turns? **3** (steps 2, 4, 5)
 - At which step did the robot change from row to column movement? **Step 3**
 
 ---
 
 ## Part 5: Trace a Second Path
 
-Path: [(2, 3), (1, 3), (0, 3), (0, 2), (0, 1), (0, 0)], Starting heading: South
+Path: [(2, 3), (1, 3), (0, 3), (0, 2), (0, 1), (0, 0)], Starting heading: 2 (S)
 
-| Step | From | To | Needed Direction | Current Heading | Turn | New Heading |
+| Step | From | To | Needed Heading | Current Heading | Right Turns | New Heading |
 |---|---|---|---|---|---|---|
-| 1 | (2, 3) | (1, 3) | **N** | S | **180** | **N** |
-| 2 | (1, 3) | (0, 3) | **N** | **N** | **None** | **N** |
-| 3 | (0, 3) | (0, 2) | **W** | **N** | **Left 90** | **W** |
-| 4 | (0, 2) | (0, 1) | **W** | **W** | **None** | **W** |
-| 5 | (0, 1) | (0, 0) | **W** | **W** | **None** | **W** |
+| 1 | (2, 3) | (1, 3) | **0 (N)** | 2 (S) | **(0-2)%4 = 2** | **0 (N)** |
+| 2 | (1, 3) | (0, 3) | **0 (N)** | **0 (N)** | **(0-0)%4 = 0** | **0 (N)** |
+| 3 | (0, 3) | (0, 2) | **3 (W)** | **0 (N)** | **(3-0)%4 = 3** | **3 (W)** |
+| 4 | (0, 2) | (0, 1) | **3 (W)** | **3 (W)** | **(3-3)%4 = 0** | **3 (W)** |
+| 5 | (0, 1) | (0, 0) | **3 (W)** | **3 (W)** | **(3-3)%4 = 0** | **3 (W)** |
 
-Final heading after completing path: **W**
+Final heading after completing path: **3 (W)**
 
 ---
 
 ## Part 6: Trace a Third Path
 
-Path: [(1, 1), (1, 2), (1, 3), (2, 3), (3, 3)], Starting heading: North
+Path: [(1, 1), (1, 2), (1, 3), (2, 3), (3, 3)], Starting heading: 0 (N)
 
-| Step | From | To | Needed Direction | Current Heading | Turn | New Heading |
+| Step | From | To | Needed Heading | Current Heading | Right Turns | New Heading |
 |---|---|---|---|---|---|---|
-| 1 | (1, 1) | (1, 2) | **E** | N | **Right 90** | **E** |
-| 2 | (1, 2) | (1, 3) | **E** | **E** | **None** | **E** |
-| 3 | (1, 3) | (2, 3) | **S** | **E** | **Right 90** | **S** |
-| 4 | (2, 3) | (3, 3) | **S** | **S** | **None** | **S** |
+| 1 | (1, 1) | (1, 2) | **1 (E)** | 0 (N) | **(1-0)%4 = 1** | **1 (E)** |
+| 2 | (1, 2) | (1, 3) | **1 (E)** | **1 (E)** | **(1-1)%4 = 0** | **1 (E)** |
+| 3 | (1, 3) | (2, 3) | **2 (S)** | **1 (E)** | **(2-1)%4 = 1** | **2 (S)** |
+| 4 | (2, 3) | (3, 3) | **2 (S)** | **2 (S)** | **(2-2)%4 = 0** | **2 (S)** |
 
-- Final heading: **S**
-- Does the first step require a turn? **Yes** — Why? **The robot starts facing North but needs to go East (column increases), so it must make a right turn.**
+- Final heading: **2 (S)**
+- Does the first step require turning? **Yes** — Why? **The robot starts facing 0 (North) but needs heading 1 (East), so it must make 1 right turn: `(1-0)%4 = 1`.**
 
 ---
 
 ## Part 7: Robot Orientation Diagrams
 
-- Scenario A: Facing North, need to go East → Turn: **Right 90**
-- Scenario B: Facing East, need to go South → Turn: **Right 90**
-- Scenario C: Facing West, need to go East → Turn: **180**
-- Scenario D: Facing South, need to go South → Turn: **None**
+- Scenario A: Facing 0 (N), need heading 1 (E) → Right turns needed: **1** — `(1-0)%4 = 1`
+- Scenario B: Facing 1 (E), need heading 2 (S) → Right turns needed: **1** — `(2-1)%4 = 1`
+- Scenario C: Facing 3 (W), need heading 1 (E) → Right turns needed: **2** — `(1-3)%4 = 2`
+- Scenario D: Facing 2 (S), need heading 2 (S) → Right turns needed: **0** — `(2-2)%4 = 0`
 
 ---
 
-## Part 8: Turn Logic in Code
+## Part 8: Heading and Turning Logic in Code
 
 ```python
-right_turns = {"N": "E", "E": "S", "S": "W", "W": "N"}
-left_turns  = {"N": "W", "W": "S", "S": "E", "E": "N"}
+HEADING_NAMES = ["N", "E", "S", "W"]
 
-def get_turn(current_heading, needed_direction):
-    if current_heading == needed_direction:
-        return "NONE"
-    elif right_turns[current_heading] == needed_direction:
-        return "RIGHT"
-    elif left_turns[current_heading] == needed_direction:
-        return "LEFT"
-    else:
-        return "REVERSE"
+def get_needed_heading(current_pos, next_pos):
+    row_diff = next_pos[0] - current_pos[0]
+    col_diff = next_pos[1] - current_pos[1]
+
+    if row_diff == -1:
+        return 0      # North
+    elif col_diff == 1:
+        return 1      # East
+    elif row_diff == 1:
+        return 2      # South
+    elif col_diff == -1:
+        return 3      # West
+
+def count_right_turns(current, needed):
+    return (needed - current) % 4
 ```
 
 Test your understanding:
 
-1. `get_turn("E", "N")` returns **"LEFT"**
-2. `get_turn("W", "W")` returns **"NONE"**
-3. `get_turn("N", "S")` returns **"REVERSE"**
+1. `count_right_turns(1, 0)` returns **3** — `(0-1)%4 = 3` (three right turns, equivalent to turning 270 degrees clockwise)
+2. `count_right_turns(3, 3)` returns **0** — `(3-3)%4 = 0` (no turn needed, already facing the right way)
+3. `count_right_turns(0, 2)` returns **2** — `(2-0)%4 = 2` (two right turns, equivalent to a 180-degree turn)
 
 ---
 
 ## Reflection
 
-**Why we separate path planning from turning logic:** Separating "where to go" from "how to get there" makes each piece simpler to understand, test, and debug independently. The Manhattan algorithm doesn't need to know anything about the robot's physical heading -- it just plans coordinates. The turning logic doesn't need to know about destination planning -- it just handles step-by-step orientation. This is called "separation of concerns" and it means you can test each part alone, fix bugs in one without breaking the other, and even reuse the Manhattan algorithm with a different robot that turns differently.
+**Why is using numbers and a formula better than using strings and dictionaries?** Using numbers 0-3 lets us replace multiple dictionaries with a single formula: `(needed - current) % 4`. The formula works for all 16 combinations automatically -- no need to build or maintain lookup tables. It's shorter to write, harder to get wrong, and reveals the underlying mathematical structure: headings are arranged in a circle, and the modulo operation naturally wraps around. This approach is also easier to extend -- if you wanted to add diagonal headings, you would just use 8 directions instead of 4 with the same formula pattern.

@@ -48,7 +48,7 @@ By the end of this lesson, students will be able to:
    - Write the pseudocode on the board:
      ```
      Create Manhattan at (0, 0)
-     Create Navigator at (0, 0) heading North
+     Create Navigator at (0, 0) heading 0 (North)
      destinations = [(1, 3), (3, 3), (3, 0), (0, 0)]
 
      For each destination:
@@ -73,10 +73,14 @@ By the end of this lesson, students will be able to:
    - Start with the classes already written (from previous lessons).
    - Write the main program on the board:
      ```python
+     HEADING_NAMES = ["N", "E", "S", "W"]
+
      manhattan = Manhattan((0, 0))
-     navigator = Navigator((0, 0), "N")
+     navigator = Navigator((0, 0), 0)  # heading North
 
      destinations = [(2, 0), (2, 3), (0, 3), (0, 0)]
+
+     board.wait_for_button()
 
      for dest in destinations:
          print("--- Navigating to", dest, "---")
@@ -85,6 +89,7 @@ By the end of this lesson, students will be able to:
          navigator.drive_path(path)
          manhattan.position = navigator.position
          print("Arrived at:", navigator.position)
+         print("Heading:", HEADING_NAMES[navigator.heading])
          print()
      ```
    - Walk through the key line: `manhattan.position = navigator.position`. Ask: "Why is this line necessary?" Answer: After the Navigator drives to the destination, the Manhattan class needs to know the new starting position for the next `compute_path()` call.
@@ -92,12 +97,12 @@ By the end of this lesson, students will be able to:
 2. **Step 2: Trace One Leg on Paper**:
    - Using the board, trace the first leg: `(0, 0)` to `(2, 0)`.
    - Path: `[(0, 0), (1, 0), (2, 0)]`
-   - Navigator starts heading N:
+   - Navigator starts heading 0 (North):
      ```
-     Step 1: At (0,0) heading N, need S --> turn 180, drive to (1,0)
-     Step 2: At (1,0) heading S, need S --> no turn, drive to (2,0)
+     Step 1: At (0,0) heading 0 (N), need 2 (S) --> turns = (2 - 0) % 4 = 2 right turns, drive to (1,0)
+     Step 2: At (1,0) heading 2 (S), need 2 (S) --> turns = (2 - 2) % 4 = 0, no turn, drive to (2,0)
      ```
-   - "After this leg, manhattan.position = (2, 0), navigator.position = (2, 0), navigator.heading = S."
+   - "After this leg, manhattan.position = (2, 0), navigator.position = (2, 0), navigator.heading = 2 (S)."
 
 3. **Step 3: Discuss Testing Strategy**:
    - Level 1: Test Manhattan alone with print statements (no robot needed)
@@ -134,7 +139,6 @@ By the end of this lesson, students will be able to:
 - Place the robot at (0, 0) facing North.
 - Run the program with only one destination.
 - Does the robot arrive at the correct cell? Is the turn correct?
-- Adjust `straight()` distance if needed.
 
 **Exercise 4: Full Sequence**
 - Run the complete multi-destination program.
@@ -160,7 +164,7 @@ By the end of this lesson, students will be able to:
 | Category | Points | Criteria |
 |---|---|---|
 | **Manhattan Class** | 10 | Class is complete and correctly computes paths. `compute_path()` returns correct coordinate lists for any start/destination pair. |
-| **Navigator Class** | 15 | Class has correct `__init__`, `get_needed_direction()`, `turn_to()`, and `drive_path()` methods. All four turn cases handled. Position and heading updated correctly. |
+| **Navigator Class** | 15 | Class has correct `__init__`, `get_needed_heading()`, `turn_to()`, and `drive_path()` methods. Turn logic uses modular arithmetic `(needed - current) % 4` correctly. Position and heading updated correctly. |
 | **Main Program** | 10 | Creates both objects, defines 4+ destinations, loops through destinations computing and driving each path. Updates `manhattan.position` after each leg. |
 | **Robot Demonstration** | 10 | Robot physically navigates to all destinations on the grid. Turns are correct. Robot arrives at each destination cell. |
 | **Planning & Documentation** | 5 | Completed planning worksheet. Hand-trace of at least one leg. Testing checklist followed. |
@@ -175,7 +179,7 @@ By the end of this lesson, students will be able to:
 | Misconception | Reality |
 |---|---|
 | "I do not need to update `manhattan.position` because Manhattan already knows where I am" | Manhattan does not automatically know the robot moved. You must explicitly set `manhattan.position = navigator.position` (or `manhattan.position = dest`) after each leg. |
-| "The Navigator's heading resets to North for each leg" | The Navigator keeps its heading from the end of the previous leg. If it finished heading East, it starts the next leg heading East. This is realistic and important for correct turn calculations. |
+| "The Navigator's heading resets to North for each leg" | The Navigator keeps its heading from the end of the previous leg. If it finished heading 1 (East), it starts the next leg heading 1 (East). This is realistic and important for correct turn calculations. |
 | "I should create new Manhattan and Navigator objects for each destination" | Create them once and reuse them. The whole point of classes is that they maintain state across multiple operations. |
 | "The path list includes the destination twice if I visit it again later" | Each call to `compute_path()` generates a fresh path from the current position to the new destination. Previous paths are not stored. |
 | "I need to call `navigator.drive_path()` for each step individually" | `drive_path()` already loops through all the steps internally. You call it once per leg with the full path list. |
@@ -201,8 +205,10 @@ By the end of this lesson, students will be able to:
 
 ### Main Program Template
 ```python
-from XRPLib.differential_drive import DifferentialDrive
+from line_track import LineTrack
 from XRPLib.board import Board
+
+HEADING_NAMES = ["N", "E", "S", "W"]
 
 
 class Manhattan:
@@ -236,41 +242,32 @@ class Navigator:
     def __init__(self, start, heading):
         self.position = start
         self.heading = heading
-        self.drivetrain = DifferentialDrive.get_default_differential_drive()
+        self.line_track = LineTrack()
 
-    def get_needed_direction(self, next_pos):
+    def get_needed_heading(self, next_pos):
         row_diff = next_pos[0] - self.position[0]
         col_diff = next_pos[1] - self.position[1]
         if row_diff == 1:
-            return "S"
+            return 2  # S
         elif row_diff == -1:
-            return "N"
+            return 0  # N
         elif col_diff == 1:
-            return "E"
+            return 1  # E
         elif col_diff == -1:
-            return "W"
+            return 3  # W
 
-    def turn_to(self, direction):
-        right_turns = {"N": "E", "E": "S", "S": "W", "W": "N"}
-        left_turns = {"N": "W", "W": "S", "S": "E", "E": "N"}
-        if self.heading == direction:
-            pass
-        elif right_turns[self.heading] == direction:
-            self.drivetrain.turn(90)
-            self.heading = direction
-        elif left_turns[self.heading] == direction:
-            self.drivetrain.turn(-90)
-            self.heading = direction
-        else:
-            self.drivetrain.turn(180)
-            self.heading = direction
+    def turn_to(self, needed):
+        turns = (needed - self.heading) % 4
+        for i in range(turns):
+            self.line_track.turn_right()
+        self.heading = needed
 
     def drive_path(self, path):
         for i in range(1, len(path)):
             next_pos = path[i]
-            direction = self.get_needed_direction(next_pos)
-            self.turn_to(direction)
-            self.drivetrain.straight(20)
+            needed = self.get_needed_heading(next_pos)
+            self.turn_to(needed)
+            self.line_track.track_until_cross()
             self.position = next_pos
 
 
@@ -278,7 +275,7 @@ class Navigator:
 board = Board.get_default_board()
 
 manhattan = Manhattan((0, 0))
-navigator = Navigator((0, 0), "N")
+navigator = Navigator((0, 0), 0)  # heading North
 
 destinations = [(2, 0), (2, 3), (0, 3), (0, 0)]
 
@@ -297,7 +294,7 @@ for dest in destinations:
     navigator.drive_path(path)
     manhattan.position = navigator.position
     print("Arrived at:", navigator.position)
-    print("Heading:", navigator.heading)
+    print("Heading:", HEADING_NAMES[navigator.heading])
     print()
 
 print("=== All destinations reached! ===")
@@ -353,6 +350,7 @@ for dest in destinations:
   - Using a different variable name for the Manhattan and Navigator starting positions
   - Having the Navigator start at `(0, 0)` but Manhattan start somewhere else
   - Calling `compute_path()` with a position instead of a destination
+- **Debugging tip:** "Is `turn_to()` updating `self.heading`?" -- If the heading is not updated after turning, every subsequent turn calculation will be wrong. Have students add a print statement inside `turn_to()` to verify.
 - **Time management for 50-min classes:** Students may need two class periods to complete the full project. Day 1: planning and Manhattan-only testing. Day 2: robot testing and demonstration.
 
 ## Connections to Next Lessons

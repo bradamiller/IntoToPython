@@ -7,7 +7,7 @@
 - Design the Navigator class with position and heading
 - Implement drive_path() to turn and drive through a path
 - Track and update heading as the robot moves
-- Integrate with DifferentialDrive for physical movement
+- Integrate with LineTrack for physical movement (reusing Module 2!)
 
 **Agenda:**
 - Class design overview (5 min)
@@ -20,7 +20,7 @@
 ## Slide 2: Hook — From Algorithm to Action
 **We have TWO pieces working:**
 1. Manhattan class computes the path (list of tuples)
-2. Turning logic tells us what turns are needed
+2. Heading logic tells us what direction is needed
 
 **Missing piece:** Something that actually DRIVES the robot!
 
@@ -29,7 +29,7 @@ path = [(0,0), (1,0), (2,0), (2,1), (2,2)]
 # How does this become real robot movement?
 ```
 
-**Today:** Build the Navigator class that turns and drives through any path.
+**Today:** Build the Navigator class that turns and drives through any path — reusing LineTrack from Module 2.
 
 ---
 
@@ -38,90 +38,90 @@ path = [(0,0), (1,0), (2,0), (2,1), (2,2)]
 
 **Data (stored in __init__):**
 - `self.position` — current (row, col) tuple
-- `self.heading` — current direction ("N", "S", "E", "W")
-- `self.drivetrain` — the DifferentialDrive object
+- `self.heading` — current heading number (0=N, 1=E, 2=S, 3=W)
+- `self.line_track` — the LineTrack object from Module 2
 
 **Methods:**
-- `get_needed_direction(next_pos)` — what direction to face
-- `turn_to(direction)` — turn the robot to face that direction
-- `drive_one_step()` — drive forward one intersection
+- `get_needed_heading(next_pos)` — what heading number to face
+- `turn_to(needed_heading)` — turn robot using right turns
 - `drive_path(path)` — drive the entire path
+
+**Key idea:** We already know how to follow lines and detect crossings — LineTrack does that. Navigator just decides WHEN to turn and WHEN to go straight.
 
 ---
 
 ## Slide 4: The __init__ Method
 ```python
-from XRPLib.differential_drive import DifferentialDrive
+from line_track import LineTrack
+
+HEADING_NAMES = ["N", "E", "S", "W"]
 
 class Navigator:
     def __init__(self, start, heading):
         self.position = start
         self.heading = heading
-        self.drivetrain = DifferentialDrive.get_default_differential_drive()
+        self.line_track = LineTrack()
 ```
 
 **Usage:**
 ```python
-nav = Navigator((0, 0), "N")
-print("Position:", nav.position)   # (0, 0)
-print("Heading:", nav.heading)     # N
+nav = Navigator((0, 0), 0)
+print("Position:", nav.position)                    # (0, 0)
+print("Heading:", HEADING_NAMES[nav.heading])        # N
 ```
 
-**Note:** The starting heading must match how you physically place the robot!
+**Note:** Heading 0 means the robot faces North — make sure to place it that way on the grid!
+
+**Reuse:** LineTrack() gives us `track_until_cross()` and `turn_right()` for free.
 
 ---
 
-## Slide 5: get_needed_direction()
-**Determine direction from current position to next position:**
+## Slide 5: get_needed_heading()
+**Determine heading number from current position to next position:**
 
 ```python
-def get_needed_direction(self, next_pos):
+def get_needed_heading(self, next_pos):
     row_diff = next_pos[0] - self.position[0]
     col_diff = next_pos[1] - self.position[1]
 
-    if row_diff == 1:
-        return "S"
-    elif row_diff == -1:
-        return "N"
+    if row_diff == -1:
+        return 0      # North
     elif col_diff == 1:
-        return "E"
+        return 1      # East
+    elif row_diff == 1:
+        return 2      # South
     elif col_diff == -1:
-        return "W"
+        return 3      # West
 ```
 
 **Example:**
 ```python
-nav = Navigator((0, 0), "N")
-direction = nav.get_needed_direction((1, 0))
-print(direction)   # "S" — need to go south (row increases)
+nav = Navigator((0, 0), 0)
+needed = nav.get_needed_heading((1, 0))
+print(HEADING_NAMES[needed])   # "S" — need heading 2 (row increases)
 ```
 
 ---
 
-## Slide 6: turn_to()
-**Turn the robot to face the desired direction:**
+## Slide 6: turn_to() — Modular Arithmetic
+**Turn the robot using right turns only:**
 
 ```python
-def turn_to(self, direction):
-    if self.heading == direction:
-        return   # Already facing the right way
-
-    right_turns = {"N": "E", "E": "S", "S": "W", "W": "N"}
-    left_turns = {"N": "W", "W": "S", "S": "E", "E": "N"}
-
-    if right_turns[self.heading] == direction:
-        self.drivetrain.turn(90)
-        self.heading = direction
-    elif left_turns[self.heading] == direction:
-        self.drivetrain.turn(-90)
-        self.heading = direction
-    else:
-        # 180 degree turn
-        self.drivetrain.turn(180)
-        self.heading = direction
+def turn_to(self, needed_heading):
+    turns = (needed_heading - self.heading) % 4
+    for i in range(turns):
+        self.line_track.turn_right()
+    self.heading = needed_heading
 ```
 
-**Key:** Updates self.heading after turning!
+**Why this works:**
+- `(needed - current) % 4` always gives 0, 1, 2, or 3
+- 0 turns = already facing right way
+- 1 turn = one right turn (90 degrees)
+- 2 turns = two right turns (180 degrees)
+- 3 turns = three right turns (270 degrees = one left turn)
+
+**No dictionaries needed!** One formula handles every case.
 
 ---
 
@@ -130,27 +130,23 @@ def turn_to(self, direction):
 
 ```python
 def drive_path(self, path):
-    for next_pos in path:
-        if next_pos == self.position:
-            continue   # Skip the starting position
-
-        # 1. Figure out which way to face
-        direction = self.get_needed_direction(next_pos)
-
-        # 2. Turn if needed
-        self.turn_to(direction)
-
-        # 3. Drive forward one intersection
-        self.drivetrain.straight(30)
-
-        # 4. Update position
+    for i in range(1, len(path)):
+        next_pos = path[i]
+        needed = self.get_needed_heading(next_pos)
+        turns = (needed - self.heading) % 4
+        if turns == 0:
+            self.line_track.drivetrain.straight(8)
+        self.turn_to(needed)
+        self.line_track.track_until_cross()
         self.position = next_pos
-        print("Arrived at", self.position)
 ```
 
-**The loop:** For each coordinate in the path, turn to face it, drive forward, update position.
+**Why `straight(8)` when turns == 0?**
+- Robot is sitting on the crossing line from the previous step
+- `track_until_cross()` would immediately re-detect it!
+- Drive 8 cm forward to clear the intersection first
 
-**Note:** `straight(30)` assumes 30 cm between intersections — adjust for your grid!
+**When turning:** `turn_right()` already moves the robot off the crossing line, so no extra clearing needed.
 
 ---
 
@@ -158,8 +154,10 @@ def drive_path(self, path):
 **Complete test program:**
 
 ```python
-from XRPLib.differential_drive import DifferentialDrive
+from line_track import LineTrack
 from XRPLib.board import Board
+
+HEADING_NAMES = ["N", "E", "S", "W"]
 
 class Manhattan:
     # ... (from Lesson 5)
@@ -170,7 +168,7 @@ class Navigator:
 # Main program
 board = Board.get_default_board()
 manhattan = Manhattan((0, 0))
-nav = Navigator((0, 0), "N")
+nav = Navigator((0, 0), 0)
 
 board.wait_for_button()
 
@@ -180,39 +178,39 @@ path = manhattan.compute_path(destination)
 print("Path:", path)
 
 nav.drive_path(path)
-print("Arrived at destination!")
+print("Arrived at", HEADING_NAMES[nav.heading])
 ```
 
 ---
 
 ## Slide 9: Your Turn!
 **Activity:**
-1. Implement the Navigator class with all four methods
-2. Test with a simple path first: (0, 0) to (2, 0) — straight line, may need one turn
+1. Implement the Navigator class with all three methods
+2. Test with a simple path first: (0, 0) to (2, 0) — straight line south
 3. Then try: (0, 0) to (2, 2) — requires a direction change mid-path
-4. Adjust the `straight(30)` distance to match your grid spacing
+4. Watch how the robot clears intersections when going straight vs. turning
 
 **Debugging tips:**
-- Print the heading and turn at each step
+- Print the heading and turn count at each step
 - Start with a 2-step path before trying longer ones
-- Make sure the robot's physical starting heading matches `"N"` (or whichever you chose)
+- Make sure the robot's physical starting heading matches heading 0 (North)
 
 **Checkpoints:**
 - Does the robot turn correctly at each step?
 - Does it arrive at the right intersection?
-- Does the heading update properly?
+- Does `straight(8)` properly clear the intersection when going straight?
 
 ---
 
 ## Slide 10: Connection to Next Lesson
 **What you did today:**
 - Implemented the Navigator class with drive_path()
-- Integrated turning logic with physical robot movement
-- Tested on real paths
+- Reused LineTrack from Module 2 — composition in action!
+- Used modular arithmetic for elegant turn calculations
 
 **Next lesson (Lesson 9 — Final Project):**
 - Integrate Manhattan + Navigator into a complete program
 - Navigate to a LIST of destinations (not just one)
 - Test with 4+ destinations on the grid
 
-**Key achievement:** You now have TWO classes working together — one computes, one drives. That's separation of concerns in action!
+**Key achievement:** You now have THREE classes working together — Manhattan computes paths, Navigator decides turns, and LineTrack handles physical movement. That's separation of concerns in action!
