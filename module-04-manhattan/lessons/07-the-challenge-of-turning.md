@@ -115,7 +115,7 @@ By the end of this lesson, students will be able to:
      - Heading: 0 (N), Need: 0 (N) --> `(0 - 0) % 4 = 0` --> no turn
      - Heading: 1 (E), Need: 3 (W) --> `(3 - 1) % 4 = 2` --> 2 right turns
      - Heading: 2 (S), Need: 1 (E) --> `(1 - 2) % 4 = 3` --> 3 right turns
-   - Point out: "We did NOT need any dictionaries. We did NOT need separate cases for right, left, and 180. One formula handles everything."
+   - Point out: "We did not need separate cases for right, left, and 180. One formula handles everything."
 
 4. **Step 4: Tracing a Full Path**:
    - Example path: `[(0,0), (1,0), (2,0), (2,1), (2,2)]`
@@ -143,7 +143,7 @@ By the end of this lesson, students will be able to:
      print(f"Turning from {HEADING_NAMES[current_heading]} to {HEADING_NAMES[needed_heading]}")
      ```
    - Run it in the console. Change `current_heading` and `needed_heading` to test different combinations.
-   - Highlight how simple it is: one line of math replaces all the dictionary lookups.
+   - Highlight how simple it is: one line of math handles all cases.
 
 ### Independent Practice (20 minutes)
 **For 50-min classes:** 15 min
@@ -233,7 +233,7 @@ By the end of this lesson, students will be able to:
 | "3 right turns seems wasteful, why not just turn left?" | Physically, 3 right turns and 1 left turn end up at the same heading. Our robot uses `turn_right()` from Module 2, so we simply call it the calculated number of times. The formula tells us the count. |
 | "The heading numbers seem arbitrary" | They follow a consistent clockwise pattern: 0=N, 1=E, 2=S, 3=W. Each right turn adds 1. This is what makes the math work. |
 | "Row increasing means North because numbers go up" | Numbers going up means the row index increases, which means moving DOWN on the grid. Down is South. This is the most common confusion. |
-| "I need separate logic for right turns, left turns, and 180" | That is the old way of thinking about it. With numeric headings and `% 4`, one formula gives a single number that tells the robot exactly how many right turns to make. |
+| "I need separate logic for right turns, left turns, and 180" | With numeric headings and `% 4`, one formula gives a single number that tells the robot exactly how many right turns to make. No separate cases needed. |
 
 ## Differentiation
 
@@ -369,7 +369,7 @@ Step 5: At (3,3) heading ___(___), next (3,2): need ___(___), (___-___) % 4 = __
 - **This lesson is intentionally paper-heavy.** Students need spatial reasoning before they start coding. Rushing to code without understanding the turn logic leads to frustrating debugging.
 - **The grid orientation is confusing.** Row 0 at the top (like a spreadsheet) means "down is South and increasing rows." Repeat this several times. Draw it. Point at it. Quiz them on it.
 - **Physical movement helps.** Have students stand up and physically turn right. "You are heading 0. Turn right. What heading number?" This kinesthetic exercise cements the concept and lets them verify the formula by counting turns.
-- **The formula is the key insight.** Instead of dictionaries and multiple cases, one line of math handles everything. This is a great example of choosing the right representation (numbers instead of strings) to simplify logic.
+- **The formula is the key insight.** One line of math handles every possible turn. This is a great example of choosing the right representation (numbers instead of strings) to simplify logic.
 - **Spend time on `% 4` (mod).** Some students may not have seen the modulo operator. Use the clock analogy: "If it is 11 o'clock and you add 3 hours, it is 2 o'clock, not 14 o'clock. That wrapping is what `% 12` does. We do the same with `% 4` for our four headings."
 - **Connect to the physical robot.** Remind students that on the actual robot, each "right turn" will call `turn_right()` from Module 2 -- the sensor-based turn that drives forward briefly then spins right until it finds the outbound line. So `turns = 2` means calling `turn_right()` twice. This connection will be made concrete in Lesson 8.
 - **Why all right turns?** Students may ask why we do not just turn left when the formula gives 3. The answer is simplicity: one turn function, one formula, one loop. The robot does not care whether 270 degrees right or 90 degrees left is "faster" -- both get it to the same heading. Keeping the code simple matters more than saving a turn.

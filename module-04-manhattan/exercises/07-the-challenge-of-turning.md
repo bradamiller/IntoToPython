@@ -32,7 +32,7 @@ Given the heading the robot is currently facing (a number 0-3) and the heading i
 - 2 = two right turns (180 degrees)
 - 3 = three right turns (270 degrees clockwise)
 
-This single line replaces all the dictionary lookups!
+This single line handles all cases!
 
 ### Part 3: Test Your Functions
 Uncomment the test code and verify:
@@ -47,7 +47,7 @@ Uncomment the test code and verify:
 - **Heading as a number:** 0=North, 1=East, 2=South, 3=West (clockwise order).
 - **`HEADING_NAMES = ["N", "E", "S", "W"]`** for display: `HEADING_NAMES[heading]` gives the letter.
 - **Direction from coordinates:** The difference between two adjacent positions tells you which heading number is needed.
-- **Modular arithmetic:** `(needed - current) % 4` gives the number of right turns. No dictionaries needed!
+- **Modular arithmetic:** `(needed - current) % 4` gives the number of right turns. One formula handles every case!
 - **Updating heading:** After turning, the new heading is simply `needed` (the heading you turned to face).
 
 ## Expected Output

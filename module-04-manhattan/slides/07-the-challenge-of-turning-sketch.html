@@ -674,11 +674,12 @@
             <a href="#slide-3" class="nav-item" onclick="showSlide(2)">What Is Heading?</a>
             <a href="#slide-4" class="nav-item" onclick="showSlide(3)">Direction from Coordinates</a>
             <a href="#slide-5" class="nav-item" onclick="showSlide(4)">What Turn Is Needed?</a>
-            <a href="#slide-6" class="nav-item" onclick="showSlide(5)">Turn Logic in Python</a>
-            <a href="#slide-7" class="nav-item" onclick="showSlide(6)">Walking Through a Path</a>
-            <a href="#slide-8" class="nav-item" onclick="showSlide(7)">Updating Heading</a>
-            <a href="#slide-9" class="nav-item" onclick="showSlide(8)">Your Turn!</a>
-            <a href="#slide-10" class="nav-item" onclick="showSlide(9)">What's Next</a>
+            <a href="#slide-6" class="nav-item" onclick="showSlide(5)">The % (Modulo) Operator</a>
+            <a href="#slide-7" class="nav-item" onclick="showSlide(6)">Turn Logic in Python</a>
+            <a href="#slide-8" class="nav-item" onclick="showSlide(7)">Walking Through a Path</a>
+            <a href="#slide-9" class="nav-item" onclick="showSlide(8)">Updating Heading</a>
+            <a href="#slide-10" class="nav-item" onclick="showSlide(9)">Your Turn!</a>
+            <a href="#slide-11" class="nav-item" onclick="showSlide(10)">What's Next</a>
         </nav>
     </div>
 
@@ -713,7 +714,7 @@
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn" disabled>Previous</button>
-                <span class="slide-counter">1 / 10</span>
+                <span class="slide-counter">1 / 11</span>
                 <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
             </div>
         </div>
@@ -770,7 +771,7 @@
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
-                <span class="slide-counter">2 / 10</span>
+                <span class="slide-counter">2 / 11</span>
                 <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
             </div>
         </div>
@@ -835,35 +836,35 @@
                     <div class="col">
                         <p class="header-text">Compass Diagram</p>
                         <div class="illustration">
-                            <svg width="312" height="286" viewBox="0 0 240 220">
+                            <svg width="350" height="286" viewBox="0 0 290 220">
                                 <!-- Compass circle -->
-                                <circle cx="110" cy="110" r="85" fill="rgba(91, 143, 168, 0.06)" stroke="#b8c5d0" stroke-width="2.5" transform="rotate(-1 110 110)"/>
+                                <circle cx="140" cy="110" r="85" fill="rgba(91, 143, 168, 0.06)" stroke="#b8c5d0" stroke-width="2.5" transform="rotate(-1 140 110)"/>
                                 <!-- Cross lines -->
-                                <line x1="110" y1="30" x2="110" y2="190" stroke="#b8c5d0" stroke-width="1.5" stroke-dasharray="4,3"/>
-                                <line x1="30" y1="110" x2="190" y2="110" stroke="#b8c5d0" stroke-width="1.5" stroke-dasharray="4,3"/>
+                                <line x1="140" y1="30" x2="140" y2="190" stroke="#b8c5d0" stroke-width="1.5" stroke-dasharray="4,3"/>
+                                <line x1="60" y1="110" x2="220" y2="110" stroke="#b8c5d0" stroke-width="1.5" stroke-dasharray="4,3"/>
                                 <!-- N arrow -->
-                                <line x1="110" y1="110" x2="110" y2="38" stroke="#e85d5d" stroke-width="3" stroke-linecap="round"/>
-                                <polygon points="104,42 110,26 116,42" fill="#e85d5d"/>
-                                <text x="110" y="18" font-family="Caveat, cursive" font-size="22" fill="#e85d5d" text-anchor="middle" font-weight="700">0 (N)</text>
+                                <line x1="140" y1="110" x2="140" y2="38" stroke="#e85d5d" stroke-width="3" stroke-linecap="round"/>
+                                <polygon points="134,42 140,26 146,42" fill="#e85d5d"/>
+                                <text x="140" y="18" font-family="Caveat, cursive" font-size="22" fill="#e85d5d" text-anchor="middle" font-weight="700">0 (N)</text>
                                 <!-- E (1) -->
-                                <line x1="110" y1="110" x2="182" y2="110" stroke="#85c88a" stroke-width="2.5" stroke-linecap="round"/>
-                                <polygon points="178,104 194,110 178,116" fill="#85c88a"/>
-                                <text x="206" y="115" font-family="Caveat, cursive" font-size="22" fill="#85c88a" text-anchor="middle" font-weight="700">1 (E)</text>
+                                <line x1="140" y1="110" x2="212" y2="110" stroke="#85c88a" stroke-width="2.5" stroke-linecap="round"/>
+                                <polygon points="208,104 224,110 208,116" fill="#85c88a"/>
+                                <text x="253" y="115" font-family="Caveat, cursive" font-size="22" fill="#85c88a" text-anchor="middle" font-weight="700">1 (E)</text>
                                 <!-- S (2) -->
-                                <line x1="110" y1="110" x2="110" y2="182" stroke="#5b8fa8" stroke-width="2.5" stroke-linecap="round"/>
-                                <polygon points="104,178 110,194 116,178" fill="#5b8fa8"/>
-                                <text x="110" y="214" font-family="Caveat, cursive" font-size="22" fill="#5b8fa8" text-anchor="middle" font-weight="700">2 (S)</text>
+                                <line x1="140" y1="110" x2="140" y2="182" stroke="#5b8fa8" stroke-width="2.5" stroke-linecap="round"/>
+                                <polygon points="134,178 140,194 146,178" fill="#5b8fa8"/>
+                                <text x="140" y="214" font-family="Caveat, cursive" font-size="22" fill="#5b8fa8" text-anchor="middle" font-weight="700">2 (S)</text>
                                 <!-- W (3) -->
-                                <line x1="110" y1="110" x2="38" y2="110" stroke="#e8a87c" stroke-width="2.5" stroke-linecap="round"/>
-                                <polygon points="42,104 26,110 42,116" fill="#e8a87c"/>
-                                <text x="14" y="115" font-family="Caveat, cursive" font-size="22" fill="#e8a87c" text-anchor="middle" font-weight="700">3 (W)</text>
+                                <line x1="140" y1="110" x2="68" y2="110" stroke="#e8a87c" stroke-width="2.5" stroke-linecap="round"/>
+                                <polygon points="72,104 56,110 72,116" fill="#e8a87c"/>
+                                <text x="32" y="115" font-family="Caveat, cursive" font-size="22" fill="#e8a87c" text-anchor="middle" font-weight="700">3 (W)</text>
                                 <!-- Center dot -->
-                                <circle cx="110" cy="110" r="5" fill="#2d3436"/>
+                                <circle cx="140" cy="110" r="5" fill="#2d3436"/>
                                 <!-- Row/col labels -->
-                                <text x="130" y="60" font-family="Caveat, cursive" font-size="16" fill="#636e72" transform="rotate(-1 130 60)">row -1</text>
-                                <text x="130" y="170" font-family="Caveat, cursive" font-size="16" fill="#636e72" transform="rotate(1 130 170)">row +1</text>
-                                <text x="152" y="96" font-family="Caveat, cursive" font-size="16" fill="#636e72">col +1</text>
-                                <text x="42" y="96" font-family="Caveat, cursive" font-size="16" fill="#636e72">col -1</text>
+                                <text x="160" y="60" font-family="Caveat, cursive" font-size="16" fill="#636e72" transform="rotate(-1 160 60)">row -1</text>
+                                <text x="160" y="170" font-family="Caveat, cursive" font-size="16" fill="#636e72" transform="rotate(1 160 170)">row +1</text>
+                                <text x="182" y="96" font-family="Caveat, cursive" font-size="16" fill="#636e72">col +1</text>
+                                <text x="72" y="96" font-family="Caveat, cursive" font-size="16" fill="#636e72">col -1</text>
                             </svg>
                         </div>
                     </div>
@@ -875,7 +876,7 @@
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
-                <span class="slide-counter">3 / 10</span>
+                <span class="slide-counter">3 / 11</span>
                 <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
             </div>
         </div>
@@ -970,7 +971,7 @@ col_diff = nxt_col - cur_col   # 0</pre>
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
-                <span class="slide-counter">4 / 10</span>
+                <span class="slide-counter">4 / 11</span>
                 <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
             </div>
         </div>
@@ -1098,17 +1099,102 @@ col_diff = nxt_col - cur_col   # 0</pre>
                     </tbody>
                 </table>
 
-                <div class="insight-box">One formula replaces the entire table: <code style="font-family: 'Fira Code', monospace;">(needed - current) % 4</code></div>
+                <div class="insight-box">One formula handles all cases: <code style="font-family: 'Fira Code', monospace;">(needed - current) % 4</code></div>
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
-                <span class="slide-counter">5 / 10</span>
+                <span class="slide-counter">5 / 11</span>
                 <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
             </div>
         </div>
 
-        <!-- ═══ SLIDE 6: Turn Logic in Python ═══ -->
+        <!-- ═══ SLIDE 6: Understanding the % Operator ═══ -->
         <div id="slide-6" class="slide">
+            <div class="title-bar">
+                <h1>Understanding the % (Modulo) Operator</h1>
+            </div>
+            <div class="content">
+                <p class="header-text">What does % do?</p>
+                <p class="body-text">The <code style="font-family: 'Fira Code', monospace;">%</code> operator gives the <span class="sketch-highlight">remainder</span> after division.</p>
+
+                <div class="code-block compact" style="display: inline-block; padding: 10px 18px; font-size: 18px;">7 % 4 = 3 &nbsp;&nbsp; # because 7 &divide; 4 = 1 remainder 3</div>
+
+                <div class="spacer"></div>
+                <p class="header-text">The clock analogy</p>
+                <p class="body-text">If it's 11 o'clock and you add 3 hours, it's <strong>2 o'clock</strong>, not 14. That wrapping is what <code style="font-family: 'Fira Code', monospace;">% 12</code> does. We do the same with <code style="font-family: 'Fira Code', monospace;">% 4</code> for our four headings.</p>
+
+                <div class="two-col">
+                    <div class="col">
+                        <p class="header-text">Negative numbers? No problem.</p>
+                        <p class="body-text">Python's <code style="font-family: 'Fira Code', monospace;">%</code> always gives a <strong>non-negative result</strong> when the divisor is positive.</p>
+
+                        <div class="code-block compact" style="padding: 12px 18px; font-size: 16px;">
+<pre>(-1) % 4 = 3
+(-2) % 4 = 2
+(-3) % 4 = 1</pre>
+                        </div>
+
+                        <p class="body-text" style="margin-top: 8px;">How? Python finds the largest multiple of 4 that is &le; the number, then subtracts:</p>
+                        <p class="bullet"><code style="font-family: 'Fira Code', monospace;">(-1) % 4</code>: largest multiple of 4 &le; -1 is <strong>-4</strong>, so -1 - (-4) = <strong>3</strong></p>
+                    </div>
+                    <div class="col">
+                        <p class="header-text">This is exactly what we want!</p>
+
+                        <table class="content-table" style="width: 100%;">
+                            <thead>
+                                <tr>
+                                    <th>From &rarr; To</th>
+                                    <th>Formula</th>
+                                    <th>Right Turns</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>N(0) &rarr; S(2)</td>
+                                    <td style="font-family: 'Fira Code', monospace; font-size: 15px;">(2 - 0) % 4 = 2</td>
+                                    <td style="font-weight: bold;">2 &#10003;</td>
+                                </tr>
+                                <tr>
+                                    <td>S(2) &rarr; N(0)</td>
+                                    <td style="font-family: 'Fira Code', monospace; font-size: 15px;">(0 - 2) % 4 = 2</td>
+                                    <td style="font-weight: bold;">2 &#10003;</td>
+                                </tr>
+                                <tr>
+                                    <td>N(0) &rarr; E(1)</td>
+                                    <td style="font-family: 'Fira Code', monospace; font-size: 15px;">(1 - 0) % 4 = 1</td>
+                                    <td style="font-weight: bold;">1 &#10003;</td>
+                                </tr>
+                                <tr>
+                                    <td>W(3) &rarr; N(0)</td>
+                                    <td style="font-family: 'Fira Code', monospace; font-size: 15px;">(0 - 3) % 4 = 1</td>
+                                    <td style="font-weight: bold;">1 &#10003;</td>
+                                </tr>
+                                <tr>
+                                    <td>E(1) &rarr; S(2)</td>
+                                    <td style="font-family: 'Fira Code', monospace; font-size: 15px;">(2 - 1) % 4 = 1</td>
+                                    <td style="font-weight: bold;">1 &#10003;</td>
+                                </tr>
+                                <tr>
+                                    <td>S(2) &rarr; E(1)</td>
+                                    <td style="font-family: 'Fira Code', monospace; font-size: 15px;">(1 - 2) % 4 = 3</td>
+                                    <td style="font-weight: bold;">3 &#10003;</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="insight-box">The <code style="font-family: 'Fira Code', monospace;">%</code> operator wraps negative results around to give us the correct clockwise count every time.</div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">6 / 11</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 7: Turn Logic in Python ═══ -->
+        <div id="slide-7" class="slide">
             <div class="title-bar">
                 <h1>Turn Logic in Python</h1>
             </div>
@@ -1164,17 +1250,17 @@ heading = needed</pre>
                     </div>
                 </div>
 
-                <div class="insight-box">Two lines of code replace all those dictionaries and if/elif chains!</div>
+                <div class="insight-box">Two lines of code handle every possible turn!</div>
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
-                <span class="slide-counter">6 / 10</span>
+                <span class="slide-counter">7 / 11</span>
                 <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
             </div>
         </div>
 
-        <!-- ═══ SLIDE 7: Walking Through a Path ═══ -->
-        <div id="slide-7" class="slide">
+        <!-- ═══ SLIDE 8: Walking Through a Path ═══ -->
+        <div id="slide-8" class="slide">
             <div class="title-bar">
                 <h1>Walking Through a Path</h1>
             </div>
@@ -1275,13 +1361,13 @@ heading = needed</pre>
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
-                <span class="slide-counter">7 / 10</span>
+                <span class="slide-counter">8 / 11</span>
                 <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
             </div>
         </div>
 
-        <!-- ═══ SLIDE 8: Updating Heading After Turning ═══ -->
-        <div id="slide-8" class="slide">
+        <!-- ═══ SLIDE 9: Updating Heading After Turning ═══ -->
+        <div id="slide-9" class="slide">
             <div class="title-bar">
                 <h1>Updating Heading After Turning</h1>
             </div>
@@ -1302,7 +1388,7 @@ heading = needed</pre>
                         <div class="spacer"></div>
 
                         <div class="answer-box">
-                            <p class="body-text" style="margin-left: 8px;"><strong>Why so simple?</strong> We always turn right until we face the needed direction. So the new heading IS the needed heading. No dictionary lookups required!</p>
+                            <p class="body-text" style="margin-left: 8px;"><strong>Why so simple?</strong> We always turn right until we face the needed direction. So the new heading IS the needed heading.</p>
                         </div>
 
                         <div class="spacer"></div>
@@ -1342,13 +1428,13 @@ heading = needed</pre>
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
-                <span class="slide-counter">8 / 10</span>
+                <span class="slide-counter">9 / 11</span>
                 <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
             </div>
         </div>
 
-        <!-- ═══ SLIDE 9: Your Turn! ═══ -->
-        <div id="slide-9" class="slide">
+        <!-- ═══ SLIDE 10: Your Turn! ═══ -->
+        <div id="slide-10" class="slide">
             <div class="title-bar">
                 <h1>Your Turn!</h1>
             </div>
@@ -1424,13 +1510,13 @@ heading = needed</pre>
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
-                <span class="slide-counter">9 / 10</span>
+                <span class="slide-counter">10 / 11</span>
                 <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
             </div>
         </div>
 
-        <!-- ═══ SLIDE 10: Connection to Next Lesson ═══ -->
-        <div id="slide-10" class="slide">
+        <!-- ═══ SLIDE 11: Connection to Next Lesson ═══ -->
+        <div id="slide-11" class="slide">
             <div class="title-bar">
                 <h1>What's Next</h1>
             </div>
@@ -1457,7 +1543,7 @@ heading = needed</pre>
 
                 <div class="spacer"></div>
 
-                <div class="insight-box">The key insight: <code style="font-family: 'Fira Code', monospace;">(needed - current) % 4</code> &mdash; one formula replaces all dictionaries. Tomorrow you'll code it!</div>
+                <div class="insight-box">The key insight: <code style="font-family: 'Fira Code', monospace;">(needed - current) % 4</code> handles every turn. Tomorrow you'll code it!</div>
 
                 <div class="illustration" style="margin-top: 20px;">
                     <svg width="572" height="156" viewBox="0 0 440 120">
@@ -1489,7 +1575,7 @@ heading = needed</pre>
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
-                <span class="slide-counter">10 / 10</span>
+                <span class="slide-counter">11 / 11</span>
                 <button onclick="nextSlide()" class="nav-btn next-btn" disabled>Next</button>
             </div>
         </div>

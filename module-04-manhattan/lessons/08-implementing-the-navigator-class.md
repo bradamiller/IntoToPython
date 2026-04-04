@@ -102,7 +102,7 @@ By the end of this lesson, students will be able to:
              return 3  # West
      ```
    - Ask: "Why does this use `self.position` instead of a `current` parameter?" Answer: The Navigator already knows its own position. That is the advantage of a class -- methods can access the object's own data.
-   - Ask: "Why numbers instead of strings?" Answer: Numbers let us do math. We can calculate how many turns we need with subtraction and modular arithmetic, instead of looking things up in dictionaries.
+   - Ask: "Why numbers instead of strings?" Answer: Numbers let us do math. We can calculate how many turns we need with subtraction and modular arithmetic -- one formula handles every case.
 
 3. **Step 3: Implement `turn_to()`**:
    - This is the core of the Navigator, and it is beautifully simple thanks to the modular arithmetic from Lesson 7:

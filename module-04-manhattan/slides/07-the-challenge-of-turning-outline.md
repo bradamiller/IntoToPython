@@ -45,7 +45,7 @@
 
 **For display:** `HEADING_NAMES = ["N", "E", "S", "W"]`
 
-**Key Idea:** Numbers let us do math with headings — no dictionaries needed!
+**Key Idea:** Numbers let us do math with headings — one formula handles all cases!
 
 ---
 
@@ -96,7 +96,7 @@ col_diff = next_pos[1] - current[1]   # 0 - 0 = 0
 ---
 
 ## Slide 6: The Formula in Python
-**Two simple functions — no dictionaries needed!**
+**Two simple functions — clean and complete!**
 
 ```python
 HEADING_NAMES = ["N", "E", "S", "W"]
@@ -117,7 +117,7 @@ def count_right_turns(current, needed):
     return (needed - current) % 4
 ```
 
-**Compare:** The old approach needed two dictionaries (`right_turns` and `left_turns`) plus if/elif/else logic. The new approach uses one formula!
+**That's it!** Two functions, one formula, and every possible turn is covered.
 
 ---
 
@@ -147,7 +147,7 @@ def count_right_turns(current, needed):
 heading = needed
 ```
 
-**That's it!** Once the robot finishes turning to face the needed direction, the new heading IS the needed heading. No dictionary lookup required.
+**That's it!** Once the robot finishes turning to face the needed direction, the new heading IS the needed heading.
 
 **In the path loop:**
 

@@ -219,7 +219,7 @@ def count_right_turns(current, needed):
 
 ## Reflection
 
-**The Manhattan algorithm tells the robot WHERE to go, but the turning logic tells it HOW to get there. Why is using numbers and a formula better than using strings and dictionaries?**
+**The Manhattan algorithm tells the robot WHERE to go, but the turning logic tells it HOW to get there. What makes numeric headings and modular arithmetic so powerful for solving the turning problem?**
 
 _________________________________________________________________
 

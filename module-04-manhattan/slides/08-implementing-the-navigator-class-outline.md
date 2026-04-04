@@ -121,7 +121,7 @@ def turn_to(self, needed_heading):
 - 2 turns = two right turns (180 degrees)
 - 3 turns = three right turns (270 degrees = one left turn)
 
-**No dictionaries needed!** One formula handles every case.
+**One formula handles every case.**
 
 ---
 
