@@ -127,17 +127,17 @@ class Navigator:
             return 3  # West
 
     def turn_to(self, needed_heading):
-        turns = (needed_heading - self.heading) % 4
-        for i in range(turns):
+        while self.heading != needed_heading:
             self.line_track.turn_right()
-        self.heading = needed_heading
+            self.heading = self.heading + 1
+            if self.heading == 4:
+                self.heading = 0
 
     def drive_path(self, path):
         for i in range(1, len(path)):
             next_pos = path[i]
             needed = self.get_needed_heading(next_pos)
-            turns = (needed - self.heading) % 4
-            if turns == 0:
+            if self.heading == needed:
                 self.line_track.drivetrain.straight(8)
             self.turn_to(needed)
             self.line_track.track_until_cross()

@@ -99,8 +99,8 @@ By the end of this lesson, students will be able to:
    - Path: `[(0, 0), (1, 0), (2, 0)]`
    - Navigator starts heading 0 (North):
      ```
-     Step 1: At (0,0) heading 0 (N), need 2 (S) --> turns = (2 - 0) % 4 = 2 right turns, drive to (1,0)
-     Step 2: At (1,0) heading 2 (S), need 2 (S) --> turns = (2 - 2) % 4 = 0, no turn, drive to (2,0)
+     Step 1: At (0,0) heading 0 (N), need 2 (S) --> count clockwise: 0→1→2 = 2 right turns, drive to (1,0)
+     Step 2: At (1,0) heading 2 (S), need 2 (S) --> already facing S, no turn, drive to (2,0)
      ```
    - "After this leg, manhattan.position = (2, 0), navigator.position = (2, 0), navigator.heading = 2 (S)."
 
@@ -164,7 +164,7 @@ By the end of this lesson, students will be able to:
 | Category | Points | Criteria |
 |---|---|---|
 | **Manhattan Class** | 10 | Class is complete and correctly computes paths. `compute_path()` returns correct coordinate lists for any start/destination pair. |
-| **Navigator Class** | 15 | Class has correct `__init__`, `get_needed_heading()`, `turn_to()`, and `drive_path()` methods. Turn logic uses modular arithmetic `(needed - current) % 4` correctly. Position and heading updated correctly. |
+| **Navigator Class** | 15 | Class has correct `__init__`, `get_needed_heading()`, `turn_to()`, and `drive_path()` methods. Turn logic uses a while loop to turn right until heading matches. Position and heading updated correctly. |
 | **Main Program** | 10 | Creates both objects, defines 4+ destinations, loops through destinations computing and driving each path. Updates `manhattan.position` after each leg. |
 | **Robot Demonstration** | 10 | Robot physically navigates to all destinations on the grid. Turns are correct. Robot arrives at each destination cell. |
 | **Planning & Documentation** | 5 | Completed planning worksheet. Hand-trace of at least one leg. Testing checklist followed. |
@@ -256,16 +256,19 @@ class Navigator:
         elif col_diff == -1:
             return 3  # W
 
-    def turn_to(self, needed):
-        turns = (needed - self.heading) % 4
-        for i in range(turns):
+    def turn_to(self, needed_heading):
+        while self.heading != needed_heading:
             self.line_track.turn_right()
-        self.heading = needed
+            self.heading = self.heading + 1
+            if self.heading == 4:
+                self.heading = 0
 
     def drive_path(self, path):
         for i in range(1, len(path)):
             next_pos = path[i]
             needed = self.get_needed_heading(next_pos)
+            if self.heading == needed:
+                self.line_track.drivetrain.straight(8)
             self.turn_to(needed)
             self.line_track.track_until_cross()
             self.position = next_pos

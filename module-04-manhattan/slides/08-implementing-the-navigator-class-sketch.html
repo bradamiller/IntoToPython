@@ -1019,21 +1019,22 @@ print(direction)   <span style="color: #85c88a;"># 2 — South (row increases)</
                 <div class="two-col">
                     <div class="col">
                         <div class="code-block" style="font-size: 15px; padding: 14px 18px;">def turn_to(self, needed_heading):
-    turns = (needed_heading - self.heading) % 4
-    for i in range(turns):
+    while self.heading != needed_heading:
         self.line_track.turn_right()
-    self.heading = needed_heading</div>
+        self.heading = self.heading + 1
+        if self.heading == 4:
+            self.heading = 0</div>
 
                         <div class="answer-box">
-                            <p class="body-text" style="margin-left: 8px;"><strong>Key idea:</strong> <code style="font-family: 'Fira Code', monospace;">turn_right()</code> is the sensor-based turn from Module 2 that finds the outbound line. One formula handles every case &mdash; just count right turns!</p>
+                            <p class="body-text" style="margin-left: 8px;"><strong>Key idea:</strong> <code style="font-family: 'Fira Code', monospace;">turn_right()</code> is the sensor-based turn from Module 2 that finds the outbound line. The while loop keeps turning right until we face the right way!</p>
                         </div>
 
                         <p class="header-text" style="font-size: 22px;">Examples:</p>
-                        <div class="code-block compact" style="font-size: 14px; margin: 6px 0; max-width: 420px;">heading=0 (N), needed=1 (E)
-turns = (1 - 0) % 4 = 1  <span style="color: #85c88a;"># one right turn</span>
+                        <div class="code-block compact" style="font-size: 14px; margin: 6px 0; max-width: 420px;">Heading 0(N), need 1(E):
+  0 &rarr; 1  <span style="color: #85c88a;"># 1 right turn</span>
 
-heading=0 (N), needed=3 (W)
-turns = (3 - 0) % 4 = 3  <span style="color: #85c88a;"># three right turns</span></div>
+Heading 0(N), need 3(W):
+  0 &rarr; 1 &rarr; 2 &rarr; 3  <span style="color: #85c88a;"># 3 right turns</span></div>
                     </div>
                     <div class="col">
                         <!-- Turn diagram - clockwise numbered -->
@@ -1064,7 +1065,7 @@ turns = (3 - 0) % 4 = 3  <span style="color: #85c88a;"># three right turns</span
                                 <text x="210" y="106" font-family="Caveat, cursive" font-size="13" fill="#5b8fa8" font-weight="600">2 turns</text>
 
                                 <!-- Key insight -->
-                                <text x="120" y="200" font-family="Caveat, cursive" font-size="15" fill="#e8a87c" text-anchor="middle" font-weight="600">Always turn right! Modular arithmetic does the rest.</text>
+                                <text x="120" y="200" font-family="Caveat, cursive" font-size="15" fill="#e8a87c" text-anchor="middle" font-weight="600">Keep turning right until heading matches!</text>
                             </svg>
                         </div>
                     </div>
@@ -1089,9 +1090,8 @@ turns = (3 - 0) % 4 = 3  <span style="color: #85c88a;"># three right turns</span
     for i in range(1, len(path)):
         next_pos = path[i]
         needed = self.get_needed_heading(next_pos)
-        turns = (needed - self.heading) % 4
 
-        if turns == 0:
+        if self.heading == needed:
             <span style="color: #85c88a;"># Going straight — clear the intersection first</span>
             self.line_track.drivetrain.straight(8)
 

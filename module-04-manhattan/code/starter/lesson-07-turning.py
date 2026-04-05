@@ -11,13 +11,14 @@
 #   3 = WEST  (moving to a smaller column)
 #
 # To figure out how many right turns are needed:
-#   turns = (needed_heading - current_heading) % 4
-#
-# Examples:
+#   Count clockwise from the current heading to the needed heading.
 #   0 right turns = already facing the right way
 #   1 right turn  = turn right once (90 degrees)
 #   2 right turns = turn around (180 degrees)
 #   3 right turns = turn right three times (same as one left turn)
+#
+# In Lesson 8, the Navigator class will do this with a while loop
+# that turns right and increments the heading until it matches.
 
 HEADING_NAMES = ["N", "E", "S", "W"]
 
@@ -40,24 +41,7 @@ def get_needed_heading(current, next_pos):
     pass
 
 
-# ===== PART 2: count_right_turns =====
-# Given the current heading and the needed heading,
-# figure out how many right turns are needed.
-
-def count_right_turns(current_heading, needed_heading):
-    """Return the number of right turns needed (0, 1, 2, or 3).
-
-    current_heading: 0-3 (the direction the robot is facing)
-    needed_heading:  0-3 (the direction the robot needs to face)
-
-    Hint: Use the modulo operator %
-    """
-    # TODO: Calculate and return the number of right turns
-    # Formula: (needed_heading - current_heading) % 4
-    pass
-
-
-# ===== PART 3: Test Your Functions =====
+# ===== PART 2: Test Your Functions =====
 
 # TODO: Uncomment and test get_needed_heading
 # print("===== Testing get_needed_heading =====")
@@ -67,11 +51,13 @@ def count_right_turns(current_heading, needed_heading):
 # print("(0,1) to (0,0):", get_needed_heading((0,1), (0,0)))  # should be 3 (West)
 # print()
 
-# TODO: Uncomment and test count_right_turns
-# print("===== Testing count_right_turns =====")
-# print("Heading N, need N:", count_right_turns(0, 0))  # should be 0
-# print("Heading N, need E:", count_right_turns(0, 1))  # should be 1
-# print("Heading N, need S:", count_right_turns(0, 2))  # should be 2
-# print("Heading N, need W:", count_right_turns(0, 3))  # should be 3
-# print("Heading E, need S:", count_right_turns(1, 2))  # should be 1
-# print("Heading W, need N:", count_right_turns(3, 0))  # should be 1
+# TODO: Trace through a path on paper
+# For each step, figure out the needed heading and count
+# how many clockwise steps from the current heading.
+# Path: [(0,0), (1,0), (2,0), (2,1), (2,2)]
+# Starting heading: 0 (North)
+#
+# Step 1: (0,0) to (1,0) — need heading ___, right turns: ___
+# Step 2: (1,0) to (2,0) — need heading ___, right turns: ___
+# Step 3: (2,0) to (2,1) — need heading ___, right turns: ___
+# Step 4: (2,1) to (2,2) — need heading ___, right turns: ___

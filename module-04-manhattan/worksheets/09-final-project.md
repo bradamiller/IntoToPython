@@ -133,7 +133,7 @@ Total: _____ steps.
 | 6 | (__, __) | (__, __) | __________ | __________ | __________ | __________ |
 
 *Headings: 0 = North, 1 = East, 2 = South, 3 = West*
-*Right turns = (needed - current) % 4*
+*Right turns = count clockwise steps from current to needed*
 
 (Add more rows if needed on the back of this page.)
 
@@ -245,23 +245,21 @@ class Navigator:
         elif col_diff == -1:
             return 3
 
-    def turn_to(self, needed):
-        right_turns = (needed - self.heading) % 4
-        if right_turns == 1:
-            self.line_track.turn(90)
-        elif right_turns == 2:
-            self.line_track.turn(180)
-        elif right_turns == 3:
-            self.line_track.turn(-90)
-        self.heading = needed
+    def turn_to(self, needed_heading):
+        while self.heading != needed_heading:
+            self.line_track.turn_right()
+            self.heading = self.heading + 1
+            if self.heading == 4:
+                self.heading = 0
 
     def drive_path(self, path):
         for i in range(1, len(path)):
             next_pos = path[i]
             needed = self.get_needed_heading(next_pos)
+            if self.heading == needed:
+                self.line_track.drivetrain.straight(8)
             self.turn_to(needed)
             self.line_track.track_until_cross()
-            self.line_track.straight(8)
             self.position = next_pos
 
 

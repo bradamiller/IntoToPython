@@ -35,7 +35,7 @@ Given two consecutive coordinates, determine the **heading number** the robot ne
 
 Using only right turns, how many right turns does it take to go from the current heading to the needed heading? Fill in each cell with **0**, **1**, **2**, or **3**.
 
-**The formula:** `turns = (needed - current) % 4`
+**Method:** Count clockwise steps from current heading to needed heading. Headings go clockwise: 0(N) -> 1(E) -> 2(S) -> 3(W) -> back to 0(N). Count how many steps clockwise to get from current to needed.
 
 | Current \ Needed | 0 (N) | 1 (E) | 2 (S) | 3 (W) |
 |---|---|---|---|---|
@@ -54,20 +54,20 @@ Using only right turns, how many right turns does it take to go from the current
 
 ## Part 3: Determine the Number of Right Turns
 
-For each scenario, use the formula `turns = (needed - current) % 4` to calculate the number of right turns.
+For each scenario, count clockwise steps from current heading to needed heading to find the number of right turns.
 
-| Scenario | Current Heading | Needed Heading | (needed - current) | % 4 | Right Turns |
-|---|---|---|---|---|---|
-| 1 | 0 (N) | 1 (E) | 1 - 0 = _____ | _____ % 4 = _____ | _____ |
-| 2 | 1 (E) | 1 (E) | 1 - 1 = _____ | _____ % 4 = _____ | _____ |
-| 3 | 2 (S) | 0 (N) | 0 - 2 = _____ | _____ % 4 = _____ | _____ |
-| 4 | 3 (W) | 2 (S) | 2 - 3 = _____ | _____ % 4 = _____ | _____ |
-| 5 | 1 (E) | 0 (N) | 0 - 1 = _____ | _____ % 4 = _____ | _____ |
-| 6 | 0 (N) | 3 (W) | 3 - 0 = _____ | _____ % 4 = _____ | _____ |
-| 7 | 2 (S) | 3 (W) | 3 - 2 = _____ | _____ % 4 = _____ | _____ |
-| 8 | 3 (W) | 1 (E) | 1 - 3 = _____ | _____ % 4 = _____ | _____ |
+| Scenario | Current Heading | Needed Heading | Clockwise Steps | Right Turns |
+|---|---|---|---|---|
+| 1 | 0 (N) | 1 (E) | 0->1 = _____ | _____ |
+| 2 | 1 (E) | 1 (E) | already there = _____ | _____ |
+| 3 | 2 (S) | 0 (N) | 2->3->0 = _____ | _____ |
+| 4 | 3 (W) | 2 (S) | 3->0->1->2 = _____ | _____ |
+| 5 | 1 (E) | 0 (N) | 1->2->3->0 = _____ | _____ |
+| 6 | 0 (N) | 3 (W) | 0->1->2->3 = _____ | _____ |
+| 7 | 2 (S) | 3 (W) | 2->3 = _____ | _____ |
+| 8 | 3 (W) | 1 (E) | 3->0->1 = _____ | _____ |
 
-**Why does the `% 4` make negative numbers work correctly?** ____________________________
+**Why does counting clockwise always give the correct number of right turns?** ____________________________
 
 ---
 
@@ -185,9 +185,9 @@ For each scenario, draw an arrow inside the box showing which way the robot is f
 
 ---
 
-## Part 8: Heading and Turning Logic in Code
+## Part 8: Heading Logic in Code
 
-Fill in the blanks to complete the heading and turning functions:
+Fill in the blanks to complete the `get_needed_heading` function:
 
 ```python
 HEADING_NAMES = ["N", "E", "S", "W"]
@@ -204,22 +204,23 @@ def get_needed_heading(current_pos, next_pos):
         return _____      # South
     elif col_diff == _____:
         return _____      # West
-
-def count_right_turns(current, needed):
-    return (__________ - __________) % _____
 ```
 
-**Test your understanding -- what does `count_right_turns(1, 0)` return?** __________
+**Test your understanding:**
 
-**What does `count_right_turns(3, 3)` return?** __________
+**What does `get_needed_heading((0,0), (1,0))` return?** __________
 
-**What does `count_right_turns(0, 2)` return?** __________
+**What does `get_needed_heading((2,3), (2,2))` return?** __________
+
+**What does `get_needed_heading((1,1), (0,1))` return?** __________
+
+*In the next lesson, the Navigator class will use a while loop to turn right until the heading matches -- the code version of counting clockwise steps.*
 
 ---
 
 ## Reflection
 
-**The Manhattan algorithm tells the robot WHERE to go, but the turning logic tells it HOW to get there. What makes numeric headings and modular arithmetic so powerful for solving the turning problem?**
+**The Manhattan algorithm tells the robot WHERE to go, but the turning logic tells it HOW to get there. What makes numeric headings and clockwise counting so powerful for solving the turning problem?**
 
 _________________________________________________________________
 

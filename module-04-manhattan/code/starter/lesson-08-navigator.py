@@ -161,19 +161,20 @@ class Navigator:
         needed_heading: 0, 1, 2, or 3
 
         Logic:
-          - Calculate: turns = (needed_heading - self.heading) % 4
-          - Turn right that many times using self.line_track.turn_right()
-          - Update self.heading = needed_heading
+          - While self.heading != needed_heading:
+            - Call self.line_track.turn_right() to turn right once
+            - Add 1 to self.heading
+            - If self.heading == 4, reset it to 0
 
         Examples:
-          - 0 turns: already facing the right way (no turn)
-          - 1 turn:  one right turn
-          - 2 turns: two right turns (180 degrees)
-          - 3 turns: three right turns (same as one left turn)
+          - Heading 0, need 1: one right turn (0 -> 1)
+          - Heading 0, need 2: two right turns (0 -> 1 -> 2)
+          - Heading 3, need 0: one right turn (3 -> 0, wraps around)
         """
-        # TODO: Calculate the number of right turns needed
-        # TODO: Use a for loop to call self.line_track.turn_right() that many times
-        # TODO: Update self.heading to needed_heading
+        # TODO: Use a while loop that keeps turning right
+        #       until self.heading equals needed_heading
+        # TODO: Inside the loop: turn right, add 1 to heading,
+        #       reset to 0 if heading reaches 4
         pass
 
     def drive_path(self, path):
@@ -186,11 +187,10 @@ class Navigator:
           - For each step:
             1. Get the next position from the path
             2. Determine the needed heading using get_needed_heading()
-            3. Calculate how many turns are needed
-            4. If 0 turns needed, clear the intersection: straight(8)
-            5. Turn to face the right direction using turn_to()
-            6. Follow the line to the next intersection: track_until_cross()
-            7. Update self.position to the new position
+            3. If already facing the right way, clear the intersection: straight(8)
+            4. Turn to face the right direction using turn_to()
+            5. Follow the line to the next intersection: track_until_cross()
+            6. Update self.position to the new position
         """
         # TODO: Write the for loop
         # TODO: For each step, get heading, clear if straight, turn, track, update

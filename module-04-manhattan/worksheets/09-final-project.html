@@ -674,7 +674,7 @@ Create Navigator at (<span class="inline-answer short"></span>, <span class="inl
                 </tr>
             </tbody>
         </table>
-        <p class="instruction" style="margin-top: 4px;"><em>Headings: 0 = North, 1 = East, 2 = South, 3 = West. Right turns = (needed - current) % 4</em></p>
+        <p class="instruction" style="margin-top: 4px;"><em>Headings: 0 = North, 1 = East, 2 = South, 3 = West. Count clockwise: 0&rarr;1&rarr;2&rarr;3&rarr;0</em></p>
         <p class="instruction" style="margin-top: 4px;">(Add more rows if needed on the back of this page.)</p>
 
         <div style="margin-top: 14px;">
@@ -809,14 +809,11 @@ class Manhattan:
             return 3
 
     def turn_to(self, needed):
-        right_turns = (needed - self.heading) % 4
-        if right_turns == 1:
-            self.line_track.turn(90)
-        elif right_turns == 2:
-            self.line_track.turn(180)
-        elif right_turns == 3:
-            self.line_track.turn(-90)
-        self.heading = needed
+        while self.heading != needed:
+            self.line_track.turn_right()
+            self.heading = self.heading + 1
+            if self.heading == 4:
+                self.heading = 0
 
     def drive_path(self, path):
         for i in range(1, len(path)):

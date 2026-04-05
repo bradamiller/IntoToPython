@@ -6,13 +6,13 @@
 **Learning Objectives:**
 - Represent heading as a number: 0=N, 1=E, 2=S, 3=W
 - Determine the needed heading from consecutive coordinates
-- Use modular arithmetic to calculate the number of right turns
+- Count right turns by stepping clockwise from current to needed heading
 - Work through turning logic on paper before coding
 
 **Agenda:**
 - What is heading? (5 min)
 - Heading from coordinates (10 min)
-- Counting right turns with a formula (15 min)
+- Counting right turns by stepping clockwise (15 min)
 - Practice worksheet (15 min)
 
 ---
@@ -27,7 +27,7 @@
 - Which direction do I NEED to face?
 - Do I need to turn? How many times?
 
-**Today:** We'll solve the turning puzzle with numbers and a simple formula.
+**Today:** We'll solve the turning puzzle with numbers and a simple counting approach.
 
 ---
 
@@ -45,7 +45,7 @@
 
 **For display:** `HEADING_NAMES = ["N", "E", "S", "W"]`
 
-**Key Idea:** Numbers let us do math with headings — one formula handles all cases!
+**Key Idea:** Numbers let us count clockwise steps from one heading to another!
 
 ---
 
@@ -76,7 +76,7 @@ col_diff = next_pos[1] - current[1]   # 0 - 0 = 0
 ## Slide 5: How Many Right Turns?
 **The key insight: we only need right turns!**
 
-**The formula:** `turns = (needed - current) % 4`
+**Count clockwise steps from current heading to needed heading:**
 
 | Result | Meaning | Physical turn |
 |---|---|---|
@@ -85,18 +85,18 @@ col_diff = next_pos[1] - current[1]   # 0 - 0 = 0
 | 2 | Two right turns | 180° (turn around) |
 | 3 | Three right turns | 270° clockwise |
 
-**Examples:**
-- Facing 0 (N), need 1 (E): `(1 - 0) % 4 = 1` → one right turn
-- Facing 0 (N), need 3 (W): `(3 - 0) % 4 = 3` → three right turns
-- Facing 2 (S), need 0 (N): `(0 - 2) % 4 = 2` → two right turns (180°)
-- Facing 1 (E), need 1 (E): `(1 - 1) % 4 = 0` → no turn needed
+**Examples — count clockwise from current to needed:**
+- Facing 0 (N), need 1 (E): 0→1 = 1 turn
+- Facing 0 (N), need 3 (W): 0→1→2→3 = 3 turns
+- Facing 2 (S), need 0 (N): 2→3→0 = 2 turns (180°)
+- Facing 1 (E), need 1 (E): already there = 0 turns
 
-**Why this works:** Python's `%` wraps negative numbers around, so `-2 % 4 = 2`, not `-2`.
+**Why this works:** Heading numbers go clockwise (0, 1, 2, 3), and after 3 we wrap back to 0. Each clockwise step is one right turn!
 
 ---
 
-## Slide 6: The Formula in Python
-**Two simple functions — clean and complete!**
+## Slide 6: Heading Logic in Python
+**One function determines the needed heading from coordinates:**
 
 ```python
 HEADING_NAMES = ["N", "E", "S", "W"]
@@ -112,12 +112,11 @@ def get_needed_heading(current_pos, next_pos):
         return 2    # South
     elif col_diff == -1:
         return 3    # West
-
-def count_right_turns(current, needed):
-    return (needed - current) % 4
 ```
 
-**That's it!** Two functions, one formula, and every possible turn is covered.
+**How it works:** Compare the two coordinates. The row/column difference tells you which of the four headings is needed.
+
+**Counting right turns?** You already know how to do that on paper -- count clockwise steps from current to needed. In the next lesson, the Navigator class will use a while loop to turn right until the heading matches.
 
 ---
 
@@ -125,29 +124,23 @@ def count_right_turns(current, needed):
 **Path: [(0,0), (1,0), (2,0), (2,1), (2,2)]**
 **Starting heading: 0 (N)**
 
-| Step | From | To | Needed | Current | Formula | Turns | New Heading |
+| Step | From | To | Needed | Current | Count | Turns | New Heading |
 |---|---|---|---|---|---|---|---|
-| 1 | (0,0) | (1,0) | 2 (S) | 0 (N) | (2-0)%4 | 2 | 2 (S) |
-| 2 | (1,0) | (2,0) | 2 (S) | 2 (S) | (2-2)%4 | 0 | 2 (S) |
-| 3 | (2,0) | (2,1) | 1 (E) | 2 (S) | (1-2)%4 | 3 | 1 (E) |
-| 4 | (2,1) | (2,2) | 1 (E) | 1 (E) | (1-1)%4 | 0 | 1 (E) |
+| 1 | (0,0) | (1,0) | 2 (S) | 0 (N) | 0→1→2 | 2 | 2 (S) |
+| 2 | (1,0) | (2,0) | 2 (S) | 2 (S) | already there | 0 | 2 (S) |
+| 3 | (2,0) | (2,1) | 1 (E) | 2 (S) | 2→3→0→1 | 3 | 1 (E) |
+| 4 | (2,1) | (2,2) | 1 (E) | 1 (E) | already there | 0 | 1 (E) |
 
 **Notice:**
-- Step 1: 2 right turns (facing wrong way — equivalent to 180°)
+- Step 1: Count 0→1→2 = 2 right turns (facing wrong way — equivalent to 180°)
 - Step 2: 0 turns (already facing South)
-- Step 3: 3 right turns (changing from rows to columns)
+- Step 3: Count 2→3→0→1 = 3 right turns (wraps around from 3 back to 0!)
 - Step 4: 0 turns (continuing East)
 
 ---
 
 ## Slide 8: Updating Heading After Turning
-**After turning, the heading update is trivial:**
-
-```python
-heading = needed
-```
-
-**That's it!** Once the robot finishes turning to face the needed direction, the new heading IS the needed heading.
+**After turning, the heading simply becomes the needed heading.**
 
 **In the path loop:**
 
@@ -156,13 +149,14 @@ heading = 0  # starting heading
 
 for i in range(len(path) - 1):
     needed = get_needed_heading(path[i], path[i+1])
-    turns = count_right_turns(heading, needed)
-    # Robot turns right `turns` times
-    # Robot drives forward one segment
+    # Turn right until facing `needed` (code comes in Lesson 8!)
+    # Drive forward one segment
     heading = needed  # update heading
 ```
 
-**Critical:** If you forget `heading = needed`, subsequent turn counts will be wrong!
+**Critical:** If you forget `heading = needed`, subsequent turn calculations will be wrong!
+
+**Next lesson:** The Navigator class will implement `turn_to()` with a while loop that turns right until the heading matches.
 
 ---
 
@@ -181,7 +175,7 @@ for i in range(len(path) - 1):
 
 **Checkpoints:**
 - Can you compute `get_needed_heading()` from two coordinates?
-- Can you apply `(needed - current) % 4` to count right turns?
+- Can you count clockwise steps from the current heading to the needed heading?
 - Do you update the heading after each step?
 
 ---
@@ -190,12 +184,13 @@ for i in range(len(path) - 1):
 **What you did today:**
 - Represented heading as a number (0=N, 1=E, 2=S, 3=W)
 - Determined needed heading from coordinate differences
-- Used `(needed - current) % 4` to count right turns
+- Counted right turns by stepping clockwise from current to needed heading
 - Walked through complete paths updating heading at each step
 
 **Next lesson (Lesson 8):**
 - Implement the **Navigator class** in Python
-- Code `drive_path()` that turns right N times and drives for each step
+- Code `turn_to()` with a while loop that turns right until the heading matches
+- Code `drive_path()` that uses `turn_to()` and drives for each step
 - Connect the turning logic to actual robot movement
 
-**Key insight:** The hard part is the LOGIC, not the code. You solved the logic today — tomorrow you'll just translate it into Python.
+**Key insight:** The hard part is the LOGIC, not the code. You solved the logic today -- tomorrow you'll translate it into Python.

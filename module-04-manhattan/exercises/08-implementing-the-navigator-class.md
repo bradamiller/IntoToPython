@@ -20,16 +20,15 @@ This is the same logic from Lesson 7, now as a class method:
 - Return the heading number: 0 for North, 1 for East, 2 for South, 3 for West.
 
 ### Complete turn_to()
-Turn the robot to face a given heading using modular arithmetic:
-- Calculate `turns = (needed_heading - self.heading) % 4`.
-- Loop that many times, calling `self.line_track.turn_right()` each time.
-- Update `self.heading` to the needed heading.
+Turn the robot to face a given heading by turning right in a while loop:
+- Use `while self.heading != needed_heading`: call `self.line_track.turn_right()`, then increment `self.heading` by 1 (wrap 4 to 0).
+- The loop naturally stops when the robot is facing the right direction.
 
 ### Complete drive_path()
 Drive the robot through a list of positions:
 - Loop from index **1** to the end (index 0 is the starting position — the robot is already there).
-- For each step: get the needed heading, compute the number of right turns.
-- If `turns == 0`, call `self.line_track.drivetrain.straight(8)` to clear the intersection.
+- For each step: get the needed heading.
+- If already facing the right way (`self.heading == needed`), call `self.line_track.drivetrain.straight(8)` to clear the intersection.
 - Call `self.turn_to(needed)` to turn the robot.
 - Call `self.line_track.track_until_cross()` to drive to the next intersection.
 - Update `self.position`.
@@ -44,7 +43,7 @@ Drive the robot through a list of positions:
 - The Navigator **does not plan** the path — it receives a path from Manhattan and drives it.
 - The Navigator **reuses LineTrack** from Module 2 — `track_until_cross()` for driving and `turn_right()` for turning.
 - The `for` loop starts at index 1 because the robot is already at `path[0]`.
-- When `turns == 0`, the robot must drive forward 8 cm to clear the current intersection before `track_until_cross()` looks for the next one.
+- When `self.heading == needed`, the robot must drive forward 8 cm to clear the current intersection before `track_until_cross()` looks for the next one.
 - After each step, update `self.position` so `get_needed_heading()` works correctly for the next step.
 - **Separation of concerns:** Manhattan plans, Navigator drives, LineTrack handles sensors.
 

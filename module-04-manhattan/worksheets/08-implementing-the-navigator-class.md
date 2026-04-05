@@ -64,20 +64,20 @@ Given the Navigator's current position and the next position, determine the need
 
 ## Part C: `turn_to()` Exercises
 
-For each scenario, compute the number of right turns using the formula: `turns = (needed - current) % 4`
+For each scenario, count clockwise steps from current heading to needed heading to find the number of right turns. Headings go clockwise: 0(N) -> 1(E) -> 2(S) -> 3(W) -> back to 0(N).
 
-| Current Heading | Needed Heading | Formula | Right Turns | New Heading |
+| Current Heading | Needed Heading | Clockwise Steps | Right Turns | New Heading |
 |---|---|---|---|---|
-| 0 (N) | 1 (E) | (1 - 0) % 4 = 1 | 1 | 1 (E) |
-| 0 (N) | 2 (S) | (2 - 0) % 4 = ____ | __________ | __________ |
-| 1 (E) | 1 (E) | (1 - 1) % 4 = ____ | __________ | __________ |
-| 1 (E) | 0 (N) | (0 - 1) % 4 = ____ | __________ | __________ |
-| 2 (S) | 3 (W) | (3 - 2) % 4 = ____ | __________ | __________ |
-| 2 (S) | 0 (N) | (0 - 2) % 4 = ____ | __________ | __________ |
-| 3 (W) | 2 (S) | (2 - 3) % 4 = ____ | __________ | __________ |
-| 3 (W) | 1 (E) | (1 - 3) % 4 = ____ | __________ | __________ |
-| 0 (N) | 3 (W) | (3 - 0) % 4 = ____ | __________ | __________ |
-| 1 (E) | 3 (W) | (3 - 1) % 4 = ____ | __________ | __________ |
+| 0 (N) | 1 (E) | 0->1 = 1 | 1 | 1 (E) |
+| 0 (N) | 2 (S) | 0->1->2 = ____ | __________ | __________ |
+| 1 (E) | 1 (E) | already there = ____ | __________ | __________ |
+| 1 (E) | 0 (N) | 1->2->3->0 = ____ | __________ | __________ |
+| 2 (S) | 3 (W) | 2->3 = ____ | __________ | __________ |
+| 2 (S) | 0 (N) | 2->3->0 = ____ | __________ | __________ |
+| 3 (W) | 2 (S) | 3->0->1->2 = ____ | __________ | __________ |
+| 3 (W) | 1 (E) | 3->0->1 = ____ | __________ | __________ |
+| 0 (N) | 3 (W) | 0->1->2->3 = ____ | __________ | __________ |
+| 1 (E) | 3 (W) | 1->2->3 = ____ | __________ | __________ |
 
 **How many of the 10 scenarios above required 0 right turns?** __________
 
@@ -151,24 +151,24 @@ class Navigator:
             return ____
 
     def turn_to(self, needed_heading):
-        turns = (__________ - __________) % ____
-        for i in range(________):
+        while self.heading != __________:
             self.line_track.______________()
-        self.heading = __________
+            self.heading = self.heading + __________
+            if self.heading == __________:
+                self.heading = __________
 
     def drive_path(self, path):
         for i in range(____, len(path)):
             next_pos = path[____]
             needed = self.get_needed_heading(____________)
-            turns = (needed - self.heading) % 4
-            if turns == ____:
+            if self.heading == ____________:
                 self.line_track.drivetrain.straight(____)
             self.turn_to(____________)
             self.line_track.track_until_cross()
             self.position = ____________
 ```
 
-**Why does `drive_path()` call `self.line_track.drivetrain.straight(8)` when `turns == 0`?**
+**Why does `drive_path()` call `self.line_track.drivetrain.straight(8)` when the robot is already facing the right way?**
 
 ____________________________________________________________________
 
@@ -217,18 +217,18 @@ ____________________________________________________________________
 
 ### Part C
 
-| Current Heading | Needed Heading | Formula | Right Turns | New Heading |
+| Current Heading | Needed Heading | Clockwise Steps | Right Turns | New Heading |
 |---|---|---|---|---|
-| 0 (N) | 1 (E) | (1 - 0) % 4 = 1 | 1 | 1 (E) |
-| 0 (N) | 2 (S) | (2 - 0) % 4 = 2 | 2 | 2 (S) |
-| 1 (E) | 1 (E) | (1 - 1) % 4 = 0 | 0 | 1 (E) |
-| 1 (E) | 0 (N) | (0 - 1) % 4 = 3 | 3 | 0 (N) |
-| 2 (S) | 3 (W) | (3 - 2) % 4 = 1 | 1 | 3 (W) |
-| 2 (S) | 0 (N) | (0 - 2) % 4 = 2 | 2 | 0 (N) |
-| 3 (W) | 2 (S) | (2 - 3) % 4 = 3 | 3 | 2 (S) |
-| 3 (W) | 1 (E) | (1 - 3) % 4 = 2 | 2 | 1 (E) |
-| 0 (N) | 3 (W) | (3 - 0) % 4 = 3 | 3 | 3 (W) |
-| 1 (E) | 3 (W) | (3 - 1) % 4 = 2 | 2 | 3 (W) |
+| 0 (N) | 1 (E) | 0->1 = 1 | 1 | 1 (E) |
+| 0 (N) | 2 (S) | 0->1->2 = 2 | 2 | 2 (S) |
+| 1 (E) | 1 (E) | already there = 0 | 0 | 1 (E) |
+| 1 (E) | 0 (N) | 1->2->3->0 = 3 | 3 | 0 (N) |
+| 2 (S) | 3 (W) | 2->3 = 1 | 1 | 3 (W) |
+| 2 (S) | 0 (N) | 2->3->0 = 2 | 2 | 0 (N) |
+| 3 (W) | 2 (S) | 3->0->1->2 = 3 | 3 | 2 (S) |
+| 3 (W) | 1 (E) | 3->0->1 = 2 | 2 | 1 (E) |
+| 0 (N) | 3 (W) | 0->1->2->3 = 3 | 3 | 3 (W) |
+| 1 (E) | 3 (W) | 1->2->3 = 2 | 2 | 3 (W) |
 
 0 right turns: 1 scenario. 2 right turns (180): 4 scenarios.
 
@@ -236,10 +236,10 @@ ____________________________________________________________________
 
 | Step | next_pos | Needed Heading | Current Heading | Right Turns | New Heading | New Position |
 |---|---|---|---|---|---|---|
-| 1 | (1, 0) | 2 (S) | 0 (N) | (2-0)%4 = 2 | 2 (S) | (1, 0) |
-| 2 | (2, 0) | 2 (S) | 2 (S) | (2-2)%4 = 0 | 2 (S) | (2, 0) |
-| 3 | (2, 1) | 1 (E) | 2 (S) | (1-2)%4 = 3 | 1 (E) | (2, 1) |
-| 4 | (2, 2) | 1 (E) | 1 (E) | (1-1)%4 = 0 | 1 (E) | (2, 2) |
+| 1 | (1, 0) | 2 (S) | 0 (N) | count 0->1->2 = 2 | 2 (S) | (1, 0) |
+| 2 | (2, 0) | 2 (S) | 2 (S) | already there = 0 | 2 (S) | (2, 0) |
+| 3 | (2, 1) | 1 (E) | 2 (S) | count 2->3->0->1 = 3 | 1 (E) | (2, 1) |
+| 4 | (2, 2) | 1 (E) | 1 (E) | already there = 0 | 1 (E) | (2, 2) |
 
 Final position: (2, 2). Final heading: 1 (E).
 
@@ -247,11 +247,11 @@ Final position: (2, 2). Final heading: 1 (E).
 
 | Step | next_pos | Needed Heading | Current Heading | Right Turns | New Heading | New Position |
 |---|---|---|---|---|---|---|
-| 1 | (3, 2) | 3 (W) | 1 (E) | (3-1)%4 = 2 | 3 (W) | (3, 2) |
-| 2 | (3, 1) | 3 (W) | 3 (W) | (3-3)%4 = 0 | 3 (W) | (3, 1) |
-| 3 | (2, 1) | 0 (N) | 3 (W) | (0-3)%4 = 1 | 0 (N) | (2, 1) |
-| 4 | (1, 1) | 0 (N) | 0 (N) | (0-0)%4 = 0 | 0 (N) | (1, 1) |
-| 5 | (0, 1) | 0 (N) | 0 (N) | (0-0)%4 = 0 | 0 (N) | (0, 1) |
+| 1 | (3, 2) | 3 (W) | 1 (E) | count 1->2->3 = 2 | 3 (W) | (3, 2) |
+| 2 | (3, 1) | 3 (W) | 3 (W) | already there = 0 | 3 (W) | (3, 1) |
+| 3 | (2, 1) | 0 (N) | 3 (W) | count 3->0 = 1 | 0 (N) | (2, 1) |
+| 4 | (1, 1) | 0 (N) | 0 (N) | already there = 0 | 0 (N) | (1, 1) |
+| 5 | (0, 1) | 0 (N) | 0 (N) | already there = 0 | 0 (N) | (0, 1) |
 
 Final position: (0, 1). Final heading: 0 (N).
 
@@ -281,23 +281,23 @@ class Navigator:
             return 3
 
     def turn_to(self, needed_heading):
-        turns = (needed_heading - self.heading) % 4
-        for i in range(turns):
+        while self.heading != needed_heading:
             self.line_track.turn_right()
-        self.heading = needed_heading
+            self.heading = self.heading + 1
+            if self.heading == 4:
+                self.heading = 0
 
     def drive_path(self, path):
         for i in range(1, len(path)):
             next_pos = path[i]
             needed = self.get_needed_heading(next_pos)
-            turns = (needed - self.heading) % 4
-            if turns == 0:
+            if self.heading == needed:
                 self.line_track.drivetrain.straight(8)
             self.turn_to(needed)
             self.line_track.track_until_cross()
             self.position = next_pos
 ```
 
-`straight(8)` is called when turns == 0 because the robot is already facing the right direction but is still sitting on the previous intersection. It needs to drive forward 8 cm to clear the intersection before `track_until_cross()` starts looking for the next crossing line.
+`straight(8)` is called when the robot is already facing the right direction but is still sitting on the previous intersection. It needs to drive forward 8 cm to clear the intersection before `track_until_cross()` starts looking for the next crossing line.
 
 The loop starts at 1 because index 0 is the starting position -- the robot is already there and does not need to drive to it.

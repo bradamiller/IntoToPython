@@ -433,8 +433,8 @@
         <p class="instruction">Using only right turns, how many right turns does it take to go from the current heading to the needed heading? Fill in each cell with <strong>0</strong>, <strong>1</strong>, <strong>2</strong>, or <strong>3</strong>.</p>
 
         <div class="tip-box">
-            <div class="tip-label">The formula:</div>
-            <code style="font-family: 'Fira Code', monospace; font-size: 14px;">turns = (needed - current) % 4</code>
+            <div class="tip-label">Clockwise counting:</div>
+            Starting at your current heading, count clockwise steps to the needed heading: 0 &rarr; 1 &rarr; 2 &rarr; 3 &rarr; 0
         </div>
 
         <table>
@@ -461,25 +461,25 @@
     <!-- ── Part 3: Determine the Number of Right Turns ── -->
     <div class="section">
         <div class="section-header">Part 3: Determine the Number of Right Turns</div>
-        <p class="instruction">For each scenario, use the formula <code style="font-family: 'Fira Code', monospace; font-size: 14px;">turns = (needed - current) % 4</code> to calculate the number of right turns.</p>
+        <p class="instruction">For each scenario, count clockwise steps from the current heading to the needed heading to find the number of right turns.</p>
 
         <table>
             <thead>
-                <tr><th style="width: 60px;">Scenario</th><th>Current Heading</th><th>Needed Heading</th><th>(needed - current)</th><th>% 4</th><th>Right Turns</th></tr>
+                <tr><th style="width: 60px;">Scenario</th><th>Current Heading</th><th>Needed Heading</th><th>Clockwise Steps</th><th>Right Turns</th></tr>
             </thead>
             <tbody>
-                <tr><td>1</td><td>0 (N)</td><td>1 (E)</td><td>1 - 0 = <span class="inline-answer short"></span></td><td><span class="inline-answer short"></span> % 4 = <span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
-                <tr><td>2</td><td>1 (E)</td><td>1 (E)</td><td>1 - 1 = <span class="inline-answer short"></span></td><td><span class="inline-answer short"></span> % 4 = <span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
-                <tr><td>3</td><td>2 (S)</td><td>0 (N)</td><td>0 - 2 = <span class="inline-answer short"></span></td><td><span class="inline-answer short"></span> % 4 = <span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
-                <tr><td>4</td><td>3 (W)</td><td>2 (S)</td><td>2 - 3 = <span class="inline-answer short"></span></td><td><span class="inline-answer short"></span> % 4 = <span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
-                <tr><td>5</td><td>1 (E)</td><td>0 (N)</td><td>0 - 1 = <span class="inline-answer short"></span></td><td><span class="inline-answer short"></span> % 4 = <span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
-                <tr><td>6</td><td>0 (N)</td><td>3 (W)</td><td>3 - 0 = <span class="inline-answer short"></span></td><td><span class="inline-answer short"></span> % 4 = <span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
-                <tr><td>7</td><td>2 (S)</td><td>3 (W)</td><td>3 - 2 = <span class="inline-answer short"></span></td><td><span class="inline-answer short"></span> % 4 = <span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
-                <tr><td>8</td><td>3 (W)</td><td>1 (E)</td><td>1 - 3 = <span class="inline-answer short"></span></td><td><span class="inline-answer short"></span> % 4 = <span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>1</td><td>0 (N)</td><td>1 (E)</td><td>0&rarr;1 = <span class="inline-answer short"></span> step</td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>2</td><td>1 (E)</td><td>1 (E)</td><td>already there = <span class="inline-answer short"></span> steps</td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>3</td><td>2 (S)</td><td>0 (N)</td><td>2&rarr;<span class="inline-answer short"></span>&rarr;<span class="inline-answer short"></span> = <span class="inline-answer short"></span> steps</td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>4</td><td>3 (W)</td><td>2 (S)</td><td>3&rarr;<span class="inline-answer short"></span>&rarr;<span class="inline-answer short"></span>&rarr;<span class="inline-answer short"></span> = <span class="inline-answer short"></span> steps</td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>5</td><td>1 (E)</td><td>0 (N)</td><td>1&rarr;<span class="inline-answer short"></span>&rarr;<span class="inline-answer short"></span>&rarr;<span class="inline-answer short"></span> = <span class="inline-answer short"></span> steps</td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>6</td><td>0 (N)</td><td>3 (W)</td><td>0&rarr;<span class="inline-answer short"></span>&rarr;<span class="inline-answer short"></span>&rarr;<span class="inline-answer short"></span> = <span class="inline-answer short"></span> steps</td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>7</td><td>2 (S)</td><td>3 (W)</td><td>2&rarr;3 = <span class="inline-answer short"></span> step</td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>8</td><td>3 (W)</td><td>1 (E)</td><td>3&rarr;<span class="inline-answer short"></span>&rarr;<span class="inline-answer short"></span> = <span class="inline-answer short"></span> steps</td><td><span class="inline-answer short"></span></td></tr>
             </tbody>
         </table>
 
-        <p style="margin-top: 10px;"><strong>Why does the <code style="font-family: 'Fira Code', monospace; font-size: 14px;">% 4</code> make negative numbers work correctly?</strong> <span class="inline-answer long"></span></p>
+        <p style="margin-top: 10px;"><strong>Why does counting clockwise always give the correct number of right turns?</strong> <span class="inline-answer long"></span></p>
     </div>
 
     <!-- ── Part 4: Trace a Path with Heading Updates ── -->
@@ -685,9 +685,9 @@
 <!-- ════════ PAGE 4 ════════ -->
 <div class="page page-break">
 
-    <!-- ── Part 8: Heading and Turning Logic in Code ── -->
+    <!-- ── Part 8: Heading Logic in Code ── -->
     <div class="section">
-        <div class="section-header">Part 8: Heading and Turning Logic in Code</div>
+        <div class="section-header">Part 8: Heading Logic in Code</div>
         <p class="instruction">Fill in the blanks to complete the heading and turning functions.</p>
 
         <div class="code-block">HEADING_NAMES = ["N", "E", "S", "W"]
@@ -705,14 +705,16 @@ def get_needed_heading(current_pos, next_pos):
     elif col_diff == <span class="inline-answer short"></span>:
         return <span class="inline-answer short"></span>      # West
 
-def count_right_turns(current, needed):
-    return (<span class="inline-answer"></span> - <span class="inline-answer"></span>) % <span class="inline-answer short"></span></div>
+
+# Count right turns on paper:
+# count clockwise from current to needed
+# The Navigator class (Lesson 8) will code this!</div>
 
         <p style="margin-top: 14px;"><strong>Test your understanding:</strong></p>
         <ol class="questions">
-            <li>What does <code style="font-family: 'Fira Code', monospace; font-size: 14px;">count_right_turns(1, 0)</code> return? <span class="inline-answer"></span></li>
-            <li>What does <code style="font-family: 'Fira Code', monospace; font-size: 14px;">count_right_turns(3, 3)</code> return? <span class="inline-answer"></span></li>
-            <li>What does <code style="font-family: 'Fira Code', monospace; font-size: 14px;">count_right_turns(0, 2)</code> return? <span class="inline-answer"></span></li>
+            <li>What does <code style="font-family: 'Fira Code', monospace; font-size: 14px;">get_needed_heading((0,0), (1,0))</code> return? <span class="inline-answer"></span></li>
+            <li>What does <code style="font-family: 'Fira Code', monospace; font-size: 14px;">get_needed_heading((2,3), (2,2))</code> return? <span class="inline-answer"></span></li>
+            <li>What does <code style="font-family: 'Fira Code', monospace; font-size: 14px;">get_needed_heading((1,1), (0,1))</code> return? <span class="inline-answer"></span></li>
         </ol>
     </div>
 
@@ -720,7 +722,7 @@ def count_right_turns(current, needed):
     <div class="section">
         <div class="reflection-box">
             <div class="reflection-label">Reflection</div>
-            <p>The Manhattan algorithm tells the robot <strong>WHERE</strong> to go, but the turning logic tells it <strong>HOW</strong> to get there. What makes numeric headings and modular arithmetic so powerful for solving the turning problem?</p>
+            <p>The Manhattan algorithm tells the robot <strong>WHERE</strong> to go, but the turning logic tells it <strong>HOW</strong> to get there. What makes numeric headings and clockwise counting so powerful for solving the turning problem?</p>
             <div class="answer-lines-3">
                 <span class="answer-line"></span>
                 <span class="answer-line"></span>

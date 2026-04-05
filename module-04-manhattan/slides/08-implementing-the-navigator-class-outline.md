@@ -103,25 +103,25 @@ print(HEADING_NAMES[needed])   # "S" — need heading 2 (row increases)
 
 ---
 
-## Slide 6: turn_to() — Modular Arithmetic
+## Slide 6: turn_to() — Turn Right Until Aligned
 **Turn the robot using right turns only:**
 
 ```python
 def turn_to(self, needed_heading):
-    turns = (needed_heading - self.heading) % 4
-    for i in range(turns):
+    while self.heading != needed_heading:
         self.line_track.turn_right()
-    self.heading = needed_heading
+        self.heading = self.heading + 1
+        if self.heading == 4:
+            self.heading = 0
 ```
 
 **Why this works:**
-- `(needed - current) % 4` always gives 0, 1, 2, or 3
-- 0 turns = already facing right way
-- 1 turn = one right turn (90 degrees)
-- 2 turns = two right turns (180 degrees)
-- 3 turns = three right turns (270 degrees = one left turn)
+- Each pass through the loop makes one right turn and steps the heading clockwise
+- After 3 wraps back to 0, just like the compass: N→E→S→W→N
+- The loop stops when heading matches the needed heading
+- 0 iterations = already facing right way, 1 = one right turn, 2 = 180°, 3 = 270°
 
-**One formula handles every case.**
+**The while loop handles every case.**
 
 ---
 
@@ -133,15 +133,14 @@ def drive_path(self, path):
     for i in range(1, len(path)):
         next_pos = path[i]
         needed = self.get_needed_heading(next_pos)
-        turns = (needed - self.heading) % 4
-        if turns == 0:
+        if self.heading == needed:
             self.line_track.drivetrain.straight(8)
         self.turn_to(needed)
         self.line_track.track_until_cross()
         self.position = next_pos
 ```
 
-**Why `straight(8)` when turns == 0?**
+**Why `straight(8)` when heading already matches?**
 - Robot is sitting on the crossing line from the previous step
 - `track_until_cross()` would immediately re-detect it!
 - Drive 8 cm forward to clear the intersection first
@@ -206,7 +205,7 @@ print("Arrived at", HEADING_NAMES[nav.heading])
 **What you did today:**
 - Implemented the Navigator class with drive_path()
 - Reused LineTrack from Module 2 — composition in action!
-- Used modular arithmetic for elegant turn calculations
+- Used a while loop to count and execute right turns
 
 **Next lesson (Lesson 9 — Final Project):**
 - Integrate Manhattan + Navigator into a complete program

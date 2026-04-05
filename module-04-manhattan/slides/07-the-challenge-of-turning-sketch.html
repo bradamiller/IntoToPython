@@ -674,12 +674,11 @@
             <a href="#slide-3" class="nav-item" onclick="showSlide(2)">What Is Heading?</a>
             <a href="#slide-4" class="nav-item" onclick="showSlide(3)">Direction from Coordinates</a>
             <a href="#slide-5" class="nav-item" onclick="showSlide(4)">What Turn Is Needed?</a>
-            <a href="#slide-6" class="nav-item" onclick="showSlide(5)">The % (Modulo) Operator</a>
-            <a href="#slide-7" class="nav-item" onclick="showSlide(6)">Turn Logic in Python</a>
-            <a href="#slide-8" class="nav-item" onclick="showSlide(7)">Walking Through a Path</a>
-            <a href="#slide-9" class="nav-item" onclick="showSlide(8)">Updating Heading</a>
-            <a href="#slide-10" class="nav-item" onclick="showSlide(9)">Your Turn!</a>
-            <a href="#slide-11" class="nav-item" onclick="showSlide(10)">What's Next</a>
+            <a href="#slide-6" class="nav-item" onclick="showSlide(5)">Heading Logic in Python</a>
+            <a href="#slide-7" class="nav-item" onclick="showSlide(6)">Walking Through a Path</a>
+            <a href="#slide-8" class="nav-item" onclick="showSlide(7)">Updating Heading</a>
+            <a href="#slide-9" class="nav-item" onclick="showSlide(8)">Your Turn!</a>
+            <a href="#slide-10" class="nav-item" onclick="showSlide(9)">What's Next</a>
         </nav>
     </div>
 
@@ -700,7 +699,7 @@
                         <h3>Learning Objectives</h3>
                         <p class="bullet">Understand heading as a number 0&ndash;3 (N, E, S, W clockwise)</p>
                         <p class="bullet">Determine the needed heading from consecutive coordinates</p>
-                        <p class="bullet">Use modular arithmetic to count right turns needed</p>
+                        <p class="bullet">Count right turns by stepping clockwise from current to needed heading</p>
                         <p class="bullet">Work through turning logic on paper before coding</p>
                     </div>
                     <div class="title-section">
@@ -714,7 +713,7 @@
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn" disabled>Previous</button>
-                <span class="slide-counter">1 / 11</span>
+                <span class="slide-counter">1 / 10</span>
                 <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
             </div>
         </div>
@@ -771,7 +770,7 @@
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
-                <span class="slide-counter">2 / 11</span>
+                <span class="slide-counter">2 / 10</span>
                 <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
             </div>
         </div>
@@ -876,7 +875,7 @@
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
-                <span class="slide-counter">3 / 11</span>
+                <span class="slide-counter">3 / 10</span>
                 <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
             </div>
         </div>
@@ -971,7 +970,7 @@ col_diff = nxt_col - cur_col   # 0</pre>
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
-                <span class="slide-counter">4 / 11</span>
+                <span class="slide-counter">4 / 10</span>
                 <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
             </div>
         </div>
@@ -982,7 +981,7 @@ col_diff = nxt_col - cur_col   # 0</pre>
                 <h1>What Turn Is Needed?</h1>
             </div>
             <div class="content">
-                <p class="body-text">How many right turns? Use <span class="sketch-highlight">modular arithmetic</span>: <code style="font-family: 'Fira Code', monospace;">(needed - current) % 4</code></p>
+                <p class="body-text">How many right turns? <span class="sketch-highlight">Count clockwise steps</span> from current heading to needed heading</p>
 
                 <div class="illustration">
                     <svg width="754" height="195" viewBox="0 0 580 150">
@@ -1001,7 +1000,7 @@ col_diff = nxt_col - cur_col   # 0</pre>
                             <path d="M68 36 C90 20, 100 45, 85 58" fill="none" stroke="#e8a87c" stroke-width="2.5" stroke-linecap="round"/>
                             <polygon points="82,54 90,60 80,62" fill="#e8a87c"/>
                             <text x="65" y="100" font-family="Caveat, cursive" font-size="15" fill="#e8a87c" text-anchor="middle" font-weight="700">1 right turn</text>
-                            <text x="65" y="118" font-family="Fira Code, monospace" font-size="11" fill="#636e72" text-anchor="middle">(1-0)%4 = 1</text>
+                            <text x="65" y="118" font-family="Fira Code, monospace" font-size="11" fill="#636e72" text-anchor="middle">0→1 = 1 step</text>
                             <text x="65" y="136" font-family="Caveat, cursive" font-size="12" fill="#636e72" text-anchor="middle">0(N) &rarr; 1(E)</text>
                         </g>
                         <!-- Example 2: current 0(N), need 3(W) = 3 right turns -->
@@ -1018,7 +1017,7 @@ col_diff = nxt_col - cur_col   # 0</pre>
                             <path d="M56 36 C34 20, 24 45, 39 58" fill="none" stroke="#e8a87c" stroke-width="2.5" stroke-linecap="round"/>
                             <polygon points="42,54 34,60 44,62" fill="#e8a87c"/>
                             <text x="65" y="100" font-family="Caveat, cursive" font-size="15" fill="#5b8fa8" text-anchor="middle" font-weight="700">3 right turns</text>
-                            <text x="65" y="118" font-family="Fira Code, monospace" font-size="11" fill="#636e72" text-anchor="middle">(3-0)%4 = 3</text>
+                            <text x="65" y="118" font-family="Fira Code, monospace" font-size="11" fill="#636e72" text-anchor="middle">0→1→2→3 = 3</text>
                             <text x="65" y="136" font-family="Caveat, cursive" font-size="12" fill="#636e72" text-anchor="middle">0(N) &rarr; 3(W)</text>
                         </g>
                         <!-- Example 3: current 0(N), need 2(S) = 2 right turns -->
@@ -1035,7 +1034,7 @@ col_diff = nxt_col - cur_col   # 0</pre>
                             <path d="M70 36 C105 15, 108 85, 70 78" fill="none" stroke="#e8a87c" stroke-width="2.5" stroke-linecap="round"/>
                             <polygon points="74,76 66,82 72,72" fill="#e8a87c"/>
                             <text x="65" y="100" font-family="Caveat, cursive" font-size="15" fill="#e85d5d" text-anchor="middle" font-weight="700">2 right turns</text>
-                            <text x="65" y="118" font-family="Fira Code, monospace" font-size="11" fill="#636e72" text-anchor="middle">(2-0)%4 = 2</text>
+                            <text x="65" y="118" font-family="Fira Code, monospace" font-size="11" fill="#636e72" text-anchor="middle">0→1→2 = 2</text>
                             <text x="65" y="136" font-family="Caveat, cursive" font-size="12" fill="#636e72" text-anchor="middle">0(N) &rarr; 2(S)</text>
                         </g>
                         <!-- Example 4: current 1(E), need 1(E) = 0 turns -->
@@ -1049,14 +1048,14 @@ col_diff = nxt_col - cur_col   # 0</pre>
                             <!-- Checkmark -->
                             <path d="M50 86 L58 94 L74 78" fill="none" stroke="#85c88a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
                             <text x="65" y="108" font-family="Caveat, cursive" font-size="15" fill="#85c88a" text-anchor="middle" font-weight="700">0 (no turn)</text>
-                            <text x="65" y="126" font-family="Fira Code, monospace" font-size="11" fill="#636e72" text-anchor="middle">(1-1)%4 = 0</text>
+                            <text x="65" y="126" font-family="Fira Code, monospace" font-size="11" fill="#636e72" text-anchor="middle">already 1 = 0</text>
                             <text x="65" y="140" font-family="Caveat, cursive" font-size="12" fill="#636e72" text-anchor="middle">1(E) &rarr; 1(E)</text>
                         </g>
                     </svg>
                 </div>
 
                 <div class="spacer"></div>
-                <p class="header-text">Right Turns Needed: (needed - current) % 4</p>
+                <p class="header-text">Right Turns Needed: Count Clockwise Steps</p>
                 <table class="content-table">
                     <thead>
                         <tr>
@@ -1099,123 +1098,43 @@ col_diff = nxt_col - cur_col   # 0</pre>
                     </tbody>
                 </table>
 
-                <div class="insight-box">One formula handles all cases: <code style="font-family: 'Fira Code', monospace;">(needed - current) % 4</code></div>
+                <div class="insight-box">Count clockwise from current to needed — it always works!</div>
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
-                <span class="slide-counter">5 / 11</span>
+                <span class="slide-counter">5 / 10</span>
                 <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
             </div>
         </div>
 
-        <!-- ═══ SLIDE 6: Understanding the % Operator ═══ -->
+        <!-- ═══ SLIDE 6: Heading Logic in Python ═══ -->
         <div id="slide-6" class="slide">
             <div class="title-bar">
-                <h1>Understanding the % (Modulo) Operator</h1>
+                <h1>Heading Logic in Python</h1>
             </div>
             <div class="content">
-                <p class="header-text">What does % do?</p>
-                <p class="body-text">The <code style="font-family: 'Fira Code', monospace;">%</code> operator gives the <span class="sketch-highlight">remainder</span> after division.</p>
-
-                <div class="code-block compact" style="display: inline-block; padding: 10px 18px; font-size: 18px;">7 % 4 = 3 &nbsp;&nbsp; # because 7 &divide; 4 = 1 remainder 3</div>
-
-                <div class="spacer"></div>
-                <p class="header-text">The clock analogy</p>
-                <p class="body-text">If it's 11 o'clock and you add 3 hours, it's <strong>2 o'clock</strong>, not 14. That wrapping is what <code style="font-family: 'Fira Code', monospace;">% 12</code> does. We do the same with <code style="font-family: 'Fira Code', monospace;">% 4</code> for our four headings.</p>
-
-                <div class="two-col">
-                    <div class="col">
-                        <p class="header-text">Negative numbers? No problem.</p>
-                        <p class="body-text">Python's <code style="font-family: 'Fira Code', monospace;">%</code> always gives a <strong>non-negative result</strong> when the divisor is positive.</p>
-
-                        <div class="code-block compact" style="padding: 12px 18px; font-size: 16px;">
-<pre>(-1) % 4 = 3
-(-2) % 4 = 2
-(-3) % 4 = 1</pre>
-                        </div>
-
-                        <p class="body-text" style="margin-top: 8px;">How? Python finds the largest multiple of 4 that is &le; the number, then subtracts:</p>
-                        <p class="bullet"><code style="font-family: 'Fira Code', monospace;">(-1) % 4</code>: largest multiple of 4 &le; -1 is <strong>-4</strong>, so -1 - (-4) = <strong>3</strong></p>
-                    </div>
-                    <div class="col">
-                        <p class="header-text">This is exactly what we want!</p>
-
-                        <table class="content-table" style="width: 100%;">
-                            <thead>
-                                <tr>
-                                    <th>From &rarr; To</th>
-                                    <th>Formula</th>
-                                    <th>Right Turns</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>N(0) &rarr; S(2)</td>
-                                    <td style="font-family: 'Fira Code', monospace; font-size: 15px;">(2 - 0) % 4 = 2</td>
-                                    <td style="font-weight: bold;">2 &#10003;</td>
-                                </tr>
-                                <tr>
-                                    <td>S(2) &rarr; N(0)</td>
-                                    <td style="font-family: 'Fira Code', monospace; font-size: 15px;">(0 - 2) % 4 = 2</td>
-                                    <td style="font-weight: bold;">2 &#10003;</td>
-                                </tr>
-                                <tr>
-                                    <td>N(0) &rarr; E(1)</td>
-                                    <td style="font-family: 'Fira Code', monospace; font-size: 15px;">(1 - 0) % 4 = 1</td>
-                                    <td style="font-weight: bold;">1 &#10003;</td>
-                                </tr>
-                                <tr>
-                                    <td>W(3) &rarr; N(0)</td>
-                                    <td style="font-family: 'Fira Code', monospace; font-size: 15px;">(0 - 3) % 4 = 1</td>
-                                    <td style="font-weight: bold;">1 &#10003;</td>
-                                </tr>
-                                <tr>
-                                    <td>E(1) &rarr; S(2)</td>
-                                    <td style="font-family: 'Fira Code', monospace; font-size: 15px;">(2 - 1) % 4 = 1</td>
-                                    <td style="font-weight: bold;">1 &#10003;</td>
-                                </tr>
-                                <tr>
-                                    <td>S(2) &rarr; E(1)</td>
-                                    <td style="font-family: 'Fira Code', monospace; font-size: 15px;">(1 - 2) % 4 = 3</td>
-                                    <td style="font-weight: bold;">3 &#10003;</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="insight-box">The <code style="font-family: 'Fira Code', monospace;">%</code> operator wraps negative results around to give us the correct clockwise count every time.</div>
-            </div>
-            <div class="slide-navigation">
-                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
-                <span class="slide-counter">6 / 11</span>
-                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
-            </div>
-        </div>
-
-        <!-- ═══ SLIDE 7: Turn Logic in Python ═══ -->
-        <div id="slide-7" class="slide">
-            <div class="title-bar">
-                <h1>Turn Logic in Python</h1>
-            </div>
-            <div class="content">
-                <p class="header-text">With numbers, the code is incredibly simple:</p>
+                <p class="header-text">One function determines the needed heading from coordinates:</p>
 
                 <div class="two-col">
                     <div class="col">
                         <div class="code-block">
-<pre>def count_right_turns(current, needed):
-    return (needed - current) % 4</pre>
-                        </div>
+<pre>HEADING_NAMES = ["N", "E", "S", "W"]
 
-                        <div class="spacer"></div>
-                        <p class="body-text">Then the robot executes:</p>
+def get_needed_heading(current_pos, next_pos):
+    row_diff = next_pos[0] - current_pos[0]
+    col_diff = next_pos[1] - current_pos[1]
+    if row_diff == -1:
+        return 0    # North
+    elif col_diff == 1:
+        return 1    # East
+    elif row_diff == 1:
+        return 2    # South
+    elif col_diff == -1:
+        return 3    # West
 
-                        <div class="code-block">
-<pre>turns = count_right_turns(heading, needed)
-for i in range(turns):
-    turn_right()      # sensor-based
-heading = needed</pre>
+# Count right turns on paper:
+# count clockwise from current to needed
+# The Navigator class (Lesson 8) will code this!</pre>
                         </div>
                     </div>
                     <div class="col">
@@ -1244,23 +1163,23 @@ heading = needed</pre>
                                 <text x="130" y="98" font-family="Caveat, cursive" font-size="16" fill="#636e72" text-anchor="middle" font-weight="600">each right</text>
                                 <text x="130" y="114" font-family="Caveat, cursive" font-size="16" fill="#636e72" text-anchor="middle" font-weight="600">turn = +1</text>
                                 <!-- Label -->
-                                <text x="130" y="208" font-family="Caveat, cursive" font-size="16" fill="#636e72" text-anchor="middle">wraps around with % 4</text>
+                                <text x="130" y="208" font-family="Caveat, cursive" font-size="16" fill="#636e72" text-anchor="middle">wraps around: after 3 comes 0</text>
                             </svg>
                         </div>
                     </div>
                 </div>
 
-                <div class="insight-box">Two lines of code handle every possible turn!</div>
+                <div class="insight-box">A simple while loop handles every possible turn!</div>
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
-                <span class="slide-counter">7 / 11</span>
+                <span class="slide-counter">6 / 10</span>
                 <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
             </div>
         </div>
 
-        <!-- ═══ SLIDE 8: Walking Through a Path ═══ -->
-        <div id="slide-8" class="slide">
+        <!-- ═══ SLIDE 7: Walking Through a Path ═══ -->
+        <div id="slide-7" class="slide">
             <div class="title-bar">
                 <h1>Walking Through a Path</h1>
             </div>
@@ -1286,7 +1205,7 @@ heading = needed</pre>
                             <td>(1,0)</td>
                             <td>2 (S)</td>
                             <td>0 (N)</td>
-                            <td style="color: #e85d5d; font-weight: bold;">(2-0)%4 = 2</td>
+                            <td style="color: #e85d5d; font-weight: bold;">0→1→2 = 2</td>
                             <td>2 (S)</td>
                         </tr>
                         <tr>
@@ -1295,7 +1214,7 @@ heading = needed</pre>
                             <td>(2,0)</td>
                             <td>2 (S)</td>
                             <td>2 (S)</td>
-                            <td style="color: #85c88a; font-weight: bold;">(2-2)%4 = 0</td>
+                            <td style="color: #85c88a; font-weight: bold;">already 2 = 0</td>
                             <td>2 (S)</td>
                         </tr>
                         <tr>
@@ -1304,7 +1223,7 @@ heading = needed</pre>
                             <td>(2,1)</td>
                             <td>1 (E)</td>
                             <td>2 (S)</td>
-                            <td style="color: #5b8fa8; font-weight: bold;">(1-2)%4 = 3</td>
+                            <td style="color: #5b8fa8; font-weight: bold;">2→3→0→1 = 3</td>
                             <td>1 (E)</td>
                         </tr>
                         <tr>
@@ -1313,7 +1232,7 @@ heading = needed</pre>
                             <td>(2,2)</td>
                             <td>1 (E)</td>
                             <td>1 (E)</td>
-                            <td style="color: #85c88a; font-weight: bold;">(1-1)%4 = 0</td>
+                            <td style="color: #85c88a; font-weight: bold;">already 1 = 0</td>
                             <td>1 (E)</td>
                         </tr>
                     </tbody>
@@ -1351,23 +1270,23 @@ heading = needed</pre>
                         <!-- Robot at end (facing east) — PNG version -->
                         <image href="images/xrp-top-down.png" x="222" y="182" width="36" height="36" transform="rotate(-90, 240, 200)"/>
                         <!-- Annotations on right side -->
-                        <text x="340" y="50" font-family="Caveat, cursive" font-size="14" fill="#636e72" font-weight="600">Formula at each step:</text>
-                        <text x="340" y="72" font-family="Patrick Hand, cursive" font-size="14" fill="#e85d5d">Step 1: (2-0)%4 = 2 rights</text>
-                        <text x="340" y="94" font-family="Patrick Hand, cursive" font-size="14" fill="#85c88a">Step 2: (2-2)%4 = 0 turns</text>
-                        <text x="340" y="116" font-family="Patrick Hand, cursive" font-size="14" fill="#5b8fa8">Step 3: (1-2)%4 = 3 rights</text>
-                        <text x="340" y="138" font-family="Patrick Hand, cursive" font-size="14" fill="#85c88a">Step 4: (1-1)%4 = 0 turns</text>
+                        <text x="340" y="50" font-family="Caveat, cursive" font-size="14" fill="#636e72" font-weight="600">Counting at each step:</text>
+                        <text x="340" y="72" font-family="Patrick Hand, cursive" font-size="14" fill="#e85d5d">Step 1: 0→1→2 = 2 rights</text>
+                        <text x="340" y="94" font-family="Patrick Hand, cursive" font-size="14" fill="#85c88a">Step 2: already 2 = 0 turns</text>
+                        <text x="340" y="116" font-family="Patrick Hand, cursive" font-size="14" fill="#5b8fa8">Step 3: 2→3→0→1 = 3 rights</text>
+                        <text x="340" y="138" font-family="Patrick Hand, cursive" font-size="14" fill="#85c88a">Step 4: already 1 = 0 turns</text>
                     </svg>
                 </div>
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
-                <span class="slide-counter">8 / 11</span>
+                <span class="slide-counter">7 / 10</span>
                 <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
             </div>
         </div>
 
-        <!-- ═══ SLIDE 9: Updating Heading After Turning ═══ -->
-        <div id="slide-9" class="slide">
+        <!-- ═══ SLIDE 8: Updating Heading After Turning ═══ -->
+        <div id="slide-8" class="slide">
             <div class="title-bar">
                 <h1>Updating Heading After Turning</h1>
             </div>
@@ -1379,10 +1298,8 @@ heading = needed</pre>
                         <p class="header-text">The whole process:</p>
                         <div class="code-block">
 <pre>needed = get_needed_heading(current_pos, next_pos)
-turns = count_right_turns(heading, needed)
-for i in range(turns):
-    turn_right()
-heading = needed</pre>
+# turn right until facing needed (Lesson 8!)
+heading = needed    # update after turning!</pre>
                         </div>
 
                         <div class="spacer"></div>
@@ -1402,7 +1319,7 @@ heading = needed</pre>
                                 <!-- Step boxes -->
                                 <rect x="10" y="10" width="240" height="50" rx="12" fill="rgba(91, 143, 168, 0.08)" stroke="#5b8fa8" stroke-width="2"/>
                                 <text x="130" y="30" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" text-anchor="middle" font-weight="700">1. Count right turns</text>
-                                <text x="130" y="48" font-family="Fira Code, monospace" font-size="12" fill="#636e72" text-anchor="middle">(needed - heading) % 4</text>
+                                <text x="130" y="48" font-family="Fira Code, monospace" font-size="12" fill="#636e72" text-anchor="middle">count to needed</text>
 
                                 <!-- Arrow -->
                                 <line x1="130" y1="60" x2="130" y2="85" stroke="#b8c5d0" stroke-width="2.5" stroke-linecap="round"/>
@@ -1428,13 +1345,13 @@ heading = needed</pre>
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
-                <span class="slide-counter">9 / 11</span>
+                <span class="slide-counter">8 / 10</span>
                 <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
             </div>
         </div>
 
-        <!-- ═══ SLIDE 10: Your Turn! ═══ -->
-        <div id="slide-10" class="slide">
+        <!-- ═══ SLIDE 9: Your Turn! ═══ -->
+        <div id="slide-9" class="slide">
             <div class="title-bar">
                 <h1>Your Turn!</h1>
             </div>
@@ -1444,15 +1361,15 @@ heading = needed</pre>
                 <div class="sketch-box">
                     <div class="activity-step">
                         <span class="step-number">1</span>
-                        <span class="step-text"><strong>Path 1:</strong> [(0,0), (0,1), (0,2), (1,2), (2,2)], starting heading: 1 (E)<br/>For each step, compute the needed heading (0&ndash;3), then use <code style="font-family: 'Fira Code', monospace;">(needed - current) % 4</code> to find right-turn count.</span>
+                        <span class="step-text"><strong>Path 1:</strong> [(0,0), (0,1), (0,2), (1,2), (2,2)], starting heading: 1 (E)<br/>For each step, compute the needed heading (0&ndash;3), then count clockwise steps from current to needed heading.</span>
                     </div>
                     <div class="activity-step">
                         <span class="step-number">2</span>
-                        <span class="step-text"><strong>Path 2:</strong> [(2,3), (1,3), (0,3), (0,2), (0,1), (0,0)], starting heading: 2 (S)<br/>This path goes up and then left &mdash; watch the formula handle negative differences!</span>
+                        <span class="step-text"><strong>Path 2:</strong> [(2,3), (1,3), (0,3), (0,2), (0,1), (0,0)], starting heading: 2 (S)<br/>This path goes up and then left &mdash; count clockwise steps carefully!</span>
                     </div>
                     <div class="activity-step">
                         <span class="step-number">3</span>
-                        <span class="step-text"><strong>Path 3:</strong> [(1,1), (1,2), (1,3), (2,3), (3,3)], starting heading: 0 (N)<br/>How many right turns for the first step? Use the formula!</span>
+                        <span class="step-text"><strong>Path 3:</strong> [(1,1), (1,2), (1,3), (2,3), (3,3)], starting heading: 0 (N)<br/>How many right turns for the first step? Count clockwise!</span>
                     </div>
                 </div>
 
@@ -1500,7 +1417,7 @@ heading = needed</pre>
                     </div>
                     <div class="checkpoint">
                         <span class="check-icon"></span>
-                        <span class="step-text">Can you compute right turns with <code style="font-family: 'Fira Code', monospace;">(needed - current) % 4</code>?</span>
+                        <span class="step-text">Can you count right turns by stepping clockwise?</span>
                     </div>
                     <div class="checkpoint">
                         <span class="check-icon"></span>
@@ -1510,13 +1427,13 @@ heading = needed</pre>
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
-                <span class="slide-counter">10 / 11</span>
+                <span class="slide-counter">9 / 10</span>
                 <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
             </div>
         </div>
 
-        <!-- ═══ SLIDE 11: Connection to Next Lesson ═══ -->
-        <div id="slide-11" class="slide">
+        <!-- ═══ SLIDE 10: Connection to Next Lesson ═══ -->
+        <div id="slide-10" class="slide">
             <div class="title-bar">
                 <h1>What's Next</h1>
             </div>
@@ -1527,7 +1444,7 @@ heading = needed</pre>
                         <div class="sketch-box">
                             <p class="bullet">Understood <span class="sketch-highlight">heading</span> as numbers 0&ndash;3 (N, E, S, W clockwise)</p>
                             <p class="bullet">Determined needed heading from <span class="sketch-highlight">coordinate differences</span></p>
-                            <p class="bullet">Used <span class="sketch-highlight">modular arithmetic</span> (<code style="font-family: 'Fira Code', monospace;">% 4</code>) to count right turns</p>
+                            <p class="bullet">Used <span class="sketch-highlight">clockwise counting</span> to find right turns needed</p>
                             <p class="bullet">Walked through complete paths updating heading</p>
                         </div>
                     </div>
@@ -1543,7 +1460,7 @@ heading = needed</pre>
 
                 <div class="spacer"></div>
 
-                <div class="insight-box">The key insight: <code style="font-family: 'Fira Code', monospace;">(needed - current) % 4</code> handles every turn. Tomorrow you'll code it!</div>
+                <div class="insight-box">The key insight: count clockwise steps from current to needed heading. Tomorrow you'll code it!</div>
 
                 <div class="illustration" style="margin-top: 20px;">
                     <svg width="572" height="156" viewBox="0 0 440 120">
@@ -1575,7 +1492,7 @@ heading = needed</pre>
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
-                <span class="slide-counter">11 / 11</span>
+                <span class="slide-counter">10 / 10</span>
                 <button onclick="nextSlide()" class="nav-btn next-btn" disabled>Next</button>
             </div>
         </div>

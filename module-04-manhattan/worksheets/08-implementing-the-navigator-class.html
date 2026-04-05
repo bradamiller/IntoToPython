@@ -440,28 +440,28 @@
         <div class="section-header">Part C: turn_to() Exercises</div>
 
         <div class="tip-box">
-            <span class="tip-label">Formula:</span> <code style="font-family: 'Fira Code', monospace; font-size: 14px;">turns = (needed - current) % 4</code><br>
-            &bull; 0 right turns &rarr; no turn needed<br>
-            &bull; 1 right turn &rarr; turn right once<br>
-            &bull; 2 right turns &rarr; turn around (180)<br>
-            &bull; 3 right turns &rarr; turn right three times (same as turning left once)
+            <span class="tip-label">Method:</span> Count clockwise steps from current to needed: 0 &rarr; 1 &rarr; 2 &rarr; 3 &rarr; 0<br>
+            &bull; 0 steps &rarr; no turn needed<br>
+            &bull; 1 step &rarr; turn right once<br>
+            &bull; 2 steps &rarr; turn around (180)<br>
+            &bull; 3 steps &rarr; turn right three times (same as turning left once)
         </div>
 
         <table>
             <thead>
-                <tr><th>Current Heading</th><th>Needed Heading</th><th>Formula</th><th>Right Turns</th><th>New Heading</th></tr>
+                <tr><th>Current Heading</th><th>Needed Heading</th><th>Clockwise Steps</th><th>Right Turns</th><th>New Heading</th></tr>
             </thead>
             <tbody>
-                <tr><td>0 (N)</td><td>1 (E)</td><td>(1 - 0) % 4 = 1</td><td>1</td><td>1 (E)</td></tr>
-                <tr><td>0 (N)</td><td>2 (S)</td><td>(2 - 0) % 4 = <span class="inline-answer short"></span></td><td><span class="answer short"></span></td><td><span class="answer short"></span></td></tr>
-                <tr><td>1 (E)</td><td>1 (E)</td><td>(1 - 1) % 4 = <span class="inline-answer short"></span></td><td><span class="answer short"></span></td><td><span class="answer short"></span></td></tr>
-                <tr><td>1 (E)</td><td>0 (N)</td><td>(0 - 1) % 4 = <span class="inline-answer short"></span></td><td><span class="answer short"></span></td><td><span class="answer short"></span></td></tr>
-                <tr><td>2 (S)</td><td>3 (W)</td><td>(3 - 2) % 4 = <span class="inline-answer short"></span></td><td><span class="answer short"></span></td><td><span class="answer short"></span></td></tr>
-                <tr><td>2 (S)</td><td>0 (N)</td><td>(0 - 2) % 4 = <span class="inline-answer short"></span></td><td><span class="answer short"></span></td><td><span class="answer short"></span></td></tr>
-                <tr><td>3 (W)</td><td>2 (S)</td><td>(2 - 3) % 4 = <span class="inline-answer short"></span></td><td><span class="answer short"></span></td><td><span class="answer short"></span></td></tr>
-                <tr><td>3 (W)</td><td>1 (E)</td><td>(1 - 3) % 4 = <span class="inline-answer short"></span></td><td><span class="answer short"></span></td><td><span class="answer short"></span></td></tr>
-                <tr><td>0 (N)</td><td>3 (W)</td><td>(3 - 0) % 4 = <span class="inline-answer short"></span></td><td><span class="answer short"></span></td><td><span class="answer short"></span></td></tr>
-                <tr><td>1 (E)</td><td>3 (W)</td><td>(3 - 1) % 4 = <span class="inline-answer short"></span></td><td><span class="answer short"></span></td><td><span class="answer short"></span></td></tr>
+                <tr><td>0 (N)</td><td>1 (E)</td><td>0&rarr;1 = 1 step</td><td>1</td><td>1 (E)</td></tr>
+                <tr><td>0 (N)</td><td>2 (S)</td><td>0&rarr;1&rarr;2 = <span class="inline-answer short"></span> steps</td><td><span class="answer short"></span></td><td><span class="answer short"></span></td></tr>
+                <tr><td>1 (E)</td><td>1 (E)</td><td>already there = <span class="inline-answer short"></span> steps</td><td><span class="answer short"></span></td><td><span class="answer short"></span></td></tr>
+                <tr><td>1 (E)</td><td>0 (N)</td><td>1&rarr;<span class="inline-answer short"></span>&rarr;<span class="inline-answer short"></span>&rarr;<span class="inline-answer short"></span> = <span class="inline-answer short"></span> steps</td><td><span class="answer short"></span></td><td><span class="answer short"></span></td></tr>
+                <tr><td>2 (S)</td><td>3 (W)</td><td>2&rarr;3 = <span class="inline-answer short"></span> step</td><td><span class="answer short"></span></td><td><span class="answer short"></span></td></tr>
+                <tr><td>2 (S)</td><td>0 (N)</td><td>2&rarr;<span class="inline-answer short"></span>&rarr;<span class="inline-answer short"></span> = <span class="inline-answer short"></span> steps</td><td><span class="answer short"></span></td><td><span class="answer short"></span></td></tr>
+                <tr><td>3 (W)</td><td>2 (S)</td><td>3&rarr;<span class="inline-answer short"></span>&rarr;<span class="inline-answer short"></span>&rarr;<span class="inline-answer short"></span> = <span class="inline-answer short"></span> steps</td><td><span class="answer short"></span></td><td><span class="answer short"></span></td></tr>
+                <tr><td>3 (W)</td><td>1 (E)</td><td>3&rarr;<span class="inline-answer short"></span>&rarr;<span class="inline-answer short"></span> = <span class="inline-answer short"></span> steps</td><td><span class="answer short"></span></td><td><span class="answer short"></span></td></tr>
+                <tr><td>0 (N)</td><td>3 (W)</td><td>0&rarr;<span class="inline-answer short"></span>&rarr;<span class="inline-answer short"></span>&rarr;<span class="inline-answer short"></span> = <span class="inline-answer short"></span> steps</td><td><span class="answer short"></span></td><td><span class="answer short"></span></td></tr>
+                <tr><td>1 (E)</td><td>3 (W)</td><td>1&rarr;<span class="inline-answer short"></span>&rarr;<span class="inline-answer short"></span> = <span class="inline-answer short"></span> steps</td><td><span class="answer short"></span></td><td><span class="answer short"></span></td></tr>
             </tbody>
         </table>
 
@@ -562,23 +562,23 @@ class Navigator:
             return <span class="code-blank" style="min-width: 30px;"></span></div>
 
         <div class="code-block">    def turn_to(self, needed_heading):
-        turns = (<span class="code-blank" style="min-width: 90px;"></span> - <span class="code-blank" style="min-width: 90px;"></span>) % <span class="code-blank" style="min-width: 30px;"></span>
-        for i in range(<span class="code-blank" style="min-width: 60px;"></span>):
+        while self.heading != <span class="code-blank" style="min-width: 90px;"></span>:
             self.line_track.<span class="code-blank" style="min-width: 90px;"></span>()
-        self.heading = <span class="code-blank" style="min-width: 90px;"></span></div>
+            self.heading = self.heading + <span class="code-blank" style="min-width: 30px;"></span>
+            if self.heading == <span class="code-blank" style="min-width: 30px;"></span>:
+                self.heading = <span class="code-blank" style="min-width: 30px;"></span></div>
 
         <div class="code-block">    def drive_path(self, path):
         for i in range(<span class="code-blank" style="min-width: 30px;"></span>, len(path)):
             next_pos = path[<span class="code-blank" style="min-width: 30px;"></span>]
             needed = self.get_needed_heading(<span class="code-blank" style="min-width: 80px;"></span>)
-            turns = (needed - self.heading) % 4
-            if turns == <span class="code-blank" style="min-width: 30px;"></span>:
+            if self.heading == <span class="code-blank" style="min-width: 60px;"></span>:
                 self.line_track.drivetrain.straight(<span class="code-blank" style="min-width: 30px;"></span>)
             self.turn_to(<span class="code-blank" style="min-width: 80px;"></span>)
             self.line_track.track_until_cross()
             self.position = <span class="code-blank" style="min-width: 80px;"></span></div>
 
-        <p style="margin-top: 12px;"><strong>Why does <code style="font-family: 'Fira Code', monospace; font-size: 14px;">drive_path()</code> call <code style="font-family: 'Fira Code', monospace; font-size: 14px;">self.line_track.drivetrain.straight(8)</code> when <code style="font-family: 'Fira Code', monospace; font-size: 14px;">turns == 0</code>?</strong></p>
+        <p style="margin-top: 12px;"><strong>Why does <code style="font-family: 'Fira Code', monospace; font-size: 14px;">drive_path()</code> call <code style="font-family: 'Fira Code', monospace; font-size: 14px;">self.line_track.drivetrain.straight(8)</code> when the heading already matches?</strong></p>
         <span class="answer-line"></span>
 
         <p style="margin-top: 12px;"><strong>Why does the loop start at range(1, ...) instead of range(0, ...)?</strong></p>
