@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Big Picture - Module 4: Manhattan</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Patrick+Hand&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Patrick Hand', cursive;
+            background-color: #faf8f5;
+            overflow: hidden;
+            color: #2d3436;
+        }
+
+        /* ── Sidebar Navigation ── */
+        .nav-sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 240px;
+            height: 100vh;
+            background-color: #faf8f5;
+            border-right: 3px solid #b8c5d0;
+            padding: 24px 16px;
+            overflow-y: auto;
+            z-index: 1000;
+            background-image:
+                linear-gradient(rgba(180, 200, 220, 0.15) 1px, transparent 1px);
+            background-size: 100% 28px;
+        }
+
+        .nav-header h2 {
+            font-family: 'Caveat', cursive;
+            font-size: 20px;
+            color: #5b8fa8;
+            margin-bottom: 4px;
+            font-weight: 600;
+        }
+
+        .nav-header h3 {
+            font-family: 'Caveat', cursive;
+            font-size: 16px;
+            color: #636e72;
+            margin-bottom: 20px;
+            font-weight: 400;
+        }
+
+        .slide-nav {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .nav-item {
+            color: #2d3436;
+            text-decoration: none;
+            padding: 6px 10px;
+            margin-bottom: 3px;
+            border-radius: 6px;
+            font-size: 15px;
+            line-height: 1.3;
+            transition: all 0.2s;
+            font-family: 'Patrick Hand', cursive;
+        }
+
+        .nav-item:hover {
+            background-color: rgba(91, 143, 168, 0.15);
+        }
+
+        .nav-item.active {
+            background-color: rgba(91, 143, 168, 0.2);
+            font-weight: bold;
+            border-left: 3px solid #5b8fa8;
+        }
+
+        /* ── Slides Container ── */
+        .slides-container {
+            margin-left: 240px;
+            height: 100vh;
+            position: relative;
+        }
+
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: calc(100vw - 240px);
+            height: 100vh;
+            background-color: #fdfcfa;
+            display: none;
+            flex-direction: column;
+            background-image:
+                linear-gradient(rgba(180, 200, 220, 0.12) 1px, transparent 1px);
+            background-size: 100% 32px;
+            background-position: 0 80px;
+        }
+
+        .slide.active {
+            display: flex;
+        }
+
+        /* ── Title Bar ── */
+        .title-bar {
+            padding: 20px 50px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            position: relative;
+            border-bottom: 3px solid #5b8fa8;
+            background-color: rgba(91, 143, 168, 0.06);
+        }
+
+        .title-bar::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 30px;
+            right: 60px;
+            height: 3px;
+            background-color: rgba(91, 143, 168, 0.15);
+            transform: rotate(-0.3deg);
+        }
+
+        .title-bar h1 {
+            font-family: 'Caveat', cursive;
+            font-size: 36px;
+            font-weight: 700;
+            color: #2d3436;
+            transform: rotate(-0.5deg);
+        }
+
+        /* ── Slide Content ── */
+        .content {
+            flex: 1;
+            padding: 30px 50px;
+            padding-bottom: 80px;
+            overflow-y: auto;
+            max-width: 1100px;
+        }
+
+        /* ── Text Styles ── */
+        .header-text {
+            font-family: 'Caveat', cursive;
+            font-size: 28px;
+            font-weight: 600;
+            color: #5b8fa8;
+            margin-bottom: 12px;
+            margin-top: 8px;
+        }
+
+        .body-text {
+            font-size: 22px;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+
+        .bullet {
+            font-size: 22px;
+            margin-bottom: 6px;
+            margin-left: 24px;
+            line-height: 1.4;
+            position: relative;
+            padding-left: 20px;
+        }
+
+        .bullet::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 11px;
+            width: 8px;
+            height: 8px;
+            background-color: #5b8fa8;
+            border-radius: 50%;
+            transform: rotate(5deg);
+        }
+
+        .bullet.level-1 {
+            margin-left: 52px;
+            font-size: 20px;
+        }
+
+        .bullet.level-1::before {
+            width: 6px;
+            height: 6px;
+            background-color: #e8a87c;
+            top: 10px;
+        }
+
+        /* ── Code Blocks ── */
+        .code-block {
+            background-color: #f0ede8;
+            border: 2px solid #b8c5d0;
+            border-radius: 12px;
+            padding: 18px 22px;
+            margin: 16px 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 16px;
+            line-height: 1.5;
+            color: #2d3436;
+            overflow-x: auto;
+            position: relative;
+            box-shadow: 3px 3px 0 rgba(91, 143, 168, 0.15);
+            transform: rotate(-0.2deg);
+            white-space: pre;
+        }
+
+        .code-block::before {
+            content: '< / >';
+            position: absolute;
+            top: -12px;
+            right: 20px;
+            background-color: #fdfcfa;
+            padding: 2px 10px;
+            font-family: 'Caveat', cursive;
+            font-size: 16px;
+            color: #5b8fa8;
+            border: 2px solid #b8c5d0;
+            border-radius: 8px;
+        }
+
+        .code-block.compact::before {
+            display: none;
+        }
+
+        /* ── Tables ── */
+        .content-table {
+            width: 90%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 16px auto;
+            font-size: 18px;
+            border: 2px solid #b8c5d0;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 3px 3px 0 rgba(91, 143, 168, 0.12);
+        }
+
+        .content-table th {
+            background-color: rgba(91, 143, 168, 0.2);
+            color: #2d3436;
+            padding: 10px 16px;
+            text-align: center;
+            font-family: 'Caveat', cursive;
+            font-size: 22px;
+            font-weight: 600;
+            border-bottom: 2px solid #b8c5d0;
+        }
+
+        .content-table td {
+            padding: 8px 16px;
+            text-align: center;
+            border-bottom: 1px dashed #ccc;
+            font-size: 18px;
+        }
+
+        .content-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .content-table tr:nth-child(even) {
+            background-color: rgba(232, 168, 124, 0.06);
+        }
+
+        .content-table td:first-child {
+            font-family: 'Caveat', cursive;
+            font-weight: 600;
+            color: #5b8fa8;
+            font-size: 20px;
+        }
+
+        .spacer {
+            height: 14px;
+        }
+
+        /* ── Sketch Decorations ── */
+        .sketch-box {
+            border: 2px solid #5b8fa8;
+            border-radius: 14px;
+            padding: 18px;
+            margin: 12px 0;
+            position: relative;
+            background-color: rgba(91, 143, 168, 0.04);
+            box-shadow: 2px 2px 0 rgba(91, 143, 168, 0.1);
+        }
+
+        .sketch-highlight {
+            background: linear-gradient(180deg, transparent 60%, rgba(232, 168, 124, 0.3) 60%);
+            padding: 0 4px;
+        }
+
+        .sketch-arrow {
+            display: inline-block;
+            font-size: 28px;
+            color: #e8a87c;
+            margin: 0 8px;
+        }
+
+        /* ── Illustrations ── */
+        .illustration {
+            display: flex;
+            justify-content: center;
+            margin: 16px 0;
+        }
+
+        .illustration svg {
+            max-width: 100%;
+        }
+
+        /* ── Question callout ── */
+        .question-box {
+            border: 2px dashed #e8a87c;
+            border-radius: 14px;
+            padding: 16px 20px;
+            margin: 14px 0;
+            background-color: rgba(232, 168, 124, 0.08);
+            position: relative;
+        }
+
+        .question-box::before {
+            content: '?';
+            position: absolute;
+            top: -14px;
+            left: 16px;
+            background-color: #e8a87c;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Caveat', cursive;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        /* ── Key insight callout ── */
+        .insight-box {
+            border: 2px solid #e8a87c;
+            border-radius: 14px;
+            padding: 16px 20px;
+            margin: 14px 0;
+            background-color: rgba(232, 168, 124, 0.08);
+            text-align: center;
+            font-family: 'Caveat', cursive;
+            font-size: 26px;
+            font-weight: 600;
+            color: #2d3436;
+            transform: rotate(-0.3deg);
+            box-shadow: 3px 3px 0 rgba(232, 168, 124, 0.15);
+        }
+
+        /* ── Activity step styling ── */
+        .activity-step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            padding-left: 8px;
+        }
+
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 32px;
+            height: 32px;
+            background-color: #5b8fa8;
+            color: white;
+            border-radius: 50%;
+            font-family: 'Caveat', cursive;
+            font-size: 20px;
+            font-weight: 700;
+            margin-right: 12px;
+            margin-top: 2px;
+            box-shadow: 2px 2px 0 rgba(91, 143, 168, 0.2);
+        }
+
+        .step-text {
+            font-size: 21px;
+            line-height: 1.4;
+            padding-top: 4px;
+        }
+
+        /* ── Navigation ── */
+        .slide-navigation {
+            position: absolute;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            background-color: rgba(250, 248, 245, 0.95);
+            padding: 8px 20px;
+            border-radius: 25px;
+            border: 2px solid #b8c5d0;
+            box-shadow: 2px 2px 0 rgba(91, 143, 168, 0.1);
+        }
+
+        .nav-btn {
+            padding: 6px 18px;
+            border: 2px solid #5b8fa8;
+            border-radius: 20px;
+            background-color: rgba(91, 143, 168, 0.1);
+            color: #2d3436;
+            font-size: 16px;
+            font-family: 'Patrick Hand', cursive;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background-color: rgba(91, 143, 168, 0.25);
+        }
+
+        .nav-btn:disabled {
+            border-color: #ccc;
+            color: #aaa;
+            background-color: transparent;
+            cursor: not-allowed;
+        }
+
+        .slide-counter {
+            font-size: 16px;
+            font-family: 'Caveat', cursive;
+            font-weight: 600;
+            color: #5b8fa8;
+            min-width: 60px;
+            text-align: center;
+        }
+
+        /* ── Title Slide Special ── */
+        .slide-title-page {
+            background-image: none;
+            background-color: #fdfcfa;
+        }
+
+        .title-hero {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .title-hero .module-label {
+            font-family: 'Patrick Hand', cursive;
+            font-size: 22px;
+            color: #5b8fa8;
+            margin-bottom: 8px;
+            letter-spacing: 2px;
+        }
+
+        .title-hero .lesson-title {
+            font-family: 'Caveat', cursive;
+            font-size: 64px;
+            font-weight: 700;
+            color: #2d3436;
+            margin-bottom: 24px;
+            transform: rotate(-1deg);
+            position: relative;
+        }
+
+        .title-hero .lesson-title::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 10%;
+            right: 10%;
+            height: 4px;
+            background-color: #e8a87c;
+            border-radius: 2px;
+            transform: rotate(0.5deg);
+        }
+
+        .title-hero .divider-sketch {
+            width: 120px;
+            height: 3px;
+            background: #b8c5d0;
+            margin: 16px auto;
+            border-radius: 2px;
+            transform: rotate(-1deg);
+        }
+
+        .title-content {
+            display: flex;
+            gap: 60px;
+            margin-top: 20px;
+            text-align: left;
+            max-width: 900px;
+        }
+
+        .title-section {
+            flex: 1;
+        }
+
+        .title-section h3 {
+            font-family: 'Caveat', cursive;
+            font-size: 26px;
+            font-weight: 600;
+            color: #5b8fa8;
+            margin-bottom: 10px;
+            border-bottom: 2px solid rgba(91, 143, 168, 0.2);
+            padding-bottom: 4px;
+        }
+
+        .title-section .bullet {
+            font-size: 19px;
+        }
+
+        .title-section .bullet::before {
+            top: 9px;
+        }
+
+        /* ── Two-column layout ── */
+        .two-col {
+            display: flex;
+            gap: 30px;
+            margin-top: 10px;
+        }
+
+        .two-col .col {
+            flex: 1;
+        }
+
+        /* ── Class box styling ── */
+        .class-box {
+            border: 2px solid #5b8fa8;
+            border-radius: 14px;
+            padding: 16px 20px;
+            background-color: rgba(91, 143, 168, 0.04);
+            box-shadow: 2px 2px 0 rgba(91, 143, 168, 0.1);
+        }
+
+        .class-box.navigator {
+            border-color: #e8a87c;
+            background-color: rgba(232, 168, 124, 0.04);
+            box-shadow: 2px 2px 0 rgba(232, 168, 124, 0.1);
+        }
+
+        .class-box h3 {
+            font-family: 'Caveat', cursive;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .class-box .label {
+            font-family: 'Caveat', cursive;
+            font-size: 18px;
+            color: #636e72;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-sidebar">
+        <div class="nav-header">
+            <h2>Module 4: Manhattan</h2>
+            <h3>The Big Picture</h3>
+        </div>
+        <nav class="slide-nav">
+            <a href="#slide-1" class="nav-item" onclick="showSlide(0)">Title &amp; Objectives</a>
+            <a href="#slide-2" class="nav-item" onclick="showSlide(1)">The Mission</a>
+            <a href="#slide-3" class="nav-item" onclick="showSlide(2)">Top-Down Design</a>
+            <a href="#slide-4" class="nav-item" onclick="showSlide(3)">The Main Program</a>
+            <a href="#slide-5" class="nav-item" onclick="showSlide(4)">Two Classes, Two Jobs</a>
+            <a href="#slide-6" class="nav-item" onclick="showSlide(5)">What Manhattan Computes</a>
+            <a href="#slide-7" class="nav-item" onclick="showSlide(6)">What Navigator Does</a>
+            <a href="#slide-8" class="nav-item" onclick="showSlide(7)">Building on Module 2</a>
+            <a href="#slide-9" class="nav-item" onclick="showSlide(8)">Your Roadmap</a>
+            <a href="#slide-10" class="nav-item" onclick="showSlide(9)">The Payoff</a>
+        </nav>
+    </div>
+
+    <div class="slides-container">
+
+        <!-- ═══ SLIDE 1: Title ═══ -->
+        <div id="slide-1" class="slide slide-title-page">
+            <div class="title-hero">
+                <!-- Grid icon -->
+                <svg width="80" height="80" viewBox="0 0 80 80" style="margin-bottom: 12px;">
+                    <rect x="10" y="10" width="60" height="60" rx="8" fill="none" stroke="#5b8fa8" stroke-width="2.5"/>
+                    <line x1="30" y1="10" x2="30" y2="70" stroke="#b8c5d0" stroke-width="1.5" stroke-dasharray="4,3"/>
+                    <line x1="50" y1="10" x2="50" y2="70" stroke="#b8c5d0" stroke-width="1.5" stroke-dasharray="4,3"/>
+                    <line x1="10" y1="30" x2="70" y2="30" stroke="#b8c5d0" stroke-width="1.5" stroke-dasharray="4,3"/>
+                    <line x1="10" y1="50" x2="70" y2="50" stroke="#b8c5d0" stroke-width="1.5" stroke-dasharray="4,3"/>
+                    <!-- Path arrows -->
+                    <circle cx="10" cy="10" r="4" fill="#e8a87c"/>
+                    <line x1="10" y1="14" x2="10" y2="46" stroke="#e8a87c" stroke-width="2.5" stroke-linecap="round"/>
+                    <line x1="14" y1="50" x2="66" y2="50" stroke="#e8a87c" stroke-width="2.5" stroke-linecap="round"/>
+                    <polygon points="66,46 70,50 66,54" fill="#e8a87c"/>
+                </svg>
+                <div class="module-label">MODULE 4 &middot; OVERVIEW</div>
+                <div class="lesson-title">The Big Picture</div>
+                <div class="divider-sketch"></div>
+                <div class="title-content">
+                    <div class="title-section">
+                        <h3>Learning Objectives</h3>
+                        <p class="bullet">See the complete system we are building</p>
+                        <p class="bullet">Understand what Manhattan and Navigator do</p>
+                        <p class="bullet">Learn what &ldquo;top-down design&rdquo; means</p>
+                        <p class="bullet">Know which lesson builds which piece</p>
+                    </div>
+                    <div class="title-section">
+                        <h3>Agenda</h3>
+                        <p class="bullet">The mission (5 min)</p>
+                        <p class="bullet">Peeling back the layers (10 min)</p>
+                        <p class="bullet">Your roadmap (5 min)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn" disabled>Previous</button>
+                <span class="slide-counter">1 / 10</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 2: The Mission ═══ -->
+        <div id="slide-2" class="slide">
+            <div class="title-bar">
+                <h1>The Mission</h1>
+            </div>
+            <div class="content">
+                <p class="header-text">By the end of this module, your robot will do this:</p>
+
+                <p class="body-text">The robot starts at (0, 0) on the grid. You give it a list of destinations. It visits each one in order &mdash; computing the path, turning at intersections, following lines &mdash; all by itself.</p>
+
+                <div class="illustration">
+                    <svg width="480" height="280" viewBox="0 0 480 280">
+                        <!-- Grid -->
+                        <line x1="60" y1="40" x2="60" y2="240" stroke="#b8c5d0" stroke-width="1.5"/>
+                        <line x1="180" y1="40" x2="180" y2="240" stroke="#b8c5d0" stroke-width="1.5"/>
+                        <line x1="300" y1="40" x2="300" y2="240" stroke="#b8c5d0" stroke-width="1.5"/>
+                        <line x1="420" y1="40" x2="420" y2="240" stroke="#b8c5d0" stroke-width="1.5"/>
+                        <line x1="60" y1="40" x2="420" y2="40" stroke="#b8c5d0" stroke-width="1.5"/>
+                        <line x1="60" y1="107" x2="420" y2="107" stroke="#b8c5d0" stroke-width="1.5"/>
+                        <line x1="60" y1="173" x2="420" y2="173" stroke="#b8c5d0" stroke-width="1.5"/>
+                        <line x1="60" y1="240" x2="420" y2="240" stroke="#b8c5d0" stroke-width="1.5"/>
+                        <!-- Labels -->
+                        <text x="60" y="28" font-family="Fira Code, monospace" font-size="11" fill="#636e72" text-anchor="middle">col 0</text>
+                        <text x="180" y="28" font-family="Fira Code, monospace" font-size="11" fill="#636e72" text-anchor="middle">col 1</text>
+                        <text x="300" y="28" font-family="Fira Code, monospace" font-size="11" fill="#636e72" text-anchor="middle">col 2</text>
+                        <text x="420" y="28" font-family="Fira Code, monospace" font-size="11" fill="#636e72" text-anchor="middle">col 3</text>
+                        <text x="40" y="44" font-family="Fira Code, monospace" font-size="11" fill="#636e72" text-anchor="middle">row 0</text>
+                        <text x="40" y="111" font-family="Fira Code, monospace" font-size="11" fill="#636e72" text-anchor="middle">row 1</text>
+                        <text x="40" y="177" font-family="Fira Code, monospace" font-size="11" fill="#636e72" text-anchor="middle">row 2</text>
+                        <text x="40" y="244" font-family="Fira Code, monospace" font-size="11" fill="#636e72" text-anchor="middle">row 3</text>
+                        <!-- Path: (0,0) → (2,0) → (2,3) → (0,3) -->
+                        <!-- Leg 1: down to (2,0) -->
+                        <line x1="60" y1="44" x2="60" y2="169" stroke="#e85d5d" stroke-width="3" stroke-linecap="round"/>
+                        <polygon points="56,165 60,175 64,165" fill="#e85d5d"/>
+                        <!-- Leg 2: right to (2,3) -->
+                        <line x1="64" y1="173" x2="416" y2="173" stroke="#5b8fa8" stroke-width="3" stroke-linecap="round"/>
+                        <polygon points="412,169 422,173 412,177" fill="#5b8fa8"/>
+                        <!-- Leg 3: up to (0,3) -->
+                        <line x1="420" y1="169" x2="420" y2="44" stroke="#85c88a" stroke-width="3" stroke-linecap="round"/>
+                        <polygon points="416,48 420,38 424,48" fill="#85c88a"/>
+                        <!-- Destination markers -->
+                        <circle cx="60" cy="40" r="7" fill="#e8a87c" stroke="white" stroke-width="2"/>
+                        <text x="60" y="44" font-family="Caveat, cursive" font-size="11" fill="white" text-anchor="middle" font-weight="700">S</text>
+                        <circle cx="60" cy="173" r="7" fill="#e85d5d" stroke="white" stroke-width="2"/>
+                        <text x="60" y="177" font-family="Caveat, cursive" font-size="11" fill="white" text-anchor="middle" font-weight="700">1</text>
+                        <circle cx="420" cy="173" r="7" fill="#5b8fa8" stroke="white" stroke-width="2"/>
+                        <text x="420" y="177" font-family="Caveat, cursive" font-size="11" fill="white" text-anchor="middle" font-weight="700">2</text>
+                        <circle cx="420" cy="40" r="7" fill="#85c88a" stroke="white" stroke-width="2"/>
+                        <text x="420" y="44" font-family="Caveat, cursive" font-size="11" fill="white" text-anchor="middle" font-weight="700">3</text>
+                    </svg>
+                </div>
+
+                <p class="body-text" style="text-align: center; font-size: 24px;"><strong>No remote control. No manual steering. The robot figures it out.</strong></p>
+
+                <div class="question-box">
+                    <p class="body-text" style="margin-bottom: 0;">&ldquo;That sounds complicated. How would you even start building this?&rdquo;</p>
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">2 / 10</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 3: Top-Down Design ═══ -->
+        <div id="slide-3" class="slide">
+            <div class="title-bar">
+                <h1>Top-Down Design</h1>
+            </div>
+            <div class="content">
+                <p class="body-text"><span class="sketch-highlight">Strategy:</span> Start with the big picture. Break it into smaller pieces. Keep breaking until each piece is something you can build.</p>
+
+                <div class="spacer"></div>
+                <p class="header-text">The big problem:</p>
+                <p class="body-text" style="font-size: 24px; text-align: center;">Robot visits multiple destinations on a grid.</p>
+
+                <div class="spacer"></div>
+                <p class="header-text">Break it down:</p>
+
+                <div class="illustration">
+                    <svg width="660" height="200" viewBox="0 0 660 200">
+                        <!-- Top box -->
+                        <rect x="180" y="5" width="300" height="40" rx="10" fill="rgba(232, 168, 124, 0.15)" stroke="#e8a87c" stroke-width="2"/>
+                        <text x="330" y="30" font-family="Patrick Hand, cursive" font-size="18" fill="#2d3436" text-anchor="middle">Visit multiple destinations</text>
+                        <!-- Lines down -->
+                        <line x1="180" y1="45" x2="100" y2="75" stroke="#b8c5d0" stroke-width="1.5"/>
+                        <line x1="330" y1="45" x2="330" y2="75" stroke="#b8c5d0" stroke-width="1.5"/>
+                        <line x1="480" y1="45" x2="560" y2="75" stroke="#b8c5d0" stroke-width="1.5"/>
+                        <!-- Three sub-boxes -->
+                        <rect x="10" y="75" width="180" height="45" rx="10" fill="rgba(91, 143, 168, 0.1)" stroke="#5b8fa8" stroke-width="2"/>
+                        <text x="100" y="102" font-family="Patrick Hand, cursive" font-size="16" fill="#2d3436" text-anchor="middle">How to compute the route?</text>
+                        <rect x="230" y="75" width="200" height="45" rx="10" fill="rgba(232, 168, 124, 0.1)" stroke="#e8a87c" stroke-width="2"/>
+                        <text x="330" y="102" font-family="Patrick Hand, cursive" font-size="16" fill="#2d3436" text-anchor="middle">How to physically drive it?</text>
+                        <rect x="470" y="75" width="180" height="45" rx="10" fill="rgba(133, 200, 138, 0.1)" stroke="#85c88a" stroke-width="2"/>
+                        <text x="560" y="102" font-family="Patrick Hand, cursive" font-size="16" fill="#2d3436" text-anchor="middle">How to handle many stops?</text>
+                        <!-- Answers -->
+                        <line x1="100" y1="120" x2="100" y2="145" stroke="#b8c5d0" stroke-width="1.5"/>
+                        <line x1="330" y1="120" x2="330" y2="145" stroke="#b8c5d0" stroke-width="1.5"/>
+                        <line x1="560" y1="120" x2="560" y2="145" stroke="#b8c5d0" stroke-width="1.5"/>
+                        <rect x="15" y="145" width="170" height="40" rx="10" fill="rgba(91, 143, 168, 0.2)" stroke="#5b8fa8" stroke-width="2"/>
+                        <text x="100" y="170" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle" font-weight="600">Manhattan class</text>
+                        <rect x="240" y="145" width="180" height="40" rx="10" fill="rgba(232, 168, 124, 0.2)" stroke="#e8a87c" stroke-width="2"/>
+                        <text x="330" y="170" font-family="Caveat, cursive" font-size="20" fill="#e8a87c" text-anchor="middle" font-weight="600">Navigator class</text>
+                        <rect x="480" y="145" width="160" height="40" rx="10" fill="rgba(133, 200, 138, 0.2)" stroke="#85c88a" stroke-width="2"/>
+                        <text x="560" y="170" font-family="Caveat, cursive" font-size="20" fill="#85c88a" text-anchor="middle" font-weight="600">A for loop</text>
+                    </svg>
+                </div>
+
+                <div class="insight-box">That gives us two classes and a main program.</div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">3 / 10</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 4: The Main Program ═══ -->
+        <div id="slide-4" class="slide">
+            <div class="title-bar">
+                <h1>The Main Program</h1>
+            </div>
+            <div class="content">
+                <p class="header-text">This is the ENTIRE main program:</p>
+
+                <div class="code-block" style="font-size: 18px; line-height: 1.6;">manhattan = Manhattan((0, 0))
+navigator = Navigator((0, 0), 0)
+destinations = [(2, 0), (2, 3), (0, 3)]
+
+for dest in destinations:
+    path = manhattan.compute_path(dest)
+    navigator.drive_path(path)
+    manhattan.position = navigator.position</div>
+
+                <p class="body-text"><strong>Seven lines.</strong> It is short because the classes do the work.</p>
+
+                <div class="spacer"></div>
+                <p class="header-text">In plain English:</p>
+                <p class="bullet">Create a path planner and a robot driver</p>
+                <p class="bullet">For each destination: compute the path, drive it, update your position</p>
+
+                <div class="spacer"></div>
+                <div class="insight-box">You do not need to understand how these work yet. Just see the shape.</div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">4 / 10</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 5: Two Classes, Two Jobs ═══ -->
+        <div id="slide-5" class="slide">
+            <div class="title-bar">
+                <h1>Two Classes, Two Jobs</h1>
+            </div>
+            <div class="content">
+                <div class="two-col">
+                    <div class="col">
+                        <div class="class-box">
+                            <h3 style="color: #5b8fa8;">Manhattan class</h3>
+                            <p class="label">&ldquo;Where do I go?&rdquo;</p>
+                            <div class="spacer"></div>
+                            <p class="bullet" style="font-size: 20px;"><strong>Input:</strong> current position + destination</p>
+                            <p class="bullet" style="font-size: 20px;"><strong>Output:</strong> a list of intersections to visit</p>
+                            <div class="spacer"></div>
+                            <div class="code-block compact" style="font-size: 14px; padding: 10px 14px;">(0,0) to (2,3):
+[(0,0), (1,0), (2,0), (2,1), (2,2), (2,3)]</div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="class-box navigator">
+                            <h3 style="color: #e8a87c;">Navigator class</h3>
+                            <p class="label">&ldquo;How do I get there?&rdquo;</p>
+                            <div class="spacer"></div>
+                            <p class="bullet" style="font-size: 20px;"><strong>Input:</strong> a list of intersections (the path)</p>
+                            <p class="bullet" style="font-size: 20px;"><strong>Output:</strong> the robot physically drives there</p>
+                            <div class="spacer"></div>
+                            <p style="font-size: 18px; text-align: center; color: #636e72; font-style: italic; margin-top: 16px;">Turns at each intersection, follows lines between them</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="illustration" style="margin-top: 16px;">
+                    <svg width="500" height="60" viewBox="0 0 500 60">
+                        <rect x="20" y="10" width="140" height="40" rx="10" fill="rgba(91, 143, 168, 0.15)" stroke="#5b8fa8" stroke-width="2"/>
+                        <text x="90" y="35" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" text-anchor="middle" font-weight="600">Manhattan</text>
+                        <text x="215" y="35" font-family="Patrick Hand, cursive" font-size="16" fill="#636e72" text-anchor="middle">path list</text>
+                        <line x1="165" y1="30" x2="260" y2="30" stroke="#e8a87c" stroke-width="2.5" stroke-linecap="round"/>
+                        <polygon points="256,26 266,30 256,34" fill="#e8a87c"/>
+                        <rect x="270" y="10" width="140" height="40" rx="10" fill="rgba(232, 168, 124, 0.15)" stroke="#e8a87c" stroke-width="2"/>
+                        <text x="340" y="35" font-family="Caveat, cursive" font-size="18" fill="#e8a87c" text-anchor="middle" font-weight="600">Navigator</text>
+                    </svg>
+                </div>
+
+                <div class="insight-box">Manhattan never touches the robot. Navigator never computes routes. Each class has one job.</div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">5 / 10</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 6: What Manhattan Computes ═══ -->
+        <div id="slide-6" class="slide">
+            <div class="title-bar">
+                <h1>What Manhattan Computes</h1>
+            </div>
+            <div class="content">
+                <p class="body-text">Given a start and destination, compute a path &mdash; rows first, then columns:</p>
+
+                <div class="illustration">
+                    <svg width="420" height="310" viewBox="0 0 420 310">
+                        <!-- Grid -->
+                        <line x1="60" y1="40" x2="60" y2="240" stroke="#ddd" stroke-width="1.5"/>
+                        <line x1="150" y1="40" x2="150" y2="240" stroke="#ddd" stroke-width="1.5"/>
+                        <line x1="240" y1="40" x2="240" y2="240" stroke="#ddd" stroke-width="1.5"/>
+                        <line x1="330" y1="40" x2="330" y2="240" stroke="#ddd" stroke-width="1.5"/>
+                        <line x1="60" y1="40" x2="330" y2="40" stroke="#ddd" stroke-width="1.5"/>
+                        <line x1="60" y1="107" x2="330" y2="107" stroke="#ddd" stroke-width="1.5"/>
+                        <line x1="60" y1="173" x2="330" y2="173" stroke="#ddd" stroke-width="1.5"/>
+                        <line x1="60" y1="240" x2="330" y2="240" stroke="#ddd" stroke-width="1.5"/>
+                        <!-- Path: (0,0) down to (2,0) then right to (2,3) -->
+                        <line x1="60" y1="40" x2="60" y2="173" stroke="#e85d5d" stroke-width="4" stroke-linecap="round"/>
+                        <line x1="60" y1="173" x2="330" y2="173" stroke="#5b8fa8" stroke-width="4" stroke-linecap="round"/>
+                        <!-- Dots at each intersection -->
+                        <circle cx="60" cy="40" r="6" fill="#e8a87c"/>
+                        <circle cx="60" cy="107" r="6" fill="#e85d5d"/>
+                        <circle cx="60" cy="173" r="6" fill="#e85d5d"/>
+                        <circle cx="150" cy="173" r="6" fill="#5b8fa8"/>
+                        <circle cx="240" cy="173" r="6" fill="#5b8fa8"/>
+                        <circle cx="330" cy="173" r="6" fill="#85c88a"/>
+                        <!-- Labels -->
+                        <text x="48" y="36" font-family="Fira Code, monospace" font-size="12" fill="#e8a87c" text-anchor="end">(0,0)</text>
+                        <text x="48" y="104" font-family="Fira Code, monospace" font-size="12" fill="#e85d5d" text-anchor="end">(1,0)</text>
+                        <text x="48" y="192" font-family="Fira Code, monospace" font-size="12" fill="#e85d5d" text-anchor="end">(2,0)</text>
+                        <text x="150" y="198" font-family="Fira Code, monospace" font-size="12" fill="#5b8fa8" text-anchor="middle">(2,1)</text>
+                        <text x="240" y="198" font-family="Fira Code, monospace" font-size="12" fill="#5b8fa8" text-anchor="middle">(2,2)</text>
+                        <text x="342" y="192" font-family="Fira Code, monospace" font-size="12" fill="#85c88a" text-anchor="start">(2,3)</text>
+                        <!-- Annotations -->
+                        <text x="80" y="110" font-family="Caveat, cursive" font-size="16" fill="#e85d5d" font-weight="600">rows first</text>
+                        <text x="190" y="165" font-family="Caveat, cursive" font-size="16" fill="#5b8fa8" font-weight="600">then columns</text>
+                    </svg>
+                </div>
+
+                <p class="header-text">The path is a list of intersections:</p>
+                <div class="code-block compact" style="font-size: 18px; padding: 12px 18px; display: inline-block;">[(0,0), (1,0), (2,0), (2,1), (2,2), (2,3)]</div>
+
+                <div class="spacer"></div>
+                <p class="body-text">Like walking city blocks in Manhattan, NYC &mdash; go along the avenues, then along the streets.</p>
+                <p class="body-text" style="color: #636e72; font-style: italic;">Lessons 4&ndash;5 will teach you how to build this.</p>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">6 / 10</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 7: What Navigator Does ═══ -->
+        <div id="slide-7" class="slide">
+            <div class="title-bar">
+                <h1>What Navigator Does</h1>
+            </div>
+            <div class="content">
+                <p class="body-text">At each intersection, the robot must do three things:</p>
+
+                <div class="spacer"></div>
+
+                <div class="activity-step">
+                    <span class="step-number">1</span>
+                    <span class="step-text"><strong>Figure out which direction to face</strong><br/>Headings are numbers: <strong>0</strong> = North, <strong>1</strong> = East, <strong>2</strong> = South, <strong>3</strong> = West<br/>Compare coordinates to determine heading</span>
+                </div>
+
+                <div class="activity-step">
+                    <span class="step-number">2</span>
+                    <span class="step-text"><strong>Turn to face that direction</strong><br/>Keep turning right until facing the right way<br/>Uses a simple <code style="font-family: 'Fira Code', monospace;">while</code> loop</span>
+                </div>
+
+                <div class="activity-step">
+                    <span class="step-number">3</span>
+                    <span class="step-text"><strong>Drive forward to the next intersection</strong><br/>Follow the line until detecting a cross<br/>This is <span class="sketch-highlight">LineTrack from Module 2</span> &mdash; you already built it!</span>
+                </div>
+
+                <div class="spacer"></div>
+                <p class="body-text" style="color: #636e72; font-style: italic;">Lessons 7&ndash;8 will teach you how to build this.</p>
+
+                <div class="insight-box">The Navigator reuses your Module 2 code. You do not start from scratch.</div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">7 / 10</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 8: Building on Module 2 ═══ -->
+        <div id="slide-8" class="slide">
+            <div class="title-bar">
+                <h1>Building on What You Know</h1>
+            </div>
+            <div class="content">
+                <p class="header-text">You are not starting from scratch.</p>
+
+                <div class="two-col" style="margin-top: 16px;">
+                    <div class="col">
+                        <div class="sketch-box">
+                            <p class="header-text" style="margin-top: 0; font-size: 24px;">Module 2 gave you:</p>
+                            <p class="bullet" style="font-size: 20px;"><strong>LineSensor</strong> &mdash; reads the line sensors</p>
+                            <p class="bullet" style="font-size: 20px;"><strong>LineTrack</strong> &mdash; follows lines and turns</p>
+                            <p class="bullet level-1"><code style="font-family: 'Fira Code', monospace;">track_until_cross()</code></p>
+                            <p class="bullet level-1"><code style="font-family: 'Fira Code', monospace;">turn_right()</code></p>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="sketch-box" style="border-color: #e8a87c;">
+                            <p class="header-text" style="margin-top: 0; font-size: 24px; color: #e8a87c;">Module 4 adds:</p>
+                            <p class="bullet" style="font-size: 20px;"><strong>Manhattan</strong> &mdash; plan the path</p>
+                            <p class="bullet level-1">Which intersections to visit</p>
+                            <p class="bullet" style="font-size: 20px;"><strong>Navigator</strong> &mdash; execute the path</p>
+                            <p class="bullet level-1">Calls LineTrack to move</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="spacer"></div>
+
+                <div class="illustration">
+                    <svg width="580" height="70" viewBox="0 0 580 70">
+                        <rect x="10" y="15" width="130" height="40" rx="10" fill="rgba(133, 200, 138, 0.15)" stroke="#85c88a" stroke-width="2"/>
+                        <text x="75" y="40" font-family="Caveat, cursive" font-size="17" fill="#85c88a" text-anchor="middle" font-weight="600">LineTrack</text>
+                        <text x="75" y="55" font-family="Patrick Hand, cursive" font-size="12" fill="#636e72" text-anchor="middle">Module 2</text>
+                        <line x1="145" y1="35" x2="190" y2="35" stroke="#b8c5d0" stroke-width="1.5"/>
+                        <text x="168" y="28" font-family="Patrick Hand, cursive" font-size="12" fill="#636e72" text-anchor="middle">used by</text>
+
+                        <rect x="195" y="15" width="130" height="40" rx="10" fill="rgba(232, 168, 124, 0.15)" stroke="#e8a87c" stroke-width="2"/>
+                        <text x="260" y="40" font-family="Caveat, cursive" font-size="17" fill="#e8a87c" text-anchor="middle" font-weight="600">Navigator</text>
+                        <line x1="330" y1="35" x2="375" y2="35" stroke="#b8c5d0" stroke-width="1.5"/>
+                        <text x="353" y="28" font-family="Patrick Hand, cursive" font-size="12" fill="#636e72" text-anchor="middle">uses</text>
+
+                        <rect x="380" y="15" width="130" height="40" rx="10" fill="rgba(91, 143, 168, 0.15)" stroke="#5b8fa8" stroke-width="2"/>
+                        <text x="445" y="40" font-family="Caveat, cursive" font-size="17" fill="#5b8fa8" text-anchor="middle" font-weight="600">Manhattan</text>
+                    </svg>
+                </div>
+
+                <div class="insight-box">Each module builds on the last. That is the power of reusable code.</div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">8 / 10</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 9: Your Roadmap ═══ -->
+        <div id="slide-9" class="slide">
+            <div class="title-bar">
+                <h1>Your Roadmap</h1>
+            </div>
+            <div class="content">
+                <table class="content-table">
+                    <thead>
+                        <tr>
+                            <th>Lesson</th>
+                            <th>What You Build</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1</td>
+                            <td style="text-align: left;">Coordinates on the grid &mdash; the (row, col) system</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td style="text-align: left;">Tuples &mdash; store positions like (2, 3) in Python</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td style="text-align: left;">Lists &mdash; store paths as lists of positions</td>
+                        </tr>
+                        <tr>
+                            <td>4&ndash;5</td>
+                            <td style="text-align: left;">Manhattan algorithm &mdash; compute the path</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td style="text-align: left;">Testing without a robot &mdash; verify before driving</td>
+                        </tr>
+                        <tr>
+                            <td>7</td>
+                            <td style="text-align: left;">Turning logic &mdash; headings as numbers, counting right turns</td>
+                        </tr>
+                        <tr>
+                            <td>8</td>
+                            <td style="text-align: left;">Navigator class &mdash; turn_to() and drive_path()</td>
+                        </tr>
+                        <tr>
+                            <td>9</td>
+                            <td style="text-align: left;">Final project &mdash; put it all together!</td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="spacer"></div>
+                <div class="insight-box">Every lesson builds one piece of the puzzle. Nothing is random.</div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">9 / 10</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 10: The Payoff ═══ -->
+        <div id="slide-10" class="slide">
+            <div class="title-bar">
+                <h1>The Payoff</h1>
+            </div>
+            <div class="content">
+                <p class="header-text">Remember this code?</p>
+
+                <div class="code-block" style="font-size: 18px; line-height: 1.6;">manhattan = Manhattan((0, 0))
+navigator = Navigator((0, 0), 0)
+destinations = [(2, 0), (2, 3), (0, 3)]
+
+for dest in destinations:
+    path = manhattan.compute_path(dest)
+    navigator.drive_path(path)
+    manhattan.position = navigator.position</div>
+
+                <div class="spacer"></div>
+                <div class="spacer"></div>
+
+                <div class="insight-box" style="font-size: 30px;">By Lesson 9, you will understand every line &mdash; because you will have written every piece yourself.</div>
+
+                <div class="spacer"></div>
+                <p class="body-text" style="text-align: center; font-size: 26px; color: #5b8fa8;"><strong>Let&rsquo;s get started.</strong></p>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">10 / 10</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn" disabled>Next</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const navItems = document.querySelectorAll('.nav-item');
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                if (i === index) {
+                    slide.classList.add('active');
+                } else {
+                    slide.classList.remove('active');
+                }
+            });
+            currentSlide = index;
+
+            navItems.forEach((item, i) => {
+                if (i === index) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        }
+
+        function nextSlide() {
+            if (currentSlide < slides.length - 1) {
+                showSlide(currentSlide + 1);
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 0) {
+                showSlide(currentSlide - 1);
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                prevSlide();
+            }
+        });
+
+        // Initialize first slide
+        showSlide(0);
+    </script>
+</body>
+</html>
