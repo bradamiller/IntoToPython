@@ -188,6 +188,7 @@
 
         .inline-answer.short { min-width: 50px; }
         .inline-answer.long { min-width: 140px; }
+        .inline-answer.x-long { min-width: 420px; }
 
         /* ── SVG Grid Container ── */
         .grid-container {
@@ -429,201 +430,170 @@
         <span class="answer-line"></span>
     </div>
 
-    <!-- ── Part 2: Determine the Step Values ── -->
+    <!-- ── Part 2: Write compute_path — Positive Directions Only ── -->
     <div class="section">
-        <div class="section-header">Part 2: Determine the Step Values</div>
-        <p class="instruction">For each start/destination pair, determine whether row_step is +1 or &minus;1, and col_step is +1 or &minus;1.</p>
+        <div class="section-header">Part 2: Write compute_path &mdash; Positive Directions Only</div>
+        <p class="instruction">Write a <code>compute_path(start, end)</code> function that builds a path from <code>start</code> to <code>end</code> using two while loops. This version only needs to handle destinations that are <strong>south and east</strong> (row and column increase).</p>
 
         <div class="tip-box">
             <span class="tip-label">Rules:</span>
-            <br>dest row &gt; start row &rarr; row_step = <strong>+1</strong> (moving down)
-            <br>dest row &lt; start row &rarr; row_step = <strong>&minus;1</strong> (moving up)
-            <br>dest col &gt; start col &rarr; col_step = <strong>+1</strong> (moving right)
-            <br>dest col &lt; start col &rarr; col_step = <strong>&minus;1</strong> (moving left)
+            <br>The path does <strong>NOT</strong> include the starting position (the robot is already there)
+            <br><code>path = []</code> &mdash; start with an empty list
+            <br>Steps = <code>len(path)</code>
         </div>
 
-        <table>
-            <thead>
-                <tr><th>Start</th><th>Destination</th><th>row_step</th><th>col_step</th></tr>
-            </thead>
-            <tbody>
-                <tr><td>(0, 0)</td><td>(3, 2)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
-                <tr><td>(3, 3)</td><td>(0, 1)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
-                <tr><td>(1, 3)</td><td>(3, 0)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
-                <tr><td>(2, 0)</td><td>(0, 3)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
-                <tr><td>(0, 0)</td><td>(0, 3)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
-            </tbody>
-        </table>
+        <p>Fill in the blanks:</p>
 
-        <p style="margin-top: 8px;"><strong>For the last row, start row and destination row are the same. Does the value of row_step matter? Why or why not?</strong></p>
+        <div class="code-block">def compute_path(start, end):
+    path = []
+    current_row, current_col = start
+    dest_row, dest_col = end
+
+    # Move south (rows increase)
+    while current_row <span class="inline-answer short"></span> dest_row:
+        current_row = current_row + <span class="inline-answer short"></span>
+        path.append((<span class="inline-answer"></span>,  <span class="inline-answer"></span>))
+
+    # Move east (columns increase)
+    while current_col <span class="inline-answer short"></span> dest_col:
+        current_col = current_col + <span class="inline-answer short"></span>
+        path.append((<span class="inline-answer"></span>,  <span class="inline-answer"></span>))
+
+    return path</div>
+
+        <p style="margin-top: 10px;"><strong>Test it:</strong> <code>compute_path((0, 0), (2, 3))</code> should return:</p>
         <span class="answer-line"></span>
+
+        <p><strong>How many steps?</strong> <code>len(path)</code> = <span class="inline-answer short"></span></p>
     </div>
 </div>
 
 <!-- ════════ PAGE 2 ════════ -->
 <div class="page page-break">
 
-    <!-- ── Part 3: Hand-Trace the Algorithm ── -->
     <div class="section">
-        <div class="section-header">Part 3: Hand-Trace the Algorithm</div>
-        <p class="instruction">For each start/destination pair, trace the Manhattan algorithm (rows first, then columns). Write every position in the path.</p>
+        <div class="section-header">Part 2 (continued)</div>
 
-        <!-- Path 1 -->
-        <div class="path-header">Path 1: (0, 0) &rarr; (3, 2)</div>
-        <p>row_step = <span class="inline-answer short"></span> &nbsp;&nbsp; col_step = <span class="inline-answer short"></span></p>
+        <p><strong>Try this:</strong> <code>compute_path((3, 3), (1, 0))</code> &mdash; what does it return?</p>
+        <span class="answer-line"></span>
 
-        <div class="two-col">
-            <div>
-                <table>
-                    <thead>
-                        <tr><th style="width:50px;">Step</th><th>Action</th><th>Position</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>Start</td><td>&mdash;</td><td>(0, 0)</td></tr>
-                        <tr><td>1</td><td>Row <span class="inline-answer short"></span></td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
-                        <tr><td>2</td><td>Row <span class="inline-answer short"></span></td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
-                        <tr><td>3</td><td>Row <span class="inline-answer short"></span></td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
-                    </tbody>
-                </table>
-            </div>
-            <div>
-                <table>
-                    <thead>
-                        <tr><th style="width:50px;">Step</th><th>Action</th><th>Position</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>4</td><td>Col <span class="inline-answer short"></span></td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
-                        <tr><td>5</td><td>Col <span class="inline-answer short"></span></td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        <p><strong>Why is the result wrong?</strong></p>
+        <span class="answer-line"></span>
+    </div>
 
-        <p style="margin-top: 8px;"><strong>Complete path:</strong> <span class="inline-answer long"></span> <span class="inline-answer long"></span> <span class="inline-answer long"></span></p>
-        <p><strong>Total steps:</strong> <span class="inline-answer short"></span> &nbsp;&nbsp;
-           <strong>Manhattan distance:</strong> <span class="inline-answer short"></span> &nbsp;&nbsp;
-           <strong>Do they match?</strong> <span class="choice">YES &nbsp;/&nbsp; NO</span></p>
+    <!-- ── Part 3: Write compute_path — All Directions ── -->
+    <div class="section">
+        <div class="section-header">Part 3: Write compute_path &mdash; All Directions</div>
+        <p class="instruction">Fix the function by adding two more while loops for <strong>north</strong> and <strong>west</strong>. No if/else statements needed &mdash; only the loops that need to run will execute!</p>
 
-        <!-- Path 2 -->
-        <div class="path-header" style="margin-top: 20px;">Path 2: (3, 3) &rarr; (0, 1)</div>
-        <p>row_step = <span class="inline-answer short"></span> &nbsp;&nbsp; col_step = <span class="inline-answer short"></span></p>
+        <p>Fill in the blanks:</p>
 
-        <div class="two-col">
-            <div>
-                <table>
-                    <thead>
-                        <tr><th style="width:50px;">Step</th><th>Action</th><th>Position</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>Start</td><td>&mdash;</td><td>(3, 3)</td></tr>
-                        <tr><td>1</td><td>Row <span class="inline-answer short"></span></td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
-                        <tr><td>2</td><td>Row <span class="inline-answer short"></span></td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
-                        <tr><td>3</td><td>Row <span class="inline-answer short"></span></td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
-                    </tbody>
-                </table>
-            </div>
-            <div>
-                <table>
-                    <thead>
-                        <tr><th style="width:50px;">Step</th><th>Action</th><th>Position</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr><td>4</td><td>Col <span class="inline-answer short"></span></td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
-                        <tr><td>5</td><td>Col <span class="inline-answer short"></span></td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
+        <div class="code-block">def compute_path(start, end):
+    path = []
+    current_row, current_col = start
+    dest_row, dest_col = end
 
-        <p style="margin-top: 8px;"><strong>Complete path:</strong> <span class="inline-answer long"></span> <span class="inline-answer long"></span> <span class="inline-answer long"></span></p>
-        <p><strong>Total steps:</strong> <span class="inline-answer short"></span> &nbsp;&nbsp;
-           <strong>Manhattan distance:</strong> <span class="inline-answer short"></span> &nbsp;&nbsp;
-           <strong>Do they match?</strong> <span class="choice">YES &nbsp;/&nbsp; NO</span></p>
+    # Move south (rows increase)
+    while current_row &lt; dest_row:
+        current_row = current_row + 1
+        path.append((current_row, current_col))
+
+    # Move north (rows decrease)
+    while current_row <span class="inline-answer short"></span> dest_row:
+        current_row = current_row <span class="inline-answer short"></span> <span class="inline-answer short"></span>
+        path.<span class="inline-answer"></span>((<span class="inline-answer"></span>,  <span class="inline-answer"></span>))
+
+    # Move east (columns increase)
+    while current_col &lt; dest_col:
+        current_col = current_col + 1
+        path.append((current_row, current_col))
+
+    # Move west (columns decrease)
+    while current_col <span class="inline-answer short"></span> dest_col:
+        current_col = current_col <span class="inline-answer short"></span> <span class="inline-answer short"></span>
+        path.<span class="inline-answer"></span>((<span class="inline-answer"></span>,  <span class="inline-answer"></span>))
+
+    return path</div>
     </div>
 </div>
 
 <!-- ════════ PAGE 3 ════════ -->
 <div class="page page-break">
 
+    <!-- ── Part 4: Hand-Trace the Algorithm ── -->
     <div class="section">
-        <div class="section-header">Part 3: Hand-Trace the Algorithm (continued)</div>
+        <div class="section-header">Part 4: Hand-Trace the Algorithm</div>
+        <p class="instruction">For each start/end pair, trace the function. The path does NOT include the start position.</p>
 
-        <!-- Path 3 -->
-        <div class="path-header">Path 3: (1, 3) &rarr; (3, 0)</div>
-        <p>row_step = <span class="inline-answer short"></span> &nbsp;&nbsp; col_step = <span class="inline-answer short"></span></p>
+        <!-- Path 1 -->
+        <div class="path-header">Path 1: compute_path((0, 0), (2, 3))</div>
 
+        <p>Row moves:</p>
         <div class="two-col">
             <div>
                 <table>
                     <thead>
-                        <tr><th style="width:50px;">Step</th><th>Action</th><th>Position</th></tr>
+                        <tr><th style="width:50px;">Step</th><th>Action</th><th>Position Added</th></tr>
                     </thead>
                     <tbody>
-                        <tr><td>Start</td><td>&mdash;</td><td>(1, 3)</td></tr>
-                        <tr><td>1</td><td>Row <span class="inline-answer short"></span></td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
-                        <tr><td>2</td><td>Row <span class="inline-answer short"></span></td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
+                        <tr><td>1</td><td>Row +1</td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
+                        <tr><td>2</td><td>Row +1</td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
                     </tbody>
                 </table>
             </div>
             <div>
+                <p>Column moves:</p>
                 <table>
                     <thead>
-                        <tr><th style="width:50px;">Step</th><th>Action</th><th>Position</th></tr>
+                        <tr><th style="width:50px;">Step</th><th>Action</th><th>Position Added</th></tr>
                     </thead>
                     <tbody>
-                        <tr><td>3</td><td>Col <span class="inline-answer short"></span></td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
-                        <tr><td>4</td><td>Col <span class="inline-answer short"></span></td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
-                        <tr><td>5</td><td>Col <span class="inline-answer short"></span></td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
+                        <tr><td>3</td><td>Col +1</td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
+                        <tr><td>4</td><td>Col +1</td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
+                        <tr><td>5</td><td>Col +1</td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
 
-        <p style="margin-top: 8px;"><strong>Complete path:</strong> <span class="inline-answer long"></span> <span class="inline-answer long"></span> <span class="inline-answer long"></span></p>
-        <p><strong>Total steps:</strong> <span class="inline-answer short"></span> &nbsp;&nbsp;
+        <p style="margin-top: 8px;"><strong>Returned path:</strong> <span class="inline-answer x-long"></span></p>
+        <p><strong>len(path):</strong> <span class="inline-answer short"></span> &nbsp;&nbsp;
            <strong>Manhattan distance:</strong> <span class="inline-answer short"></span> &nbsp;&nbsp;
            <strong>Do they match?</strong> <span class="choice">YES &nbsp;/&nbsp; NO</span></p>
 
-        <!-- Path 4 -->
-        <div class="path-header" style="margin-top: 20px;">Path 4: (2, 2) &rarr; (2, 0) &nbsp;<em style="font-size: 16px; color: #636e72;">(same row!)</em></div>
-        <p>row_step = <span class="inline-answer short"></span> &nbsp;&nbsp; col_step = <span class="inline-answer short"></span></p>
-        <p><strong>Does the row loop execute?</strong> <span class="choice">YES &nbsp;/&nbsp; NO</span> &nbsp;&nbsp; <strong>Why?</strong> <span class="inline-answer long"></span></p>
+        <!-- Path 2 -->
+        <div class="path-header" style="margin-top: 20px;">Path 2: compute_path((3, 3), (1, 0))</div>
 
-        <table>
-            <thead>
-                <tr><th style="width:50px;">Step</th><th>Action</th><th>Position</th></tr>
-            </thead>
-            <tbody>
-                <tr><td>Start</td><td>&mdash;</td><td>(2, 2)</td></tr>
-                <tr><td>1</td><td>Col <span class="inline-answer short"></span></td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
-                <tr><td>2</td><td>Col <span class="inline-answer short"></span></td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
-            </tbody>
-        </table>
+        <p>Row moves:</p>
+        <div class="two-col">
+            <div>
+                <table>
+                    <thead>
+                        <tr><th style="width:50px;">Step</th><th>Action</th><th>Position Added</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>1</td><td>Row &minus;1</td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
+                        <tr><td>2</td><td>Row &minus;1</td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div>
+                <p>Column moves:</p>
+                <table>
+                    <thead>
+                        <tr><th style="width:50px;">Step</th><th>Action</th><th>Position Added</th></tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>3</td><td>Col &minus;1</td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
+                        <tr><td>4</td><td>Col &minus;1</td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
+                        <tr><td>5</td><td>Col &minus;1</td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
-        <p style="margin-top: 8px;"><strong>Complete path:</strong> <span class="inline-answer long"></span> <span class="inline-answer long"></span></p>
-        <p><strong>Total steps:</strong> <span class="inline-answer short"></span> &nbsp;&nbsp;
-           <strong>Manhattan distance:</strong> <span class="inline-answer short"></span> &nbsp;&nbsp;
-           <strong>Do they match?</strong> <span class="choice">YES &nbsp;/&nbsp; NO</span></p>
-
-        <!-- Path 5 -->
-        <div class="path-header" style="margin-top: 20px;">Path 5: (0, 1) &rarr; (3, 1) &nbsp;<em style="font-size: 16px; color: #636e72;">(same column!)</em></div>
-        <p>row_step = <span class="inline-answer short"></span> &nbsp;&nbsp; col_step = <span class="inline-answer short"></span></p>
-        <p><strong>Does the column loop execute?</strong> <span class="choice">YES &nbsp;/&nbsp; NO</span> &nbsp;&nbsp; <strong>Why?</strong> <span class="inline-answer long"></span></p>
-
-        <table>
-            <thead>
-                <tr><th style="width:50px;">Step</th><th>Action</th><th>Position</th></tr>
-            </thead>
-            <tbody>
-                <tr><td>Start</td><td>&mdash;</td><td>(0, 1)</td></tr>
-                <tr><td>1</td><td>Row <span class="inline-answer short"></span></td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
-                <tr><td>2</td><td>Row <span class="inline-answer short"></span></td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
-                <tr><td>3</td><td>Row <span class="inline-answer short"></span></td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
-            </tbody>
-        </table>
-
-        <p style="margin-top: 8px;"><strong>Complete path:</strong> <span class="inline-answer long"></span> <span class="inline-answer long"></span></p>
-        <p><strong>Total steps:</strong> <span class="inline-answer short"></span> &nbsp;&nbsp;
+        <p style="margin-top: 8px;"><strong>Returned path:</strong> <span class="inline-answer x-long"></span></p>
+        <p><strong>len(path):</strong> <span class="inline-answer short"></span> &nbsp;&nbsp;
            <strong>Manhattan distance:</strong> <span class="inline-answer short"></span> &nbsp;&nbsp;
            <strong>Do they match?</strong> <span class="choice">YES &nbsp;/&nbsp; NO</span></p>
     </div>
@@ -632,10 +602,44 @@
 <!-- ════════ PAGE 4 ════════ -->
 <div class="page page-break">
 
-    <!-- ── Part 4: Draw the Paths on the Grid ── -->
     <div class="section">
-        <div class="section-header">Part 4: Draw the Paths on the Grid</div>
-        <p class="instruction">Using the paths you traced in Part 3, draw each path on the grid below. Use arrows to show direction. Label each path with its number (1&ndash;5).</p>
+        <div class="section-header">Part 4: Hand-Trace the Algorithm (continued)</div>
+
+        <!-- Path 3 -->
+        <div class="path-header">Path 3: compute_path((2, 0), (2, 3)) &nbsp;<em style="font-size: 16px; color: #636e72;">(same row!)</em></div>
+
+        <p><strong>Do any row loops execute?</strong> <span class="choice">YES &nbsp;/&nbsp; NO</span> &nbsp;&nbsp; <strong>Why?</strong> <span class="inline-answer long"></span></p>
+
+        <p>Column moves:</p>
+        <table>
+            <thead>
+                <tr><th style="width:50px;">Step</th><th>Action</th><th>Position Added</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>1</td><td>Col +1</td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
+                <tr><td>2</td><td>Col +1</td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
+                <tr><td>3</td><td>Col +1</td><td>(<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</td></tr>
+            </tbody>
+        </table>
+
+        <p style="margin-top: 8px;"><strong>Returned path:</strong> <span class="inline-answer x-long"></span></p>
+        <p><strong>len(path):</strong> <span class="inline-answer short"></span> &nbsp;&nbsp;
+           <strong>Manhattan distance:</strong> <span class="inline-answer short"></span> &nbsp;&nbsp;
+           <strong>Do they match?</strong> <span class="choice">YES &nbsp;/&nbsp; NO</span></p>
+
+        <!-- Path 4 -->
+        <div class="path-header" style="margin-top: 20px;">Path 4: compute_path((1, 1), (1, 1)) &nbsp;<em style="font-size: 16px; color: #636e72;">(same position!)</em></div>
+
+        <p><strong>Do any loops execute?</strong> <span class="choice">YES &nbsp;/&nbsp; NO</span> &nbsp;&nbsp; <strong>Why?</strong> <span class="inline-answer long"></span></p>
+
+        <p><strong>Returned path:</strong> <span class="inline-answer"></span></p>
+        <p><strong>len(path):</strong> <span class="inline-answer short"></span></p>
+    </div>
+
+    <!-- ── Part 5: Draw the Paths on the Grid ── -->
+    <div class="section">
+        <div class="section-header">Part 5: Draw the Paths on the Grid</div>
+        <p class="instruction">Using the paths you traced in Part 4, draw each path on the grid below. Use arrows to show direction. Label each path with its number (1&ndash;3). Path 4 is just a dot!</p>
 
         <div class="grid-container">
             <svg width="380" height="370" viewBox="0 0 380 370" font-family="Patrick Hand, cursive">
@@ -688,26 +692,33 @@
         <p style="margin-top: 8px;"><strong>What shape do most of the paths make?</strong> <span class="inline-answer long"></span></p>
         <p><strong>Which paths are straight lines instead of L-shapes?</strong> <span class="inline-answer long"></span></p>
     </div>
+</div>
 
-    <!-- ── Part 5: Verify Your Understanding ── -->
+<!-- ════════ PAGE 5 ════════ -->
+<div class="page page-break">
+
+    <!-- ── Part 6: Verify Your Understanding ── -->
     <div class="section">
-        <div class="section-header">Part 5: Verify Your Understanding</div>
+        <div class="section-header">Part 6: Verify Your Understanding</div>
 
         <ol class="questions">
             <li>The Manhattan algorithm always moves <span class="inline-answer"></span> first, then <span class="inline-answer"></span>.</li>
-            <li>If the destination row is SMALLER than the start row, the robot moves <span class="inline-answer"></span> (up/down).</li>
-            <li>If the destination column is LARGER than the start column, the robot moves <span class="inline-answer"></span> (left/right).</li>
-            <li>When start and destination are in the same row, the row loop <span class="inline-answer long"></span> (executes / does not execute).</li>
-            <li>When start and destination are the same position, the path contains <span class="inline-answer short"></span> position(s).</li>
-            <li>The number of steps in a path always equals the <span class="inline-answer long"></span>.</li>
+            <li>If the destination row is SMALLER than the start row, which while loop runs? <span class="inline-answer long"></span></li>
+            <li>If the destination column is LARGER than the start column, which while loop runs? <span class="inline-answer long"></span></li>
+            <li>When the start and destination are in the same row, the row loops <span class="inline-answer long"></span> (execute / do not execute).</li>
+            <li>When the start and destination are the same position, the path is <span class="inline-answer"></span> and len(path) is <span class="inline-answer short"></span>.</li>
+            <li>The number of steps in a path (len(path)) always equals the <span class="inline-answer long"></span>.</li>
+            <li>Why don&rsquo;t we need if/else to choose direction? How do the 4 while loops handle it?</li>
         </ol>
+        <span class="answer-line"></span>
+        <span class="answer-line"></span>
     </div>
 
     <!-- ── Reflection ── -->
     <div class="section">
         <div class="reflection-box">
             <div class="reflection-label">Reflection</div>
-            <p><strong>You traced 5 different paths by hand today. In the next lesson, you will write a Python class that does this automatically. Why is it important to trace the algorithm by hand BEFORE writing code?</strong></p>
+            <p><strong>You wrote a function that can find a path between ANY two grid positions using just 4 while loops. In the next lesson, you will wrap this function into a class. Why is it important to get the function working correctly BEFORE putting it in a class?</strong></p>
             <div class="answer-lines-3">
                 <span class="answer-line"></span>
                 <span class="answer-line"></span>
@@ -718,7 +729,7 @@
 
     <!-- ── Next Lesson ── -->
     <div class="next-lesson">
-        <strong>Next Lesson:</strong> We'll implement the Manhattan algorithm as a Python class with a <strong>compute_path()</strong> method!
+        <strong>Next Lesson:</strong> We&rsquo;ll wrap <code>compute_path</code> into a Manhattan class that remembers the robot&rsquo;s position!
     </div>
 </div>
 

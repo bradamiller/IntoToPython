@@ -96,11 +96,11 @@ By the end of this lesson, students will be able to:
 
 2. **Step 2: Trace One Leg on Paper**:
    - Using the board, trace the first leg: `(0, 0)` to `(2, 0)`.
-   - Path: `[(0, 0), (1, 0), (2, 0)]`
-   - Navigator starts heading 0 (North):
+   - Path: `[(1, 0), (2, 0)]`
+   - Navigator starts at (0,0) heading 0 (North):
      ```
-     Step 1: At (0,0) heading 0 (N), need 2 (S) --> count clockwise: 0→1→2 = 2 right turns, drive to (1,0)
-     Step 2: At (1,0) heading 2 (S), need 2 (S) --> already facing S, no turn, drive to (2,0)
+     Step 1: Position (0,0) heading 0 (N), need 2 (S) --> count clockwise: 0→1→2 = 2 right turns, drive to (1,0)
+     Step 2: Position (1,0) heading 2 (S), need 2 (S) --> already facing S, no turn, drive to (2,0)
      ```
    - "After this leg, manhattan.position = (2, 0), navigator.position = (2, 0), navigator.heading = 2 (S)."
 
@@ -216,24 +216,20 @@ class Manhattan:
         self.position = start
 
     def compute_path(self, destination):
-        path = [self.position]
-        current_row = self.position[0]
-        current_col = self.position[1]
-        dest_row = destination[0]
-        dest_col = destination[1]
-        if dest_row > current_row:
-            row_step = 1
-        else:
-            row_step = -1
-        if dest_col > current_col:
-            col_step = 1
-        else:
-            col_step = -1
-        while current_row != dest_row:
-            current_row = current_row + row_step
+        path = []
+        current_row, current_col = self.position
+        dest_row, dest_col = destination
+        while current_row < dest_row:
+            current_row = current_row + 1
             path.append((current_row, current_col))
-        while current_col != dest_col:
-            current_col = current_col + col_step
+        while current_row > dest_row:
+            current_row = current_row - 1
+            path.append((current_row, current_col))
+        while current_col < dest_col:
+            current_col = current_col + 1
+            path.append((current_row, current_col))
+        while current_col > dest_col:
+            current_col = current_col - 1
             path.append((current_row, current_col))
         return path
 
@@ -264,8 +260,7 @@ class Navigator:
                 self.heading = 0
 
     def drive_path(self, path):
-        for i in range(1, len(path)):
-            next_pos = path[i]
+        for next_pos in path:
             needed = self.get_needed_heading(next_pos)
             if self.heading == needed:
                 self.line_track.drivetrain.straight(8)
@@ -293,7 +288,7 @@ for dest in destinations:
     print("--- Navigating to", dest, "---")
     path = manhattan.compute_path(dest)
     print("Path:", path)
-    print("Steps:", len(path) - 1)
+    print("Steps:", len(path))
     navigator.drive_path(path)
     manhattan.position = navigator.position
     print("Arrived at:", navigator.position)
@@ -311,24 +306,20 @@ class Manhattan:
         self.position = start
 
     def compute_path(self, destination):
-        path = [self.position]
-        current_row = self.position[0]
-        current_col = self.position[1]
-        dest_row = destination[0]
-        dest_col = destination[1]
-        if dest_row > current_row:
-            row_step = 1
-        else:
-            row_step = -1
-        if dest_col > current_col:
-            col_step = 1
-        else:
-            col_step = -1
-        while current_row != dest_row:
-            current_row = current_row + row_step
+        path = []
+        current_row, current_col = self.position
+        dest_row, dest_col = destination
+        while current_row < dest_row:
+            current_row = current_row + 1
             path.append((current_row, current_col))
-        while current_col != dest_col:
-            current_col = current_col + col_step
+        while current_row > dest_row:
+            current_row = current_row - 1
+            path.append((current_row, current_col))
+        while current_col < dest_col:
+            current_col = current_col + 1
+            path.append((current_row, current_col))
+        while current_col > dest_col:
+            current_col = current_col - 1
             path.append((current_row, current_col))
         return path
 
@@ -338,7 +329,7 @@ destinations = [(2, 0), (2, 3), (0, 3), (0, 0)]
 
 for dest in destinations:
     path = manhattan.compute_path(dest)
-    print("To", dest, ":", path, "  Steps:", len(path) - 1)
+    print("To", dest, ":", path, "  Steps:", len(path))
     manhattan.position = dest
 ```
 

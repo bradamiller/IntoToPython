@@ -1,15 +1,14 @@
-# Lesson 4: The Manhattan Algorithm — Paper First
-# Trace the algorithm by hand before writing code.
+# Lesson 4: The Manhattan Algorithm
+# Build a compute_path function step by step.
 #
 # Team: ________________________
 # Date: ________________________
 #
 # The Manhattan algorithm finds a path between two grid positions:
-#   1. Start at the current position
-#   2. Move along ROWS until you reach the destination row
-#   3. Move along COLUMNS until you reach the destination column
+#   1. Move along ROWS until you reach the destination row
+#   2. Move along COLUMNS until you reach the destination column
 #
-# The robot always moves rows first, then columns.
+# The path does NOT include the starting position (the robot is already there).
 #
 #   Col: 0   1   2   3   4
 #  Row 0: +---+---+---+---+
@@ -21,76 +20,88 @@
 #  Row 3: +---+---+---+---+
 
 
-# ===== EXAMPLE: Tracing the Algorithm =====
-# Start: (0, 0)  Destination: (2, 3)
+# ===== PART 1: Positive Directions Only =====
+# Write a compute_path function that works when the destination
+# is south (larger row) and east (larger column) of the start.
 #
-# Step 1: We are at (0, 0). Destination row is 2.
-#         Current row (0) < destination row (2), so move SOUTH.
-# Step 2: Move south: (0,0) -> (1,0) -> (2,0)  [now at destination row]
-# Step 3: We are at (2, 0). Destination col is 3.
-#         Current col (0) < destination col (3), so move EAST.
-# Step 4: Move east: (2,0) -> (2,1) -> (2,2) -> (2,3)  [arrived!]
+# Parameters:
+#   start - a (row, col) tuple
+#   end   - a (row, col) tuple
 #
-# Full path: [(0,0), (1,0), (2,0), (2,1), (2,2), (2,3)]
+# Returns: a list of (row, col) tuples (not including start)
 
-print("===== Example: (0,0) to (2,3) =====")
-print("Path: [(0,0), (1,0), (2,0), (2,1), (2,2), (2,3)]")
+def compute_path(start, end):
+    path = []
+    current_row, current_col = start
+    dest_row, dest_col = end
+
+    # TODO: While current_row is less than dest_row,
+    #   add 1 to current_row
+    #   append (current_row, current_col) to path
+
+    # TODO: While current_col is less than dest_col,
+    #   add 1 to current_col
+    #   append (current_row, current_col) to path
+
+    return path
+
+
+# Test Part 1
+print("===== Part 1: Positive Directions =====")
+path = compute_path((0, 0), (2, 3))
+print("(0,0) to (2,3):", path)
+# Expected: [(1, 0), (2, 0), (2, 1), (2, 2), (2, 3)]
+
+path = compute_path((1, 1), (3, 4))
+print("(1,1) to (3,4):", path)
+# Expected: [(2, 1), (3, 1), (3, 2), (3, 3), (3, 4)]
 print()
 
 
-# ===== EXERCISE 1: Trace (1, 1) to (3, 4) =====
-# TODO: Trace the algorithm by hand on paper, then type the path here.
-# Which direction do rows move? (north/south) ???
-# Which direction do columns move? (east/west) ???
+# ===== PART 2: All Directions =====
+# Try your function with a path that goes north or west:
+#   compute_path((3, 3), (1, 0))
+# It returns [] because 3 is not less than 1!
+#
+# Fix: Add two more while loops — one for north (current_row > dest_row)
+# and one for west (current_col > dest_col).
+#
+# Only the loops that need to run will execute.
+# No if statements needed!
 
-# TODO: Uncomment and fill in the path
-# print("===== Exercise 1: (1,1) to (3,4) =====")
-# print("Row direction: ???")
-# print("Col direction: ???")
-# print("Path: ???")
-# print()
+# TODO: Rewrite compute_path below with 4 while loops:
+#   south (current_row < dest_row, add 1)
+#   north (current_row > dest_row, subtract 1)
+#   east  (current_col < dest_col, add 1)
+#   west  (current_col > dest_col, subtract 1)
 
-
-# ===== EXERCISE 2: Trace (3, 3) to (1, 0) =====
-# This time the robot moves NORTH and WEST!
-# TODO: Trace the algorithm by hand, then type the path.
-
-# TODO: Uncomment and fill in the path
-# print("===== Exercise 2: (3,3) to (1,0) =====")
-# print("Row direction: ???")
-# print("Col direction: ???")
-# print("Path: ???")
-# print()
-
-
-# ===== EXERCISE 3: Trace (0, 2) to (3, 2) =====
-# What happens when the column is already correct?
-# TODO: Trace and type the path.
-
-# TODO: Uncomment and fill in the path
-# print("===== Exercise 3: (0,2) to (3,2) =====")
-# print("Row direction: ???")
-# print("Col direction: (none — already there!)")
-# print("Path: ???")
-# print()
+# def compute_path(start, end):
+#     path = []
+#     current_row, current_col = start
+#     dest_row, dest_col = end
+#
+#     # TODO: 4 while loops here
+#
+#     return path
 
 
-# ===== EXERCISE 4: Trace (2, 0) to (2, 4) =====
-# What happens when the row is already correct?
-# TODO: Trace and type the path.
-
-# TODO: Uncomment and fill in the path
-# print("===== Exercise 4: (2,0) to (2,4) =====")
-# print("Row direction: (none — already there!)")
-# print("Col direction: ???")
-# print("Path: ???")
-# print()
-
-
-# ===== EXERCISE 5: How Many Steps? =====
-# TODO: For each exercise above, count how many steps the path takes.
-# Remember: the number of steps = len(path) - 1 (don't count the start)
-# print("Exercise 1 steps: ???")
-# print("Exercise 2 steps: ???")
-# print("Exercise 3 steps: ???")
-# print("Exercise 4 steps: ???")
+# Test Part 2 — uncomment after writing the 4-loop version
+# print("===== Part 2: All Directions =====")
+# path = compute_path((0, 0), (2, 3))
+# print("(0,0) to (2,3):", path)
+#
+# path = compute_path((3, 3), (1, 0))
+# print("(3,3) to (1,0):", path)
+#
+# path = compute_path((1, 3), (3, 1))
+# print("(1,3) to (3,1):", path)
+#
+# # Edge cases
+# path = compute_path((2, 0), (2, 3))
+# print("(2,0) to (2,3):", path)
+#
+# path = compute_path((0, 2), (3, 2))
+# print("(0,2) to (3,2):", path)
+#
+# path = compute_path((1, 1), (1, 1))
+# print("(1,1) to (1,1):", path)

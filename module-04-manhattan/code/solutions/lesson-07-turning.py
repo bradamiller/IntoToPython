@@ -26,13 +26,15 @@ for current, next_pos in test_pairs:
     print(f"  {current} to {next_pos}: {h} ({HEADING_NAMES[h]})")
 
 # Test: Full path trace
+# The path from compute_path does not include the start,
+# so we track position separately — just like Navigator will.
 print("\n=== Full Path Trace ===")
-path = [(0, 0), (1, 0), (2, 0), (2, 1), (2, 2)]
+path = [(1, 0), (2, 0), (2, 1), (2, 2)]
+position = (0, 0)
 heading = 0  # North
-for i in range(len(path) - 1):
-    current = path[i]
-    next_pos = path[i + 1]
-    needed = get_needed_heading(current, next_pos)
-    print(f"  At {current} heading {HEADING_NAMES[heading]}, need {HEADING_NAMES[needed]}")
+for next_pos in path:
+    needed = get_needed_heading(position, next_pos)
+    print(f"  At {position} heading {HEADING_NAMES[heading]}, need {HEADING_NAMES[needed]}")
     heading = needed
-    print(f"    Now heading {HEADING_NAMES[heading]}, drive to {next_pos}")
+    position = next_pos
+    print(f"    Now heading {HEADING_NAMES[heading]}, drive to {position}")

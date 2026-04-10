@@ -4,46 +4,60 @@
 **Title:** Implementing the Manhattan Class
 
 **Learning Objectives:**
-- Design a class with __init__ and compute_path methods
-- Implement the Manhattan algorithm in Python
-- Handle direction using conditional logic (+1 or -1 step)
-- Build a path as a list of tuples using append()
+- Understand why we wrap functions in a class
+- Convert the compute_path function from Lesson 4 into a method
+- Use `self.position` to store state instead of passing a parameter
+- Test the class with print statements
 
 **Agenda:**
-- Class design overview (5 min)
+- Why use a class? (5 min)
+- From function to method (10 min)
 - Building compute_path step by step (15 min)
-- Guided coding (15 min)
-- Testing your class (10 min)
+- Testing your class (15 min)
 
 ---
 
-## Slide 2: Hook — From Paper to Code
-**Last lesson:** You traced paths by hand.
+## Slide 2: Hook — You Already Have the Algorithm
+**In Lesson 4** you wrote a `compute_path` function with 4 while loops.
 
-**Today:** You'll write a class that computes paths automatically.
+**Today's question:** "What if the robot needs to remember where it is?"
 
-**The goal:**
+**With a function:**
 ```python
-manhattan = Manhattan((0, 0))
-path = manhattan.compute_path((2, 3))
-print(path)
-# [(0,0), (1,0), (2,0), (2,1), (2,2), (2,3)]
+path = compute_path((0, 0), (2, 3))
+# Every call needs the start position
+path = compute_path((2, 3), (1, 0))
 ```
 
-**Question:** "Can you translate the hand-tracing steps into Python code?"
+**With a class:**
+```python
+nav = Manhattan((0, 0))
+path = nav.compute_path((2, 3))
+# The object remembers where it started
+```
+
+**A class bundles data and behavior together.**
 
 ---
 
-## Slide 3: Class Design — Manhattan
-**What does the class need?**
+## Slide 3: Why Use a Class?
+**A function knows nothing between calls.**
+- You pass in start and destination every time
+- Nothing remembers where the robot is
 
-**Data (stored in __init__):**
-- `self.position` — the robot's current position as a tuple
+**A class stores state.**
+- `self.position` remembers the robot's position
+- Methods can use that stored data without extra parameters
 
-**Methods:**
-- `compute_path(destination)` — returns a list of tuples from current position to destination
+**Real-world parallel:** A GPS app remembers your location. You only type the destination.
 
-**Class skeleton:**
+**Our goal:** Wrap the Lesson 4 function in a `Manhattan` class so the robot's position is stored.
+
+---
+
+## Slide 4: The Class Skeleton
+**Two pieces: `__init__` stores data, `compute_path` does the work.**
+
 ```python
 class Manhattan:
     def __init__(self, start):
@@ -54,170 +68,147 @@ class Manhattan:
         pass
 ```
 
----
-
-## Slide 4: Step 1 — Determine Direction
-**First, figure out which way to go:**
-
-```python
-def compute_path(self, destination):
-    path = [self.position]
-
-    current_row = self.position[0]
-    current_col = self.position[1]
-    dest_row = destination[0]
-    dest_col = destination[1]
-
-    # Which direction for rows?
-    if dest_row > current_row:
-        row_step = 1       # Move down
-    else:
-        row_step = -1      # Move up
-
-    # Which direction for columns?
-    if dest_col > current_col:
-        col_step = 1       # Move right
-    else:
-        col_step = -1      # Move left
-```
-
-**This matches what we did by hand in Lesson 4!**
+**What changed from the function?**
+- `start` is no longer a parameter of `compute_path` — it lives in `self.position`
+- `self` connects the method to the object's data
 
 ---
 
-## Slide 5: Step 2 — Move Along Rows
-**Loop through rows until we reach the destination row:**
-
+## Slide 5: Converting the Function to a Method
+**Lesson 4 function (review):**
 ```python
-    # Move along rows
-    while current_row != dest_row:
-        current_row = current_row + row_step
-        path.append((current_row, current_col))
-```
-
-**Trace for (0, 0) to (2, 3):**
-
-| Iteration | current_row | row_step | After | Appended |
-|---|---|---|---|---|
-| 1 | 0 | +1 | 1 | (1, 0) |
-| 2 | 1 | +1 | 2 | (2, 0) |
-| Stop | 2 == 2 | — | — | — |
-
-**Path so far: [(0,0), (1,0), (2,0)]**
-
----
-
-## Slide 6: Step 3 — Move Along Columns
-**Loop through columns until we reach the destination column:**
-
-```python
-    # Move along columns
-    while current_col != dest_col:
-        current_col = current_col + col_step
-        path.append((current_row, current_col))
-
+def compute_path(start, destination):
+    path = []
+    current_row, current_col = start
+    dest_row, dest_col = destination
+    # ... 4 while loops ...
     return path
 ```
 
-**Continuing the trace for (0, 0) to (2, 3):**
+**Lesson 5 method — what changes?**
+```python
+def compute_path(self, destination):
+    path = []
+    current_row, current_col = self.position
+    dest_row, dest_col = destination
+    # ... same 4 while loops ...
+    return path
+```
 
-| Iteration | current_col | col_step | After | Appended |
-|---|---|---|---|---|
-| 1 | 0 | +1 | 1 | (2, 1) |
-| 2 | 1 | +1 | 2 | (2, 2) |
-| 3 | 2 | +1 | 3 | (2, 3) |
-| Stop | 3 == 3 | — | — | — |
+**Only two changes:**
+1. Replace `start` parameter with `self`
+2. Replace `start` usage with `self.position`
 
-**Final path: [(0,0), (1,0), (2,0), (2,1), (2,2), (2,3)]**
+**The 4 while loops stay exactly the same!**
 
 ---
 
-## Slide 7: The Complete Manhattan Class
+## Slide 6: The 4 While Loops — No If/Else Needed
+**Each direction gets its own while loop:**
+
 ```python
-class Manhattan:
-    def __init__(self, start):
-        self.position = start
+while current_row < dest_row:        # Move south
+    current_row = current_row + 1
+    path.append((current_row, current_col))
 
-    def compute_path(self, destination):
-        path = [self.position]
+while current_row > dest_row:        # Move north
+    current_row = current_row - 1
+    path.append((current_row, current_col))
 
-        current_row = self.position[0]
-        current_col = self.position[1]
-        dest_row = destination[0]
-        dest_col = destination[1]
+while current_col < dest_col:        # Move east
+    current_col = current_col + 1
+    path.append((current_row, current_col))
 
-        if dest_row > current_row:
-            row_step = 1
-        else:
-            row_step = -1
-
-        if dest_col > current_col:
-            col_step = 1
-        else:
-            col_step = -1
-
-        while current_row != dest_row:
-            current_row = current_row + row_step
-            path.append((current_row, current_col))
-
-        while current_col != dest_col:
-            current_col = current_col + col_step
-            path.append((current_row, current_col))
-
-        return path
+while current_col > dest_col:        # Move west
+    current_col = current_col - 1
+    path.append((current_row, current_col))
 ```
+
+**Why does this work?** If the robot is already in the right row, the first two loops just skip. Same for columns.
+
+**No if/else needed** — the `<` and `>` conditions handle direction automatically.
 
 ---
 
-## Slide 8: Using the Manhattan Class
-**Test program:**
-```python
-manhattan = Manhattan((0, 0))
+## Slide 7: Tracing Through an Example
+**`Manhattan((0, 0)).compute_path((2, 3))`**
 
-path = manhattan.compute_path((2, 3))
-print("Path to (2,3):", path)
+**Path starts empty: `[]`**
 
-path = manhattan.compute_path((1, 1))
-print("Path to (1,1):", path)
-```
+**Loop 1 — south (row < dest_row):**
 
-**Wait — second path starts from (0, 0) again!**
+| current_row | Appended |
+|---|---|
+| 0 -> 1 | (1, 0) |
+| 1 -> 2 | (2, 0) |
+| 2 == 2 | stop |
 
-**Important:** compute_path always starts from self.position. If you want the robot to "move," update the position:
-```python
-manhattan.position = (2, 3)
-path = manhattan.compute_path((0, 0))
-print("Return path:", path)
-```
+**Loop 2 — north:** 2 > 2? No, skip.
+
+**Loop 3 — east (col < dest_col):**
+
+| current_col | Appended |
+|---|---|
+| 0 -> 1 | (2, 1) |
+| 1 -> 2 | (2, 2) |
+| 2 -> 3 | (2, 3) |
+| 3 == 3 | stop |
+
+**Loop 4 — west:** 3 > 3? No, skip.
+
+**Result: `[(1, 0), (2, 0), (2, 1), (2, 2), (2, 3)]` — 5 steps**
+
+---
+
+## Slide 8: Edge Cases
+**Same row — (0, 0) to (0, 3):**
+- South loop: 0 < 0? No, skip.
+- North loop: 0 > 0? No, skip.
+- East loop runs 3 times: `[(0, 1), (0, 2), (0, 3)]`
+- 3 steps
+
+**Going backward — (3, 3) to (1, 0):**
+- South loop: 3 < 1? No, skip.
+- North loop runs 2 times: `[(2, 3), (1, 3)]`
+- East loop: 3 < 0? No, skip.
+- West loop runs 3 times: `[(1, 2), (1, 1), (1, 0)]`
+- Full path: `[(2, 3), (1, 3), (1, 2), (1, 1), (1, 0)]` — 5 steps
+
+**Same position — (2, 2) to (2, 2):**
+- All four loops skip. Path is `[]` — 0 steps.
 
 ---
 
 ## Slide 9: Your Turn!
 **Activity:**
-1. Type the complete Manhattan class into a new Python file
-2. Test with these cases:
-   - (0, 0) to (2, 3) — expected: 6 positions
-   - (2, 3) to (0, 0) — expected: 6 positions (reverse)
-   - (0, 0) to (0, 3) — expected: 4 positions (same row)
-   - (1, 1) to (1, 1) — expected: 1 position (same spot)
-3. Print each path and verify against your hand traces from Lesson 4
+1. Open the starter file: `lesson-05-manhattan-class.py`
+2. Copy your 4 while loops from Lesson 4 into the `compute_path` method
+3. Uncomment the test code at the bottom
+4. Run and verify these cases:
+
+| Start | Destination | Expected Steps |
+|---|---|---|
+| (0, 0) | (2, 3) | 5 |
+| (3, 3) | (1, 0) | 5 |
+| (0, 0) | (0, 3) | 3 |
+| (2, 2) | (2, 2) | 0 |
 
 **Checkpoints:**
-- Does your class produce the correct paths?
-- Does it handle all four directions?
-- Does the "same position" case return just the start?
+- Does the path NOT include the start position?
+- Does `len(path)` match the expected steps?
+- Does the same-position case return `[]`?
 
 ---
 
 ## Slide 10: Connection to Next Lesson
 **What you did today:**
-- Implemented the Manhattan class with compute_path()
-- Built paths using while loops and append()
-- Handled direction with conditional step values
+- Wrapped the Lesson 4 function in a Manhattan class
+- Used `self.position` to store the robot's location
+- Tested compute_path with print statements
 
 **Next lesson (Lesson 6):**
-- Learn how to **test without a robot**
-- Write systematic test programs
-- Verify your class works correctly before putting it on the robot
+- Write **systematic tests** for the Manhattan class
+- Learn how to verify code **without a robot**
+- Build confidence before putting the algorithm on hardware
 
 **Key insight:** The algorithm is pure math — no motors, no sensors. We can test it on any computer!

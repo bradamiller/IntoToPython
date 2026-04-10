@@ -475,7 +475,7 @@
     <div class="section">
         <div class="section-header">Part D: drive_path() Tracing</div>
 
-        <p><strong>First path:</strong> [(0, 0), (1, 0), (2, 0), (2, 1), (2, 2)]</p>
+        <p><strong>First path:</strong> [(1, 0), (2, 0), (2, 1), (2, 2)]</p>
         <p>Starting position: (0, 0) &nbsp;&nbsp; Starting heading: 0 (N)</p>
 
         <table>
@@ -503,7 +503,7 @@
     <div class="section">
         <div class="section-header">Part D: drive_path() Tracing (continued)</div>
 
-        <p><strong>Second path:</strong> [(3, 3), (3, 2), (3, 1), (2, 1), (1, 1), (0, 1)]</p>
+        <p><strong>Second path:</strong> [(3, 2), (3, 1), (2, 1), (1, 1), (0, 1)]</p>
         <p>Starting position: (3, 3) &nbsp;&nbsp; Starting heading: 1 (E)</p>
 
         <table>
@@ -569,8 +569,7 @@ class Navigator:
                 self.heading = <span class="code-blank" style="min-width: 30px;"></span></div>
 
         <div class="code-block">    def drive_path(self, path):
-        for i in range(<span class="code-blank" style="min-width: 30px;"></span>, len(path)):
-            next_pos = path[<span class="code-blank" style="min-width: 30px;"></span>]
+        for <span class="code-blank" style="min-width: 80px;"></span> in <span class="code-blank" style="min-width: 60px;"></span>:
             needed = self.get_needed_heading(<span class="code-blank" style="min-width: 80px;"></span>)
             if self.heading == <span class="code-blank" style="min-width: 60px;"></span>:
                 self.line_track.drivetrain.straight(<span class="code-blank" style="min-width: 30px;"></span>)
@@ -581,7 +580,7 @@ class Navigator:
         <p style="margin-top: 12px;"><strong>Why does <code style="font-family: 'Fira Code', monospace; font-size: 14px;">drive_path()</code> call <code style="font-family: 'Fira Code', monospace; font-size: 14px;">self.line_track.drivetrain.straight(8)</code> when the heading already matches?</strong></p>
         <span class="answer-line"></span>
 
-        <p style="margin-top: 12px;"><strong>Why does the loop start at range(1, ...) instead of range(0, ...)?</strong></p>
+        <p style="margin-top: 12px;"><strong>Why does <code style="font-family: 'Fira Code', monospace; font-size: 14px;">for next_pos in path</code> work without skipping any elements?</strong></p>
         <span class="answer-line"></span>
     </div>
 

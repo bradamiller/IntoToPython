@@ -22,28 +22,25 @@ class Manhattan:
         self.position = start
 
     def compute_path(self, destination):
-        path = [self.position]
-        current_row = self.position[0]
-        current_col = self.position[1]
-        dest_row = destination[0]
-        dest_col = destination[1]
+        path = []
 
-        if dest_row > current_row:
-            row_step = 1
-        else:
-            row_step = -1
+        current_row, current_col = self.position
+        dest_row, dest_col = destination
 
-        if dest_col > current_col:
-            col_step = 1
-        else:
-            col_step = -1
-
-        while current_row != dest_row:
-            current_row = current_row + row_step
+        while current_row < dest_row:
+            current_row = current_row + 1
             path.append((current_row, current_col))
 
-        while current_col != dest_col:
-            current_col = current_col + col_step
+        while current_row > dest_row:
+            current_row = current_row - 1
+            path.append((current_row, current_col))
+
+        while current_col < dest_col:
+            current_col = current_col + 1
+            path.append((current_row, current_col))
+
+        while current_col > dest_col:
+            current_col = current_col - 1
             path.append((current_row, current_col))
 
         return path
@@ -69,7 +66,7 @@ run_test(
     "South-East: (0,0) to (2,3)",
     (0, 0),
     (2, 3),
-    [(0,0), (1,0), (2,0), (2,1), (2,2), (2,3)]
+    [(1,0), (2,0), (2,1), (2,2), (2,3)]
 )
 
 # TODO: Test 2 — North and West
@@ -100,7 +97,7 @@ run_test(
 # )
 
 # TODO: Test 5 — Already at destination
-# Go from (1, 1) to (1, 1). The path should be just the start.
+# Go from (1, 1) to (1, 1). The path should be empty.
 # run_test(
 #     ???,
 #     ???,

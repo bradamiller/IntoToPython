@@ -15,61 +15,68 @@
 | `current_col` | **0** |
 | `dest_row` | **2** |
 | `dest_col` | **3** |
-| `row_step` | **1** |
-| `col_step` | **1** |
-| `path` (initial) | **[(0, 0)]** |
+| `path` (initial) | **[]** |
 
-**Row while loop — trace each iteration:**
+**South while loop — trace each iteration:**
 
-| Iteration | current_row (before) | != dest_row? | current_row (after) | Appended to path |
+| Iteration | current_row (before) | < dest_row? | current_row (after) | Appended to path |
 |---|---|---|---|---|
 | 1 | **0** | **YES** | **1** | **(1, 0)** |
 | 2 | **1** | **YES** | **2** | **(2, 0)** |
 | Check | **2** | **NO** | — (loop ends) | — |
 
-**Column while loop — trace each iteration:**
+**North while loop:** Does it execute? **NO** &nbsp;&nbsp; **Why?** **current_row (2) is not greater than dest_row (2), so the condition is false.**
 
-| Iteration | current_col (before) | != dest_col? | current_col (after) | Appended to path |
+**East while loop — trace each iteration:**
+
+| Iteration | current_col (before) | < dest_col? | current_col (after) | Appended to path |
 |---|---|---|---|---|
 | 1 | **0** | **YES** | **1** | **(2, 1)** |
 | 2 | **1** | **YES** | **2** | **(2, 2)** |
 | 3 | **2** | **YES** | **3** | **(2, 3)** |
 | Check | **3** | **NO** | — (loop ends) | — |
 
-**Final returned path:** **[(0, 0), (1, 0), (2, 0), (2, 1), (2, 2), (2, 3)]**
+**West while loop:** Does it execute? **NO** &nbsp;&nbsp; **Why?** **current_col (3) is not greater than dest_col (3), so the condition is false.**
+
+**Final returned path:** **[(1, 0), (2, 0), (2, 1), (2, 2), (2, 3)]**
+
+**len(path):** **5**
 
 ---
 
 ## Part 2: Trace a Reverse Path
 
-**Trace the call:** `Manhattan((2, 3)).compute_path((0, 1))`
+**Trace the call:** `Manhattan((3, 3)).compute_path((1, 0))`
 
 **Setup variables:**
 
 | Variable | Initial Value |
 |---|---|
-| `current_row` | **2** |
+| `current_row` | **3** |
 | `current_col` | **3** |
-| `dest_row` | **0** |
-| `dest_col` | **1** |
-| `row_step` | **-1** |
-| `col_step` | **-1** |
+| `dest_row` | **1** |
+| `dest_col` | **0** |
 
-**Row while loop:**
+**Which two while loops execute?** **North** and **West**
+
+**North while loop:**
 
 | Iteration | current_row (before) | current_row (after) | Appended |
 |---|---|---|---|
-| 1 | **2** | **1** | **(1, 3)** |
-| 2 | **1** | **0** | **(0, 3)** |
+| 1 | **3** | **2** | **(2, 3)** |
+| 2 | **2** | **1** | **(1, 3)** |
 
-**Column while loop:**
+**West while loop:**
 
 | Iteration | current_col (before) | current_col (after) | Appended |
 |---|---|---|---|
-| 1 | **3** | **2** | **(0, 2)** |
-| 2 | **2** | **1** | **(0, 1)** |
+| 1 | **3** | **2** | **(1, 2)** |
+| 2 | **2** | **1** | **(1, 1)** |
+| 3 | **1** | **0** | **(1, 0)** |
 
-**Final returned path:** **[(2, 3), (1, 3), (0, 3), (0, 2), (0, 1)]**
+**Final returned path:** **[(2, 3), (1, 3), (1, 2), (1, 1), (1, 0)]**
+
+**len(path):** **5**
 
 ---
 
@@ -81,29 +88,29 @@ class Manhattan:
         self.position = start
 
     def compute_path(self, destination):
-        path = [self.position]
+        path = []
 
-        current_row = self.position[0]
-        current_col = self.position[1]
-        dest_row = destination[0]
-        dest_col = destination[1]
+        current_row, current_col = self.position
+        dest_row, dest_col = destination
 
-        if dest_row > current_row:
-            row_step = 1
-        else:
-            row_step = -1
-
-        if dest_col > current_col:
-            col_step = 1
-        else:
-            col_step = -1
-
-        while current_row != dest_row:
-            current_row = current_row + row_step
+        # Move south
+        while current_row < dest_row:
+            current_row = current_row + 1
             path.append((current_row,  current_col))
 
-        while current_col != dest_col:
-            current_col = current_col + col_step
+        # Move north
+        while current_row > dest_row:
+            current_row = current_row - 1
+            path.append((current_row,  current_col))
+
+        # Move east
+        while current_col < dest_col:
+            current_col = current_col + 1
+            path.append((current_row,  current_col))
+
+        # Move west
+        while current_col > dest_col:
+            current_col = current_col - 1
             path.append((current_row,  current_col))
 
         return path
@@ -112,28 +119,30 @@ class Manhattan:
 **Blanks in order:**
 
 1. `position`
-2. `self.position`
-3. `0`
-4. `1`
-5. `destination`
-6. `destination`
-7. `>`
-8. `1`
-9. `-1`
+2. `[]`
+3. `position`
+4. `destination`
+5. `<`
+6. `1`
+7. `append`
+8. `current_row`
+9. `current_col`
 10. `>`
 11. `1`
-12. `-1`
-13. `!=`
-14. `row_step`
-15. `append`
-16. `current_row`
-17. `current_col`
-18. `!=`
-19. `col_step`
-20. `append`
-21. `current_row`
-22. `current_col`
-23. `path`
+12. `append`
+13. `current_row`
+14. `current_col`
+15. `<`
+16. `1`
+17. `append`
+18. `current_row`
+19. `current_col`
+20. `>`
+21. `1`
+22. `append`
+23. `current_row`
+24. `current_col`
+25. `path`
 
 ---
 
@@ -141,33 +150,33 @@ class Manhattan:
 
 **Program A:**
 
-Line 1: **[(0, 0), (0, 1), (0, 2), (0, 3)]**
+Line 1: **[(0, 1), (0, 2), (0, 3)]**
 
 Line 2: **Steps: 3**
 
-**What kind of edge case is this?** **Same row -- the row loop does not execute, so the path only has column movement.**
+**What kind of edge case is this?** **Same row -- the south and north loops do not execute, so the path only has column movement (east).**
 
 ---
 
 **Program B:**
 
-Line 1: **[(2, 2)]**
+Line 1: **[]**
 
 Line 2: **Steps: 0**
 
-**Why does the path have only one element?** **The start equals the destination, so neither while loop executes. The only element in the path is the starting position added during initialization (`path = [self.position]`).**
+**Why is the path empty?** **The start equals the destination, so none of the four while loop conditions are true. No loops execute, and the path stays as the empty list [].**
 
 ---
 
 **Program C:**
 
-Line 1: **Path 1: [(0, 0), (1, 0), (2, 0), (2, 1), (2, 2), (2, 3)]**
+Line 1: **Path 1: [(1, 0), (2, 0), (2, 1), (2, 2), (2, 3)]**
 
-Line 2: **Path 2: [(0, 0), (1, 0), (1, 1)]**
+Line 2: **Path 2: [(1, 0), (1, 1)]**
 
 **Do both paths start from the same position?** **YES**
 
-**Why?** **`compute_path` always uses `self.position` as the starting point, which is (0, 0) and never changes. The method does not update `self.position` -- it only modifies local variables (`current_row` and `current_col`). So every call to `compute_path` starts from the original position (0, 0).**
+**Why?** **`compute_path` always uses `self.position` as the starting point, which is (0, 0) and never changes. The method does not update `self.position` -- it only modifies local variables (`current_row` and `current_col`). So every call to `compute_path` starts from the original position (0, 0). The first step in each path is a move away from (0, 0).**
 
 ---
 
@@ -175,27 +184,25 @@ Line 2: **Path 2: [(0, 0), (1, 0), (1, 1)]**
 
 **Bug 1:**
 
-**What is wrong?** **`path` starts as an empty list `[]` instead of `[self.position]`. The starting position is missing from the path, so the returned path only contains the intermediate steps and destination but not where the robot begins.**
+**What is wrong?** **`path` starts as `[self.position]` instead of `[]`. The starting position should NOT be in the path (the robot is already there). This would add an extra element at the beginning, and `len(path)` would be one more than the actual number of steps.**
 
-**Fix:** **Change `path = []` to `path = [self.position]`**
+**Fix:** **Change `path = [self.position]` to `path = []`**
 
 ---
 
 **Bug 2:**
 
-**What is wrong?** **The row while loop uses `<` instead of `!=`. This fails when the robot needs to move in the negative row direction (north), because `current_row` starts greater than `dest_row`, so the condition `current_row < dest_row` is immediately False and the loop never runs.**
+**What is wrong?** **The west loop adds 1 instead of subtracting 1: `current_col = current_col + 1`. This makes the column go the wrong direction (east instead of west), and the loop condition `current_col > dest_col` stays true forever, creating an infinite loop.**
 
-**When would this bug cause a problem? Give a specific start and destination:**
+**What would happen if you called `compute_path((2, 3))` from start (3, 3)?** **The north loop runs correctly, moving row from 3 to 2. Then the west loop should move column from 3 to 2, but instead it adds 1 each time (3, 4, 5, 6, ...), creating an infinite loop that never terminates.**
 
-Start: **(3, 0)** &nbsp;&nbsp; Destination: **(0, 0)**
-
-**Fix:** **Change `while current_row < dest_row:` to `while current_row != dest_row:`**
+**Fix:** **Change `current_col = current_col + 1` to `current_col = current_col - 1` in the west while loop.**
 
 ---
 
 **Bug 3:**
 
-**What is wrong?** **In the column while loop, the append call has row and column swapped: `path.append((current_col, current_row))` instead of `path.append((current_row, current_col))`. This puts the column value in the row position and vice versa.**
+**What is wrong?** **In the east while loop, the append call has row and column swapped: `path.append((current_col, current_row))` instead of `path.append((current_row, current_col))`. This puts the column value in the row position and vice versa.**
 
 **If start is (0, 0) and destination is (2, 3), what would the INCORRECT last three elements of the path be?**
 
@@ -205,12 +212,10 @@ Start: **(3, 0)** &nbsp;&nbsp; Destination: **(0, 0)**
 
 **(2, 1), (2, 2), (2, 3)**
 
-**Fix:** **Change `path.append((current_col, current_row))` to `path.append((current_row, current_col))`**
-
 ---
 
 ## Reflection
 
-**The compute_path() method uses while loops instead of for loops. Why is `while current_row != dest_row` better than using a for loop for this problem?**
+**The compute_path() method uses 4 separate while loops instead of if/else statements with 2 while loops. Why does this simpler approach work? (Hint: think about what happens when a while loop's condition is already false.)**
 
-While loops are better because the number of iterations depends on the distance between start and destination, which varies with every call. We need to loop UNTIL we arrive rather than FOR a fixed count. The while condition `current_row != dest_row` naturally handles both positive and negative directions -- whether the robot moves north or south, the loop keeps going until the current row matches the destination row. A for loop would require calculating the distance first and handling direction separately, making the code more complicated.
+A while loop whose condition is already false simply does nothing -- it is skipped entirely. So we can write all four directions (south, north, east, west) as separate loops without any if/else logic. For any given path, only the one or two loops whose conditions are true will actually execute. For example, going from (0,0) to (2,3), only the south loop (current_row < dest_row) and east loop (current_col < dest_col) run. The north and west loops are automatically skipped because their conditions are false. This is simpler than using if/else to choose between +1 and -1 step values.

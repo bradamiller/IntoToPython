@@ -34,11 +34,11 @@ The example test goes from `(0, 0)` to `(2, 3)`. This is already written for you
 
 ### Test 5: Already at Destination
 - Go from `(1, 1)` to `(1, 1)`.
-- The path should contain just the starting position.
+- The path should be empty (`[]`) since the robot is already there.
 
 ### Test 6: One Step Only
 - Go from `(0, 0)` to `(1, 0)`.
-- The path should have exactly two positions.
+- The path should have exactly one position: `[(1, 0)]`.
 
 ## Key Concepts
 

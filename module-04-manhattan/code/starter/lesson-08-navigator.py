@@ -84,29 +84,25 @@ class Manhattan:
         self.position = start
 
     def compute_path(self, destination):
-        path = [self.position]
+        path = []
 
-        current_row = self.position[0]
-        current_col = self.position[1]
-        dest_row = destination[0]
-        dest_col = destination[1]
+        current_row, current_col = self.position
+        dest_row, dest_col = destination
 
-        if dest_row > current_row:
-            row_step = 1
-        else:
-            row_step = -1
-
-        if dest_col > current_col:
-            col_step = 1
-        else:
-            col_step = -1
-
-        while current_row != dest_row:
-            current_row = current_row + row_step
+        while current_row < dest_row:
+            current_row = current_row + 1
             path.append((current_row, current_col))
 
-        while current_col != dest_col:
-            current_col = current_col + col_step
+        while current_row > dest_row:
+            current_row = current_row - 1
+            path.append((current_row, current_col))
+
+        while current_col < dest_col:
+            current_col = current_col + 1
+            path.append((current_row, current_col))
+
+        while current_col > dest_col:
+            current_col = current_col - 1
             path.append((current_row, current_col))
 
         return path
@@ -181,18 +177,18 @@ class Navigator:
         """Drive the robot along the given path.
 
         path: a list of (row, col) tuples from Manhattan.compute_path()
+              (does not include the starting position)
 
         Logic:
-          - Loop from index 1 to the end of the path (skip index 0, we are there)
+          - Loop through each position in the path
           - For each step:
-            1. Get the next position from the path
-            2. Determine the needed heading using get_needed_heading()
-            3. If already facing the right way, clear the intersection: straight(8)
-            4. Turn to face the right direction using turn_to()
-            5. Follow the line to the next intersection: track_until_cross()
-            6. Update self.position to the new position
+            1. Determine the needed heading using get_needed_heading()
+            2. If already facing the right way, clear the intersection: straight(8)
+            3. Turn to face the right direction using turn_to()
+            4. Follow the line to the next intersection: track_until_cross()
+            5. Update self.position to the new position
         """
-        # TODO: Write the for loop
+        # TODO: Write the for loop (for next_pos in path:)
         # TODO: For each step, get heading, clear if straight, turn, track, update
         pass
 

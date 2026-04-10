@@ -67,7 +67,7 @@
 
 ## Part D: drive_path() Tracing
 
-**First path:** `[(0, 0), (1, 0), (2, 0), (2, 1), (2, 2)]`
+**First path:** `[(1, 0), (2, 0), (2, 1), (2, 2)]`
 
 Starting position: (0, 0), Starting heading: 0 (N)
 
@@ -84,7 +84,7 @@ Final position: **(2, 2)**, Final heading: **1 (E)**
 
 ---
 
-**Second path:** `[(3, 3), (3, 2), (3, 1), (2, 1), (1, 1), (0, 1)]`
+**Second path:** `[(3, 2), (3, 1), (2, 1), (1, 1), (0, 1)]`
 
 Starting position: (3, 3), Starting heading: 1 (E)
 
@@ -148,8 +148,7 @@ def turn_to(self, needed_heading):
 
 ```python
 def drive_path(self, path):
-    for i in range(1, len(path)):
-        next_pos = path[i]
+    for next_pos in path:
         needed = self.get_needed_heading(next_pos)
         if self.heading == needed:
             self.line_track.drivetrain.straight(8)
@@ -158,15 +157,15 @@ def drive_path(self, path):
         self.position = next_pos
 ```
 
-**Blanks:** **1**, **i**, **next_pos**, **needed**, **8**, **needed**, **next_pos**
+**Blanks:** **path**, **next_pos**, **needed**, **8**, **needed**, **next_pos**
 
 **Why does `drive_path()` call `self.line_track.drivetrain.straight(8)` when the robot is already facing the right way?**
 
 **When the robot doesn't need to turn, it is still sitting on the previous intersection's crossing line. The `straight(8)` call drives 8 cm forward to clear the intersection so that `track_until_cross()` can look for the NEXT crossing line without immediately re-detecting the current one.**
 
-**Why does the loop start at range(1, ...) instead of range(0, ...)?**
+**Why does the loop iterate directly with `for next_pos in path:` instead of skipping elements?**
 
-**Because path[0] is the robot's current position -- it's already there. If the loop started at 0, the robot would try to "navigate" to where it already is, which would produce a zero-distance direction calculation that doesn't make sense.**
+**Because the path does not include the starting position -- every element is a new cell the robot needs to drive to. The Navigator already knows its current position through `self.position`, so the path only contains the destinations to visit.**
 
 ---
 

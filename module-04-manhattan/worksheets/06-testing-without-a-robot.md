@@ -116,7 +116,7 @@ def run_test(test_name, start, dest, expected):
 
 ```python
 run_test("Test A", (0, 0), (1, 1),
-         [(0, 0), (1, 0), (1, 1)])
+         [(1, 0), (1, 1)])
 ```
 
 **Output:** ____________________________________________________________________
@@ -125,7 +125,7 @@ run_test("Test A", (0, 0), (1, 1),
 
 ```python
 run_test("Test B", (0, 0), (1, 1),
-         [(0, 0), (0, 1), (1, 1)])
+         [(0, 1), (1, 1)])
 ```
 
 **Output:**
@@ -168,9 +168,9 @@ A correct Manhattan path has four properties. For each property, explain how you
 
 | Property | How to Check |
 |---|---|
-| Path starts at the correct position | Compare `path[_____]` to __________ |
+| Path does not include the start position | `path` should not contain __________ |
 | Path ends at the destination | Compare `path[_____]` to __________ |
-| Number of steps equals Manhattan distance | `len(path) - 1` should equal __________ |
+| Number of steps equals Manhattan distance | `len(path)` should equal __________ |
 | Each step moves exactly one row OR one column | For every pair of consecutive positions, the difference should be __________ |
 
 ---
@@ -179,14 +179,14 @@ A correct Manhattan path has four properties. For each property, explain how you
 
 Before you put code on a robot, check off each item:
 
-- [ ] Test with both row_step and col_step positive (down-right)
-- [ ] Test with both row_step and col_step negative (up-left)
-- [ ] Test with row_step positive and col_step negative (down-left)
-- [ ] Test with row_step negative and col_step positive (up-right)
+- [ ] Test with row increasing and col increasing (down-right)
+- [ ] Test with row decreasing and col decreasing (up-left)
+- [ ] Test with row increasing and col decreasing (down-left)
+- [ ] Test with row decreasing and col increasing (up-right)
 - [ ] Test with same row (column movement only)
 - [ ] Test with same column (row movement only)
 - [ ] Test with same position (no movement)
-- [ ] All paths start at the correct position
+- [ ] No path includes its start position
 - [ ] All paths end at the correct destination
 - [ ] All step counts match the Manhattan distance
 
@@ -201,8 +201,8 @@ A student wrote this test and got a FAIL. Read the output and figure out what we
 **Test output:**
 ```
 Test: (3, 0) to (1, 2) - FAIL
-  Expected: [(3, 0), (2, 0), (1, 0), (1, 1), (1, 2)]
-  Actual:   [(3, 0), (2, 0), (1, 0), (0, 0), (-1, 0), (-2, 0)...
+  Expected: [(2, 0), (1, 0), (1, 1), (1, 2)]
+  Actual:   [(2, 0), (1, 0), (0, 0), (-1, 0), (-2, 0)...
 ```
 
 1. **What is the problem? The path keeps going instead of stopping.**

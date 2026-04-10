@@ -1,63 +1,39 @@
 # Lesson 5: The Manhattan Class
-# Turn the Manhattan algorithm into a reusable class.
+# Turn the compute_path function into a reusable class.
 #
 # Team: ________________________
 # Date: ________________________
 #
-# A class bundles data and functions together.
-# Our Manhattan class will:
-#   - Store the robot's current position
-#   - Compute a path to any destination using the Manhattan algorithm
+# In Lesson 4 you wrote a compute_path function.
+# Now wrap it in a class so it can store the robot's position.
 #
-# Review of the algorithm:
-#   1. Start at current position
-#   2. Move rows first (south if dest_row > current_row, north otherwise)
-#   3. Move columns second (east if dest_col > current_col, west otherwise)
+# The Manhattan class will:
+#   - Store the robot's current position in __init__
+#   - Have a compute_path method that uses self.position as the start
 
 
 class Manhattan:
 
     def __init__(self, start):
-        """Create a Manhattan navigator starting at the given position."""
         self.position = start
 
     def compute_path(self, destination):
-        """Compute a Manhattan path from current position to destination.
-        Returns a list of (row, col) tuples."""
-        path = [self.position]
+        path = []
 
-        current_row = self.position[0]
-        current_col = self.position[1]
-        dest_row = destination[0]
-        dest_col = destination[1]
+        current_row, current_col = self.position
+        dest_row, dest_col = destination
 
-        # TODO: Determine the row step direction.
-        # If dest_row > current_row, we need to go south (step = 1)
-        # Otherwise, we need to go north (step = -1)
-        # row_step = ???
+        # TODO: Copy your 4 while loops from Lesson 4 here.
+        # The only change: use self.position instead of the
+        # start parameter (already done above with tuple unpacking).
 
-        # TODO: Determine the column step direction.
-        # If dest_col > current_col, we need to go east (step = 1)
-        # Otherwise, we need to go west (step = -1)
-        # col_step = ???
+        # Move south (rows increase)
 
-        # TODO: Use a while loop to move along rows until
-        # current_row equals dest_row.
-        # Each iteration:
-        #   - Update current_row by adding row_step
-        #   - Append the new position (current_row, current_col) to path
-        # while ???:
-        #     current_row = ???
-        #     path.append(???)
+        # Move north (rows decrease)
 
-        # TODO: Use a while loop to move along columns until
-        # current_col equals dest_col.
-        # Each iteration:
-        #   - Update current_col by adding col_step
-        #   - Append the new position (current_row, current_col) to path
-        # while ???:
-        #     current_col = ???
-        #     path.append(???)
+        # Move east (columns increase)
+
+        # Move west (columns decrease)
 
         return path
 
@@ -70,12 +46,13 @@ class Manhattan:
 # print("Start: (0, 0)")
 # print("Destination: (2, 3)")
 # print("Path:", path)
-# print("Steps:", len(path) - 1)
+# print("Steps:", len(path))
 # print()
 
 # TODO: Test with another start and destination
-# path2 = nav.compute_path((3, 1))
-# print("Start: (0, 0)")
-# print("Destination: (3, 1)")
+# nav2 = Manhattan((3, 3))
+# path2 = nav2.compute_path((1, 0))
+# print("Start: (3, 3)")
+# print("Destination: (1, 0)")
 # print("Path:", path2)
-# print("Steps:", len(path2) - 1)
+# print("Steps:", len(path2))

@@ -1,5 +1,5 @@
 # Lesson 5: The Manhattan Class - SOLUTION
-# Turn the Manhattan algorithm into a reusable class.
+# Turn the compute_path function into a reusable class.
 #
 # A class bundles data and functions together.
 # Our Manhattan class will:
@@ -10,39 +10,32 @@
 class Manhattan:
 
     def __init__(self, start):
-        """Create a Manhattan navigator starting at the given position."""
         self.position = start
 
     def compute_path(self, destination):
-        """Compute a Manhattan path from current position to destination.
-        Returns a list of (row, col) tuples."""
-        path = [self.position]
+        path = []
 
-        current_row = self.position[0]
-        current_col = self.position[1]
-        dest_row = destination[0]
-        dest_col = destination[1]
+        current_row, current_col = self.position
+        dest_row, dest_col = destination
 
-        # Determine the row step direction
-        if dest_row > current_row:
-            row_step = 1
-        else:
-            row_step = -1
-
-        # Determine the column step direction
-        if dest_col > current_col:
-            col_step = 1
-        else:
-            col_step = -1
-
-        # Move along rows until we reach the destination row
-        while current_row != dest_row:
-            current_row = current_row + row_step
+        # Move south (rows increase)
+        while current_row < dest_row:
+            current_row = current_row + 1
             path.append((current_row, current_col))
 
-        # Move along columns until we reach the destination column
-        while current_col != dest_col:
-            current_col = current_col + col_step
+        # Move north (rows decrease)
+        while current_row > dest_row:
+            current_row = current_row - 1
+            path.append((current_row, current_col))
+
+        # Move east (columns increase)
+        while current_col < dest_col:
+            current_col = current_col + 1
+            path.append((current_row, current_col))
+
+        # Move west (columns decrease)
+        while current_col > dest_col:
+            current_col = current_col - 1
             path.append((current_row, current_col))
 
         return path
@@ -56,7 +49,7 @@ path = nav.compute_path((2, 3))
 print("Start: (0, 0)")
 print("Destination: (2, 3)")
 print("Path:", path)
-print("Steps:", len(path) - 1)
+print("Steps:", len(path))
 print()
 
 # Test 2: (0,0) to (3,1) — south then east
@@ -64,7 +57,7 @@ path2 = nav.compute_path((3, 1))
 print("Start: (0, 0)")
 print("Destination: (3, 1)")
 print("Path:", path2)
-print("Steps:", len(path2) - 1)
+print("Steps:", len(path2))
 print()
 
 # Test 3: Starting from a different position
@@ -73,7 +66,7 @@ path3 = nav2.compute_path((1, 0))
 print("Start: (3, 3)")
 print("Destination: (1, 0)")
 print("Path:", path3)
-print("Steps:", len(path3) - 1)
+print("Steps:", len(path3))
 print()
 
 # Test 4: Same row — only column movement
@@ -82,4 +75,4 @@ path4 = nav3.compute_path((2, 4))
 print("Start: (2, 0)")
 print("Destination: (2, 4)")
 print("Path:", path4)
-print("Steps:", len(path4) - 1)
+print("Steps:", len(path4))

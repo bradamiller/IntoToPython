@@ -51,9 +51,9 @@
 
 ## Part 4: Trace a Path with Heading Updates
 
-Path: [(0, 0), (1, 0), (2, 0), (2, 1), (2, 2), (2, 3)], Starting heading: 0 (N)
+Path: [(1, 0), (2, 0), (2, 1), (2, 2), (2, 3)], Starting position: (0, 0), Starting heading: 0 (N)
 
-| Step | From | To | Needed Heading | Current Heading | Right Turns | New Heading |
+| Step | Position | Next | Needed Heading | Current Heading | Right Turns | New Heading |
 |---|---|---|---|---|---|---|
 | 1 | (0, 0) | (1, 0) | **2 (S)** | 0 (N) | **count 0->1->2 = 2** | **2 (S)** |
 | 2 | (1, 0) | (2, 0) | **2 (S)** | **2 (S)** | **already there = 0** | **2 (S)** |
@@ -69,9 +69,9 @@ Path: [(0, 0), (1, 0), (2, 0), (2, 1), (2, 2), (2, 3)], Starting heading: 0 (N)
 
 ## Part 5: Trace a Second Path
 
-Path: [(2, 3), (1, 3), (0, 3), (0, 2), (0, 1), (0, 0)], Starting heading: 2 (S)
+Path: [(1, 3), (0, 3), (0, 2), (0, 1), (0, 0)], Starting position: (2, 3), Starting heading: 2 (S)
 
-| Step | From | To | Needed Heading | Current Heading | Right Turns | New Heading |
+| Step | Position | Next | Needed Heading | Current Heading | Right Turns | New Heading |
 |---|---|---|---|---|---|---|
 | 1 | (2, 3) | (1, 3) | **0 (N)** | 2 (S) | **count 2->3->0 = 2** | **0 (N)** |
 | 2 | (1, 3) | (0, 3) | **0 (N)** | **0 (N)** | **already there = 0** | **0 (N)** |
@@ -85,9 +85,9 @@ Final heading after completing path: **3 (W)**
 
 ## Part 6: Trace a Third Path
 
-Path: [(1, 1), (1, 2), (1, 3), (2, 3), (3, 3)], Starting heading: 0 (N)
+Path: [(1, 2), (1, 3), (2, 3), (3, 3)], Starting position: (1, 1), Starting heading: 0 (N)
 
-| Step | From | To | Needed Heading | Current Heading | Right Turns | New Heading |
+| Step | Position | Next | Needed Heading | Current Heading | Right Turns | New Heading |
 |---|---|---|---|---|---|---|
 | 1 | (1, 1) | (1, 2) | **1 (E)** | 0 (N) | **count 0->1 = 1** | **1 (E)** |
 | 2 | (1, 2) | (1, 3) | **1 (E)** | **1 (E)** | **already there = 0** | **1 (E)** |

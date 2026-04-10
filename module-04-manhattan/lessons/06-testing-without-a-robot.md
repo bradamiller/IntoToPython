@@ -67,21 +67,20 @@ By the end of this lesson, students will be able to:
      path = manhattan.compute_path((2, 3))
      print("Test 1 - (0,0) to (2,3):")
      print("  Path:", path)
-     print("  Steps:", len(path) - 1)
+     print("  Steps:", len(path))
      print()
      ```
    - What to check:
-     1. Does the path start at the correct position?
-     2. Does the path end at the destination?
-     3. Is the number of steps correct (Manhattan distance)?
-     4. Does each step move exactly one row or one column?
+     1. Does the path end at the destination?
+     2. Is the number of steps correct (Manhattan distance)?
+     3. Does each step move exactly one row or one column?
 
 2. **Expected vs. Actual Comparison** (5 minutes)
    - Hand-trace the path from (0,0) to (2,3): go down 2 rows, then right 3 columns
-   - Expected: `[(0,0), (1,0), (2,0), (2,1), (2,2), (2,3)]`
+   - Expected: `[(1,0), (2,0), (2,1), (2,2), (2,3)]`
    - Live code the comparison:
      ```python
-     expected = [(0,0), (1,0), (2,0), (2,1), (2,2), (2,3)]
+     expected = [(1,0), (2,0), (2,1), (2,2), (2,3)]
 
      manhattan = Manhattan((0, 0))
      actual = manhattan.compute_path((2, 3))
@@ -112,7 +111,7 @@ By the end of this lesson, students will be able to:
      ```python
      run_test("Test 1: Basic forward",
               (0, 0), (2, 3),
-              [(0,0), (1,0), (2,0), (2,1), (2,2), (2,3)])
+              [(1,0), (2,0), (2,1), (2,2), (2,3)])
      ```
 
 4. **Systematic Test Cases** (5 minutes)
@@ -149,13 +148,12 @@ By the end of this lesson, students will be able to:
   1. If any tests fail, add print statements inside `compute_path()` to trace the logic:
      ```python
      print("Computing path from", self.position, "to", destination)
-     print("Row step:", row_step)
-     print("Col step:", col_step)
+     print("dest_row:", dest_row, "dest_col:", dest_col)
      ```
   2. Run the failing test again and read the trace output
   3. Identify the bug and fix it
   4. Re-run all tests to confirm the fix did not break anything else
-- If all tests pass on the first try: Intentionally introduce a bug (e.g., change `+1` to `-1` in `row_step`) and verify that the test catches it, then fix it
+- If all tests pass on the first try: Intentionally introduce a bug (e.g., change `+ 1` to `- 1` in one of the while loops) and verify that the test catches it, then fix it
 
 **Exercise 3: Add More Edge Cases** (Challenge)
 - Goal: Think of additional test scenarios beyond the basic 6
@@ -178,7 +176,7 @@ By the end of this lesson, students will be able to:
 1. Why is it better to test the Manhattan algorithm on screen before putting it on the robot?
 2. What does "separation of concerns" mean in the context of this project?
 3. Write a test case for Manhattan starting at (1, 1) going to (3, 2). What is the expected path?
-4. Your test shows the actual path is `[(0,0), (1,0), (2,0), (2,1)]` but the expected path is `[(0,0), (1,0), (2,0), (2,1), (2,2), (2,3)]`. What might be wrong?
+4. Your test shows the actual path is `[(1,0), (2,0), (2,1)]` but the expected path is `[(1,0), (2,0), (2,1), (2,2), (2,3)]`. What might be wrong?
 5. Why is it important to test edge cases like "same position" or "one step"?
 
 ## Common Misconceptions
@@ -215,14 +213,14 @@ manhattan = Manhattan((0, 0))
 path = manhattan.compute_path((2, 3))
 print("Test 1 - (0,0) to (2,3):")
 print("  Path:", path)
-print("  Steps:", len(path) - 1)
+print("  Steps:", len(path))
 print()
 ```
 
 ### Expected vs. Actual Comparison
 ```python
 # Expected path (hand-calculated)
-expected = [(0,0), (1,0), (2,0), (2,1), (2,2), (2,3)]
+expected = [(1,0), (2,0), (2,1), (2,2), (2,3)]
 
 # Actual path (from code)
 manhattan = Manhattan((0, 0))
@@ -255,55 +253,56 @@ def run_test(test_name, start, dest, expected):
 # Test 1: Basic forward path
 run_test("Test 1: Forward right",
          (0, 0), (2, 3),
-         [(0,0), (1,0), (2,0), (2,1), (2,2), (2,3)])
+         [(1,0), (2,0), (2,1), (2,2), (2,3)])
 
 # Test 2: Reverse direction
 run_test("Test 2: Backward left",
          (2, 3), (0, 0),
-         [(2,3), (1,3), (0,3), (0,2), (0,1), (0,0)])
+         [(1,3), (0,3), (0,2), (0,1), (0,0)])
 
 # Test 3: Same row — column movement only
 run_test("Test 3: Same row",
          (1, 0), (1, 3),
-         [(1,0), (1,1), (1,2), (1,3)])
+         [(1,1), (1,2), (1,3)])
 
 # Test 4: Same column — row movement only
 run_test("Test 4: Same column",
          (0, 2), (3, 2),
-         [(0,2), (1,2), (2,2), (3,2)])
+         [(1,2), (2,2), (3,2)])
 
 # Test 5: Same position — no movement
 run_test("Test 5: Same spot",
          (1, 1), (1, 1),
-         [(1,1)])
+         [])
 
 # Test 6: One step
 run_test("Test 6: One step",
          (0, 0), (0, 1),
-         [(0,0), (0,1)])
+         [(0,1)])
 ```
 
 ### Debugging with Print Statements
 ```python
 def compute_path(self, destination):
     print("Computing path from", self.position, "to", destination)
-    path = [self.position]
-    current_row = self.position[0]
-    current_col = self.position[1]
-    dest_row = destination[0]
-    dest_col = destination[1]
+    path = []
+    current_row, current_col = self.position
+    dest_row, dest_col = destination
 
-    row_step = 1 if dest_row > current_row else -1
-    col_step = 1 if dest_col > current_col else -1
-    print("Row step:", row_step, "Col step:", col_step)
-
-    while current_row != dest_row:
-        current_row = current_row + row_step
+    while current_row < dest_row:
+        current_row = current_row + 1
         path.append((current_row, current_col))
         print("  Added:", (current_row, current_col))
-
-    while current_col != dest_col:
-        current_col = current_col + col_step
+    while current_row > dest_row:
+        current_row = current_row - 1
+        path.append((current_row, current_col))
+        print("  Added:", (current_row, current_col))
+    while current_col < dest_col:
+        current_col = current_col + 1
+        path.append((current_row, current_col))
+        print("  Added:", (current_row, current_col))
+    while current_col > dest_col:
+        current_col = current_col - 1
         path.append((current_row, current_col))
         print("  Added:", (current_row, current_col))
 
@@ -315,7 +314,7 @@ def compute_path(self, destination):
 - **Hand-calculate expected paths first**: Do not let students run their code and then copy the output as the "expected" path. The entire point of testing is to have an independent source of truth. Have students trace the path on their grid worksheet from Lesson 1 and write down the expected list of tuples before touching the keyboard.
 - **Celebrate failing tests**: When a test says "FAIL", that is the test doing its job. A test that catches a bug before the robot runs is a success, not a failure. Reframe the language: "The test found a bug for you."
 - **Remove debug prints after fixing**: Remind students that print statements added for debugging should be removed (or commented out) once the bug is fixed, so the output stays clean for future test runs.
-- **Common bugs to watch for**: Path missing the start position, path going in the wrong direction, infinite loop when start equals destination, off-by-one errors. The slide outline (Slide 8) lists these — walk through them if students encounter issues.
+- **Common bugs to watch for**: Path going in the wrong direction, path including the start position when it should not, infinite loop when start equals destination, off-by-one errors. The slide outline (Slide 8) lists these — walk through them if students encounter issues.
 
 ## Connections to Next Lessons
 - **Lesson 7** will introduce the turning challenge — now that the algorithm is tested and correct, students need to figure out how the robot should turn at each step

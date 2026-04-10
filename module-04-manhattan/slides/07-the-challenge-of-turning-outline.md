@@ -18,7 +18,7 @@
 ---
 
 ## Slide 2: Hook — The Algorithm Knows Where, Not How
-**We have a path:** `[(0,0), (1,0), (2,0), (2,1), (2,2)]`
+**We have a path:** `[(1,0), (2,0), (2,1), (2,2)]` (starting from position `(0,0)`)
 
 **The robot knows WHERE to go.** But HOW does it get there?
 
@@ -121,10 +121,10 @@ def get_needed_heading(current_pos, next_pos):
 ---
 
 ## Slide 7: Walking Through a Path
-**Path: [(0,0), (1,0), (2,0), (2,1), (2,2)]**
+**Path: [(1,0), (2,0), (2,1), (2,2)]** (starting from position `(0,0)`)
 **Starting heading: 0 (N)**
 
-| Step | From | To | Needed | Current | Count | Turns | New Heading |
+| Step | Position | Next | Needed | Current | Count | Turns | New Heading |
 |---|---|---|---|---|---|---|---|
 | 1 | (0,0) | (1,0) | 2 (S) | 0 (N) | 0→1→2 | 2 | 2 (S) |
 | 2 | (1,0) | (2,0) | 2 (S) | 2 (S) | already there | 0 | 2 (S) |
@@ -145,16 +145,18 @@ def get_needed_heading(current_pos, next_pos):
 **In the path loop:**
 
 ```python
-heading = 0  # starting heading
+position = (0, 0)  # starting position
+heading = 0        # starting heading
 
-for i in range(len(path) - 1):
-    needed = get_needed_heading(path[i], path[i+1])
+for next_pos in path:
+    needed = get_needed_heading(position, next_pos)
     # Turn right until facing `needed` (code comes in Lesson 8!)
     # Drive forward one segment
-    heading = needed  # update heading
+    heading = needed    # update heading
+    position = next_pos # update position
 ```
 
-**Critical:** If you forget `heading = needed`, subsequent turn calculations will be wrong!
+**Critical:** If you forget `heading = needed` or `position = next_pos`, subsequent turn calculations will be wrong!
 
 **Next lesson:** The Navigator class will implement `turn_to()` with a while loop that turns right until the heading matches.
 
@@ -163,14 +165,14 @@ for i in range(len(path) - 1):
 ## Slide 9: Your Turn!
 **Activity: Work Through Turning Logic on Paper**
 
-**Path 1:** [(0,0), (0,1), (0,2), (1,2), (2,2)], starting heading: 1 (E)
+**Path 1:** [(0,1), (0,2), (1,2), (2,2)], position: `(0,0)`, heading: 1 (E)
 - What are the right-turn counts at each step?
 - What is the heading after each step?
 
-**Path 2:** [(2,3), (1,3), (0,3), (0,2), (0,1), (0,0)], starting heading: 2 (S)
+**Path 2:** [(1,3), (0,3), (0,2), (0,1), (0,0)], position: `(2,3)`, heading: 2 (S)
 - This path goes up and then left — multiple heading changes!
 
-**Path 3:** [(1,1), (1,2), (1,3), (2,3), (3,3)], starting heading: 0 (N)
+**Path 3:** [(1,2), (1,3), (2,3), (3,3)], position: `(1,1)`, heading: 0 (N)
 - How many right turns for the first step?
 
 **Checkpoints:**

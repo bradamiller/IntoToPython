@@ -9,8 +9,8 @@
 
 | | Path |
 |---|---|
-| **Expected:** | [(0, 0), (1, 0), (2, 0), (2, 1), (2, 2), (2, 3)] |
-| **Actual:** | [(0, 0), (1, 0), (2, 0), (2, 1), (2, 2), (2, 3)] |
+| **Expected:** | [(1, 0), (2, 0), (2, 1), (2, 2), (2, 3)] |
+| **Actual:** | [(1, 0), (2, 0), (2, 1), (2, 2), (2, 3)] |
 
 **Expected number of steps:** 5
 
@@ -23,8 +23,8 @@
 
 | | Path |
 |---|---|
-| **Expected:** | [(2, 3), (1, 3), (0, 3), (0, 2), (0, 1), (0, 0)] |
-| **Actual:** | [(2, 3), (1, 3), (0, 3), (0, 2), (0, 1), (0, 0)] |
+| **Expected:** | [(1, 3), (0, 3), (0, 2), (0, 1), (0, 0)] |
+| **Actual:** | [(1, 3), (0, 3), (0, 2), (0, 1), (0, 0)] |
 
 **Expected number of steps:** 5
 
@@ -37,8 +37,8 @@
 
 | | Path |
 |---|---|
-| **Expected:** | [(1, 0), (1, 1), (1, 2), (1, 3)] |
-| **Actual:** | [(1, 0), (1, 1), (1, 2), (1, 3)] |
+| **Expected:** | [(1, 1), (1, 2), (1, 3)] |
+| **Actual:** | [(1, 1), (1, 2), (1, 3)] |
 
 **Expected number of steps:** 3
 
@@ -51,8 +51,8 @@
 
 | | Path |
 |---|---|
-| **Expected:** | [(2, 2)] |
-| **Actual:** | [(2, 2)] |
+| **Expected:** | [] |
+| **Actual:** | [] |
 
 **Expected number of steps:** 0
 
@@ -99,11 +99,11 @@
 
    Line 1: `Test B - FAIL`
 
-   Line 2: `  Expected: [(0, 0), (0, 1), (1, 1)]`
+   Line 2: `  Expected: [(0, 1), (1, 1)]`
 
-   Line 3: `  Actual:   [(0, 0), (1, 0), (1, 1)]`
+   Line 3: `  Actual:   [(1, 0), (1, 1)]`
 
-   The algorithm moves rows first then columns, so the actual path goes (0,0) to (1,0) to (1,1), not through (0,1).
+   The algorithm moves rows first then columns, so the actual path goes through (1,0) then (1,1), not through (0,1).
 
 ---
 
@@ -114,17 +114,17 @@
 - Description of what this tests: Row-only movement (same column)
 - Start: (0, 2)
 - Destination: (3, 2)
-- Expected path: [(0, 2), (1, 2), (2, 2), (3, 2)]
+- Expected path: [(1, 2), (2, 2), (3, 2)]
 - Expected number of steps: 3
 
 ---
 
 **Your Test Case 6:**
 
-- Description of what this tests: South-West direction (positive row_step, negative col_step)
+- Description of what this tests: South-West direction (row increasing, col decreasing)
 - Start: (0, 3)
 - Destination: (2, 0)
-- Expected path: [(0, 3), (1, 3), (2, 3), (2, 2), (2, 1), (2, 0)]
+- Expected path: [(1, 3), (2, 3), (2, 2), (2, 1), (2, 0)]
 - Expected number of steps: 5
 
 ---
@@ -133,23 +133,23 @@
 
 | Property | How to Check |
 |---|---|
-| Path starts at the correct position | Compare `path[0]` to `start` |
+| Path does not include the start position | `path` should not contain `start` |
 | Path ends at the destination | Compare `path[-1]` to `destination` |
-| Number of steps equals Manhattan distance | `len(path) - 1` should equal `|dest_row - start_row| + |dest_col - start_col|` |
+| Number of steps equals Manhattan distance | `len(path)` should equal `|dest_row - start_row| + |dest_col - start_col|` |
 | Each step moves exactly one row OR one column | For every pair of consecutive positions, the difference should be exactly 1 (either the row changes by 1 or the column changes by 1, but not both at the same time) |
 
 ---
 
 ## Part 6: Testing Checklist
 
-- [x] Test with both row_step and col_step positive (down-right)
-- [x] Test with both row_step and col_step negative (up-left)
-- [x] Test with row_step positive and col_step negative (down-left)
-- [x] Test with row_step negative and col_step positive (up-right)
+- [x] Test with row increasing and col increasing (down-right)
+- [x] Test with row decreasing and col decreasing (up-left)
+- [x] Test with row increasing and col decreasing (down-left)
+- [x] Test with row decreasing and col increasing (up-right)
 - [x] Test with same row (column movement only)
 - [x] Test with same column (row movement only)
 - [x] Test with same position (no movement)
-- [x] All paths start at the correct position
+- [x] No path includes its start position
 - [x] All paths end at the correct destination
 - [x] All step counts match the Manhattan distance
 
@@ -162,8 +162,8 @@
 **Test output:**
 ```
 Test: (3, 0) to (1, 2) - FAIL
-  Expected: [(3, 0), (2, 0), (1, 0), (1, 1), (1, 2)]
-  Actual:   [(3, 0), (2, 0), (1, 0), (0, 0), (-1, 0), (-2, 0)...
+  Expected: [(2, 0), (1, 0), (1, 1), (1, 2)]
+  Actual:   [(2, 0), (1, 0), (0, 0), (-1, 0), (-2, 0)...
 ```
 
 1. **What is the problem? The path keeps going instead of stopping.**

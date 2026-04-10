@@ -64,15 +64,14 @@ manhattan = Manhattan((0, 0))
 path = manhattan.compute_path((2, 3))
 print("Test 1 - (0,0) to (2,3):")
 print("  Path:", path)
-print("  Steps:", len(path) - 1)
+print("  Steps:", len(path))
 print()
 ```
 
 **What to check:**
-1. Does the path start at the correct position?
-2. Does the path end at the destination?
-3. Is the number of steps correct (Manhattan distance)?
-4. Does each step move exactly one row or one column?
+1. Does the path end at the destination?
+2. Is the number of steps correct (Manhattan distance)?
+3. Does each step move exactly one row or one column?
 
 ---
 
@@ -81,7 +80,7 @@ print()
 
 ```python
 # Expected path (from hand trace)
-expected = [(0,0), (1,0), (2,0), (2,1), (2,2), (2,3)]
+expected = [(1,0), (2,0), (2,1), (2,2), (2,3)]
 
 # Actual path (from your class)
 manhattan = Manhattan((0, 0))
@@ -134,16 +133,13 @@ def run_test(test_name, start, dest, expected):
 ```python
 def compute_path(self, destination):
     print("Computing path from", self.position, "to", destination)
-    path = [self.position]
-    current_row = self.position[0]
-    current_col = self.position[1]
+    path = []
+    current_row, current_col = self.position
+    dest_row, dest_col = destination
     # ... rest of code ...
 
-    print("Row step:", row_step)
-    print("Col step:", col_step)
-
-    while current_row != dest_row:
-        current_row = current_row + row_step
+    while current_row < dest_row:
+        current_row = current_row + 1
         path.append((current_row, current_col))
         print("  Added:", (current_row, current_col))
     # ...
@@ -156,13 +152,13 @@ def compute_path(self, destination):
 ---
 
 ## Slide 8: Common Bugs and How to Find Them
-**Bug 1: Path missing the start position**
-- Symptom: Path has 5 steps instead of 6
-- Fix: Make sure `path = [self.position]` (include start)
+**Bug 1: Path includes the start position**
+- Symptom: Path has 6 items instead of 5
+- Fix: Make sure `path = []` (do NOT include start)
 
 **Bug 2: Path goes wrong direction**
-- Symptom: (0,0) to (2,3) produces (0,0), (-1,0), (-2,0)...
-- Fix: Check row_step logic — should be +1 when dest > current
+- Symptom: (0,0) to (2,3) produces (-1,0), (-2,0)...
+- Fix: Check which while loop runs — `while current_row < dest_row` should add 1
 
 **Bug 3: Infinite loop**
 - Symptom: Program never finishes
@@ -170,7 +166,7 @@ def compute_path(self, destination):
 
 **Bug 4: Off-by-one error**
 - Symptom: Path goes one step too far or stops one step short
-- Fix: Check while condition — should be `!=` not `<` or `>`
+- Fix: Check while condition — use `<` and `>` for the four loops
 
 ---
 
@@ -187,7 +183,7 @@ def compute_path(self, destination):
 # Test 1: Basic forward path
 manhattan = Manhattan((0, 0))
 path = manhattan.compute_path((2, 3))
-expected = [(0,0), (1,0), (2,0), (2,1), (2,2), (2,3)]
+expected = [(1,0), (2,0), (2,1), (2,2), (2,3)]
 print("Test 1:", "PASS" if path == expected else "FAIL")
 ```
 

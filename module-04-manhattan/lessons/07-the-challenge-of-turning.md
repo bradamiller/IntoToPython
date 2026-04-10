@@ -47,7 +47,7 @@ By the end of this lesson, students will be able to:
    - Ask: "Why clockwise? Because each right turn adds 1 to the heading number. That is going to be the key to everything today."
 
 3. **Connect to the Manhattan Path**:
-   - Recall from previous lessons: the Manhattan algorithm produces a list of coordinates like `[(0,0), (1,0), (2,0), (2,1)]`.
+   - Recall from previous lessons: the Manhattan algorithm produces a list of coordinates like `[(1,0), (2,0), (2,1)]` (not including the starting position).
    - "The path tells us WHERE to go. But we also need to know which way the robot is facing so we can figure out whether to turn."
    - Preview: "By the end of today, you will be able to look at any two consecutive coordinates and count the exact number of right turns the robot needs."
 
@@ -118,14 +118,15 @@ By the end of this lesson, students will be able to:
    - Point out: "We did not need separate cases for right, left, and 180. Counting clockwise handles everything."
 
 4. **Step 4: Tracing a Full Path**:
-   - Example path: `[(0,0), (1,0), (2,0), (2,1), (2,2)]`
+   - Example path: `[(1,0), (2,0), (2,1), (2,2)]`, starting position `(0,0)`
    - Starting heading: 0 (North)
+   - We track a separate `position` variable that starts at `(0,0)` and updates after each step
    - Trace on the board:
      ```
-     At (0,0) heading 0(N), next is (1,0): need 2(S), count 0->1->2 = 2 right turns, now heading 2(S), drive to (1,0)
-     At (1,0) heading 2(S), next is (2,0): need 2(S), already there = 0 right turns, drive to (2,0)
-     At (2,0) heading 2(S), next is (2,1): need 1(E), count 2->3->0->1 = 3 right turns, now heading 1(E), drive to (2,1)
-     At (2,1) heading 1(E), next is (2,2): need 1(E), already there = 0 right turns, drive to (2,2)
+     Position (0,0) heading 0(N), next is (1,0): need 2(S), count 0->1->2 = 2 right turns, now heading 2(S), drive to (1,0)
+     Position (1,0) heading 2(S), next is (2,0): need 2(S), already there = 0 right turns, drive to (2,0)
+     Position (2,0) heading 2(S), next is (2,1): need 1(E), count 2->3->0->1 = 3 right turns, now heading 1(E), drive to (2,1)
+     Position (2,1) heading 1(E), next is (2,2): need 1(E), already there = 0 right turns, drive to (2,2)
      ```
    - Have students call out each step before you write it.
    - Note: After turning, the new heading IS the needed heading. We just set `heading = needed`.
@@ -148,15 +149,15 @@ By the end of this lesson, students will be able to:
              return 3    # West
 
      # Trace a short path, printing the needed heading at each step
-     path = [(0,0), (1,0), (2,0), (2,1)]
+     path = [(1,0), (2,0), (2,1)]
+     position = (0,0)
      heading = 0
 
-     for i in range(len(path) - 1):
-         current = path[i]
-         next_pos = path[i + 1]
-         needed = get_needed_heading(current, next_pos)
-         print(f"At {current} heading {heading}({HEADING_NAMES[heading]}), need {needed}({HEADING_NAMES[needed]})")
+     for next_pos in path:
+         needed = get_needed_heading(position, next_pos)
+         print(f"At {position} heading {heading}({HEADING_NAMES[heading]}), need {needed}({HEADING_NAMES[needed]})")
          heading = needed
+         position = next_pos
      ```
    - Run it in the console. Students can verify the needed headings match their paper work.
    - Point out: "We are not writing the turning code yet -- you counted right turns on paper, and in the next lesson the Navigator class will use a while loop to turn right until the heading matches."
@@ -187,23 +188,23 @@ By the end of this lesson, students will be able to:
 - Answers: 1, 0, 2, 3, 3, 2, 1, 3
 
 **Exercise 3: Full Path Trace (Paper)**
-- Path: `[(0,0), (0,1), (0,2), (1,2), (2,2), (2,1), (2,0)]`
-- Starting heading: 1 (E)
-- For each step, write: current position, heading number, next position, needed heading, clockwise count, right turns, new heading
+- Path: `[(0,1), (0,2), (1,2), (2,2), (2,1), (2,0)]`
+- Starting position: `(0,0)`, Starting heading: 1 (E)
+- Use a separate position variable starting at `(0,0)`. For each step, write: position, heading number, next position, needed heading, clockwise count, right turns, new heading. Update position after each step.
 - Expected trace:
   ```
-  At (0,0) heading 1(E), next (0,1): need 1(E), already there = 0, no turn, heading stays 1(E)
-  At (0,1) heading 1(E), next (0,2): need 1(E), already there = 0, no turn, heading stays 1(E)
-  At (0,2) heading 1(E), next (1,2): need 2(S), count 1->2 = 1, turn right x1, heading becomes 2(S)
-  At (1,2) heading 2(S), next (2,2): need 2(S), already there = 0, no turn, heading stays 2(S)
-  At (2,2) heading 2(S), next (2,1): need 3(W), count 2->3 = 1, turn right x1, heading becomes 3(W)
-  At (2,1) heading 3(W), next (2,0): need 3(W), already there = 0, no turn, heading stays 3(W)
+  Position (0,0) heading 1(E), next (0,1): need 1(E), already there = 0, no turn, heading stays 1(E)
+  Position (0,1) heading 1(E), next (0,2): need 1(E), already there = 0, no turn, heading stays 1(E)
+  Position (0,2) heading 1(E), next (1,2): need 2(S), count 1->2 = 1, turn right x1, heading becomes 2(S)
+  Position (1,2) heading 2(S), next (2,2): need 2(S), already there = 0, no turn, heading stays 2(S)
+  Position (2,2) heading 2(S), next (2,1): need 3(W), count 2->3 = 1, turn right x1, heading becomes 3(W)
+  Position (2,1) heading 3(W), next (2,0): need 3(W), already there = 0, no turn, heading stays 3(W)
   ```
 
 **Exercise 4: Trace a Path on Paper (Paper)**
-- Path: `[(0,0), (0,1), (1,1), (2,1), (2,0)]`
-- Starting heading: 0 (N)
-- For each step, write: current position, current heading, next position, needed heading, clockwise count of right turns, new heading
+- Path: `[(0,1), (1,1), (2,1), (2,0)]`
+- Starting position: `(0,0)`, Starting heading: 0 (N)
+- Use a separate position variable starting at `(0,0)`. For each step, write: position, current heading, next position, needed heading, clockwise count of right turns, new heading. Update position after each step.
 - Verify your trace by checking that the needed heading at each step matches the coordinate delta
 
 ### Assessment
@@ -219,7 +220,7 @@ By the end of this lesson, students will be able to:
 2. Describe the counting method for figuring out right turns in words (count clockwise steps on the compass from current to needed).
 3. If the robot is heading 3 (West) and needs to go heading 1 (East), how many right turns? Show the clockwise counting.
 4. What are the four possible results of counting right turns, and what does each one mean?
-5. Trace the turns for path `[(1,1), (2,1), (2,2)]` with starting heading 2 (S).
+5. Trace the turns for path `[(2,1), (2,2)]` with starting position `(1,1)` and starting heading 2 (S).
 
 ## Common Misconceptions
 
@@ -293,18 +294,18 @@ def get_needed_heading(current, next_pos):
     elif col_diff == -1:
         return 3
 
-path = [(0,0), (1,0), (2,0), (2,1), (2,2)]
+path = [(1,0), (2,0), (2,1), (2,2)]
+position = (0,0)
 heading = 0
 
-for i in range(len(path) - 1):
-    current = path[i]
-    next_pos = path[i + 1]
-    needed = get_needed_heading(current, next_pos)
+for next_pos in path:
+    needed = get_needed_heading(position, next_pos)
     current_name = HEADING_NAMES[heading]
     needed_name = HEADING_NAMES[needed]
-    print(f"At {current} heading {heading}({current_name}), need {needed}({needed_name})")
+    print(f"At {position} heading {heading}({current_name}), need {needed}({needed_name})")
     heading = needed
     print(f"  Now heading {heading}({HEADING_NAMES[heading]}), drive to {next_pos}")
+    position = next_pos
 ```
 
 ### Turn Logic Worksheet
@@ -332,14 +333,14 @@ Count clockwise from current to needed to find the number of right turns:
 6. Current: 1(E), Need: 0(N) --> count: 1->___->___->___ = ___ right turns
 
 PART C: Full Path Trace
-Path: [(1,1), (1,2), (1,3), (2,3), (3,3), (3,2)]
-Starting heading: 1 (E)
+Path: [(1,2), (1,3), (2,3), (3,3), (3,2)]
+Starting position: (1,1), Starting heading: 1 (E)
 
-Step 1: At (1,1) heading ___(___), next (1,2): need ___(___), count: ___->___ = ___ turns, now heading ___(___)
-Step 2: At (1,2) heading ___(___), next (1,3): need ___(___), count: ___->___ = ___ turns, now heading ___(___)
-Step 3: At (1,3) heading ___(___), next (2,3): need ___(___), count: ___->___ = ___ turns, now heading ___(___)
-Step 4: At (2,3) heading ___(___), next (3,3): need ___(___), count: ___->___ = ___ turns, now heading ___(___)
-Step 5: At (3,3) heading ___(___), next (3,2): need ___(___), count: ___->___ = ___ turns, now heading ___(___)
+Step 1: Position (1,1) heading ___(___), next (1,2): need ___(___), count: ___->___ = ___ turns, now heading ___(___)
+Step 2: Position (1,2) heading ___(___), next (1,3): need ___(___), count: ___->___ = ___ turns, now heading ___(___)
+Step 3: Position (1,3) heading ___(___), next (2,3): need ___(___), count: ___->___ = ___ turns, now heading ___(___)
+Step 4: Position (2,3) heading ___(___), next (3,3): need ___(___), count: ___->___ = ___ turns, now heading ___(___)
+Step 5: Position (3,3) heading ___(___), next (3,2): need ___(___), count: ___->___ = ___ turns, now heading ___(___)
 ```
 
 ## Teaching Notes

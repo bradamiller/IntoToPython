@@ -469,10 +469,10 @@
             <li><strong>When a test FAILS, what extra info is printed? Why is that helpful?</strong><br>
                 <span class="answer-line"></span></li>
             <li><strong>Predict the output of:</strong>
-                <div class="code-block">run_test("Test A", (0, 0), (1, 1), [(0, 0), (1, 0), (1, 1)])</div>
+                <div class="code-block">run_test("Test A", (0, 0), (1, 1), [(1, 0), (1, 1)])</div>
                 <p>Output: <span class="inline-answer x-long"></span></p></li>
             <li><strong>Predict the output of (with WRONG expected):</strong>
-                <div class="code-block">run_test("Test B", (0, 0), (1, 1), [(0, 0), (0, 1), (1, 1)])</div>
+                <div class="code-block">run_test("Test B", (0, 0), (1, 1), [(0, 1), (1, 1)])</div>
                 <p>Output Line 1: <span class="inline-answer x-long"></span></p>
                 <p>Output Line 2: <span class="inline-answer x-long"></span></p>
                 <p>Output Line 3: <span class="inline-answer x-long"></span></p></li>
@@ -511,9 +511,9 @@
                 <tr><th>Property</th><th>How to Check</th></tr>
             </thead>
             <tbody>
-                <tr><td>Path starts at correct position</td><td>Compare path[<span class="inline-answer short"></span>] to <span class="inline-answer"></span></td></tr>
+                <tr><td>Path starts with first step from start</td><td>Compare path[<span class="inline-answer short"></span>] to <span class="inline-answer"></span></td></tr>
                 <tr><td>Path ends at destination</td><td>Compare path[<span class="inline-answer short"></span>] to <span class="inline-answer"></span></td></tr>
-                <tr><td>Number of steps equals Manhattan distance</td><td>len(path) - 1 should equal <span class="inline-answer long"></span></td></tr>
+                <tr><td>Number of steps equals Manhattan distance</td><td>len(path) should equal <span class="inline-answer long"></span></td></tr>
                 <tr><td>Each step moves exactly one row OR one column</td><td>For every pair of consecutive positions, the difference should be <span class="inline-answer long"></span></td></tr>
             </tbody>
         </table>
@@ -525,14 +525,14 @@
         <p class="instruction">Check off each test as you verify it passes.</p>
 
         <ul class="checklist">
-            <li>Test with both row_step and col_step positive (down-right)</li>
-            <li>Test with both row_step and col_step negative (up-left)</li>
-            <li>Test with positive row_step, negative col_step</li>
-            <li>Test with negative row_step, positive col_step</li>
+            <li>Test moving down and right (row increases, col increases)</li>
+            <li>Test moving up and left (row decreases, col decreases)</li>
+            <li>Test moving down and left (row increases, col decreases)</li>
+            <li>Test moving up and right (row decreases, col increases)</li>
             <li>Test same row (column movement only)</li>
             <li>Test same column (row movement only)</li>
             <li>Test same position (no movement)</li>
-            <li>All paths start at the correct position</li>
+            <li>All paths begin with the correct first step</li>
             <li>All paths end at the destination</li>
             <li>All step counts match the Manhattan distance</li>
         </ul>
@@ -546,8 +546,8 @@
         <p class="instruction">A student ran their tests and got this output. Diagnose the bug.</p>
 
         <div class="code-block">Test: (3, 0) to (1, 2) - FAIL
-  Expected: [(3, 0), (2, 0), (1, 0), (1, 1), (1, 2)]
-  Actual:   [(3, 0), (2, 0), (1, 0), (0, 0), (-1, 0), (-2, 0)...</div>
+  Expected: [(2, 0), (1, 0), (1, 1), (1, 2)]
+  Actual:   [(2, 0), (1, 0), (0, 0), (-1, 0), (-2, 0)...</div>
 
         <ol class="questions">
             <li><strong>What is the problem?</strong><br>

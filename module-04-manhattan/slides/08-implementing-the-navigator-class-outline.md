@@ -25,7 +25,7 @@
 **Missing piece:** Something that actually DRIVES the robot!
 
 ```python
-path = [(0,0), (1,0), (2,0), (2,1), (2,2)]
+path = [(1,0), (2,0), (2,1), (2,2)]
 # How does this become real robot movement?
 ```
 
@@ -130,8 +130,7 @@ def turn_to(self, needed_heading):
 
 ```python
 def drive_path(self, path):
-    for i in range(1, len(path)):
-        next_pos = path[i]
+    for next_pos in path:
         needed = self.get_needed_heading(next_pos)
         if self.heading == needed:
             self.line_track.drivetrain.straight(8)
@@ -139,6 +138,8 @@ def drive_path(self, path):
         self.line_track.track_until_cross()
         self.position = next_pos
 ```
+
+**Why `for next_pos in path:`?** The path does not include the starting position -- every element is a new cell to drive to. No need to skip index 0.
 
 **Why `straight(8)` when heading already matches?**
 - Robot is sitting on the crossing line from the previous step

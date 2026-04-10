@@ -52,12 +52,12 @@ def get_needed_heading(current, next_pos):
 # print()
 
 # TODO: Trace through a path on paper
-# For each step, figure out the needed heading and count
-# how many clockwise steps from the current heading.
-# Path: [(0,0), (1,0), (2,0), (2,1), (2,2)]
+# The path does not include the start, so track position separately.
+# Path: [(1,0), (2,0), (2,1), (2,2)]
+# Start position: (0, 0)
 # Starting heading: 0 (North)
 #
-# Step 1: (0,0) to (1,0) — need heading ___, right turns: ___
-# Step 2: (1,0) to (2,0) — need heading ___, right turns: ___
-# Step 3: (2,0) to (2,1) — need heading ___, right turns: ___
-# Step 4: (2,1) to (2,2) — need heading ___, right turns: ___
+# Step 1: At (0,0), next is (1,0) — need heading ___, right turns: ___
+# Step 2: At (1,0), next is (2,0) — need heading ___, right turns: ___
+# Step 3: At (2,0), next is (2,1) — need heading ___, right turns: ___
+# Step 4: At (2,1), next is (2,2) — need heading ___, right turns: ___

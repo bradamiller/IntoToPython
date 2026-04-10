@@ -640,13 +640,13 @@
         </div>
         <nav class="slide-nav">
             <a href="#slide-1" class="nav-item" onclick="showSlide(0)">Title & Objectives</a>
-            <a href="#slide-2" class="nav-item" onclick="showSlide(1)">From Paper to Code</a>
+            <a href="#slide-2" class="nav-item" onclick="showSlide(1)">From Function to Class</a>
             <a href="#slide-3" class="nav-item" onclick="showSlide(2)">Class Design</a>
-            <a href="#slide-4" class="nav-item" onclick="showSlide(3)">Step 1: Determine Direction</a>
-            <a href="#slide-5" class="nav-item" onclick="showSlide(4)">Step 2: Move Along Rows</a>
-            <a href="#slide-6" class="nav-item" onclick="showSlide(5)">Step 3: Move Along Columns</a>
-            <a href="#slide-7" class="nav-item" onclick="showSlide(6)">The Complete Class</a>
-            <a href="#slide-8" class="nav-item" onclick="showSlide(7)">Using the Manhattan Class</a>
+            <a href="#slide-4" class="nav-item" onclick="showSlide(3)">Converting the Function</a>
+            <a href="#slide-5" class="nav-item" onclick="showSlide(4)">The Complete Class</a>
+            <a href="#slide-6" class="nav-item" onclick="showSlide(5)">Testing the Class</a>
+            <a href="#slide-7" class="nav-item" onclick="showSlide(6)">Multiple Paths</a>
+            <a href="#slide-8" class="nav-item" onclick="showSlide(7)">Edge Cases</a>
             <a href="#slide-9" class="nav-item" onclick="showSlide(8)">Your Turn!</a>
             <a href="#slide-10" class="nav-item" onclick="showSlide(9)">What's Next</a>
         </nav>
@@ -654,7 +654,7 @@
 
     <div class="slides-container">
 
-        <!-- ═══ SLIDE 1: Title ═══ -->
+        <!-- ═══ SLIDE 1: Title & Learning Objectives ═══ -->
         <div id="slide-1" class="slide slide-title-page">
             <div class="title-hero">
                 <!-- Robot illustration — PNG version -->
@@ -667,17 +667,17 @@
                 <div class="title-content">
                     <div class="title-section">
                         <h3>Learning Objectives</h3>
-                        <p class="bullet">Design a class with __init__ and compute_path methods</p>
-                        <p class="bullet">Implement the Manhattan algorithm in Python</p>
-                        <p class="bullet">Handle direction using conditional logic (+1 or -1 step)</p>
-                        <p class="bullet">Build a path as a list of tuples using append()</p>
+                        <p class="bullet">Design a class that wraps a working function</p>
+                        <p class="bullet">Convert a standalone function into a method with self</p>
+                        <p class="bullet">Test the class with print statements</p>
                     </div>
                     <div class="title-section">
                         <h3>Agenda</h3>
-                        <p class="bullet">Class design overview (5 min)</p>
-                        <p class="bullet">Building compute_path step by step (15 min)</p>
-                        <p class="bullet">Guided coding (15 min)</p>
-                        <p class="bullet">Testing your class (10 min)</p>
+                        <p class="bullet">From function to class (5 min)</p>
+                        <p class="bullet">Class design &amp; conversion (10 min)</p>
+                        <p class="bullet">Complete class walkthrough (10 min)</p>
+                        <p class="bullet">Testing &amp; edge cases (10 min)</p>
+                        <p class="bullet">Practice activity (10 min)</p>
                     </div>
                 </div>
             </div>
@@ -688,54 +688,49 @@
             </div>
         </div>
 
-        <!-- ═══ SLIDE 2: Hook — From Paper to Code ═══ -->
+        <!-- ═══ SLIDE 2: Hook — From Function to Class ═══ -->
         <div id="slide-2" class="slide">
             <div class="title-bar">
-                <h1>From Paper to Code</h1>
+                <h1>From Function to Class</h1>
             </div>
             <div class="content">
-                <p class="header-text">Last lesson: You traced paths by hand.</p>
-                <p class="header-text" style="color: #e8a87c;">Today: You'll write a class that computes paths automatically.</p>
+                <p class="header-text">You already have a working function from Lesson 4.</p>
+                <p class="header-text" style="color: #e8a87c;">Now let's make it reusable by wrapping it in a class.</p>
 
                 <div class="illustration">
-                    <svg width="640" height="240" viewBox="0 0 490 185">
-                        <!-- Hand tracing side -->
-                        <rect x="10" y="10" width="170" height="165" rx="12" fill="rgba(91, 143, 168, 0.06)" stroke="#b8c5d0" stroke-width="2"/>
-                        <text x="95" y="35" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" text-anchor="middle" font-weight="600">Lesson 4: By Hand</text>
-                        <!-- Mini grid -->
-                        <line x1="40" y1="60" x2="40" y2="150" stroke="#2d3436" stroke-width="2"/>
-                        <line x1="95" y1="60" x2="95" y2="150" stroke="#2d3436" stroke-width="2"/>
-                        <line x1="150" y1="60" x2="150" y2="150" stroke="#2d3436" stroke-width="2"/>
-                        <line x1="25" y1="75" x2="165" y2="75" stroke="#2d3436" stroke-width="2"/>
-                        <line x1="25" y1="105" x2="165" y2="105" stroke="#2d3436" stroke-width="2"/>
-                        <line x1="25" y1="135" x2="165" y2="135" stroke="#2d3436" stroke-width="2"/>
-                        <!-- Hand-drawn path -->
-                        <path d="M 40 75 L 40 135 L 150 135" fill="none" stroke="#e8a87c" stroke-width="3" stroke-dasharray="6,4"/>
-                        <text x="95" y="165" font-family="Caveat, cursive" font-size="16" fill="#636e72" text-anchor="middle">pencil &amp; paper</text>
+                    <svg width="640" height="220" viewBox="0 0 490 170">
+                        <!-- Function side -->
+                        <rect x="10" y="10" width="190" height="150" rx="12" fill="rgba(91, 143, 168, 0.06)" stroke="#b8c5d0" stroke-width="2"/>
+                        <text x="105" y="35" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" text-anchor="middle" font-weight="600">Lesson 4: Function</text>
+                        <text x="20" y="62" font-family="Fira Code, monospace" font-size="11" fill="#2d3436">def compute_path(</text>
+                        <text x="20" y="78" font-family="Fira Code, monospace" font-size="11" fill="#2d3436">    start, dest):</text>
+                        <text x="20" y="98" font-family="Fira Code, monospace" font-size="11" fill="#636e72">    # 4 while loops</text>
+                        <text x="20" y="114" font-family="Fira Code, monospace" font-size="11" fill="#636e72">    ...</text>
+                        <text x="20" y="134" font-family="Fira Code, monospace" font-size="11" fill="#2d3436">    return path</text>
+                        <text x="105" y="155" font-family="Caveat, cursive" font-size="14" fill="#636e72" text-anchor="middle">works, but loose</text>
 
                         <!-- Arrow -->
-                        <path d="M 195 90 L 230 90" fill="none" stroke="#e8a87c" stroke-width="2.5"/>
-                        <polygon points="230,84 245,90 230,96" fill="#e8a87c"/>
+                        <path d="M 215 85 L 250 85" fill="none" stroke="#e8a87c" stroke-width="2.5"/>
+                        <polygon points="250,79 265,85 250,91" fill="#e8a87c"/>
 
-                        <!-- Python class side -->
-                        <rect x="255" y="10" width="225" height="165" rx="12" fill="rgba(232, 168, 124, 0.08)" stroke="#e8a87c" stroke-width="2"/>
-                        <text x="367" y="35" font-family="Caveat, cursive" font-size="18" fill="#e8a87c" text-anchor="middle" font-weight="600">Lesson 5: Python Class</text>
-                        <text x="265" y="62" font-family="Fira Code, monospace" font-size="11" fill="#2d3436">m = Manhattan((0,0))</text>
-                        <text x="265" y="82" font-family="Fira Code, monospace" font-size="11" fill="#2d3436">path = m.compute_path((2,2))</text>
-                        <text x="265" y="112" font-family="Fira Code, monospace" font-size="11" fill="#5b8fa8"># [(0,0), (1,0), (2,0),</text>
-                        <text x="265" y="128" font-family="Fira Code, monospace" font-size="11" fill="#5b8fa8">#  (2,1), (2,2)]</text>
+                        <!-- Class side -->
+                        <rect x="275" y="10" width="205" height="150" rx="12" fill="rgba(232, 168, 124, 0.08)" stroke="#e8a87c" stroke-width="2"/>
+                        <text x="377" y="35" font-family="Caveat, cursive" font-size="18" fill="#e8a87c" text-anchor="middle" font-weight="600">Lesson 5: Class</text>
+                        <text x="285" y="62" font-family="Fira Code, monospace" font-size="11" fill="#2d3436">class Manhattan:</text>
+                        <text x="285" y="78" font-family="Fira Code, monospace" font-size="11" fill="#2d3436">  def __init__(self, start):</text>
+                        <text x="285" y="94" font-family="Fira Code, monospace" font-size="11" fill="#2d3436">    self.position = start</text>
+                        <text x="285" y="114" font-family="Fira Code, monospace" font-size="11" fill="#2d3436">  def compute_path(self, dest):</text>
+                        <text x="285" y="130" font-family="Fira Code, monospace" font-size="11" fill="#636e72">    # same 4 while loops</text>
+                        <text x="377" y="155" font-family="Caveat, cursive" font-size="14" fill="#e8a87c" text-anchor="middle">bundled &amp; reusable</text>
                     </svg>
                 </div>
 
-                <div class="code-block">
-<pre>manhattan = Manhattan((0, 0))
-path = manhattan.compute_path((2, 3))
-print(path)
-# [(0,0), (1,0), (2,0), (2,1), (2,2), (2,3)]</pre>
+                <div class="question-box">
+                    <p class="body-text" style="margin-left: 8px;"><strong>Why a class?</strong> It bundles the starting position with the path-finding method &mdash; one object you can reuse.</p>
                 </div>
 
-                <div class="question-box">
-                    <p class="body-text" style="margin-left: 8px;"><strong>"Can you translate the hand-tracing steps into Python code?"</strong></p>
+                <div class="insight-box">
+                    The algorithm stays exactly the same &mdash; we just organize it differently.
                 </div>
             </div>
             <div class="slide-navigation">
@@ -757,11 +752,11 @@ print(path)
                     <div class="col">
                         <div class="sketch-box">
                             <p class="header-text" style="margin-top: 0;">Data (stored in __init__)</p>
-                            <p class="bullet"><code style="font-family: 'Fira Code', monospace;">self.position</code> &mdash; the robot's current position as a tuple</p>
+                            <p class="bullet"><code style="font-family: 'Fira Code', monospace;">self.position</code> &mdash; the robot's starting position as a tuple (row, col)</p>
                         </div>
                         <div class="sketch-box" style="border-color: #e8a87c; background-color: rgba(232, 168, 124, 0.04);">
                             <p class="header-text" style="margin-top: 0; color: #e8a87c;">Methods</p>
-                            <p class="bullet"><code style="font-family: 'Fira Code', monospace;">compute_path(destination)</code> &mdash; returns a list of tuples from current position to destination</p>
+                            <p class="bullet"><code style="font-family: 'Fira Code', monospace;">compute_path(destination)</code> &mdash; returns a list of tuples from position to destination (not including start)</p>
                         </div>
                     </div>
                     <div class="col">
@@ -806,69 +801,58 @@ print(path)
             </div>
         </div>
 
-        <!-- ═══ SLIDE 4: Step 1 — Determine Direction ═══ -->
+        <!-- ═══ SLIDE 4: Converting the Function ═══ -->
         <div id="slide-4" class="slide">
             <div class="title-bar">
-                <h1>Step 1 &mdash; Determine Direction</h1>
+                <h1>Converting the Function</h1>
             </div>
             <div class="content">
-                <p class="header-text">First, figure out which way to go:</p>
+                <p class="header-text">Side by side: function vs. method</p>
 
                 <div class="two-col">
                     <div class="col">
-                        <div class="code-block compact" style="font-size: 14px;">
-<pre>def compute_path(self, destination):
-    path = [self.position]
+                        <p class="header-text" style="font-size: 22px;">Lesson 4 Function</p>
+                        <div class="code-block compact" style="font-size: 16px;">
+<pre>def compute_path(start, dest):
+    path = []
+    cur_row, cur_col = start
+    dest_row, dest_col = dest
 
-    current_row, current_col = self.position
-    dest_row, dest_col = destination
+    while cur_row < dest_row:
+        cur_row = cur_row + 1
+        path.append((cur_row, cur_col))
+    # ... 3 more while loops
 
-    # Which direction for rows?
-    if dest_row > current_row:
-        row_step = 1       # Move down
-    else:
-        row_step = -1      # Move up
-
-    # Which direction for columns?
-    if dest_col > current_col:
-        col_step = 1       # Move right
-    else:
-        col_step = -1      # Move left</pre>
+    return path</pre>
                         </div>
                     </div>
                     <div class="col">
-                        <div class="illustration">
-                            <svg width="325" height="300" viewBox="0 0 250 230">
-                                <!-- Compass-style direction diagram -->
-                                <text x="125" y="22" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" text-anchor="middle" font-weight="600">Direction Logic</text>
-                                <!-- Center point -->
-                                <circle cx="125" cy="125" r="6" fill="#5b8fa8" stroke="#2d3436" stroke-width="2"/>
-                                <text x="125" y="130" font-family="Caveat, cursive" font-size="10" fill="white" text-anchor="middle">start</text>
-                                <!-- Up arrow (row_step = -1) -->
-                                <line x1="125" y1="115" x2="125" y2="55" stroke="#85c88a" stroke-width="2.5"/>
-                                <polygon points="119,58 125,42 131,58" fill="#85c88a"/>
-                                <text x="125" y="40" font-family="Caveat, cursive" font-size="14" fill="#85c88a" text-anchor="middle" font-weight="600">row_step = -1</text>
-                                <!-- Down arrow (row_step = +1) -->
-                                <line x1="125" y1="135" x2="125" y2="195" stroke="#e8a87c" stroke-width="2.5"/>
-                                <polygon points="119,192 125,208 131,192" fill="#e8a87c"/>
-                                <text x="125" y="225" font-family="Caveat, cursive" font-size="14" fill="#e8a87c" text-anchor="middle" font-weight="600">row_step = +1</text>
-                                <!-- Left arrow (col_step = -1) -->
-                                <line x1="115" y1="125" x2="55" y2="125" stroke="#85c88a" stroke-width="2.5"/>
-                                <polygon points="58,119 42,125 58,131" fill="#85c88a"/>
-                                <text x="25" y="112" font-family="Caveat, cursive" font-size="14" fill="#85c88a" text-anchor="middle" font-weight="600">col_step</text>
-                                <text x="25" y="128" font-family="Caveat, cursive" font-size="14" fill="#85c88a" text-anchor="middle" font-weight="600">= -1</text>
-                                <!-- Right arrow (col_step = +1) -->
-                                <line x1="135" y1="125" x2="195" y2="125" stroke="#e8a87c" stroke-width="2.5"/>
-                                <polygon points="192,119 208,125 192,131" fill="#e8a87c"/>
-                                <text x="225" y="112" font-family="Caveat, cursive" font-size="14" fill="#e8a87c" text-anchor="middle" font-weight="600">col_step</text>
-                                <text x="225" y="128" font-family="Caveat, cursive" font-size="14" fill="#e8a87c" text-anchor="middle" font-weight="600">= +1</text>
-                            </svg>
+                        <p class="header-text" style="font-size: 22px; color: #e8a87c;">Lesson 5 Method</p>
+                        <div class="code-block compact" style="font-size: 16px; border-color: #e8a87c;">
+<pre>def compute_path(self, dest):
+    path = []
+    cur_row, cur_col = self.position
+    dest_row, dest_col = dest
+
+    while cur_row < dest_row:
+        cur_row = cur_row + 1
+        path.append((cur_row, cur_col))
+    # ... 3 more while loops
+
+    return path</pre>
                         </div>
                     </div>
                 </div>
 
+                <div class="spacer"></div>
+
+                <p class="header-text">What changed?</p>
+                <p class="bullet"><code style="font-family: 'Fira Code', monospace;">start</code> parameter is gone &mdash; replaced by <code style="font-family: 'Fira Code', monospace;">self.position</code></p>
+                <p class="bullet"><code style="font-family: 'Fira Code', monospace;">self</code> is added as the first parameter</p>
+                <p class="bullet">The 4 while loops stay <span class="sketch-highlight">exactly the same</span></p>
+
                 <div class="insight-box">
-                    This matches what we did by hand in Lesson 4!
+                    Two changes: add self, use self.position instead of start. That's it!
                 </div>
             </div>
             <div class="slide-navigation">
@@ -878,256 +862,35 @@ print(path)
             </div>
         </div>
 
-        <!-- ═══ SLIDE 5: Step 2 — Move Along Rows ═══ -->
+        <!-- ═══ SLIDE 5: The Complete Manhattan Class ═══ -->
         <div id="slide-5" class="slide">
-            <div class="title-bar">
-                <h1>Step 2 &mdash; Move Along Rows</h1>
-            </div>
-            <div class="content">
-                <p class="header-text">Loop through rows until we reach the destination row:</p>
-
-                <div class="code-block compact" style="margin-bottom: 12px;">
-<pre>    # Move along rows
-    while current_row != dest_row:
-        current_row = current_row + row_step
-        path.append((current_row, current_col))</pre>
-                </div>
-
-                <p class="header-text">Trace for (0, 0) to (2, 3):</p>
-
-                <div class="two-col">
-                    <div class="col">
-                        <table class="content-table">
-                            <thead>
-                                <tr>
-                                    <th>Iteration</th>
-                                    <th>current_row</th>
-                                    <th>row_step</th>
-                                    <th>After</th>
-                                    <th>Appended</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td>0</td>
-                                    <td>+1</td>
-                                    <td>1</td>
-                                    <td style="font-family: 'Fira Code', monospace; font-size: 15px;">(1, 0)</td>
-                                </tr>
-                                <tr>
-                                    <td>2</td>
-                                    <td>1</td>
-                                    <td>+1</td>
-                                    <td>2</td>
-                                    <td style="font-family: 'Fira Code', monospace; font-size: 15px;">(2, 0)</td>
-                                </tr>
-                                <tr>
-                                    <td style="color: #85c88a; font-weight: bold;">Stop</td>
-                                    <td>2 == 2</td>
-                                    <td>&mdash;</td>
-                                    <td>&mdash;</td>
-                                    <td>&mdash;</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="col">
-                        <div class="illustration">
-                            <svg width="260" height="260" viewBox="0 0 200 200">
-                                <!-- Mini grid -->
-                                <line x1="40" y1="40" x2="40" y2="170" stroke="#2d3436" stroke-width="2"/>
-                                <line x1="100" y1="40" x2="100" y2="170" stroke="#2d3436" stroke-width="2"/>
-                                <line x1="160" y1="40" x2="160" y2="170" stroke="#2d3436" stroke-width="2"/>
-                                <line x1="20" y1="55" x2="180" y2="55" stroke="#2d3436" stroke-width="2"/>
-                                <line x1="20" y1="105" x2="180" y2="105" stroke="#2d3436" stroke-width="2"/>
-                                <line x1="20" y1="155" x2="180" y2="155" stroke="#2d3436" stroke-width="2"/>
-                                <!-- Row labels -->
-                                <text x="10" y="64" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">0</text>
-                                <text x="10" y="114" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">1</text>
-                                <text x="10" y="164" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">2</text>
-                                <!-- Col labels -->
-                                <text x="40" y="32" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">0</text>
-                                <text x="100" y="32" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">1</text>
-                                <text x="160" y="32" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">2</text>
-                                <!-- Path: down column 0 -->
-                                <line x1="40" y1="55" x2="40" y2="155" stroke="#e8a87c" stroke-width="4" stroke-linecap="round" opacity="0.6"/>
-                                <!-- Dots at positions -->
-                                <circle cx="40" cy="55" r="5" fill="#5b8fa8" stroke="#2d3436" stroke-width="1.5"/>
-                                <circle cx="40" cy="105" r="5" fill="#e8a87c" stroke="#2d3436" stroke-width="1.5"/>
-                                <circle cx="40" cy="155" r="5" fill="#e8a87c" stroke="#2d3436" stroke-width="1.5"/>
-                                <!-- Labels -->
-                                <text x="55" y="50" font-family="Fira Code, monospace" font-size="15" fill="#5b8fa8">(0,0)</text>
-                                <text x="55" y="100" font-family="Fira Code, monospace" font-size="15" fill="#e8a87c">(1,0)</text>
-                                <text x="55" y="150" font-family="Fira Code, monospace" font-size="15" fill="#e8a87c">(2,0)</text>
-                                <!-- Direction arrow -->
-                                <text x="28" y="110" font-family="Caveat, cursive" font-size="16" fill="#e8a87c" transform="rotate(-90 28 110)">rows</text>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="answer-box">
-                    <p class="body-text" style="margin-left: 8px;"><strong>Path so far:</strong> <code style="font-family: 'Fira Code', monospace;">[(0,0), (1,0), (2,0)]</code></p>
-                </div>
-            </div>
-            <div class="slide-navigation">
-                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
-                <span class="slide-counter">5 / 10</span>
-                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
-            </div>
-        </div>
-
-        <!-- ═══ SLIDE 6: Step 3 — Move Along Columns ═══ -->
-        <div id="slide-6" class="slide">
-            <div class="title-bar">
-                <h1>Step 3 &mdash; Move Along Columns</h1>
-            </div>
-            <div class="content">
-                <p class="header-text">Loop through columns until we reach the destination column:</p>
-
-                <div class="code-block compact" style="margin-bottom: 12px;">
-<pre>    # Move along columns
-    while current_col != dest_col:
-        current_col = current_col + col_step
-        path.append((current_row, current_col))
-
-    return path</pre>
-                </div>
-
-                <p class="header-text">Continuing the trace for (0, 0) to (2, 3):</p>
-
-                <div class="two-col">
-                    <div class="col">
-                        <table class="content-table">
-                            <thead>
-                                <tr>
-                                    <th>Iteration</th>
-                                    <th>current_col</th>
-                                    <th>col_step</th>
-                                    <th>After</th>
-                                    <th>Appended</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>1</td>
-                                    <td>0</td>
-                                    <td>+1</td>
-                                    <td>1</td>
-                                    <td style="font-family: 'Fira Code', monospace; font-size: 15px;">(2, 1)</td>
-                                </tr>
-                                <tr>
-                                    <td>2</td>
-                                    <td>1</td>
-                                    <td>+1</td>
-                                    <td>2</td>
-                                    <td style="font-family: 'Fira Code', monospace; font-size: 15px;">(2, 2)</td>
-                                </tr>
-                                <tr>
-                                    <td>3</td>
-                                    <td>2</td>
-                                    <td>+1</td>
-                                    <td>3</td>
-                                    <td style="font-family: 'Fira Code', monospace; font-size: 15px;">(2, 3)</td>
-                                </tr>
-                                <tr>
-                                    <td style="color: #85c88a; font-weight: bold;">Stop</td>
-                                    <td>3 == 3</td>
-                                    <td>&mdash;</td>
-                                    <td>&mdash;</td>
-                                    <td>&mdash;</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="col">
-                        <div class="illustration">
-                            <svg width="310" height="260" viewBox="0 0 240 200">
-                                <!-- Mini grid -->
-                                <line x1="30" y1="40" x2="30" y2="170" stroke="#2d3436" stroke-width="2"/>
-                                <line x1="80" y1="40" x2="80" y2="170" stroke="#2d3436" stroke-width="2"/>
-                                <line x1="130" y1="40" x2="130" y2="170" stroke="#2d3436" stroke-width="2"/>
-                                <line x1="180" y1="40" x2="180" y2="170" stroke="#2d3436" stroke-width="2"/>
-                                <line x1="15" y1="55" x2="195" y2="55" stroke="#2d3436" stroke-width="2"/>
-                                <line x1="15" y1="105" x2="195" y2="105" stroke="#2d3436" stroke-width="2"/>
-                                <line x1="15" y1="155" x2="195" y2="155" stroke="#2d3436" stroke-width="2"/>
-                                <!-- Row labels -->
-                                <text x="8" y="64" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">0</text>
-                                <text x="8" y="114" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">1</text>
-                                <text x="8" y="164" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">2</text>
-                                <!-- Col labels -->
-                                <text x="30" y="32" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">0</text>
-                                <text x="80" y="32" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">1</text>
-                                <text x="130" y="32" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">2</text>
-                                <text x="180" y="32" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">3</text>
-                                <!-- Row path (already done, faded) -->
-                                <line x1="30" y1="55" x2="30" y2="155" stroke="#b8c5d0" stroke-width="3" stroke-linecap="round" opacity="0.5"/>
-                                <!-- Column path (current step, bright) -->
-                                <line x1="30" y1="155" x2="180" y2="155" stroke="#e8a87c" stroke-width="4" stroke-linecap="round" opacity="0.6"/>
-                                <!-- Dots at column positions -->
-                                <circle cx="30" cy="55" r="4" fill="#b8c5d0" stroke="#2d3436" stroke-width="1"/>
-                                <circle cx="30" cy="155" r="4" fill="#b8c5d0" stroke="#2d3436" stroke-width="1"/>
-                                <circle cx="80" cy="155" r="5" fill="#e8a87c" stroke="#2d3436" stroke-width="1.5"/>
-                                <circle cx="130" cy="155" r="5" fill="#e8a87c" stroke="#2d3436" stroke-width="1.5"/>
-                                <circle cx="180" cy="155" r="5" fill="#85c88a" stroke="#2d3436" stroke-width="1.5"/>
-                                <!-- Labels -->
-                                <text x="80" y="145" font-family="Fira Code, monospace" font-size="15" fill="#e8a87c">(2,1)</text>
-                                <text x="130" y="145" font-family="Fira Code, monospace" font-size="15" fill="#e8a87c">(2,2)</text>
-                                <text x="180" y="145" font-family="Fira Code, monospace" font-size="15" fill="#85c88a">(2,3)</text>
-                                <!-- Direction label -->
-                                <text x="105" y="185" font-family="Caveat, cursive" font-size="16" fill="#e8a87c" text-anchor="middle">columns &rarr;</text>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="answer-box">
-                    <p class="body-text" style="margin-left: 8px;"><strong>Final path:</strong> <code style="font-family: 'Fira Code', monospace;">[(0,0), (1,0), (2,0), (2,1), (2,2), (2,3)]</code></p>
-                </div>
-            </div>
-            <div class="slide-navigation">
-                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
-                <span class="slide-counter">6 / 10</span>
-                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
-            </div>
-        </div>
-
-        <!-- ═══ SLIDE 7: The Complete Manhattan Class ═══ -->
-        <div id="slide-7" class="slide">
             <div class="title-bar">
                 <h1>The Complete Manhattan Class</h1>
             </div>
             <div class="content">
                 <div class="two-col">
                     <div class="col" style="flex: 1.4;">
-                        <div class="code-block compact" style="font-size: 14px;">
+                        <div class="code-block compact" style="font-size: 16px;">
 <pre>class Manhattan:
     def __init__(self, start):
         self.position = start
 
     def compute_path(self, destination):
-        path = [self.position]
-
+        path = []
         current_row, current_col = self.position
         dest_row, dest_col = destination
 
-        if dest_row > current_row:
-            row_step = 1
-        else:
-            row_step = -1
-
-        if dest_col > current_col:
-            col_step = 1
-        else:
-            col_step = -1
-
-        while current_row != dest_row:
-            current_row = current_row + row_step
+        while current_row < dest_row:
+            current_row = current_row + 1
             path.append((current_row, current_col))
-
-        while current_col != dest_col:
-            current_col = current_col + col_step
+        while current_row > dest_row:
+            current_row = current_row - 1
+            path.append((current_row, current_col))
+        while current_col < dest_col:
+            current_col = current_col + 1
+            path.append((current_row, current_col))
+        while current_col > dest_col:
+            current_col = current_col - 1
             path.append((current_row, current_col))
 
         return path</pre>
@@ -1135,7 +898,7 @@ print(path)
                     </div>
                     <div class="col">
                         <div class="illustration">
-                            <svg width="300" height="340" viewBox="0 0 230 260">
+                            <svg width="300" height="360" viewBox="0 0 230 275">
                                 <!-- Progression: build-up steps -->
                                 <rect x="10" y="5" width="210" height="50" rx="10" fill="rgba(91, 143, 168, 0.1)" stroke="#5b8fa8" stroke-width="2"/>
                                 <text x="115" y="25" font-family="Caveat, cursive" font-size="15" fill="#5b8fa8" text-anchor="middle" font-weight="600">1. Store position</text>
@@ -1145,24 +908,161 @@ print(path)
                                 <polygon points="109,67 115,77 121,67" fill="#b8c5d0"/>
 
                                 <rect x="10" y="80" width="210" height="50" rx="10" fill="rgba(232, 168, 124, 0.1)" stroke="#e8a87c" stroke-width="2"/>
-                                <text x="115" y="100" font-family="Caveat, cursive" font-size="15" fill="#e8a87c" text-anchor="middle" font-weight="600">2. Determine direction</text>
-                                <text x="115" y="119" font-family="Fira Code, monospace" font-size="10" fill="#636e72" text-anchor="middle">row_step, col_step</text>
+                                <text x="115" y="100" font-family="Caveat, cursive" font-size="15" fill="#e8a87c" text-anchor="middle" font-weight="600">2. Unpack tuples</text>
+                                <text x="115" y="119" font-family="Fira Code, monospace" font-size="10" fill="#636e72" text-anchor="middle">current_row, current_col</text>
 
                                 <line x1="115" y1="130" x2="115" y2="145" stroke="#b8c5d0" stroke-width="2"/>
                                 <polygon points="109,142 115,152 121,142" fill="#b8c5d0"/>
 
-                                <rect x="10" y="155" width="210" height="50" rx="10" fill="rgba(91, 143, 168, 0.1)" stroke="#5b8fa8" stroke-width="2"/>
-                                <text x="115" y="175" font-family="Caveat, cursive" font-size="15" fill="#5b8fa8" text-anchor="middle" font-weight="600">3. Loop rows, then columns</text>
-                                <text x="115" y="194" font-family="Fira Code, monospace" font-size="10" fill="#636e72" text-anchor="middle">while + append</text>
+                                <rect x="10" y="155" width="210" height="65" rx="10" fill="rgba(91, 143, 168, 0.1)" stroke="#5b8fa8" stroke-width="2"/>
+                                <text x="115" y="175" font-family="Caveat, cursive" font-size="15" fill="#5b8fa8" text-anchor="middle" font-weight="600">3. Four while loops</text>
+                                <text x="115" y="194" font-family="Fira Code, monospace" font-size="10" fill="#636e72" text-anchor="middle">rows up, rows down</text>
+                                <text x="115" y="210" font-family="Fira Code, monospace" font-size="10" fill="#636e72" text-anchor="middle">cols right, cols left</text>
 
-                                <line x1="115" y1="205" x2="115" y2="220" stroke="#b8c5d0" stroke-width="2"/>
-                                <polygon points="109,217 115,227 121,217" fill="#b8c5d0"/>
+                                <line x1="115" y1="220" x2="115" y2="235" stroke="#b8c5d0" stroke-width="2"/>
+                                <polygon points="109,232 115,242 121,232" fill="#b8c5d0"/>
 
-                                <rect x="10" y="230" width="210" height="28" rx="10" fill="rgba(133, 200, 138, 0.15)" stroke="#85c88a" stroke-width="2"/>
-                                <text x="115" y="250" font-family="Caveat, cursive" font-size="15" fill="#85c88a" text-anchor="middle" font-weight="600">4. Return path</text>
+                                <rect x="10" y="245" width="210" height="28" rx="10" fill="rgba(133, 200, 138, 0.15)" stroke="#85c88a" stroke-width="2"/>
+                                <text x="115" y="264" font-family="Caveat, cursive" font-size="15" fill="#85c88a" text-anchor="middle" font-weight="600">4. Return path</text>
                             </svg>
                         </div>
                     </div>
+                </div>
+
+                <div class="answer-box">
+                    <p class="body-text" style="margin-left: 8px;"><strong>Key:</strong> Only one of each pair of while loops runs &mdash; if current_row &lt; dest_row, then current_row is never &gt; dest_row.</p>
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">5 / 10</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 6: Testing the Class ═══ -->
+        <div id="slide-6" class="slide">
+            <div class="title-bar">
+                <h1>Testing the Class</h1>
+            </div>
+            <div class="content">
+                <p class="header-text">Create an instance, call compute_path, print the result:</p>
+                <div class="code-block">
+<pre>manhattan = Manhattan((0, 0))
+path = manhattan.compute_path((2, 3))
+print(path)
+print("Steps:", len(path))</pre>
+                </div>
+
+                <p class="header-text">Output:</p>
+                <div class="code-block compact" style="background-color: rgba(133, 200, 138, 0.08); border-color: #85c88a;">
+<pre>[(1, 0), (2, 0), (2, 1), (2, 2), (2, 3)]
+Steps: 5</pre>
+                </div>
+
+                <div class="two-col">
+                    <div class="col">
+                        <p class="header-text">Trace on the grid:</p>
+                        <div class="illustration">
+                            <svg width="310" height="230" viewBox="0 0 240 175">
+                                <!-- Mini grid 4 cols x 3 rows -->
+                                <line x1="30" y1="30" x2="30" y2="150" stroke="#2d3436" stroke-width="2"/>
+                                <line x1="80" y1="30" x2="80" y2="150" stroke="#2d3436" stroke-width="2"/>
+                                <line x1="130" y1="30" x2="130" y2="150" stroke="#2d3436" stroke-width="2"/>
+                                <line x1="180" y1="30" x2="180" y2="150" stroke="#2d3436" stroke-width="2"/>
+                                <line x1="15" y1="45" x2="195" y2="45" stroke="#2d3436" stroke-width="2"/>
+                                <line x1="15" y1="95" x2="195" y2="95" stroke="#2d3436" stroke-width="2"/>
+                                <line x1="15" y1="145" x2="195" y2="145" stroke="#2d3436" stroke-width="2"/>
+                                <!-- Row labels -->
+                                <text x="8" y="54" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" text-anchor="middle">0</text>
+                                <text x="8" y="104" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" text-anchor="middle">1</text>
+                                <text x="8" y="154" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" text-anchor="middle">2</text>
+                                <!-- Col labels -->
+                                <text x="30" y="22" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" text-anchor="middle">0</text>
+                                <text x="80" y="22" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" text-anchor="middle">1</text>
+                                <text x="130" y="22" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" text-anchor="middle">2</text>
+                                <text x="180" y="22" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" text-anchor="middle">3</text>
+                                <!-- Path: down then right -->
+                                <line x1="30" y1="45" x2="30" y2="145" stroke="#e8a87c" stroke-width="4" stroke-linecap="round" opacity="0.6"/>
+                                <line x1="30" y1="145" x2="180" y2="145" stroke="#e8a87c" stroke-width="4" stroke-linecap="round" opacity="0.6"/>
+                                <!-- Start dot -->
+                                <circle cx="30" cy="45" r="5" fill="#5b8fa8" stroke="#2d3436" stroke-width="1.5"/>
+                                <!-- Path dots -->
+                                <circle cx="30" cy="95" r="4" fill="#e8a87c" stroke="#2d3436" stroke-width="1"/>
+                                <circle cx="30" cy="145" r="4" fill="#e8a87c" stroke="#2d3436" stroke-width="1"/>
+                                <circle cx="80" cy="145" r="4" fill="#e8a87c" stroke="#2d3436" stroke-width="1"/>
+                                <circle cx="130" cy="145" r="4" fill="#e8a87c" stroke="#2d3436" stroke-width="1"/>
+                                <!-- End dot -->
+                                <circle cx="180" cy="145" r="5" fill="#85c88a" stroke="#2d3436" stroke-width="1.5"/>
+                                <!-- Labels -->
+                                <text x="38" y="40" font-family="Caveat, cursive" font-size="14" fill="#5b8fa8">start</text>
+                                <text x="186" y="140" font-family="Caveat, cursive" font-size="14" fill="#85c88a">end</text>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <p class="header-text">Notice:</p>
+                        <p class="bullet">The path does <strong>not</strong> include the start (0, 0)</p>
+                        <p class="bullet">It lists every intersection the robot moves to</p>
+                        <p class="bullet"><code style="font-family: 'Fira Code', monospace;">len(path)</code> = 5 = the number of steps</p>
+
+                        <div class="spacer"></div>
+
+                        <div class="insight-box">
+                            Steps = len(path)
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">6 / 10</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 7: Multiple Paths from Same Object ═══ -->
+        <div id="slide-7" class="slide">
+            <div class="title-bar">
+                <h1>Multiple Paths from Same Object</h1>
+            </div>
+            <div class="content">
+                <p class="header-text">compute_path does NOT change self.position:</p>
+
+                <div class="code-block">
+<pre>manhattan = Manhattan((0, 0))
+
+path1 = manhattan.compute_path((2, 3))
+print("Path 1:", path1)
+
+path2 = manhattan.compute_path((1, 1))
+print("Path 2:", path2)
+
+print("Position:", manhattan.position)</pre>
+                </div>
+
+                <p class="header-text">Output:</p>
+                <div class="code-block compact" style="background-color: rgba(133, 200, 138, 0.08); border-color: #85c88a;">
+<pre>Path 1: [(1, 0), (2, 0), (2, 1), (2, 2), (2, 3)]
+Path 2: [(1, 0), (1, 1)]
+Position: (0, 0)</pre>
+                </div>
+
+                <div class="two-col">
+                    <div class="col">
+                        <div class="answer-box">
+                            <p class="body-text" style="margin-left: 8px;"><strong>Why?</strong> The method uses local variables (<code style="font-family: 'Fira Code', monospace;">current_row</code>, <code style="font-family: 'Fira Code', monospace;">current_col</code>) &mdash; not <code style="font-family: 'Fira Code', monospace;">self.position</code>.</p>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="answer-box">
+                            <p class="body-text" style="margin-left: 8px;"><strong>Both paths start from (0, 0)</strong> because <code style="font-family: 'Fira Code', monospace;">self.position</code> never changes.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="insight-box">
+                    compute_path reads self.position but never modifies it &mdash; you can call it as many times as you want.
                 </div>
             </div>
             <div class="slide-navigation">
@@ -1172,67 +1072,55 @@ print(path)
             </div>
         </div>
 
-        <!-- ═══ SLIDE 8: Using the Manhattan Class ═══ -->
+        <!-- ═══ SLIDE 8: Edge Cases ═══ -->
         <div id="slide-8" class="slide">
             <div class="title-bar">
-                <h1>Using the Manhattan Class</h1>
+                <h1>Edge Cases</h1>
             </div>
             <div class="content">
-                <p class="header-text">Test program:</p>
-                <div class="code-block compact">
-<pre>manhattan = Manhattan((0, 0))
-
-path = manhattan.compute_path((2, 3))
-print("Path to (2,3):", path)
-
-path = manhattan.compute_path((1, 1))
-print("Path to (1,1):", path)</pre>
-                </div>
-
-                <div class="question-box">
-                    <p class="body-text" style="margin-left: 8px;"><strong>Wait &mdash; the second path starts from (0, 0) again!</strong></p>
-                </div>
+                <p class="header-text">What happens in special situations?</p>
 
                 <div class="two-col">
                     <div class="col">
-                        <div class="answer-box">
-                            <p class="body-text" style="margin-left: 8px;"><strong>Why?</strong> <code style="font-family: 'Fira Code', monospace;">compute_path</code> always starts from <code style="font-family: 'Fira Code', monospace;">self.position</code>. If you want the robot to "move," update the position:</p>
-                        </div>
-                        <div class="code-block compact" style="font-size: 14px;">
-<pre>manhattan.position = (2, 3)
-path = manhattan.compute_path((0, 0))
-print("Return path:", path)</pre>
+                        <div class="sketch-box">
+                            <p class="header-text" style="margin-top: 0;">Same row &mdash; only columns change</p>
+                            <div class="code-block compact" style="font-size: 16px; margin-top: 8px;">
+<pre>manhattan = Manhattan((0, 0))
+path = manhattan.compute_path((0, 3))
+print(path)
+# [(0, 1), (0, 2), (0, 3)]
+print("Steps:", len(path))  # 3</pre>
+                            </div>
+                            <p class="body-text" style="font-size: 20px; margin-top: 6px;">The two row while loops do nothing (current_row already equals dest_row).</p>
                         </div>
                     </div>
                     <div class="col">
-                        <div class="illustration">
-                            <svg width="440" height="240" viewBox="0 0 340 185">
-                                <!-- Two scenarios side by side -->
-                                <!-- Scenario 1: no update -->
-                                <rect x="5" y="5" width="158" height="175" rx="8" fill="rgba(232, 168, 124, 0.06)" stroke="#e8a87c" stroke-width="1.5" stroke-dasharray="4,3"/>
-                                <text x="84" y="24" font-family="Caveat, cursive" font-size="15" fill="#e8a87c" text-anchor="middle" font-weight="600">Without update</text>
-                                <text x="84" y="44" font-family="Fira Code, monospace" font-size="10" fill="#636e72" text-anchor="middle">position = (0,0)</text>
-                                <!-- Mini path 1 -->
-                                <text x="15" y="68" font-family="Fira Code, monospace" font-size="10" fill="#2d3436">call 1: (0,0)→(2,3)</text>
-                                <text x="15" y="88" font-family="Fira Code, monospace" font-size="10" fill="#2d3436">call 2: (0,0)→(1,1)</text>
-                                <text x="20" y="114" font-family="Caveat, cursive" font-size="14" fill="#e8a87c" font-weight="600">Both start at (0,0)!</text>
-                                <!-- X mark -->
-                                <line x1="65" y1="130" x2="90" y2="155" stroke="#e85d5d" stroke-width="3" stroke-linecap="round"/>
-                                <line x1="90" y1="130" x2="65" y2="155" stroke="#e85d5d" stroke-width="3" stroke-linecap="round"/>
-
-                                <!-- Scenario 2: with update -->
-                                <rect x="175" y="5" width="158" height="175" rx="8" fill="rgba(133, 200, 138, 0.06)" stroke="#85c88a" stroke-width="1.5"/>
-                                <text x="254" y="24" font-family="Caveat, cursive" font-size="15" fill="#85c88a" text-anchor="middle" font-weight="600">With update</text>
-                                <text x="254" y="44" font-family="Fira Code, monospace" font-size="10" fill="#636e72" text-anchor="middle">position = (0,0)</text>
-                                <text x="185" y="68" font-family="Fira Code, monospace" font-size="10" fill="#2d3436">call 1: (0,0)→(2,3)</text>
-                                <text x="185" y="88" font-family="Fira Code, monospace" font-size="10" fill="#85c88a">update: pos=(2,3)</text>
-                                <text x="185" y="108" font-family="Fira Code, monospace" font-size="10" fill="#2d3436">call 2: (2,3)→(0,0)</text>
-                                <text x="200" y="132" font-family="Caveat, cursive" font-size="14" fill="#85c88a" font-weight="600">Correct start!</text>
-                                <!-- Check mark -->
-                                <polyline points="230,145 240,158 260,135" fill="none" stroke="#85c88a" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
+                        <div class="sketch-box" style="border-color: #e8a87c; background-color: rgba(232, 168, 124, 0.04);">
+                            <p class="header-text" style="margin-top: 0; color: #e8a87c;">Same position &mdash; empty list</p>
+                            <div class="code-block compact" style="font-size: 16px; margin-top: 8px;">
+<pre>manhattan = Manhattan((2, 2))
+path = manhattan.compute_path((2, 2))
+print(path)
+# []
+print("Steps:", len(path))  # 0</pre>
+                            </div>
+                            <p class="body-text" style="font-size: 20px; margin-top: 6px;">All four while loops are skipped &mdash; no steps needed!</p>
                         </div>
                     </div>
+                </div>
+
+                <div class="spacer"></div>
+
+                <p class="header-text">Reverse direction works too:</p>
+                <div class="code-block compact">
+<pre>manhattan = Manhattan((3, 3))
+path = manhattan.compute_path((1, 0))
+print(path)   # [(2, 3), (1, 3), (1, 2), (1, 1), (1, 0)]
+print("Steps:", len(path))  # 5</pre>
+                </div>
+
+                <div class="insight-box">
+                    The 4 while loops handle every direction automatically &mdash; no special cases needed.
                 </div>
             </div>
             <div class="slide-navigation">
@@ -1256,7 +1144,19 @@ print("Return path:", path)</pre>
                 </div>
                 <div class="activity-step">
                     <span class="step-number">2</span>
-                    <span class="step-text">Test with these cases:</span>
+                    <span class="step-text">Add test code below your class and run it:</span>
+                </div>
+
+                <div class="code-block compact" style="margin-left: 52px; margin-bottom: 12px;">
+<pre>manhattan = Manhattan((0, 0))
+path = manhattan.compute_path((2, 3))
+print(path)
+print("Steps:", len(path))</pre>
+                </div>
+
+                <div class="activity-step">
+                    <span class="step-number">3</span>
+                    <span class="step-text">Test with these cases and verify the output:</span>
                 </div>
 
                 <div style="margin-left: 52px; margin-bottom: 12px;">
@@ -1265,42 +1165,37 @@ print("Return path:", path)</pre>
                             <tr>
                                 <th>Start</th>
                                 <th>Destination</th>
-                                <th>Expected</th>
-                                <th>Positions</th>
+                                <th>Expected Path</th>
+                                <th>Steps</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td style="font-family: 'Fira Code', monospace;">(0, 0)</td>
                                 <td style="font-family: 'Fira Code', monospace;">(2, 3)</td>
-                                <td>6 positions</td>
-                                <td style="font-family: 'Fira Code', monospace; font-size: 14px;">rows + columns</td>
+                                <td style="font-family: 'Fira Code', monospace; font-size: 14px;">[(1,0), (2,0), (2,1), (2,2), (2,3)]</td>
+                                <td>5</td>
                             </tr>
                             <tr>
-                                <td style="font-family: 'Fira Code', monospace;">(2, 3)</td>
-                                <td style="font-family: 'Fira Code', monospace;">(0, 0)</td>
-                                <td>6 positions</td>
-                                <td style="font-family: 'Fira Code', monospace; font-size: 14px;">reverse direction</td>
+                                <td style="font-family: 'Fira Code', monospace;">(3, 3)</td>
+                                <td style="font-family: 'Fira Code', monospace;">(1, 0)</td>
+                                <td style="font-family: 'Fira Code', monospace; font-size: 14px;">[(2,3), (1,3), (1,2), (1,1), (1,0)]</td>
+                                <td>5</td>
                             </tr>
                             <tr>
                                 <td style="font-family: 'Fira Code', monospace;">(0, 0)</td>
                                 <td style="font-family: 'Fira Code', monospace;">(0, 3)</td>
-                                <td>4 positions</td>
-                                <td style="font-family: 'Fira Code', monospace; font-size: 14px;">same row</td>
+                                <td style="font-family: 'Fira Code', monospace; font-size: 14px;">[(0,1), (0,2), (0,3)]</td>
+                                <td>3</td>
                             </tr>
                             <tr>
-                                <td style="font-family: 'Fira Code', monospace;">(1, 1)</td>
-                                <td style="font-family: 'Fira Code', monospace;">(1, 1)</td>
-                                <td>1 position</td>
-                                <td style="font-family: 'Fira Code', monospace; font-size: 14px;">same spot</td>
+                                <td style="font-family: 'Fira Code', monospace;">(2, 2)</td>
+                                <td style="font-family: 'Fira Code', monospace;">(2, 2)</td>
+                                <td style="font-family: 'Fira Code', monospace; font-size: 14px;">[]</td>
+                                <td>0</td>
                             </tr>
                         </tbody>
                     </table>
-                </div>
-
-                <div class="activity-step">
-                    <span class="step-number">3</span>
-                    <span class="step-text">Print each path and verify against your hand traces from Lesson 4</span>
                 </div>
 
                 <div class="spacer"></div>
@@ -1312,32 +1207,11 @@ print("Return path:", path)</pre>
                 </div>
                 <div class="checkpoint">
                     <div class="check-icon"></div>
-                    <span class="step-text">Does it handle all four directions?</span>
+                    <span class="step-text">Does <code style="font-family: 'Fira Code', monospace;">len(path)</code> match the expected steps?</span>
                 </div>
                 <div class="checkpoint">
                     <div class="check-icon"></div>
-                    <span class="step-text">Does the "same position" case return just the start?</span>
-                </div>
-
-                <div class="illustration" style="margin-top: 8px;">
-                    <svg width="520" height="100" viewBox="0 0 400 75">
-                        <!-- Four mini test icons -->
-                        <rect x="5" y="10" width="85" height="55" rx="8" fill="rgba(91, 143, 168, 0.08)" stroke="#5b8fa8" stroke-width="1.5"/>
-                        <text x="47" y="30" font-family="Caveat, cursive" font-size="12" fill="#5b8fa8" text-anchor="middle" font-weight="600">(0,0)→(2,3)</text>
-                        <text x="47" y="52" font-family="Caveat, cursive" font-size="14" fill="#85c88a" text-anchor="middle">6 steps</text>
-
-                        <rect x="105" y="10" width="85" height="55" rx="8" fill="rgba(91, 143, 168, 0.08)" stroke="#5b8fa8" stroke-width="1.5"/>
-                        <text x="147" y="30" font-family="Caveat, cursive" font-size="12" fill="#5b8fa8" text-anchor="middle" font-weight="600">(2,3)→(0,0)</text>
-                        <text x="147" y="52" font-family="Caveat, cursive" font-size="14" fill="#85c88a" text-anchor="middle">6 steps</text>
-
-                        <rect x="205" y="10" width="85" height="55" rx="8" fill="rgba(232, 168, 124, 0.08)" stroke="#e8a87c" stroke-width="1.5"/>
-                        <text x="247" y="30" font-family="Caveat, cursive" font-size="12" fill="#e8a87c" text-anchor="middle" font-weight="600">(0,0)→(0,3)</text>
-                        <text x="247" y="52" font-family="Caveat, cursive" font-size="14" fill="#85c88a" text-anchor="middle">4 steps</text>
-
-                        <rect x="305" y="10" width="85" height="55" rx="8" fill="rgba(133, 200, 138, 0.08)" stroke="#85c88a" stroke-width="1.5"/>
-                        <text x="347" y="30" font-family="Caveat, cursive" font-size="12" fill="#85c88a" text-anchor="middle" font-weight="600">(1,1)→(1,1)</text>
-                        <text x="347" y="52" font-family="Caveat, cursive" font-size="14" fill="#85c88a" text-anchor="middle">1 step</text>
-                    </svg>
+                    <span class="step-text">Does the same-position case return an empty list?</span>
                 </div>
             </div>
             <div class="slide-navigation">
@@ -1347,7 +1221,7 @@ print("Return path:", path)</pre>
             </div>
         </div>
 
-        <!-- ═══ SLIDE 10: Connection to Next Lesson ═══ -->
+        <!-- ═══ SLIDE 10: Connection to Lesson 6 ═══ -->
         <div id="slide-10" class="slide">
             <div class="title-bar">
                 <h1>What's Next</h1>
@@ -1356,9 +1230,9 @@ print("Return path:", path)</pre>
                 <div class="two-col">
                     <div class="col">
                         <p class="header-text">What you did today:</p>
-                        <p class="bullet">Implemented the Manhattan class with <code style="font-family: 'Fira Code', monospace;">compute_path()</code></p>
-                        <p class="bullet">Built paths using while loops and <code style="font-family: 'Fira Code', monospace;">append()</code></p>
-                        <p class="bullet">Handled direction with conditional step values (+1 / -1)</p>
+                        <p class="bullet">Wrapped a working function into a Manhattan class</p>
+                        <p class="bullet">Converted <code style="font-family: 'Fira Code', monospace;">start</code> parameter to <code style="font-family: 'Fira Code', monospace;">self.position</code></p>
+                        <p class="bullet">Tested with <code style="font-family: 'Fira Code', monospace;">print()</code> to verify paths</p>
 
                         <div class="spacer"></div>
 
@@ -1378,7 +1252,7 @@ print("Return path:", path)</pre>
                                 <rect x="75" y="50" width="100" height="55" rx="4" fill="#f0ede8" stroke="#b8c5d0" stroke-width="1.5"/>
                                 <text x="125" y="70" font-family="Fira Code, monospace" font-size="9" fill="#2d3436" text-anchor="middle">manhattan</text>
                                 <text x="125" y="84" font-family="Fira Code, monospace" font-size="9" fill="#2d3436" text-anchor="middle">.compute_path()</text>
-                                <text x="125" y="98" font-family="Fira Code, monospace" font-size="9" fill="#85c88a" text-anchor="middle">→ [(0,0)...]</text>
+                                <text x="125" y="98" font-family="Fira Code, monospace" font-size="9" fill="#85c88a" text-anchor="middle">--> [(1,0)...]</text>
                                 <!-- Screen base -->
                                 <rect x="100" y="125" width="50" height="6" rx="2" fill="#b8c5d0" stroke="#2d3436" stroke-width="1"/>
 

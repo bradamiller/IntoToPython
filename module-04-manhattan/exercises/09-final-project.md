@@ -69,25 +69,25 @@ Starting at: (0, 0)
 Destinations: [(2, 0), (2, 3), (0, 3), (0, 0)]
 
 --- Navigating to (2, 0) ---
-Path: [(0, 0), (1, 0), (2, 0)]
+Path: [(1, 0), (2, 0)]
 Steps: 2
 Arrived at: (2, 0)
 Heading: S
 
 --- Navigating to (2, 3) ---
-Path: [(2, 0), (2, 1), (2, 2), (2, 3)]
+Path: [(2, 1), (2, 2), (2, 3)]
 Steps: 3
 Arrived at: (2, 3)
 Heading: E
 
 --- Navigating to (0, 3) ---
-Path: [(2, 3), (1, 3), (0, 3)]
+Path: [(1, 3), (0, 3)]
 Steps: 2
 Arrived at: (0, 3)
 Heading: N
 
 --- Navigating to (0, 0) ---
-Path: [(0, 3), (0, 2), (0, 1), (0, 0)]
+Path: [(0, 2), (0, 1), (0, 0)]
 Steps: 3
 Arrived at: (0, 0)
 Heading: W

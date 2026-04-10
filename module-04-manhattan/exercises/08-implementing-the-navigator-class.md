@@ -26,7 +26,7 @@ Turn the robot to face a given heading by turning right in a while loop:
 
 ### Complete drive_path()
 Drive the robot through a list of positions:
-- Loop from index **1** to the end (index 0 is the starting position — the robot is already there).
+- Iterate directly: `for next_pos in path:` (the path does not include the starting position, so every element is a new cell to drive to).
 - For each step: get the needed heading.
 - If already facing the right way (`self.heading == needed`), call `self.line_track.drivetrain.straight(8)` to clear the intersection.
 - Call `self.turn_to(needed)` to turn the robot.
@@ -42,7 +42,7 @@ Drive the robot through a list of positions:
 
 - The Navigator **does not plan** the path — it receives a path from Manhattan and drives it.
 - The Navigator **reuses LineTrack** from Module 2 — `track_until_cross()` for driving and `turn_right()` for turning.
-- The `for` loop starts at index 1 because the robot is already at `path[0]`.
+- The `for` loop iterates directly over the path with `for next_pos in path:` because the path does not include the starting position.
 - When `self.heading == needed`, the robot must drive forward 8 cm to clear the current intersection before `track_until_cross()` looks for the next one.
 - After each step, update `self.position` so `get_needed_heading()` works correctly for the next step.
 - **Separation of concerns:** Manhattan plans, Navigator drives, LineTrack handles sensors.
@@ -50,7 +50,7 @@ Drive the robot through a list of positions:
 ## Expected Console Output
 
 ```
-Path from (0,0) to (2,2): [(0, 0), (1, 0), (2, 0), (2, 1), (2, 2)]
+Path from (0,0) to (2,2): [(1, 0), (2, 0), (2, 1), (2, 2)]
 
 Navigator position: (0, 0)
 Navigator heading: N
@@ -64,7 +64,7 @@ Final heading: E
 
 - **Forgetting to update `self.heading`** after turning — the next turn calculation will be wrong.
 - **Forgetting to update `self.position`** after driving — `get_needed_heading()` will use the old position.
-- **Starting the loop at index 0** — the robot will try to "drive" to its current position.
+- **Including the start position in the path** — the robot will try to "drive" to where it already is.
 - **Not clearing the intersection** when going straight — `track_until_cross()` will immediately re-detect the current crossing line.
 
 ## When You Are Done

@@ -73,12 +73,12 @@ For each scenario, count clockwise steps from current heading to needed heading 
 
 ## Part 4: Trace a Path with Heading Updates
 
-**Path:** [(0, 0), (1, 0), (2, 0), (2, 1), (2, 2), (2, 3)]
-**Starting heading:** 0 (N)
+**Path:** [(1, 0), (2, 0), (2, 1), (2, 2), (2, 3)]
+**Starting position:** (0, 0) &nbsp;&nbsp; **Starting heading:** 0 (N)
 
-For each step, determine the needed heading, the number of right turns, and the new heading.
+Use a separate position variable starting at (0, 0). For each step, determine the needed heading, the number of right turns, and the new heading. Update position after each step.
 
-| Step | From | To | Needed Heading | Current Heading | Right Turns | New Heading |
+| Step | Position | Next | Needed Heading | Current Heading | Right Turns | New Heading |
 |---|---|---|---|---|---|---|
 | 1 | (0, 0) | (1, 0) | __________ | 0 (N) | __________ | __________ |
 | 2 | (1, 0) | (2, 0) | __________ | __________ | __________ | __________ |
@@ -96,10 +96,10 @@ For each step, determine the needed heading, the number of right turns, and the 
 
 ## Part 5: Trace a Second Path
 
-**Path:** [(2, 3), (1, 3), (0, 3), (0, 2), (0, 1), (0, 0)]
-**Starting heading:** 2 (S)
+**Path:** [(1, 3), (0, 3), (0, 2), (0, 1), (0, 0)]
+**Starting position:** (2, 3) &nbsp;&nbsp; **Starting heading:** 2 (S)
 
-| Step | From | To | Needed Heading | Current Heading | Right Turns | New Heading |
+| Step | Position | Next | Needed Heading | Current Heading | Right Turns | New Heading |
 |---|---|---|---|---|---|---|
 | 1 | (2, 3) | (1, 3) | __________ | 2 (S) | __________ | __________ |
 | 2 | (1, 3) | (0, 3) | __________ | __________ | __________ | __________ |
@@ -113,10 +113,10 @@ For each step, determine the needed heading, the number of right turns, and the 
 
 ## Part 6: Trace a Third Path
 
-**Path:** [(1, 1), (1, 2), (1, 3), (2, 3), (3, 3)]
-**Starting heading:** 0 (N)
+**Path:** [(1, 2), (1, 3), (2, 3), (3, 3)]
+**Starting position:** (1, 1) &nbsp;&nbsp; **Starting heading:** 0 (N)
 
-| Step | From | To | Needed Heading | Current Heading | Right Turns | New Heading |
+| Step | Position | Next | Needed Heading | Current Heading | Right Turns | New Heading |
 |---|---|---|---|---|---|---|
 | 1 | (1, 1) | (1, 2) | __________ | 0 (N) | __________ | __________ |
 | 2 | (1, 2) | (1, 3) | __________ | __________ | __________ | __________ |

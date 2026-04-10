@@ -70,7 +70,7 @@ for dest in destinations:
 **Manhattan class — "Where do I go?"**
 - Input: current position + destination
 - Output: a list of intersections to visit
-- Example: (0,0) to (2,3) → `[(0,0), (1,0), (2,0), (2,1), (2,2), (2,3)]`
+- Example: (0,0) to (2,3) → `[(1,0), (2,0), (2,1), (2,2), (2,3)]`
 
 **Navigator class — "How do I get there?"**
 - Input: a list of intersections (the path)
@@ -89,8 +89,9 @@ Visual: Grid with path from (0,0) to (2,3) highlighted — go down 2 rows, then 
 
 **The path is a list of intersections:**
 ```
-[(0,0), (1,0), (2,0), (2,1), (2,2), (2,3)]
+[(1,0), (2,0), (2,1), (2,2), (2,3)]
 ```
+The path lists only the intersections to drive to (the robot is already at the start).
 
 **The rule:** Rows first, then columns — like walking city blocks in Manhattan, NYC.
 

@@ -207,22 +207,20 @@ class Manhattan:
         self.position = start
 
     def compute_path(self, destination):
-        path = [self.position]
+        path = []
         current_row, current_col = self.position
         dest_row, dest_col = destination
-        if dest_row > current_row:
-            row_step = 1
-        else:
-            row_step = -1
-        if dest_col > current_col:
-            col_step = 1
-        else:
-            col_step = -1
-        while current_row != dest_row:
-            current_row = current_row + row_step
+        while current_row < dest_row:
+            current_row = current_row + 1
             path.append((current_row, current_col))
-        while current_col != dest_col:
-            current_col = current_col + col_step
+        while current_row > dest_row:
+            current_row = current_row - 1
+            path.append((current_row, current_col))
+        while current_col < dest_col:
+            current_col = current_col + 1
+            path.append((current_row, current_col))
+        while current_col > dest_col:
+            current_col = current_col - 1
             path.append((current_row, current_col))
         return path
 
@@ -253,8 +251,7 @@ class Navigator:
                 self.heading = 0
 
     def drive_path(self, path):
-        for i in range(1, len(path)):
-            next_pos = path[i]
+        for next_pos in path:
             needed = self.get_needed_heading(next_pos)
             if self.heading == needed:
                 self.line_track.drivetrain.straight(8)
@@ -293,7 +290,7 @@ for __________ in __________:
     path = _______________________________________________
 
     print("Path:", path)
-    print("Steps:", len(path) - 1)
+    print("Steps:", len(path))
 
     # TODO: Drive the path using navigator
     _______________________________________________

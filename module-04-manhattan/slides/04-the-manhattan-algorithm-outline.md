@@ -5,15 +5,16 @@
 
 **Learning Objectives:**
 - Understand how Manhattan distance pathfinding works
-- Trace the algorithm by hand for given start/destination pairs
-- Explain the "rows first, then columns" strategy
-- Handle paths in all four directions (up, down, left, right)
+- Write a `compute_path(start, end)` function using while loops
+- Build up from positive directions only to all four directions
+- Test your function with edge cases
 
 **Agenda:**
-- What is Manhattan distance? (10 min)
-- The algorithm: rows first, then columns (10 min)
-- Hand-tracing examples (15 min)
-- Practice worksheet (10 min)
+- What is Manhattan distance? (5 min)
+- The algorithm: rows first, then columns (5 min)
+- Part 1: Write `compute_path` for south/east only (15 min)
+- Part 2: Add north/west loops (15 min)
+- Edge cases and testing (5 min)
 
 ---
 
@@ -22,7 +23,7 @@
 
 **You can't cut diagonally through buildings!**
 - Walk along streets (rows) and avenues (columns)
-- Go north/south first, then east/west — or vice versa
+- Go south first, then east — or vice versa
 
 **This is Manhattan distance** — named after the grid layout of Manhattan, New York City.
 
@@ -35,7 +36,7 @@
 
 **Example:**
 - Start: (0, 0)
-- Destination: (2, 3)
+- End: (2, 3)
 - Row distance: |2 - 0| = 2 steps
 - Column distance: |3 - 0| = 3 steps
 - Manhattan distance: 2 + 3 = 5 steps
@@ -53,142 +54,176 @@
 **Example: (0, 0) to (2, 3)**
 
 **Step 1: Move along rows (0 → 2)**
-- (0, 0) → (1, 0) → (2, 0)
+- (1, 0) → (2, 0)
 
 **Step 2: Move along columns (0 → 3)**
-- (2, 0) → (2, 1) → (2, 2) → (2, 3)
+- (2, 1) → (2, 2) → (2, 3)
 
-**Full path:**
+**Full path (not including start):**
 ```
-(0,0) → (1,0) → (2,0) → (2,1) → (2,2) → (2,3)
+[(1,0), (2,0), (2,1), (2,2), (2,3)]
 ```
 
-**Total: 5 steps (matches Manhattan distance!)**
+**Steps = len(path) = 5 (matches Manhattan distance!)**
 
 ---
 
-## Slide 5: Tracing on the Grid
-**Visual: (0, 0) to (2, 3)**
+## Slide 5: Part 1 — Positive Directions Only
+**Goal:** Write `compute_path(start, end)` that works when the destination is south and/or east of the start.
 
-| | Col 0 | Col 1 | Col 2 | Col 3 |
-|---|---|---|---|---|
-| Row 0 | START | | | |
-| Row 1 | ↓ | | | |
-| Row 2 | ↓ | → | → | END |
+**Key ideas:**
+- `path = []` — the path does NOT include the starting position
+- Use tuple unpacking: `current_row, current_col = start`
+- Two while loops: one for south (rows increase), one for east (columns increase)
 
-**The path makes an "L" shape:**
-- Down 2 rows, then right 3 columns
-- Always goes rows first, then columns
+**Code:**
+```python
+def compute_path(start, end):
+    path = []
+    current_row, current_col = start
+    dest_row, dest_col = end
+
+    # Move south (rows increase)
+    while current_row < dest_row:
+        current_row = current_row + 1
+        path.append((current_row, current_col))
+
+    # Move east (columns increase)
+    while current_col < dest_col:
+        current_col = current_col + 1
+        path.append((current_row, current_col))
+
+    return path
+```
+
+**Main program:**
+```python
+path = compute_path((0, 0), (2, 3))
+print("(0,0) to (2,3):", path)
+print("Steps:", len(path))
+```
 
 ---
 
-## Slide 6: Direction Matters
-**What if the destination is UP or LEFT?**
+## Slide 6: Trace Part 1
+**Trace: `compute_path((0, 0), (2, 3))`**
 
-**Example: (2, 3) to (0, 1)**
-- Row: go from 2 to 0 (decrease — move UP)
-- Column: go from 3 to 1 (decrease — move LEFT)
+| Variable | Value |
+|---|---|
+| current_row, current_col | 0, 0 |
+| dest_row, dest_col | 2, 3 |
 
-**Path:**
-```
-(2,3) → (1,3) → (0,3) → (0,2) → (0,1)
-```
+**South loop** (current_row < dest_row):
+- current_row = 1, append (1, 0)
+- current_row = 2, append (2, 0)
+- 2 < 2 is False — loop stops
 
-**How to determine direction:**
-- If destination row > current row → move DOWN (row increases)
-- If destination row < current row → move UP (row decreases)
-- If destination col > current col → move RIGHT (col increases)
-- If destination col < current col → move LEFT (col decreases)
+**East loop** (current_col < dest_col):
+- current_col = 1, append (2, 1)
+- current_col = 2, append (2, 2)
+- current_col = 3, append (2, 3)
+- 3 < 3 is False — loop stops
 
----
-
-## Slide 7: The Step Value
-**Use +1 or -1 to control direction:**
-
-```
-If destination row > start row:
-    row_step = +1    (moving down)
-Else:
-    row_step = -1    (moving up)
-
-If destination col > start col:
-    col_step = +1    (moving right)
-Else:
-    col_step = -1    (moving left)
-```
-
-**Example: (3, 0) to (1, 2)**
-- Row: 3 → 1, so row_step = -1
-- Col: 0 → 2, so col_step = +1
-- Path: (3,0) → (2,0) → (1,0) → (1,1) → (1,2)
+**Result:** `[(1,0), (2,0), (2,1), (2,2), (2,3)]` — 5 steps
 
 ---
 
-## Slide 8: More Practice — Hand Trace
-**Trace these paths by hand:**
+## Slide 7: Part 1 Works... But Not Everywhere
+**Try:** `compute_path((3, 3), (1, 0))`
 
-**Path 1: (0, 0) to (3, 2)**
-- Row steps: 0 → 3 (step = +1): (0,0), (1,0), (2,0), (3,0)
-- Col steps: 0 → 2 (step = +1): (3,1), (3,2)
-- Full: (0,0) → (1,0) → (2,0) → (3,0) → (3,1) → (3,2)
+**South loop:** `while 3 < 1` — False! Loop never runs.
+**East loop:** `while 3 < 0` — False! Loop never runs.
 
-**Path 2: (2, 2) to (0, 0)**
-- Row steps: 2 → 0 (step = -1): (2,2), (1,2), (0,2)
-- Col steps: 2 → 0 (step = -1): (0,1), (0,0)
-- Full: (2,2) → (1,2) → (0,2) → (0,1) → (0,0)
+**Result:** `[]` — That's wrong! The path should have 5 steps.
 
-**Path 3: (1, 0) to (1, 3)**
-- Row steps: 1 → 1 (none needed — already on correct row!)
-- Col steps: 0 → 3 (step = +1): (1,1), (1,2), (1,3)
-- Full: (1,0) → (1,1) → (1,2) → (1,3)
+**The problem:** Our while loops only handle increasing values. We need loops for the other directions too.
 
 ---
 
-## Slide 9: Edge Cases
+## Slide 8: Part 2 — Add North and West Loops
+**Fix:** Add two more while loops. No if/else needed — only the loops that apply will run.
+
+```python
+def compute_path(start, end):
+    path = []
+    current_row, current_col = start
+    dest_row, dest_col = end
+
+    # Move south (rows increase)
+    while current_row < dest_row:
+        current_row = current_row + 1
+        path.append((current_row, current_col))
+
+    # Move north (rows decrease)
+    while current_row > dest_row:
+        current_row = current_row - 1
+        path.append((current_row, current_col))
+
+    # Move east (columns increase)
+    while current_col < dest_col:
+        current_col = current_col + 1
+        path.append((current_row, current_col))
+
+    # Move west (columns decrease)
+    while current_col > dest_col:
+        current_col = current_col - 1
+        path.append((current_row, current_col))
+
+    return path
+```
+
+**Why no if/else?** If current_row < dest_row, the north loop's condition (`current_row > dest_row`) is automatically False. Only the correct loop runs!
+
+---
+
+## Slide 9: Trace Part 2
+**Trace: `compute_path((3, 3), (1, 0))`**
+
+**South loop:** `while 3 < 1` — False, skipped.
+
+**North loop** (current_row > dest_row):
+- current_row = 2, append (2, 3)
+- current_row = 1, append (1, 3)
+- 1 > 1 is False — loop stops
+
+**East loop:** `while 3 < 0` — False, skipped.
+
+**West loop** (current_col > dest_col):
+- current_col = 2, append (1, 2)
+- current_col = 1, append (1, 1)
+- current_col = 0, append (1, 0)
+- 0 > 0 is False — loop stops
+
+**Result:** `[(2,3), (1,3), (1,2), (1,1), (1,0)]` — 5 steps
+
+---
+
+## Slide 10: Edge Cases
 **Same row — only column movement:**
-- (2, 0) to (2, 3): just move right
-- Path: (2,0) → (2,1) → (2,2) → (2,3)
+- `compute_path((2, 0), (2, 3))` → `[(2,1), (2,2), (2,3)]`
+- Both row loops skip, east loop runs. 3 steps.
 
 **Same column — only row movement:**
-- (0, 1) to (3, 1): just move down
-- Path: (0,1) → (1,1) → (2,1) → (3,1)
+- `compute_path((0, 2), (3, 2))` → `[(1,2), (2,2), (3,2)]`
+- South loop runs, both column loops skip. 3 steps.
 
 **Same position — no movement:**
-- (1, 1) to (1, 1): path is just [(1, 1)]
-- Manhattan distance = 0
+- `compute_path((1, 1), (1, 1))` → `[]`
+- All four loops skip. 0 steps.
 
-**All of these should work with our algorithm!**
-
----
-
-## Slide 10: Your Turn!
-**Activity: Hand-Trace the Algorithm**
-1. Trace the path from (0, 0) to (2, 2)
-2. Trace the path from (3, 3) to (0, 1)
-3. Trace the path from (1, 3) to (1, 0)
-4. Trace the path from (0, 2) to (3, 2)
-
-**For each path:**
-- Write out every coordinate in the path
-- Count the total number of steps
-- Verify: steps = |row difference| + |col difference|
-
-**Checkpoints:**
-- Can you trace a path in all four directions?
-- Do your step counts match the Manhattan distance?
-- Can you handle the "same row" and "same column" cases?
+**All of these work with our four-loop function!**
 
 ---
 
 ## Slide 11: Connection to Next Lesson
 **What you did today:**
 - Learned the Manhattan distance concept
-- Traced the "rows first, then columns" algorithm by hand
-- Handled all four directions with step values
+- Wrote `compute_path` with 2 while loops (south/east only)
+- Extended it to 4 while loops (all directions)
+- Tested edge cases: same row, same column, same position
 
 **Next lesson (Lesson 5):**
-- Implement the Manhattan algorithm as a **Python class**
-- Write `compute_path(destination)` that returns a list of tuples
-- The computer does the tracing for you!
+- Build a `Navigator` class that uses `compute_path` to plan routes
+- The navigator will turn the path into driving instructions for the robot
 
-**Key insight:** You traced by hand today. Next lesson, you'll teach the computer to do the same thing.
+**Key insight:** Four simple while loops — no if/else needed — handle all four directions.

@@ -7,7 +7,7 @@
 
 ## Part 1: Code Tracing — compute_path() Step by Step
 
-Here is the complete `compute_path` method:
+Here is the complete Manhattan class with the 4-while-loop `compute_path` method:
 
 ```python
 class Manhattan:
@@ -15,28 +15,28 @@ class Manhattan:
         self.position = start
 
     def compute_path(self, destination):
-        path = [self.position]
-        current_row = self.position[0]
-        current_col = self.position[1]
-        dest_row = destination[0]
-        dest_col = destination[1]
+        path = []
+        current_row, current_col = self.position
+        dest_row, dest_col = destination
 
-        if dest_row > current_row:
-            row_step = 1
-        else:
-            row_step = -1
-
-        if dest_col > current_col:
-            col_step = 1
-        else:
-            col_step = -1
-
-        while current_row != dest_row:
-            current_row = current_row + row_step
+        # Move south (rows increase)
+        while current_row < dest_row:
+            current_row = current_row + 1
             path.append((current_row, current_col))
 
-        while current_col != dest_col:
-            current_col = current_col + col_step
+        # Move north (rows decrease)
+        while current_row > dest_row:
+            current_row = current_row - 1
+            path.append((current_row, current_col))
+
+        # Move east (columns increase)
+        while current_col < dest_col:
+            current_col = current_col + 1
+            path.append((current_row, current_col))
+
+        # Move west (columns decrease)
+        while current_col > dest_col:
+            current_col = current_col - 1
             path.append((current_row, current_col))
 
         return path
@@ -53,34 +53,38 @@ class Manhattan:
 | `current_col` | __________ |
 | `dest_row` | __________ |
 | `dest_col` | __________ |
-| `row_step` | __________ |
-| `col_step` | __________ |
 | `path` (initial) | __________ |
 
-**Row while loop — trace each iteration:**
+**South while loop — trace each iteration:**
 
-| Iteration | current_row (before) | != dest_row? | current_row (after) | Appended to path |
+| Iteration | current_row (before) | < dest_row? | current_row (after) | Appended to path |
 |---|---|---|---|---|
 | 1 | _____ | YES / NO | _____ | ________________ |
 | 2 | _____ | YES / NO | _____ | ________________ |
 | Check | _____ | YES / NO | — (loop ends) | — |
 
-**Column while loop — trace each iteration:**
+**North while loop:** Does it execute? YES / NO &nbsp;&nbsp; **Why?** ____________________________
 
-| Iteration | current_col (before) | != dest_col? | current_col (after) | Appended to path |
+**East while loop — trace each iteration:**
+
+| Iteration | current_col (before) | < dest_col? | current_col (after) | Appended to path |
 |---|---|---|---|---|
 | 1 | _____ | YES / NO | _____ | ________________ |
 | 2 | _____ | YES / NO | _____ | ________________ |
 | 3 | _____ | YES / NO | _____ | ________________ |
 | Check | _____ | YES / NO | — (loop ends) | — |
 
+**West while loop:** Does it execute? YES / NO &nbsp;&nbsp; **Why?** ____________________________
+
 **Final returned path:** ________________________________________________________
+
+**len(path):** __________
 
 ---
 
 ## Part 2: Trace a Reverse Path
 
-**Trace the call:** `Manhattan((2, 3)).compute_path((0, 1))`
+**Trace the call:** `Manhattan((3, 3)).compute_path((1, 0))`
 
 **Setup variables:**
 
@@ -90,24 +94,27 @@ class Manhattan:
 | `current_col` | __________ |
 | `dest_row` | __________ |
 | `dest_col` | __________ |
-| `row_step` | __________ |
-| `col_step` | __________ |
 
-**Row while loop:**
+**Which two while loops execute?** __________ and __________
+
+**North while loop:**
 
 | Iteration | current_row (before) | current_row (after) | Appended |
 |---|---|---|---|
 | 1 | _____ | _____ | ________________ |
 | 2 | _____ | _____ | ________________ |
 
-**Column while loop:**
+**West while loop:**
 
 | Iteration | current_col (before) | current_col (after) | Appended |
 |---|---|---|---|
 | 1 | _____ | _____ | ________________ |
 | 2 | _____ | _____ | ________________ |
+| 3 | _____ | _____ | ________________ |
 
 **Final returned path:** ________________________________________________________
+
+**len(path):** __________
 
 ---
 
@@ -121,29 +128,29 @@ class Manhattan:
         self.__________ = start
 
     def compute_path(self, destination):
-        path = [__________]
+        path = __
 
-        current_row = self.position[__]
-        current_col = self.position[__]
-        dest_row = __________[0]
-        dest_col = __________[1]
+        current_row, current_col = self.__________
+        dest_row, dest_col = __________
 
-        if dest_row __ current_row:
-            row_step = __
-        else:
-            row_step = __
-
-        if dest_col __ current_col:
-            col_step = __
-        else:
-            col_step = __
-
+        # Move south
         while current_row __ dest_row:
-            current_row = current_row + __________
+            current_row = current_row + __
             path.__________((__________,  __________))
 
+        # Move north
+        while current_row __ dest_row:
+            current_row = current_row - __
+            path.__________((__________,  __________))
+
+        # Move east
         while current_col __ dest_col:
-            current_col = current_col + __________
+            current_col = current_col + __
+            path.__________((__________,  __________))
+
+        # Move west
+        while current_col __ dest_col:
+            current_col = current_col - __
             path.__________((__________,  __________))
 
         return __________
@@ -158,7 +165,7 @@ class Manhattan:
 manhattan = Manhattan((0, 0))
 path = manhattan.compute_path((0, 3))
 print(path)
-print("Steps:", len(path) - 1)
+print("Steps:", len(path))
 ```
 
 **Predicted output:**
@@ -176,7 +183,7 @@ Line 2: ________________________________________________________
 manhattan = Manhattan((2, 2))
 path = manhattan.compute_path((2, 2))
 print(path)
-print("Steps:", len(path) - 1)
+print("Steps:", len(path))
 ```
 
 **Predicted output:**
@@ -185,7 +192,7 @@ Line 1: ________________________________________________________
 
 Line 2: ________________________________________________________
 
-**Why does the path have only one element?** ____________________________
+**Why is the path empty?** ____________________________
 
 ---
 
@@ -217,12 +224,10 @@ Each version of `compute_path` has a bug. Identify the problem and write the fix
 **Bug 1:**
 ```python
 def compute_path(self, destination):
-    path = []                          # <-- Look here
-    current_row = self.position[0]
-    current_col = self.position[1]
-    dest_row = destination[0]
-    dest_col = destination[1]
-    # ... rest of method
+    path = [self.position]                 # <-- Look here
+    current_row, current_col = self.position
+    dest_row, dest_col = destination
+    # ... rest of method (4 while loops)
 ```
 
 **What is wrong?** ____________________________________________________________________
@@ -234,38 +239,32 @@ def compute_path(self, destination):
 **Bug 2:**
 ```python
 def compute_path(self, destination):
-    path = [self.position]
-    current_row = self.position[0]
-    current_col = self.position[1]
-    dest_row = destination[0]
-    dest_col = destination[1]
+    path = []
+    current_row, current_col = self.position
+    dest_row, dest_col = destination
 
-    if dest_row > current_row:
-        row_step = 1
-    else:
-        row_step = -1
-
-    if dest_col > current_col:
-        col_step = 1
-    else:
-        col_step = -1
-
-    while current_row < dest_row:          # <-- Look here
-        current_row = current_row + row_step
+    while current_row < dest_row:
+        current_row = current_row + 1
         path.append((current_row, current_col))
 
-    while current_col != dest_col:
-        current_col = current_col + col_step
+    while current_row > dest_row:
+        current_row = current_row - 1
         path.append((current_row, current_col))
 
-    return path
+    while current_col < dest_col:
+        current_col = current_col + 1
+        path.append((current_row, current_col))
+
+    while current_col > dest_col:
+        current_col = current_col + 1          # <-- Look here
+        path.append((current_row, current_col))
 ```
 
 **What is wrong?** ____________________________________________________________________
 
-**When would this bug cause a problem? Give a specific start and destination:**
+**What would happen if you called `compute_path((2, 3))` from start (3, 3)?**
 
-Start: (_____, _____) &nbsp;&nbsp; Destination: (_____, _____)
+____________________________________________________________________
 
 **Fix:** ____________________________________________________________________
 
@@ -274,31 +273,25 @@ Start: (_____, _____) &nbsp;&nbsp; Destination: (_____, _____)
 **Bug 3:**
 ```python
 def compute_path(self, destination):
-    path = [self.position]
-    current_row = self.position[0]
-    current_col = self.position[1]
-    dest_row = destination[0]
-    dest_col = destination[1]
+    path = []
+    current_row, current_col = self.position
+    dest_row, dest_col = destination
 
-    if dest_row > current_row:
-        row_step = 1
-    else:
-        row_step = -1
-
-    if dest_col > current_col:
-        col_step = 1
-    else:
-        col_step = -1
-
-    while current_row != dest_row:
-        current_row = current_row + row_step
+    while current_row < dest_row:
+        current_row = current_row + 1
         path.append((current_row, current_col))
 
-    while current_col != dest_col:
-        current_col = current_col + col_step
+    while current_row > dest_row:
+        current_row = current_row - 1
+        path.append((current_row, current_col))
+
+    while current_col < dest_col:
+        current_col = current_col + 1
         path.append((current_col, current_row))    # <-- Look here
 
-    return path
+    while current_col > dest_col:
+        current_col = current_col - 1
+        path.append((current_row, current_col))
 ```
 
 **What is wrong?** ____________________________________________________________________
@@ -315,7 +308,7 @@ ________________________________________________________
 
 ## Reflection
 
-**The compute_path() method uses while loops instead of for loops. Why is `while current_row != dest_row` better than using a for loop for this problem?**
+**The compute_path() method uses 4 separate while loops instead of if/else statements with 2 while loops. Why does this simpler approach work? (Hint: think about what happens when a while loop's condition is already false.)**
 
 _________________________________________________________________
 

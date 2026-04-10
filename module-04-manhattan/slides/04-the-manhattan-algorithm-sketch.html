@@ -630,6 +630,34 @@
         .robot-icon {
             display: inline-block;
         }
+
+        /* ── Warning box ── */
+        .warning-box {
+            border: 2px solid #e85d5d;
+            border-radius: 14px;
+            padding: 16px 20px;
+            margin: 14px 0;
+            background-color: rgba(232, 93, 93, 0.08);
+            position: relative;
+        }
+
+        .warning-box::before {
+            content: '!';
+            position: absolute;
+            top: -14px;
+            left: 16px;
+            background-color: #e85d5d;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Caveat', cursive;
+            font-size: 20px;
+            font-weight: 700;
+        }
     </style>
 </head>
 <body>
@@ -643,19 +671,19 @@
             <a href="#slide-2" class="nav-item" onclick="showSlide(1)">How Do You Walk in a City?</a>
             <a href="#slide-3" class="nav-item" onclick="showSlide(2)">Manhattan Distance</a>
             <a href="#slide-4" class="nav-item" onclick="showSlide(3)">Rows First, Then Columns</a>
-            <a href="#slide-5" class="nav-item" onclick="showSlide(4)">Tracing on the Grid</a>
-            <a href="#slide-6" class="nav-item" onclick="showSlide(5)">Direction Matters</a>
-            <a href="#slide-7" class="nav-item" onclick="showSlide(6)">The Step Value</a>
-            <a href="#slide-8" class="nav-item" onclick="showSlide(7)">Hand Trace Practice</a>
-            <a href="#slide-9" class="nav-item" onclick="showSlide(8)">Edge Cases</a>
-            <a href="#slide-10" class="nav-item" onclick="showSlide(9)">Your Turn!</a>
-            <a href="#slide-11" class="nav-item" onclick="showSlide(10)">What's Next</a>
+            <a href="#slide-5" class="nav-item" onclick="showSlide(4)">Part 1: compute_path</a>
+            <a href="#slide-6" class="nav-item" onclick="showSlide(5)">Tracing Part 1</a>
+            <a href="#slide-7" class="nav-item" onclick="showSlide(6)">Part 1 Works... Sometimes</a>
+            <a href="#slide-8" class="nav-item" onclick="showSlide(7)">Part 2: North and West</a>
+            <a href="#slide-9" class="nav-item" onclick="showSlide(8)">Tracing Part 2</a>
+            <a href="#slide-10" class="nav-item" onclick="showSlide(9)">Edge Cases</a>
+            <a href="#slide-11" class="nav-item" onclick="showSlide(10)">Your Turn! + What's Next</a>
         </nav>
     </div>
 
     <div class="slides-container">
 
-        <!-- ═══ SLIDE 1: Title ═══ -->
+        <!-- ═══ SLIDE 1: Title & Learning Objectives ═══ -->
         <div id="slide-1" class="slide slide-title-page">
             <div class="title-hero">
                 <!-- Robot illustration — PNG version -->
@@ -668,17 +696,17 @@
                 <div class="title-content">
                     <div class="title-section">
                         <h3>Learning Objectives</h3>
-                        <p class="bullet">Understand how Manhattan distance pathfinding works</p>
-                        <p class="bullet">Trace the algorithm by hand for given start/destination pairs</p>
-                        <p class="bullet">Explain the "rows first, then columns" strategy</p>
-                        <p class="bullet">Handle paths in all four directions</p>
+                        <p class="bullet">Understand Manhattan distance pathfinding</p>
+                        <p class="bullet">Write a <code style="font-family: 'Fira Code', monospace;">compute_path(start, end)</code> function</p>
+                        <p class="bullet">Use while loops to build a path list</p>
+                        <p class="bullet">Handle all four directions (N, S, E, W)</p>
                     </div>
                     <div class="title-section">
                         <h3>Agenda</h3>
-                        <p class="bullet">What is Manhattan distance? (10 min)</p>
-                        <p class="bullet">The algorithm: rows first, then columns (10 min)</p>
-                        <p class="bullet">Hand-tracing examples (15 min)</p>
-                        <p class="bullet">Practice worksheet (10 min)</p>
+                        <p class="bullet">Manhattan distance concept (5 min)</p>
+                        <p class="bullet">Part 1: South/East only (10 min)</p>
+                        <p class="bullet">Part 2: All four directions (10 min)</p>
+                        <p class="bullet">Practice problems (15 min)</p>
                     </div>
                 </div>
             </div>
@@ -761,13 +789,18 @@
                 <div class="two-col">
                     <div class="col">
                         <div class="sketch-box">
-                            <p class="header-text" style="margin-top: 0;">Example</p>
+                            <p class="header-text" style="margin-top: 0;">Example 1</p>
                             <p class="bullet">Start: <strong>(0, 0)</strong></p>
-                            <p class="bullet">Destination: <strong>(2, 3)</strong></p>
-                            <p class="bullet">Row distance: |2 - 0| = <strong>2 steps</strong></p>
-                            <p class="bullet">Column distance: |3 - 0| = <strong>3 steps</strong></p>
+                            <p class="bullet">End: <strong>(2, 3)</strong></p>
+                            <p class="bullet">Row distance: |2 - 0| = <strong>2</strong></p>
+                            <p class="bullet">Column distance: |3 - 0| = <strong>3</strong></p>
                             <div class="spacer"></div>
                             <div class="insight-box" style="font-size: 24px;">Manhattan distance: 2 + 3 = 5 steps</div>
+                        </div>
+                        <div class="sketch-box" style="border-color: #e8a87c; background-color: rgba(232,168,124,0.04);">
+                            <p class="header-text" style="margin-top: 0;">Example 2</p>
+                            <p class="bullet">Start: <strong>(3, 3)</strong>, End: <strong>(1, 0)</strong></p>
+                            <p class="bullet">|1 - 3| + |0 - 3| = 2 + 3 = <strong>5 steps</strong></p>
                         </div>
                     </div>
                     <div class="col">
@@ -811,10 +844,6 @@
                         </div>
                     </div>
                 </div>
-
-                <div class="answer-box">
-                    <p class="body-text" style="margin-left: 8px;"><strong>Manhattan distance is always &ge; straight-line distance.</strong> They're equal only when moving purely along one axis.</p>
-                </div>
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
@@ -835,15 +864,17 @@
                     <div class="col">
                         <div class="sketch-box">
                             <p class="header-text" style="margin-top: 0;">Example: (0, 0) to (2, 3)</p>
-                            <p class="body-text"><strong>Step 1: Move along rows (0 &rarr; 2)</strong></p>
-                            <p class="bullet level-1">(0, 0) &rarr; (1, 0) &rarr; (2, 0)</p>
+                            <p class="body-text"><strong>Phase 1: Move rows (0 &rarr; 2)</strong></p>
+                            <p class="bullet level-1">(0,0) &rarr; (1,0) &rarr; (2,0)</p>
                             <div class="spacer"></div>
-                            <p class="body-text"><strong>Step 2: Move along columns (0 &rarr; 3)</strong></p>
-                            <p class="bullet level-1">(2, 0) &rarr; (2, 1) &rarr; (2, 2) &rarr; (2, 3)</p>
+                            <p class="body-text"><strong>Phase 2: Move columns (0 &rarr; 3)</strong></p>
+                            <p class="bullet level-1">(2,0) &rarr; (2,1) &rarr; (2,2) &rarr; (2,3)</p>
                         </div>
 
-                        <div class="code-block compact" style="font-size: 15px; padding: 12px 16px; margin-top: 12px;">
-                            (0,0) &rarr; (1,0) &rarr; (2,0) &rarr; (2,1) &rarr; (2,2) &rarr; (2,3)<br><br>Total: 5 steps (matches Manhattan distance!)
+                        <div class="answer-box">
+                            <p class="body-text" style="margin-left: 8px;"><strong>Path does NOT include start.</strong></p>
+                            <p class="bullet" style="font-size: 20px;">path = [(1,0), (2,0), (2,1), (2,2), (2,3)]</p>
+                            <p class="bullet" style="font-size: 20px;">Steps = len(path) = 5</p>
                         </div>
                     </div>
                     <div class="col">
@@ -865,14 +896,14 @@
                                 <text x="100" y="12" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">C1</text>
                                 <text x="160" y="12" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">C2</text>
                                 <text x="220" y="12" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">C3</text>
-                                <!-- Step 1: Rows (vertical down) - ORANGE -->
+                                <!-- Phase 1: Rows (vertical down) - ORANGE -->
                                 <path d="M40 40 L40 160" fill="none" stroke="#e8a87c" stroke-width="4" stroke-linecap="round" stroke-dasharray="8,5"/>
                                 <polygon points="35,155 40,168 45,155" fill="#e8a87c"/>
-                                <text x="56" y="95" font-family="Caveat, cursive" font-size="18" fill="#e8a87c" font-weight="600">Step 1</text>
-                                <!-- Step 2: Columns (horizontal right) - TEAL -->
+                                <text x="56" y="95" font-family="Caveat, cursive" font-size="18" fill="#e8a87c" font-weight="600">Phase 1</text>
+                                <!-- Phase 2: Columns (horizontal right) - TEAL -->
                                 <path d="M40 160 L220 160" fill="none" stroke="#5b8fa8" stroke-width="4" stroke-linecap="round" stroke-dasharray="8,5"/>
                                 <polygon points="215,155 228,160 215,165" fill="#5b8fa8"/>
-                                <text x="130" y="188" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" font-weight="600">Step 2</text>
+                                <text x="130" y="188" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" font-weight="600">Phase 2</text>
                                 <!-- Coordinate labels at each intersection -->
                                 <text x="55" y="55" font-family="Fira Code, monospace" font-size="15" fill="#e8a87c">(0,0)</text>
                                 <text x="55" y="135" font-family="Fira Code, monospace" font-size="15" fill="#e8a87c">(1,0)</text>
@@ -885,7 +916,7 @@
                                 <!-- Green dot at end -->
                                 <circle cx="220" cy="160" r="7" fill="#85c88a" stroke="#2d3436" stroke-width="2"/>
                                 <!-- L-shape label -->
-                                <text x="130" y="230" font-family="Caveat, cursive" font-size="18" fill="#636e72" text-anchor="middle">The path makes an "L" shape!</text>
+                                <text x="130" y="228" font-family="Caveat, cursive" font-size="18" fill="#636e72" text-anchor="middle">The path makes an "L" shape!</text>
                             </svg>
                         </div>
                     </div>
@@ -898,58 +929,49 @@
             </div>
         </div>
 
-        <!-- ═══ SLIDE 5: Tracing on the Grid ═══ -->
+        <!-- ═══ SLIDE 5: Part 1 — The compute_path Function ═══ -->
         <div id="slide-5" class="slide">
             <div class="title-bar">
-                <h1>Tracing on the Grid</h1>
+                <h1>Part 1: The compute_path Function</h1>
             </div>
             <div class="content">
-                <p class="header-text">Visual: (0, 0) to (2, 3)</p>
+                <p class="header-text">Positive directions only -- south (row+1) and east (col+1)</p>
 
-                <div class="illustration">
-                    <svg width="585" height="370" viewBox="0 0 450 285">
-                        <!-- Grid lines - 3 rows x 4 cols -->
-                        <line x1="80" y1="60" x2="380" y2="60" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
-                        <line x1="80" y1="140" x2="380" y2="140" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
-                        <line x1="80" y1="220" x2="380" y2="220" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
-                        <line x1="80" y1="30" x2="80" y2="250" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
-                        <line x1="180" y1="30" x2="180" y2="250" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
-                        <line x1="280" y1="30" x2="280" y2="250" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
-                        <line x1="380" y1="30" x2="380" y2="250" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
-                        <!-- Row/Col labels -->
-                        <text x="50" y="77" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle" font-weight="600">R0</text>
-                        <text x="50" y="157" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle" font-weight="600">R1</text>
-                        <text x="50" y="237" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle" font-weight="600">R2</text>
-                        <text x="80" y="22" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle" font-weight="600">C0</text>
-                        <text x="180" y="22" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle" font-weight="600">C1</text>
-                        <text x="280" y="22" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle" font-weight="600">C2</text>
-                        <text x="380" y="22" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle" font-weight="600">C3</text>
-                        <!-- Path: down from (0,0) to (2,0) then right to (2,3) -->
-                        <!-- Down arrows -->
-                        <line x1="80" y1="68" x2="80" y2="132" stroke="#e8a87c" stroke-width="4" stroke-linecap="round"/>
-                        <polygon points="75,128 80,138 85,128" fill="#e8a87c"/>
-                        <line x1="80" y1="148" x2="80" y2="212" stroke="#e8a87c" stroke-width="4" stroke-linecap="round"/>
-                        <polygon points="75,208 80,218 85,208" fill="#e8a87c"/>
-                        <!-- Right arrows -->
-                        <line x1="88" y1="220" x2="172" y2="220" stroke="#5b8fa8" stroke-width="4" stroke-linecap="round"/>
-                        <polygon points="168,215 178,220 168,225" fill="#5b8fa8"/>
-                        <line x1="188" y1="220" x2="272" y2="220" stroke="#5b8fa8" stroke-width="4" stroke-linecap="round"/>
-                        <polygon points="268,215 278,220 268,225" fill="#5b8fa8"/>
-                        <line x1="288" y1="220" x2="372" y2="220" stroke="#5b8fa8" stroke-width="4" stroke-linecap="round"/>
-                        <polygon points="368,215 378,220 368,225" fill="#5b8fa8"/>
-                        <!-- START label -->
-                        <rect x="88" y="46" width="62" height="26" rx="6" fill="rgba(232,168,124,0.2)" stroke="#e8a87c" stroke-width="1.5"/>
-                        <text x="119" y="65" font-family="Caveat, cursive" font-size="18" fill="#e8a87c" text-anchor="middle" font-weight="600">START</text>
-                        <!-- END label -->
-                        <rect x="386" y="206" width="50" height="26" rx="6" fill="rgba(133,200,138,0.2)" stroke="#85c88a" stroke-width="1.5"/>
-                        <text x="411" y="225" font-family="Caveat, cursive" font-size="18" fill="#85c88a" text-anchor="middle" font-weight="600">END</text>
-                        <!-- Robot at start (traveling down) — PNG version -->
-                        <image href="images/xrp-top-down.png" x="62" y="42" width="36" height="36"/>
-                    </svg>
-                </div>
+                <div class="two-col">
+                    <div class="col" style="flex: 1.2;">
+                        <div class="code-block" style="font-size: 16px; line-height: 1.55;">def compute_path(start, end):
+    path = []
+    current_row, current_col = start
+    dest_row, dest_col = end
 
-                <div class="insight-box">
-                    The path always makes an "L" shape: down 2 rows, then right 3 columns. Always rows first, then columns.
+    while current_row < dest_row:
+        current_row = current_row + 1
+        path.append((current_row, current_col))
+
+    while current_col < dest_col:
+        current_col = current_col + 1
+        path.append((current_row, current_col))
+
+    return path</div>
+                    </div>
+                    <div class="col">
+                        <div class="sketch-box">
+                            <p class="header-text" style="margin-top: 0;">Key ideas</p>
+                            <p class="bullet"><span class="sketch-highlight">path = []</span> -- start with empty list</p>
+                            <p class="bullet">Tuple unpacking pulls out row and col</p>
+                            <p class="bullet">First while loop: move south (row increases)</p>
+                            <p class="bullet">Second while loop: move east (col increases)</p>
+                            <p class="bullet">Start position is NOT added to path</p>
+                        </div>
+
+                        <div class="spacer"></div>
+
+                        <div class="sketch-box" style="border-color: #e8a87c; background-color: rgba(232,168,124,0.04);">
+                            <p class="body-text"><strong>Calling it:</strong></p>
+                            <div class="code-block compact" style="font-size: 16px; padding: 10px 14px; transform: none;">path = compute_path((0, 0), (2, 3))
+print(path)</div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="slide-navigation">
@@ -959,37 +981,45 @@
             </div>
         </div>
 
-        <!-- ═══ SLIDE 6: Direction Matters ═══ -->
+        <!-- ═══ SLIDE 6: Tracing Part 1 ═══ -->
         <div id="slide-6" class="slide">
             <div class="title-bar">
-                <h1>Direction Matters</h1>
+                <h1>Tracing Part 1: (0,0) to (2,3)</h1>
             </div>
             <div class="content">
-                <p class="header-text">What if the destination is UP or LEFT?</p>
-
                 <div class="two-col">
                     <div class="col">
-                        <div class="sketch-box">
-                            <p class="body-text"><strong>Example: (2, 3) to (0, 1)</strong></p>
-                            <p class="bullet">Row: go from 2 to 0 (decrease -- move <span class="sketch-highlight">UP</span>)</p>
-                            <p class="bullet">Column: go from 3 to 1 (decrease -- move <span class="sketch-highlight">LEFT</span>)</p>
-                            <div class="spacer"></div>
-                            <div class="code-block compact" style="font-size: 14px; padding: 10px 14px; transform: none;">(2,3) &rarr; (1,3) &rarr; (0,3) &rarr; (0,2) &rarr; (0,1)</div>
+                        <p class="header-text">Step-by-step trace</p>
+
+                        <div class="sketch-box" style="padding: 12px 16px;">
+                            <p class="body-text" style="margin-bottom: 4px;"><strong>Setup:</strong></p>
+                            <div class="code-block compact" style="font-size: 16px; padding: 8px 12px; transform: none; margin: 4px 0;">path = []
+current_row, current_col = 0, 0
+dest_row, dest_col = 2, 3</div>
                         </div>
 
-                        <div class="spacer"></div>
+                        <div class="sketch-box" style="border-color: #e8a87c; background-color: rgba(232,168,124,0.04); padding: 12px 16px;">
+                            <p class="body-text" style="margin-bottom: 4px;"><strong>While loop 1:</strong> current_row < dest_row</p>
+                            <p class="bullet level-1">row 0 < 2: row=1, append <strong>(1,0)</strong></p>
+                            <p class="bullet level-1">row 1 < 2: row=2, append <strong>(2,0)</strong></p>
+                            <p class="bullet level-1">row 2 < 2: FALSE -- stop</p>
+                        </div>
+
+                        <div class="sketch-box" style="border-color: #5b8fa8; padding: 12px 16px;">
+                            <p class="body-text" style="margin-bottom: 4px;"><strong>While loop 2:</strong> current_col < dest_col</p>
+                            <p class="bullet level-1">col 0 < 3: col=1, append <strong>(2,1)</strong></p>
+                            <p class="bullet level-1">col 1 < 3: col=2, append <strong>(2,2)</strong></p>
+                            <p class="bullet level-1">col 2 < 3: col=3, append <strong>(2,3)</strong></p>
+                            <p class="bullet level-1">col 3 < 3: FALSE -- stop</p>
+                        </div>
 
                         <div class="answer-box">
-                            <p class="body-text" style="margin-left: 8px;"><strong>How to determine direction:</strong></p>
-                            <p class="bullet" style="font-size: 20px;">dest row &gt; current row &rarr; move <strong>DOWN</strong></p>
-                            <p class="bullet" style="font-size: 20px;">dest row &lt; current row &rarr; move <strong>UP</strong></p>
-                            <p class="bullet" style="font-size: 20px;">dest col &gt; current col &rarr; move <strong>RIGHT</strong></p>
-                            <p class="bullet" style="font-size: 20px;">dest col &lt; current col &rarr; move <strong>LEFT</strong></p>
+                            <p class="body-text" style="margin-left: 8px; font-family: 'Fira Code', monospace; font-size: 16px;">[(1,0), (2,0), (2,1), (2,2), (2,3)]</p>
                         </div>
                     </div>
                     <div class="col">
                         <div class="illustration">
-                            <svg width="345" height="310" viewBox="0 0 270 240">
+                            <svg width="325" height="310" viewBox="0 0 250 240">
                                 <!-- Grid lines -->
                                 <line x1="40" y1="40" x2="220" y2="40" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
                                 <line x1="40" y1="100" x2="220" y2="100" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
@@ -998,7 +1028,7 @@
                                 <line x1="100" y1="20" x2="100" y2="180" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
                                 <line x1="160" y1="20" x2="160" y2="180" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
                                 <line x1="220" y1="20" x2="220" y2="180" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
-                                <!-- Labels -->
+                                <!-- Row/Col labels -->
                                 <text x="15" y="57" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">R0</text>
                                 <text x="15" y="117" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">R1</text>
                                 <text x="15" y="177" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">R2</text>
@@ -1006,28 +1036,34 @@
                                 <text x="100" y="12" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">C1</text>
                                 <text x="160" y="12" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">C2</text>
                                 <text x="220" y="12" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">C3</text>
-                                <!-- Path: UP from (2,3) to (0,3) then LEFT to (0,1) -->
-                                <!-- Up arrows (orange) -->
-                                <line x1="220" y1="152" x2="220" y2="108" stroke="#e8a87c" stroke-width="4" stroke-linecap="round"/>
-                                <polygon points="215,112 220,102 225,112" fill="#e8a87c"/>
-                                <line x1="220" y1="92" x2="220" y2="48" stroke="#e8a87c" stroke-width="4" stroke-linecap="round"/>
-                                <polygon points="215,52 220,42 225,52" fill="#e8a87c"/>
-                                <!-- Left arrows (teal) -->
-                                <line x1="212" y1="40" x2="168" y2="40" stroke="#5b8fa8" stroke-width="4" stroke-linecap="round"/>
-                                <polygon points="172,35 162,40 172,45" fill="#5b8fa8"/>
-                                <line x1="152" y1="40" x2="108" y2="40" stroke="#5b8fa8" stroke-width="4" stroke-linecap="round"/>
-                                <polygon points="112,35 102,40 112,45" fill="#5b8fa8"/>
-                                <!-- Start marker (2,3) -->
-                                <circle cx="220" cy="160" r="7" fill="#e8a87c" stroke="#2d3436" stroke-width="2"/>
-                                <text x="220" y="198" font-family="Caveat, cursive" font-size="18" fill="#e8a87c" text-anchor="middle" font-weight="600">Start (2,3)</text>
-                                <!-- End marker (0,1) -->
-                                <circle cx="100" cy="40" r="7" fill="#85c88a" stroke="#2d3436" stroke-width="2"/>
-                                <text x="100" y="208" font-family="Caveat, cursive" font-size="18" fill="#85c88a" text-anchor="middle" font-weight="600">End (0,1)</text>
-                                <!-- Step labels -->
-                                <text x="240" y="130" font-family="Caveat, cursive" font-size="18" fill="#e8a87c" font-weight="600">UP</text>
-                                <text x="190" y="28" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" font-weight="600" text-anchor="middle">LEFT</text>
-                                <!-- Reversed L shape notation -->
-                                <text x="130" y="228" font-family="Caveat, cursive" font-size="18" fill="#636e72" text-anchor="middle">Reversed "L" -- still rows first!</text>
+                                <!-- Down arrows (orange) -->
+                                <line x1="40" y1="48" x2="40" y2="92" stroke="#e8a87c" stroke-width="4" stroke-linecap="round"/>
+                                <polygon points="35,88 40,98 45,88" fill="#e8a87c"/>
+                                <line x1="40" y1="108" x2="40" y2="152" stroke="#e8a87c" stroke-width="4" stroke-linecap="round"/>
+                                <polygon points="35,148 40,158 45,148" fill="#e8a87c"/>
+                                <!-- Right arrows (teal) -->
+                                <line x1="48" y1="160" x2="92" y2="160" stroke="#5b8fa8" stroke-width="4" stroke-linecap="round"/>
+                                <polygon points="88,155 98,160 88,165" fill="#5b8fa8"/>
+                                <line x1="108" y1="160" x2="152" y2="160" stroke="#5b8fa8" stroke-width="4" stroke-linecap="round"/>
+                                <polygon points="148,155 158,160 148,165" fill="#5b8fa8"/>
+                                <line x1="168" y1="160" x2="212" y2="160" stroke="#5b8fa8" stroke-width="4" stroke-linecap="round"/>
+                                <polygon points="208,155 218,160 208,165" fill="#5b8fa8"/>
+                                <!-- Start (0,0) -->
+                                <image href="images/xrp-top-down.png" x="26" y="26" width="28" height="28"/>
+                                <text x="62" y="36" font-family="Fira Code, monospace" font-size="14" fill="#e8a87c">start</text>
+                                <!-- End (2,3) -->
+                                <circle cx="220" cy="160" r="7" fill="#85c88a" stroke="#2d3436" stroke-width="2"/>
+                                <text x="220" y="200" font-family="Caveat, cursive" font-size="18" fill="#85c88a" text-anchor="middle" font-weight="600">end (2,3)</text>
+                                <!-- Path step numbers -->
+                                <circle cx="40" cy="100" r="10" fill="rgba(232,168,124,0.3)" stroke="#e8a87c" stroke-width="1.5"/>
+                                <text x="40" y="104" font-family="Caveat, cursive" font-size="14" fill="#e8a87c" text-anchor="middle" font-weight="600">1</text>
+                                <circle cx="40" cy="160" r="10" fill="rgba(232,168,124,0.3)" stroke="#e8a87c" stroke-width="1.5"/>
+                                <text x="40" y="164" font-family="Caveat, cursive" font-size="14" fill="#e8a87c" text-anchor="middle" font-weight="600">2</text>
+                                <circle cx="100" cy="160" r="10" fill="rgba(91,143,168,0.3)" stroke="#5b8fa8" stroke-width="1.5"/>
+                                <text x="100" y="164" font-family="Caveat, cursive" font-size="14" fill="#5b8fa8" text-anchor="middle" font-weight="600">3</text>
+                                <circle cx="160" cy="160" r="10" fill="rgba(91,143,168,0.3)" stroke="#5b8fa8" stroke-width="1.5"/>
+                                <text x="160" y="164" font-family="Caveat, cursive" font-size="14" fill="#5b8fa8" text-anchor="middle" font-weight="600">4</text>
+                                <text x="130" y="228" font-family="Caveat, cursive" font-size="18" fill="#636e72" text-anchor="middle">5 steps in path -- it works!</text>
                             </svg>
                         </div>
                     </div>
@@ -1040,73 +1076,75 @@
             </div>
         </div>
 
-        <!-- ═══ SLIDE 7: The Step Value ═══ -->
+        <!-- ═══ SLIDE 7: Part 1 Works... Sometimes ═══ -->
         <div id="slide-7" class="slide">
             <div class="title-bar">
-                <h1>The Step Value</h1>
+                <h1>Part 1 Works... Sometimes</h1>
             </div>
             <div class="content">
-                <p class="header-text">Use +1 or -1 to control direction</p>
+                <p class="header-text">What happens with (3, 3) to (1, 0)?</p>
 
                 <div class="two-col">
                     <div class="col">
-                        <div class="code-block compact"><pre>If dest row > start row:
-    row_step = +1   # down
-Else:
-    row_step = -1   # up
+                        <div class="sketch-box" style="padding: 12px 16px;">
+                            <p class="body-text" style="margin-bottom: 4px;"><strong>Let's trace it:</strong></p>
+                            <div class="code-block compact" style="font-size: 16px; padding: 8px 12px; transform: none; margin: 4px 0;">current_row, current_col = 3, 3
+dest_row, dest_col = 1, 0</div>
+                        </div>
 
-If dest col > start col:
-    col_step = +1   # right
-Else:
-    col_step = -1   # left</pre></div>
+                        <div class="warning-box">
+                            <p class="body-text" style="margin-left: 8px;"><strong>While loop 1:</strong> current_row < dest_row</p>
+                            <p class="bullet" style="font-size: 20px;">3 < 1? <strong>FALSE</strong> -- loop never runs!</p>
+                        </div>
 
-                        <div class="sketch-box" style="border-color: #e8a87c; background-color: rgba(232,168,124,0.04);">
-                            <p class="body-text"><strong>Example: (3, 0) to (1, 2)</strong></p>
-                            <p class="bullet">Row: 3 &rarr; 1, so row_step = <strong>-1</strong></p>
-                            <p class="bullet">Col: 0 &rarr; 2, so col_step = <strong>+1</strong></p>
-                            <p class="bullet">Path: (3,0) &rarr; (2,0) &rarr; (1,0) &rarr; (1,1) &rarr; (1,2)</p>
+                        <div class="warning-box">
+                            <p class="body-text" style="margin-left: 8px;"><strong>While loop 2:</strong> current_col < dest_col</p>
+                            <p class="bullet" style="font-size: 20px;">3 < 0? <strong>FALSE</strong> -- loop never runs!</p>
+                        </div>
+
+                        <div class="spacer"></div>
+
+                        <div class="insight-box" style="border-color: #e85d5d; background-color: rgba(232,93,93,0.08);">
+                            Returns [] -- an empty list! The robot doesn't move at all.
                         </div>
                     </div>
                     <div class="col">
                         <div class="illustration">
-                            <svg width="345" height="350" viewBox="0 0 270 270">
-                                <!-- Grid lines - 4 rows x 3 cols -->
-                                <line x1="40" y1="40" x2="180" y2="40" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
-                                <line x1="40" y1="100" x2="180" y2="100" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
-                                <line x1="40" y1="160" x2="180" y2="160" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
-                                <line x1="40" y1="220" x2="180" y2="220" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                            <svg width="325" height="310" viewBox="0 0 250 240">
+                                <!-- Grid lines - 4 rows x 4 cols -->
+                                <line x1="40" y1="40" x2="220" y2="40" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                                <line x1="40" y1="100" x2="220" y2="100" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                                <line x1="40" y1="160" x2="220" y2="160" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                                <line x1="40" y1="220" x2="220" y2="220" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
                                 <line x1="40" y1="20" x2="40" y2="240" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
-                                <line x1="110" y1="20" x2="110" y2="240" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
-                                <line x1="180" y1="20" x2="180" y2="240" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                                <line x1="100" y1="20" x2="100" y2="240" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                                <line x1="160" y1="20" x2="160" y2="240" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                                <line x1="220" y1="20" x2="220" y2="240" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
                                 <!-- Labels -->
                                 <text x="15" y="57" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">R0</text>
                                 <text x="15" y="117" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">R1</text>
                                 <text x="15" y="177" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">R2</text>
                                 <text x="15" y="237" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">R3</text>
                                 <text x="40" y="12" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">C0</text>
-                                <text x="110" y="12" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">C1</text>
-                                <text x="180" y="12" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">C2</text>
-                                <!-- Path: UP from (3,0) to (1,0) then RIGHT to (1,2) -->
-                                <line x1="40" y1="212" x2="40" y2="168" stroke="#e8a87c" stroke-width="4" stroke-linecap="round"/>
-                                <polygon points="35,172 40,162 45,172" fill="#e8a87c"/>
-                                <line x1="40" y1="152" x2="40" y2="108" stroke="#e8a87c" stroke-width="4" stroke-linecap="round"/>
-                                <polygon points="35,112 40,102 45,112" fill="#e8a87c"/>
-                                <line x1="48" y1="100" x2="102" y2="100" stroke="#5b8fa8" stroke-width="4" stroke-linecap="round"/>
-                                <polygon points="98,95 108,100 98,105" fill="#5b8fa8"/>
-                                <line x1="118" y1="100" x2="172" y2="100" stroke="#5b8fa8" stroke-width="4" stroke-linecap="round"/>
-                                <polygon points="168,95 178,100 168,105" fill="#5b8fa8"/>
-                                <!-- Start (3,0) -->
-                                <circle cx="40" cy="220" r="7" fill="#e8a87c" stroke="#2d3436" stroke-width="2"/>
-                                <text x="55" y="248" font-family="Fira Code, monospace" font-size="15" fill="#e8a87c">(3,0)</text>
-                                <!-- End (1,2) -->
-                                <circle cx="180" cy="100" r="7" fill="#85c88a" stroke="#2d3436" stroke-width="2"/>
-                                <text x="195" y="117" font-family="Fira Code, monospace" font-size="15" fill="#85c88a">(1,2)</text>
-                                <!-- Step value labels -->
-                                <rect x="52" y="130" width="70" height="26" rx="6" fill="rgba(232,168,124,0.15)" stroke="#e8a87c" stroke-width="1.5"/>
-                                <text x="87" y="149" font-family="Fira Code, monospace" font-size="13" fill="#e8a87c" text-anchor="middle">step = -1</text>
-                                <rect x="90" y="55" width="70" height="26" rx="6" fill="rgba(91,143,168,0.15)" stroke="#5b8fa8" stroke-width="1.5"/>
-                                <text x="125" y="74" font-family="Fira Code, monospace" font-size="13" fill="#5b8fa8" text-anchor="middle">step = +1</text>
+                                <text x="100" y="12" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">C1</text>
+                                <text x="160" y="12" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">C2</text>
+                                <text x="220" y="12" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">C3</text>
+                                <!-- Start at (3,3) -->
+                                <circle cx="220" cy="220" r="9" fill="#e8a87c" stroke="#2d3436" stroke-width="2"/>
+                                <text x="220" y="258" font-family="Caveat, cursive" font-size="18" fill="#e8a87c" text-anchor="middle" font-weight="600">Start (3,3)</text>
+                                <!-- End at (1,0) -->
+                                <circle cx="40" cy="100" r="9" fill="#85c88a" stroke="#2d3436" stroke-width="2"/>
+                                <text x="75" y="88" font-family="Caveat, cursive" font-size="18" fill="#85c88a" font-weight="600">End (1,0)</text>
+                                <!-- Dashed desired path -->
+                                <path d="M220 220 L220 100 L40 100" fill="none" stroke="#e85d5d" stroke-width="3" stroke-linecap="round" stroke-dasharray="5,5" opacity="0.5"/>
+                                <!-- Big X -->
+                                <text x="130" y="170" font-family="Caveat, cursive" font-size="48" fill="#e85d5d" text-anchor="middle" font-weight="700" opacity="0.6">X</text>
+                                <text x="130" y="200" font-family="Caveat, cursive" font-size="20" fill="#e85d5d" text-anchor="middle" font-weight="600">Needs north & west!</text>
                             </svg>
+                        </div>
+
+                        <div class="question-box">
+                            <p class="body-text" style="margin-left: 8px;"><strong>The problem:</strong> our while loops only handle <code style="font-family: 'Fira Code', monospace; font-size: 18px;">&lt;</code> (increasing). We need to also handle <code style="font-family: 'Fira Code', monospace; font-size: 18px;">&gt;</code> (decreasing)!</p>
                         </div>
                     </div>
                 </div>
@@ -1118,56 +1156,62 @@ Else:
             </div>
         </div>
 
-        <!-- ═══ SLIDE 8: More Practice — Hand Trace ═══ -->
+        <!-- ═══ SLIDE 8: Part 2 — Adding North and West ═══ -->
         <div id="slide-8" class="slide">
             <div class="title-bar">
-                <h1>More Practice -- Hand Trace</h1>
+                <h1>Part 2: Adding North and West</h1>
             </div>
             <div class="content">
-                <p class="header-text">Trace these paths by hand</p>
+                <p class="header-text">Add 2 more while loops -- 4 total, no if/else needed!</p>
 
-                <div class="sketch-box">
-                    <p class="body-text"><strong>Path 1: (0, 0) to (3, 2)</strong></p>
-                    <p class="bullet level-1">Row steps: 0 &rarr; 3 (step = +1): (0,0), (1,0), (2,0), (3,0)</p>
-                    <p class="bullet level-1">Col steps: 0 &rarr; 2 (step = +1): (3,1), (3,2)</p>
-                    <p class="bullet level-1">Full: <code style="font-family: 'Fira Code', monospace; font-size: 16px;">(0,0) &rarr; (1,0) &rarr; (2,0) &rarr; (3,0) &rarr; (3,1) &rarr; (3,2)</code></p>
-                </div>
+                <div class="two-col">
+                    <div class="col" style="flex: 1.2;">
+                        <div class="code-block" style="font-size: 16px; line-height: 1.5;">def compute_path(start, end):
+    path = []
+    current_row, current_col = start
+    dest_row, dest_col = end
 
-                <div class="sketch-box" style="border-color: #e8a87c; background-color: rgba(232,168,124,0.04);">
-                    <p class="body-text"><strong>Path 2: (2, 2) to (0, 0)</strong></p>
-                    <p class="bullet level-1">Row steps: 2 &rarr; 0 (step = -1): (2,2), (1,2), (0,2)</p>
-                    <p class="bullet level-1">Col steps: 2 &rarr; 0 (step = -1): (0,1), (0,0)</p>
-                    <p class="bullet level-1">Full: <code style="font-family: 'Fira Code', monospace; font-size: 16px;">(2,2) &rarr; (1,2) &rarr; (0,2) &rarr; (0,1) &rarr; (0,0)</code></p>
-                </div>
+    while current_row < dest_row:     <span style="color: #85c88a;"># south</span>
+        current_row = current_row + 1
+        path.append((current_row, current_col))
 
-                <div class="sketch-box" style="border-color: #85c88a; background-color: rgba(133,200,138,0.04);">
-                    <p class="body-text"><strong>Path 3: (1, 0) to (1, 3)</strong></p>
-                    <p class="bullet level-1">Row steps: 1 &rarr; 1 (none needed -- already on correct row!)</p>
-                    <p class="bullet level-1">Col steps: 0 &rarr; 3 (step = +1): (1,1), (1,2), (1,3)</p>
-                    <p class="bullet level-1">Full: <code style="font-family: 'Fira Code', monospace; font-size: 16px;">(1,0) &rarr; (1,1) &rarr; (1,2) &rarr; (1,3)</code></p>
-                </div>
+    while current_row > dest_row:     <span style="color: #85c88a;"># north</span>
+        current_row = current_row - 1
+        path.append((current_row, current_col))
 
-                <div class="illustration" style="margin-top: 8px;">
-                    <svg width="520" height="195" viewBox="0 0 400 150">
-                        <!-- Mini grid for Path 3 visualization -->
-                        <line x1="40" y1="40" x2="340" y2="40" stroke="#2d3436" stroke-width="2" stroke-linecap="round"/>
-                        <line x1="40" y1="100" x2="340" y2="100" stroke="#2d3436" stroke-width="2" stroke-linecap="round"/>
-                        <line x1="40" y1="20" x2="40" y2="120" stroke="#2d3436" stroke-width="2" stroke-linecap="round"/>
-                        <line x1="140" y1="20" x2="140" y2="120" stroke="#2d3436" stroke-width="2" stroke-linecap="round"/>
-                        <line x1="240" y1="20" x2="240" y2="120" stroke="#2d3436" stroke-width="2" stroke-linecap="round"/>
-                        <line x1="340" y1="20" x2="340" y2="120" stroke="#2d3436" stroke-width="2" stroke-linecap="round"/>
-                        <!-- Labels -->
-                        <text x="20" y="52" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">R0</text>
-                        <text x="20" y="112" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">R1</text>
-                        <!-- Path 3: straight across row 1 -->
-                        <path d="M40 100 L340 100" fill="none" stroke="#85c88a" stroke-width="4" stroke-linecap="round" stroke-dasharray="8,5" opacity="0.8"/>
-                        <polygon points="335,95 345,100 335,105" fill="#85c88a" opacity="0.8"/>
-                        <circle cx="40" cy="100" r="6" fill="#e8a87c" stroke="#2d3436" stroke-width="1.5"/>
-                        <circle cx="340" cy="100" r="6" fill="#85c88a" stroke="#2d3436" stroke-width="1.5"/>
-                        <text x="40" y="135" font-family="Fira Code, monospace" font-size="15" fill="#e8a87c" text-anchor="middle">(1,0)</text>
-                        <text x="340" y="135" font-family="Fira Code, monospace" font-size="15" fill="#85c88a" text-anchor="middle">(1,3)</text>
-                        <text x="190" y="88" font-family="Caveat, cursive" font-size="18" fill="#85c88a" text-anchor="middle" font-weight="600">Same row = straight line!</text>
-                    </svg>
+    while current_col < dest_col:     <span style="color: #85c88a;"># east</span>
+        current_col = current_col + 1
+        path.append((current_row, current_col))
+
+    while current_col > dest_col:     <span style="color: #85c88a;"># west</span>
+        current_col = current_col - 1
+        path.append((current_row, current_col))
+
+    return path</div>
+                    </div>
+                    <div class="col">
+                        <div class="sketch-box">
+                            <p class="header-text" style="margin-top: 0;">Why does this work?</p>
+                            <p class="bullet">Only ONE row loop runs (the other's condition is false)</p>
+                            <p class="bullet">Only ONE col loop runs (same reason)</p>
+                            <p class="bullet">If already on the right row, BOTH row loops skip</p>
+                            <p class="bullet">No if/else needed -- the while conditions do the choosing!</p>
+                        </div>
+
+                        <div class="spacer"></div>
+
+                        <div class="insight-box">
+                            4 while loops, but at most 2 ever execute for any given call.
+                        </div>
+
+                        <div class="spacer"></div>
+
+                        <div class="sketch-box" style="border-color: #e8a87c; background-color: rgba(232,168,124,0.04);">
+                            <p class="body-text"><strong>Test it:</strong></p>
+                            <div class="code-block compact" style="font-size: 16px; padding: 10px 14px; transform: none;">path = compute_path((3, 3), (1, 0))
+print(path)</div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="slide-navigation">
@@ -1177,36 +1221,144 @@ Else:
             </div>
         </div>
 
-        <!-- ═══ SLIDE 9: Edge Cases ═══ -->
+        <!-- ═══ SLIDE 9: Tracing Part 2 ═══ -->
         <div id="slide-9" class="slide">
+            <div class="title-bar">
+                <h1>Tracing Part 2: (3,3) to (1,0)</h1>
+            </div>
+            <div class="content">
+                <div class="two-col">
+                    <div class="col">
+                        <p class="header-text">Step-by-step trace</p>
+
+                        <div class="sketch-box" style="padding: 12px 16px;">
+                            <div class="code-block compact" style="font-size: 16px; padding: 8px 12px; transform: none; margin: 4px 0;">current_row, current_col = 3, 3
+dest_row, dest_col = 1, 0</div>
+                        </div>
+
+                        <div class="sketch-box" style="border-color: #b8c5d0; padding: 10px 14px;">
+                            <p class="body-text" style="font-size: 19px; margin-bottom: 2px;"><strong>Loop 1 (south):</strong> 3 < 1? FALSE -- skip</p>
+                        </div>
+
+                        <div class="sketch-box" style="border-color: #e8a87c; background-color: rgba(232,168,124,0.04); padding: 10px 14px;">
+                            <p class="body-text" style="font-size: 19px; margin-bottom: 2px;"><strong>Loop 2 (north):</strong> current_row > dest_row</p>
+                            <p class="bullet level-1">3 > 1: row=2, append <strong>(2,3)</strong></p>
+                            <p class="bullet level-1">2 > 1: row=1, append <strong>(1,3)</strong></p>
+                            <p class="bullet level-1">1 > 1: FALSE -- stop</p>
+                        </div>
+
+                        <div class="sketch-box" style="border-color: #b8c5d0; padding: 10px 14px;">
+                            <p class="body-text" style="font-size: 19px; margin-bottom: 2px;"><strong>Loop 3 (east):</strong> 3 < 0? FALSE -- skip</p>
+                        </div>
+
+                        <div class="sketch-box" style="border-color: #5b8fa8; padding: 10px 14px;">
+                            <p class="body-text" style="font-size: 19px; margin-bottom: 2px;"><strong>Loop 4 (west):</strong> current_col > dest_col</p>
+                            <p class="bullet level-1">3 > 0: col=2, append <strong>(1,2)</strong></p>
+                            <p class="bullet level-1">2 > 0: col=1, append <strong>(1,1)</strong></p>
+                            <p class="bullet level-1">1 > 0: col=0, append <strong>(1,0)</strong></p>
+                            <p class="bullet level-1">0 > 0: FALSE -- stop</p>
+                        </div>
+
+                        <div class="answer-box">
+                            <p class="body-text" style="margin-left: 8px; font-family: 'Fira Code', monospace; font-size: 16px;">[(2,3), (1,3), (1,2), (1,1), (1,0)]</p>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="illustration" style="margin-top: 20px;">
+                            <svg width="325" height="350" viewBox="0 0 250 270">
+                                <!-- Grid lines - 4 rows x 4 cols -->
+                                <line x1="40" y1="40" x2="220" y2="40" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                                <line x1="40" y1="100" x2="220" y2="100" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                                <line x1="40" y1="160" x2="220" y2="160" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                                <line x1="40" y1="220" x2="220" y2="220" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                                <line x1="40" y1="20" x2="40" y2="240" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                                <line x1="100" y1="20" x2="100" y2="240" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                                <line x1="160" y1="20" x2="160" y2="240" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                                <line x1="220" y1="20" x2="220" y2="240" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
+                                <!-- Labels -->
+                                <text x="15" y="57" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">R0</text>
+                                <text x="15" y="117" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">R1</text>
+                                <text x="15" y="177" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">R2</text>
+                                <text x="15" y="237" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">R3</text>
+                                <text x="40" y="12" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">C0</text>
+                                <text x="100" y="12" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">C1</text>
+                                <text x="160" y="12" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">C2</text>
+                                <text x="220" y="12" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">C3</text>
+                                <!-- Up arrows (orange) from (3,3) to (1,3) -->
+                                <line x1="220" y1="212" x2="220" y2="168" stroke="#e8a87c" stroke-width="4" stroke-linecap="round"/>
+                                <polygon points="215,172 220,162 225,172" fill="#e8a87c"/>
+                                <line x1="220" y1="152" x2="220" y2="108" stroke="#e8a87c" stroke-width="4" stroke-linecap="round"/>
+                                <polygon points="215,112 220,102 225,112" fill="#e8a87c"/>
+                                <!-- Left arrows (teal) from (1,3) to (1,0) -->
+                                <line x1="212" y1="100" x2="168" y2="100" stroke="#5b8fa8" stroke-width="4" stroke-linecap="round"/>
+                                <polygon points="172,95 162,100 172,105" fill="#5b8fa8"/>
+                                <line x1="152" y1="100" x2="108" y2="100" stroke="#5b8fa8" stroke-width="4" stroke-linecap="round"/>
+                                <polygon points="112,95 102,100 112,105" fill="#5b8fa8"/>
+                                <line x1="92" y1="100" x2="48" y2="100" stroke="#5b8fa8" stroke-width="4" stroke-linecap="round"/>
+                                <polygon points="52,95 42,100 52,105" fill="#5b8fa8"/>
+                                <!-- Start (3,3) -->
+                                <circle cx="220" cy="220" r="8" fill="#e8a87c" stroke="#2d3436" stroke-width="2"/>
+                                <text x="220" y="258" font-family="Caveat, cursive" font-size="18" fill="#e8a87c" text-anchor="middle" font-weight="600">Start (3,3)</text>
+                                <!-- End (1,0) -->
+                                <circle cx="40" cy="100" r="8" fill="#85c88a" stroke="#2d3436" stroke-width="2"/>
+                                <text x="40" y="80" font-family="Caveat, cursive" font-size="18" fill="#85c88a" text-anchor="middle" font-weight="600">End (1,0)</text>
+                                <!-- Step numbers -->
+                                <circle cx="220" cy="160" r="10" fill="rgba(232,168,124,0.3)" stroke="#e8a87c" stroke-width="1.5"/>
+                                <text x="220" y="164" font-family="Caveat, cursive" font-size="14" fill="#e8a87c" text-anchor="middle" font-weight="600">1</text>
+                                <circle cx="220" cy="100" r="10" fill="rgba(232,168,124,0.3)" stroke="#e8a87c" stroke-width="1.5"/>
+                                <text x="220" y="104" font-family="Caveat, cursive" font-size="14" fill="#e8a87c" text-anchor="middle" font-weight="600">2</text>
+                                <circle cx="160" cy="100" r="10" fill="rgba(91,143,168,0.3)" stroke="#5b8fa8" stroke-width="1.5"/>
+                                <text x="160" y="104" font-family="Caveat, cursive" font-size="14" fill="#5b8fa8" text-anchor="middle" font-weight="600">3</text>
+                                <circle cx="100" cy="100" r="10" fill="rgba(91,143,168,0.3)" stroke="#5b8fa8" stroke-width="1.5"/>
+                                <text x="100" y="104" font-family="Caveat, cursive" font-size="14" fill="#5b8fa8" text-anchor="middle" font-weight="600">4</text>
+                                <!-- Direction labels -->
+                                <text x="240" y="170" font-family="Caveat, cursive" font-size="18" fill="#e8a87c" font-weight="600">north</text>
+                                <text x="150" y="88" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" text-anchor="middle" font-weight="600">west</text>
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">9 / 11</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- ═══ SLIDE 10: Edge Cases ═══ -->
+        <div id="slide-10" class="slide">
             <div class="title-bar">
                 <h1>Edge Cases</h1>
             </div>
             <div class="content">
-                <p class="header-text">Special situations the algorithm handles</p>
+                <p class="header-text">Special situations the algorithm handles automatically</p>
 
                 <div class="two-col">
                     <div class="col">
                         <div class="sketch-box">
-                            <p class="body-text"><strong>Same row -- only column movement:</strong></p>
-                            <p class="bullet">(2, 0) to (2, 3): just move right</p>
-                            <p class="bullet level-1">Path: (2,0) &rarr; (2,1) &rarr; (2,2) &rarr; (2,3)</p>
+                            <p class="body-text"><strong>Same row -- only column loops run:</strong></p>
+                            <p class="bullet">(2, 0) to (2, 3)</p>
+                            <p class="bullet level-1">Both row loops skip (2 == 2)</p>
+                            <p class="bullet level-1">path = <code style="font-family: 'Fira Code', monospace; font-size: 16px;">[(2,1), (2,2), (2,3)]</code></p>
                         </div>
 
                         <div class="sketch-box" style="border-color: #e8a87c; background-color: rgba(232,168,124,0.04);">
-                            <p class="body-text"><strong>Same column -- only row movement:</strong></p>
-                            <p class="bullet">(0, 1) to (3, 1): just move down</p>
-                            <p class="bullet level-1">Path: (0,1) &rarr; (1,1) &rarr; (2,1) &rarr; (3,1)</p>
+                            <p class="body-text"><strong>Same column -- only row loops run:</strong></p>
+                            <p class="bullet">(0, 1) to (3, 1)</p>
+                            <p class="bullet level-1">Both col loops skip (1 == 1)</p>
+                            <p class="bullet level-1">path = <code style="font-family: 'Fira Code', monospace; font-size: 16px;">[(1,1), (2,1), (3,1)]</code></p>
                         </div>
 
                         <div class="sketch-box" style="border-color: #85c88a; background-color: rgba(133,200,138,0.04);">
-                            <p class="body-text"><strong>Same position -- no movement:</strong></p>
-                            <p class="bullet">(1, 1) to (1, 1): path is just [(1, 1)]</p>
-                            <p class="bullet level-1">Manhattan distance = 0</p>
+                            <p class="body-text"><strong>Same position -- all 4 loops skip:</strong></p>
+                            <p class="bullet">(1, 1) to (1, 1)</p>
+                            <p class="bullet level-1">path = <code style="font-family: 'Fira Code', monospace; font-size: 16px;">[]</code> (empty list)</p>
+                            <p class="bullet level-1">len(path) = 0 -- already there!</p>
                         </div>
 
                         <div class="answer-box">
-                            <p class="body-text" style="margin-left: 8px;"><strong>All of these work with our algorithm!</strong> No special cases needed.</p>
+                            <p class="body-text" style="margin-left: 8px;"><strong>No special cases needed.</strong> The while loop conditions handle everything.</p>
                         </div>
                     </div>
                     <div class="col">
@@ -1250,160 +1402,83 @@ Else:
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
-                <span class="slide-counter">9 / 11</span>
-                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
-            </div>
-        </div>
-
-        <!-- ═══ SLIDE 10: Your Turn! ═══ -->
-        <div id="slide-10" class="slide">
-            <div class="title-bar">
-                <h1>Your Turn!</h1>
-            </div>
-            <div class="content">
-                <p class="header-text">Activity: Hand-Trace the Algorithm</p>
-
-                <div class="sketch-box">
-                    <div class="activity-step">
-                        <span class="step-number">1</span>
-                        <span class="step-text">Trace the path from <strong>(0, 0)</strong> to <strong>(2, 2)</strong></span>
-                    </div>
-                    <div class="activity-step">
-                        <span class="step-number">2</span>
-                        <span class="step-text">Trace the path from <strong>(3, 3)</strong> to <strong>(0, 1)</strong></span>
-                    </div>
-                    <div class="activity-step">
-                        <span class="step-number">3</span>
-                        <span class="step-text">Trace the path from <strong>(1, 3)</strong> to <strong>(1, 0)</strong></span>
-                    </div>
-                    <div class="activity-step">
-                        <span class="step-number">4</span>
-                        <span class="step-text">Trace the path from <strong>(0, 2)</strong> to <strong>(3, 2)</strong></span>
-                    </div>
-                </div>
-
-                <div class="spacer"></div>
-
-                <div class="sketch-box" style="border-color: #e8a87c; background-color: rgba(232,168,124,0.04);">
-                    <p class="header-text" style="margin-top: 0;">For each path:</p>
-                    <p class="bullet">Write out every coordinate in the path</p>
-                    <p class="bullet">Count the total number of steps</p>
-                    <p class="bullet">Verify: steps = |row difference| + |col difference|</p>
-                </div>
-
-                <div class="spacer"></div>
-
-                <p class="header-text">Checkpoints</p>
-                <div class="sketch-box" style="border-color: #85c88a; background-color: rgba(133,200,138,0.04);">
-                    <div class="checkpoint">
-                        <span class="check-icon"></span>
-                        <span class="step-text">Can you trace a path in all four directions?</span>
-                    </div>
-                    <div class="checkpoint">
-                        <span class="check-icon"></span>
-                        <span class="step-text">Do your step counts match the Manhattan distance?</span>
-                    </div>
-                    <div class="checkpoint">
-                        <span class="check-icon"></span>
-                        <span class="step-text">Can you handle the "same row" and "same column" cases?</span>
-                    </div>
-                </div>
-
-                <div class="illustration" style="margin-top: 8px;">
-                    <svg width="390" height="280" viewBox="0 -18 300 218">
-                        <!-- Blank grid for students to trace on -->
-                        <line x1="40" y1="30" x2="260" y2="30" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
-                        <line x1="40" y1="85" x2="260" y2="85" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
-                        <line x1="40" y1="140" x2="260" y2="140" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
-                        <line x1="40" y1="195" x2="260" y2="195" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
-                        <line x1="40" y1="10" x2="40" y2="195" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
-                        <line x1="113" y1="10" x2="113" y2="195" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
-                        <line x1="186" y1="10" x2="186" y2="195" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
-                        <line x1="260" y1="10" x2="260" y2="195" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
-                        <!-- Row/Col labels -->
-                        <text x="20" y="40" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">R0</text>
-                        <text x="20" y="95" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">R1</text>
-                        <text x="20" y="150" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">R2</text>
-                        <text x="20" y="205" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">R3</text>
-                        <text x="40" y="6" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">C0</text>
-                        <text x="113" y="6" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">C1</text>
-                        <text x="186" y="6" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">C2</text>
-                        <text x="260" y="6" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle">C3</text>
-                        <!-- Hint: pencil icon -->
-                        <text x="150" y="220" font-family="Caveat, cursive" font-size="18" fill="#636e72" text-anchor="middle" font-style="italic">Use this grid to trace your paths!</text>
-                    </svg>
-                </div>
-            </div>
-            <div class="slide-navigation">
-                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
                 <span class="slide-counter">10 / 11</span>
                 <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
             </div>
         </div>
 
-        <!-- ═══ SLIDE 11: Connection to Next Lesson ═══ -->
+        <!-- ═══ SLIDE 11: Your Turn! + Connection to Next Lesson ═══ -->
         <div id="slide-11" class="slide">
             <div class="title-bar">
-                <h1>What's Next</h1>
+                <h1>Your Turn!</h1>
             </div>
             <div class="content">
+                <p class="header-text">Activity: Code and Trace compute_path</p>
+
                 <div class="two-col">
                     <div class="col">
-                        <p class="header-text">What you did today</p>
                         <div class="sketch-box">
-                            <p class="bullet">Learned the <span class="sketch-highlight">Manhattan distance</span> concept</p>
-                            <p class="bullet">Traced the <span class="sketch-highlight">"rows first, then columns"</span> algorithm by hand</p>
-                            <p class="bullet">Handled all four directions with step values (+1 / -1)</p>
+                            <div class="activity-step">
+                                <span class="step-number">1</span>
+                                <span class="step-text">Type in the full <strong>compute_path</strong> function (4 while loops)</span>
+                            </div>
+                            <div class="activity-step">
+                                <span class="step-number">2</span>
+                                <span class="step-text">Test: <code style="font-family: 'Fira Code', monospace; font-size: 18px;">compute_path((0, 0), (2, 3))</code></span>
+                            </div>
+                            <div class="activity-step">
+                                <span class="step-number">3</span>
+                                <span class="step-text">Test: <code style="font-family: 'Fira Code', monospace; font-size: 18px;">compute_path((3, 3), (1, 0))</code></span>
+                            </div>
+                            <div class="activity-step">
+                                <span class="step-number">4</span>
+                                <span class="step-text">Test: <code style="font-family: 'Fira Code', monospace; font-size: 18px;">compute_path((1, 1), (1, 1))</code></span>
+                            </div>
+                        </div>
+
+                        <div class="spacer"></div>
+
+                        <div class="sketch-box" style="border-color: #85c88a; background-color: rgba(133,200,138,0.04);">
+                            <p class="header-text" style="margin-top: 0;">Expected outputs</p>
+                            <div class="code-block compact" style="font-size: 16px; padding: 10px 14px; transform: none; line-height: 1.6;">(0,0) to (2,3): [(1,0), (2,0), (2,1), (2,2), (2,3)]
+(3,3) to (1,0): [(2,3), (1,3), (1,2), (1,1), (1,0)]
+(1,1) to (1,1): []</div>
                         </div>
                     </div>
                     <div class="col">
-                        <p class="header-text">Next lesson (Lesson 5)</p>
+                        <p class="header-text">Checkpoints</p>
+                        <div class="sketch-box">
+                            <div class="checkpoint">
+                                <span class="check-icon"></span>
+                                <span class="step-text">Your function returns a list of tuples</span>
+                            </div>
+                            <div class="checkpoint">
+                                <span class="check-icon"></span>
+                                <span class="step-text">Start position is NOT in the path</span>
+                            </div>
+                            <div class="checkpoint">
+                                <span class="check-icon"></span>
+                                <span class="step-text">len(path) matches Manhattan distance</span>
+                            </div>
+                            <div class="checkpoint">
+                                <span class="check-icon"></span>
+                                <span class="step-text">Same position returns empty list []</span>
+                            </div>
+                        </div>
+
+                        <div class="spacer"></div>
+
+                        <p class="header-text">What's Next (Lesson 5)</p>
                         <div class="sketch-box" style="border-color: #e8a87c; background-color: rgba(232,168,124,0.04);">
-                            <p class="bullet">Implement the Manhattan algorithm as a <strong>Python class</strong></p>
-                            <p class="bullet">Write <code style="font-family: 'Fira Code', monospace;">compute_path(destination)</code> that returns a list of tuples</p>
-                            <p class="bullet">The computer does the tracing for you!</p>
+                            <p class="bullet">Turn the path list into <strong>driving directions</strong></p>
+                            <p class="bullet">Convert (row, col) steps into headings the robot can follow</p>
+                            <p class="bullet">The robot will navigate the grid using this function!</p>
+                        </div>
+
+                        <div class="insight-box" style="font-size: 24px; margin-top: 14px;">
+                            Today you wrote the brain. Next lesson, the robot gets to use it.
                         </div>
                     </div>
-                </div>
-
-                <div class="spacer"></div>
-
-                <div class="insight-box">
-                    You traced by hand today. Next lesson, you'll teach the computer to do the same thing.
-                </div>
-
-                <div class="illustration" style="margin-top: 16px;">
-                    <svg width="585" height="260" viewBox="0 0 450 200">
-                        <!-- Left side: Hand tracing -->
-                        <rect x="20" y="20" width="170" height="140" rx="12" fill="rgba(91,143,168,0.06)" stroke="#5b8fa8" stroke-width="2"/>
-                        <text x="105" y="48" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle" font-weight="600">Today: By Hand</text>
-                        <!-- Mini grid -->
-                        <line x1="50" y1="65" x2="170" y2="65" stroke="#2d3436" stroke-width="1.5"/>
-                        <line x1="50" y1="105" x2="170" y2="105" stroke="#2d3436" stroke-width="1.5"/>
-                        <line x1="50" y1="145" x2="170" y2="145" stroke="#2d3436" stroke-width="1.5"/>
-                        <line x1="50" y1="55" x2="50" y2="150" stroke="#2d3436" stroke-width="1.5"/>
-                        <line x1="110" y1="55" x2="110" y2="150" stroke="#2d3436" stroke-width="1.5"/>
-                        <line x1="170" y1="55" x2="170" y2="150" stroke="#2d3436" stroke-width="1.5"/>
-                        <!-- L-path -->
-                        <path d="M50 65 L50 145 L170 145" fill="none" stroke="#e8a87c" stroke-width="3" stroke-linecap="round" stroke-dasharray="6,4"/>
-                        <polygon points="166,141 174,145 166,149" fill="#e8a87c"/>
-                        <!-- Pencil icon -->
-                        <text x="105" y="178" font-family="Caveat, cursive" font-size="16" fill="#636e72" text-anchor="middle">pencil + paper</text>
-
-                        <!-- Arrow -->
-                        <line x1="200" y1="90" x2="250" y2="90" stroke="#b8c5d0" stroke-width="3" stroke-linecap="round"/>
-                        <polygon points="246,84 258,90 246,96" fill="#b8c5d0"/>
-
-                        <!-- Right side: Python code -->
-                        <rect x="260" y="20" width="180" height="140" rx="12" fill="rgba(232,168,124,0.06)" stroke="#e8a87c" stroke-width="2"/>
-                        <text x="350" y="46" font-family="Caveat, cursive" font-size="18" fill="#e8a87c" text-anchor="middle" font-weight="600">Next: Python Class</text>
-                        <!-- Code preview -->
-                        <text x="270" y="70" font-family="Fira Code, monospace" font-size="11" fill="#2d3436">path = manhattan</text>
-                        <text x="270" y="85" font-family="Fira Code, monospace" font-size="11" fill="#2d3436">  .compute_path((2, 3))</text>
-                        <text x="270" y="112" font-family="Fira Code, monospace" font-size="11" fill="#85c88a"># Returns list of</text>
-                        <text x="270" y="127" font-family="Fira Code, monospace" font-size="11" fill="#85c88a"># (row, col) tuples</text>
-                        <text x="350" y="178" font-family="Caveat, cursive" font-size="16" fill="#636e72" text-anchor="middle">computer does it!</text>
-                    </svg>
                 </div>
             </div>
             <div class="slide-navigation">

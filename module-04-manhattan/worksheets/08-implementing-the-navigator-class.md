@@ -89,11 +89,11 @@ For each scenario, count clockwise steps from current heading to needed heading 
 
 Trace through the entire `drive_path()` method for the given path. Fill in every column for each step.
 
-**Path:** `[(0, 0), (1, 0), (2, 0), (2, 1), (2, 2)]`
+**Path:** `[(1, 0), (2, 0), (2, 1), (2, 2)]`
 **Starting position:** (0, 0)
 **Starting heading:** 0 (N)
 
-| Step (i) | next_pos | Needed Heading | Current Heading | Right Turns | New Heading | New Position |
+| Step | next_pos | Needed Heading | Current Heading | Right Turns | New Heading | New Position |
 |---|---|---|---|---|---|---|
 | 1 | (1, 0) | __________ | 0 (N) | __________ | __________ | (1, 0) |
 | 2 | (2, 0) | __________ | __________ | __________ | __________ | (2, 0) |
@@ -106,11 +106,11 @@ Trace through the entire `drive_path()` method for the given path. Fill in every
 
 **Now trace a second path:**
 
-**Path:** `[(3, 3), (3, 2), (3, 1), (2, 1), (1, 1), (0, 1)]`
+**Path:** `[(3, 2), (3, 1), (2, 1), (1, 1), (0, 1)]`
 **Starting position:** (3, 3)
 **Starting heading:** 1 (E)
 
-| Step (i) | next_pos | Needed Heading | Current Heading | Right Turns | New Heading | New Position |
+| Step | next_pos | Needed Heading | Current Heading | Right Turns | New Heading | New Position |
 |---|---|---|---|---|---|---|
 | 1 | (3, 2) | __________ | 1 (E) | __________ | __________ | (3, 2) |
 | 2 | (3, 1) | __________ | __________ | __________ | __________ | (3, 1) |
@@ -158,8 +158,7 @@ class Navigator:
                 self.heading = __________
 
     def drive_path(self, path):
-        for i in range(____, len(path)):
-            next_pos = path[____]
+        for next_pos in ____________:
             needed = self.get_needed_heading(____________)
             if self.heading == ____________:
                 self.line_track.drivetrain.straight(____)
@@ -172,7 +171,7 @@ class Navigator:
 
 ____________________________________________________________________
 
-**Why does the loop start at `range(1, ...)` instead of `range(0, ...)`?**
+**Why does the loop iterate directly with `for next_pos in path:` instead of skipping elements?**
 
 ____________________________________________________________________
 
@@ -288,8 +287,7 @@ class Navigator:
                 self.heading = 0
 
     def drive_path(self, path):
-        for i in range(1, len(path)):
-            next_pos = path[i]
+        for next_pos in path:
             needed = self.get_needed_heading(next_pos)
             if self.heading == needed:
                 self.line_track.drivetrain.straight(8)
@@ -298,6 +296,8 @@ class Navigator:
             self.position = next_pos
 ```
 
+**Blanks:** **path**, **next_pos**, **needed**, **8**, **needed**, **next_pos**
+
 `straight(8)` is called when the robot is already facing the right direction but is still sitting on the previous intersection. It needs to drive forward 8 cm to clear the intersection before `track_until_cross()` starts looking for the next crossing line.
 
-The loop starts at 1 because index 0 is the starting position -- the robot is already there and does not need to drive to it.
+The loop iterates directly with `for next_pos in path:` because the path does not include the starting position -- every element is a new cell to drive to.
