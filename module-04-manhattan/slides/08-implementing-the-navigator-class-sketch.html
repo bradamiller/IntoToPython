@@ -8,676 +8,50 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Patrick+Hand&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: 'Patrick Hand', cursive;
-            background-color: #faf8f5;
-            overflow: hidden;
-            color: #2d3436;
-        }
-
-        /* ── Sidebar Navigation ── */
-        .nav-sidebar {
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 240px;
-            height: 100vh;
-            background-color: #faf8f5;
-            border-right: 3px solid #b8c5d0;
-            padding: 24px 16px;
-            overflow-y: auto;
-            z-index: 1000;
-            background-image:
-                linear-gradient(rgba(180, 200, 220, 0.15) 1px, transparent 1px);
-            background-size: 100% 28px;
-        }
-
-        .nav-header h2 {
-            font-family: 'Caveat', cursive;
-            font-size: 20px;
-            color: #5b8fa8;
-            margin-bottom: 4px;
-            font-weight: 600;
-        }
-
-        .nav-header h3 {
-            font-family: 'Caveat', cursive;
-            font-size: 16px;
-            color: #636e72;
-            margin-bottom: 20px;
-            font-weight: 400;
-        }
-
-        .slide-nav {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .nav-item {
-            color: #2d3436;
-            text-decoration: none;
-            padding: 6px 10px;
-            margin-bottom: 3px;
-            border-radius: 6px;
-            font-size: 15px;
-            line-height: 1.3;
-            transition: all 0.2s;
-            font-family: 'Patrick Hand', cursive;
-        }
-
-        .nav-item:hover {
-            background-color: rgba(91, 143, 168, 0.15);
-        }
-
-        .nav-item.active {
-            background-color: rgba(91, 143, 168, 0.2);
-            font-weight: bold;
-            border-left: 3px solid #5b8fa8;
-        }
-
-        /* ── Slides Container ── */
-        .slides-container {
-            margin-left: 240px;
-            height: 100vh;
-            position: relative;
-        }
-
-        .slide {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: calc(100vw - 240px);
-            height: 100vh;
-            background-color: #fdfcfa;
-            display: none;
-            flex-direction: column;
-            /* Notebook paper lines */
-            background-image:
-                linear-gradient(rgba(180, 200, 220, 0.12) 1px, transparent 1px);
-            background-size: 100% 32px;
-            background-position: 0 80px;
-        }
-
-        .slide.active {
-            display: flex;
-        }
-
-        /* ── Title Bar (sketch style) ── */
-        .title-bar {
-            padding: 20px 50px;
-            min-height: 80px;
-            display: flex;
-            align-items: center;
-            position: relative;
-            border-bottom: 3px solid #5b8fa8;
-            background-color: rgba(91, 143, 168, 0.06);
-        }
-
-        .title-bar::after {
-            content: '';
-            position: absolute;
-            bottom: -6px;
-            left: 30px;
-            right: 60px;
-            height: 3px;
-            background-color: rgba(91, 143, 168, 0.15);
-            transform: rotate(-0.3deg);
-        }
-
-        .title-bar h1 {
-            font-family: 'Caveat', cursive;
-            font-size: 36px;
-            font-weight: 700;
-            color: #2d3436;
-            transform: rotate(-0.5deg);
-        }
-
-        /* ── Slide Content ── */
-        .content {
-            flex: 1;
-            padding: 30px 50px;
-            padding-bottom: 80px;
-            overflow-y: auto;
-            max-width: 1100px;
-        }
-
-        /* ── Text Styles ── */
-        .header-text {
-            font-family: 'Caveat', cursive;
-            font-size: 28px;
-            font-weight: 600;
-            color: #5b8fa8;
-            margin-bottom: 12px;
-            margin-top: 8px;
-        }
-
-        .body-text {
-            font-size: 22px;
-            margin-bottom: 10px;
-            line-height: 1.5;
-        }
-
-        .bold {
-            font-weight: bold;
-        }
-
-        .bullet {
-            font-size: 22px;
-            margin-bottom: 6px;
-            margin-left: 24px;
-            line-height: 1.4;
-            position: relative;
-            padding-left: 20px;
-        }
-
-        .bullet::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 11px;
-            width: 8px;
-            height: 8px;
-            background-color: #5b8fa8;
-            border-radius: 50%;
-            transform: rotate(5deg);
-        }
-
-        .bullet.level-1 {
-            margin-left: 52px;
-            font-size: 20px;
-        }
-
-        .bullet.level-1::before {
-            width: 6px;
-            height: 6px;
-            background-color: #e8a87c;
-            top: 10px;
-        }
-
-        /* ── Code Blocks (sketch style) ── */
-        .code-block {
-            background-color: #f0ede8;
-            border: 2px solid #b8c5d0;
-            border-radius: 12px;
-            padding: 18px 22px;
-            margin: 16px 0;
-            font-family: 'Fira Code', monospace;
-            font-size: 16px;
-            line-height: 1.5;
-            color: #2d3436;
-            overflow-x: auto;
-            position: relative;
-            box-shadow: 3px 3px 0 rgba(91, 143, 168, 0.15);
-            transform: rotate(-0.2deg);
-            white-space: pre;
-        }
-
-        .code-block::before {
-            content: '< / >';
-            position: absolute;
-            top: -12px;
-            right: 20px;
-            background-color: #fdfcfa;
-            padding: 2px 10px;
-            font-family: 'Caveat', cursive;
-            font-size: 16px;
-            color: #5b8fa8;
-            border: 2px solid #b8c5d0;
-            border-radius: 8px;
-        }
-
-        .code-block.compact::before {
-            display: none;
-        }
-
-        /* ── Tables (sketch style) ── */
-        .content-table {
-            width: 90%;
-            border-collapse: separate;
-            border-spacing: 0;
-            margin: 16px auto;
-            font-size: 18px;
-            border: 2px solid #b8c5d0;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 3px 3px 0 rgba(91, 143, 168, 0.12);
-        }
-
-        .content-table th {
-            background-color: rgba(91, 143, 168, 0.2);
-            color: #2d3436;
-            padding: 10px 16px;
-            text-align: center;
-            font-family: 'Caveat', cursive;
-            font-size: 22px;
-            font-weight: 600;
-            border-bottom: 2px solid #b8c5d0;
-        }
-
-        .content-table td {
-            padding: 8px 16px;
-            text-align: center;
-            border-bottom: 1px dashed #ccc;
-            font-size: 18px;
-        }
-
-        .content-table tr:last-child td {
-            border-bottom: none;
-        }
-
-        .content-table tr:nth-child(even) {
-            background-color: rgba(232, 168, 124, 0.06);
-        }
-
-        .spacer {
-            height: 14px;
-        }
-
-        /* ── Sketch Decorations ── */
-        .sketch-box {
-            border: 2px solid #5b8fa8;
-            border-radius: 14px;
-            padding: 18px;
-            margin: 12px 0;
-            position: relative;
-            background-color: rgba(91, 143, 168, 0.04);
-            box-shadow: 2px 2px 0 rgba(91, 143, 168, 0.1);
-        }
-
-        .sketch-highlight {
-            background: linear-gradient(180deg, transparent 60%, rgba(232, 168, 124, 0.3) 60%);
-            padding: 0 4px;
-        }
-
-        .sketch-arrow {
-            display: inline-block;
-            font-size: 28px;
-            color: #e8a87c;
-            margin: 0 8px;
-        }
-
-        /* ── Illustrations (SVG inline) ── */
-        .illustration {
-            display: flex;
-            justify-content: center;
-            margin: 16px 0;
-        }
-
-        .illustration svg {
-            max-width: 100%;
-        }
-
-        /* ── Question callout ── */
-        .question-box {
-            border: 2px dashed #e8a87c;
-            border-radius: 14px;
-            padding: 16px 20px;
-            margin: 14px 0;
-            background-color: rgba(232, 168, 124, 0.08);
-            position: relative;
-        }
-
-        .question-box::before {
-            content: '?';
-            position: absolute;
-            top: -14px;
-            left: 16px;
-            background-color: #e8a87c;
-            color: white;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Caveat', cursive;
-            font-size: 20px;
-            font-weight: 700;
-        }
-
-        .answer-box {
-            border: 2px dashed #85c88a;
-            border-radius: 14px;
-            padding: 16px 20px;
-            margin: 14px 0;
-            background-color: rgba(133, 200, 138, 0.08);
-            position: relative;
-        }
-
-        .answer-box::before {
-            content: '!';
-            position: absolute;
-            top: -14px;
-            left: 16px;
-            background-color: #85c88a;
-            color: white;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: 'Caveat', cursive;
-            font-size: 20px;
-            font-weight: 700;
-        }
-
-        /* ── Key insight callout ── */
-        .insight-box {
-            border: 2px solid #e8a87c;
-            border-radius: 14px;
-            padding: 16px 20px;
-            margin: 14px 0;
-            background-color: rgba(232, 168, 124, 0.08);
-            text-align: center;
-            font-family: 'Caveat', cursive;
-            font-size: 26px;
-            font-weight: 600;
-            color: #2d3436;
-            transform: rotate(-0.3deg);
-            box-shadow: 3px 3px 0 rgba(232, 168, 124, 0.15);
-        }
-
-        /* ── Activity slide styling ── */
-        .activity-step {
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 10px;
-            padding-left: 8px;
-        }
-
-        .step-number {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 32px;
-            height: 32px;
-            background-color: #5b8fa8;
-            color: white;
-            border-radius: 50%;
-            font-family: 'Caveat', cursive;
-            font-size: 20px;
-            font-weight: 700;
-            margin-right: 12px;
-            margin-top: 2px;
-            box-shadow: 2px 2px 0 rgba(91, 143, 168, 0.2);
-        }
-
-        .step-text {
-            font-size: 21px;
-            line-height: 1.4;
-            padding-top: 4px;
-        }
-
-        /* ── Checkpoint style ── */
-        .checkpoint {
-            display: flex;
-            align-items: flex-start;
-            margin-bottom: 8px;
-            padding-left: 8px;
-        }
-
-        .check-icon {
-            min-width: 26px;
-            height: 26px;
-            border: 2px solid #85c88a;
-            border-radius: 6px;
-            margin-right: 12px;
-            margin-top: 4px;
-            position: relative;
-        }
-
-        .checkpoint .step-text {
-            font-size: 20px;
-        }
-
-        /* ── Navigation ── */
-        .slide-navigation {
-            position: absolute;
-            bottom: 16px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            background-color: rgba(250, 248, 245, 0.95);
-            padding: 8px 20px;
-            border-radius: 25px;
-            border: 2px solid #b8c5d0;
-            box-shadow: 2px 2px 0 rgba(91, 143, 168, 0.1);
-        }
-
-        .nav-btn {
-            padding: 6px 18px;
-            border: 2px solid #5b8fa8;
-            border-radius: 20px;
-            background-color: rgba(91, 143, 168, 0.1);
-            color: #2d3436;
-            font-size: 16px;
-            font-family: 'Patrick Hand', cursive;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .nav-btn:hover:not(:disabled) {
-            background-color: rgba(91, 143, 168, 0.25);
-        }
-
-        .nav-btn:disabled {
-            border-color: #ccc;
-            color: #aaa;
-            background-color: transparent;
-            cursor: not-allowed;
-        }
-
-        .slide-counter {
-            font-size: 16px;
-            font-family: 'Caveat', cursive;
-            font-weight: 600;
-            color: #5b8fa8;
-            min-width: 60px;
-            text-align: center;
-        }
-
-        /* ── Title Slide Special ── */
-        .slide-title-page {
-            background-image: none;
-            background-color: #fdfcfa;
-        }
-
-        .title-hero {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            padding: 40px;
-            text-align: center;
-        }
-
-        .title-hero .module-label {
-            font-family: 'Patrick Hand', cursive;
-            font-size: 22px;
-            color: #5b8fa8;
-            margin-bottom: 8px;
-            letter-spacing: 2px;
-        }
-
-        .title-hero .lesson-title {
-            font-family: 'Caveat', cursive;
-            font-size: 64px;
-            font-weight: 700;
-            color: #2d3436;
-            margin-bottom: 24px;
-            transform: rotate(-1deg);
-            position: relative;
-        }
-
-        .title-hero .lesson-title::after {
-            content: '';
-            position: absolute;
-            bottom: -4px;
-            left: 10%;
-            right: 10%;
-            height: 4px;
-            background-color: #e8a87c;
-            border-radius: 2px;
-            transform: rotate(0.5deg);
-        }
-
-        .title-hero .divider-sketch {
-            width: 120px;
-            height: 3px;
-            background: #b8c5d0;
-            margin: 16px auto;
-            border-radius: 2px;
-            transform: rotate(-1deg);
-        }
-
-        .title-content {
-            display: flex;
-            gap: 60px;
-            margin-top: 20px;
-            text-align: left;
-            max-width: 900px;
-        }
-
-        .title-section {
-            flex: 1;
-        }
-
-        .title-section h3 {
-            font-family: 'Caveat', cursive;
-            font-size: 26px;
-            font-weight: 600;
-            color: #5b8fa8;
-            margin-bottom: 10px;
-            border-bottom: 2px solid rgba(91, 143, 168, 0.2);
-            padding-bottom: 4px;
-        }
-
-        .title-section .bullet {
-            font-size: 19px;
-        }
-
-        .title-section .bullet::before {
-            top: 9px;
-        }
-
-        /* ── Grid illustration ── */
-        .grid-illustration {
-            display: flex;
-            justify-content: center;
-            margin: 20px 0;
-        }
-
-        /* ── Progression arrow ── */
-        .progression {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            margin: 20px 0;
-            flex-wrap: wrap;
-        }
-
-        .progression-step {
-            border: 2px solid #b8c5d0;
-            border-radius: 14px;
-            padding: 12px 18px;
-            text-align: center;
-            font-size: 18px;
-            background-color: rgba(91, 143, 168, 0.05);
-            min-width: 180px;
-        }
-
-        .progression-step.current {
-            border-color: #e8a87c;
-            background-color: rgba(232, 168, 124, 0.1);
-            box-shadow: 3px 3px 0 rgba(232, 168, 124, 0.15);
-        }
-
-        .progression-step .step-label {
-            font-family: 'Caveat', cursive;
-            font-size: 16px;
-            color: #5b8fa8;
-            font-weight: 600;
-        }
-
-        .progression-arrow {
-            font-size: 28px;
-            color: #b8c5d0;
-        }
-
-        /* ── Two-column layout ── */
-        .two-col {
-            display: flex;
-            gap: 30px;
-            margin-top: 10px;
-        }
-
-        .two-col .col {
-            flex: 1;
-        }
-
-        /* ── Robot SVG ── */
-        .robot-icon {
-            display: inline-block;
-        }
-
-        /* ── Photo panels ── */
-        .photo-comparison {
-            display: flex;
-            gap: 24px;
-            justify-content: center;
-            align-items: flex-start;
-            margin: 16px 0;
-        }
-
-        .photo-panel {
-            text-align: center;
-            flex: 1;
-            max-width: 280px;
-        }
-
-        .photo-panel img {
-            width: 100%;
-            border-radius: 12px;
-            border: 3px solid #b8c5d0;
-            box-shadow: 4px 4px 0 rgba(91, 143, 168, 0.15);
-            transform: rotate(-0.5deg);
-        }
-
-        .photo-panel.stuck img {
-            border-color: #e85d5d;
-            box-shadow: 4px 4px 0 rgba(232, 93, 93, 0.15);
-        }
-
-        .photo-panel.cleared img {
-            border-color: #85c88a;
-            box-shadow: 4px 4px 0 rgba(133, 200, 138, 0.15);
-        }
-
-        .photo-caption {
-            font-family: 'Caveat', cursive;
-            font-size: 20px;
-            font-weight: 600;
-            margin-top: 8px;
-        }
-
-        .photo-caption.stuck {
-            color: #e85d5d;
-        }
-
-        .photo-caption.cleared {
-            color: #85c88a;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Patrick Hand', cursive; background-color: #faf8f5; overflow: hidden; color: #2d3436; }
+        .nav-sidebar { position: fixed; left: 0; top: 0; width: 240px; height: 100vh; background-color: #faf8f5; border-right: 3px solid #b8c5d0; padding: 24px 16px; overflow-y: auto; z-index: 1000; background-image: linear-gradient(rgba(180, 200, 220, 0.15) 1px, transparent 1px); background-size: 100% 28px; }
+        .nav-header h2 { font-family: 'Caveat', cursive; font-size: 20px; color: #5b8fa8; margin-bottom: 4px; font-weight: 600; }
+        .nav-header h3 { font-family: 'Caveat', cursive; font-size: 16px; color: #636e72; margin-bottom: 20px; font-weight: 400; }
+        .slide-nav { display: flex; flex-direction: column; }
+        .nav-item { color: #2d3436; text-decoration: none; padding: 6px 10px; margin-bottom: 3px; border-radius: 6px; font-size: 15px; line-height: 1.3; transition: all 0.2s; font-family: 'Patrick Hand', cursive; }
+        .nav-item:hover { background-color: rgba(91, 143, 168, 0.15); }
+        .nav-item.active { background-color: rgba(91, 143, 168, 0.2); font-weight: bold; border-left: 3px solid #5b8fa8; }
+        .slides-container { margin-left: 240px; height: 100vh; position: relative; }
+        .slide { position: absolute; top: 0; left: 0; width: calc(100vw - 240px); height: 100vh; background-color: #fdfcfa; display: none; flex-direction: column; background-image: linear-gradient(rgba(180, 200, 220, 0.12) 1px, transparent 1px); background-size: 100% 32px; background-position: 0 80px; }
+        .slide.active { display: flex; }
+        .title-bar { padding: 20px 50px; min-height: 80px; display: flex; align-items: center; position: relative; border-bottom: 3px solid #5b8fa8; background-color: rgba(91, 143, 168, 0.06); }
+        .title-bar::after { content: ''; position: absolute; bottom: -6px; left: 30px; right: 60px; height: 3px; background-color: rgba(91, 143, 168, 0.15); transform: rotate(-0.3deg); }
+        .title-bar h1 { font-family: 'Caveat', cursive; font-size: 36px; font-weight: 700; color: #2d3436; transform: rotate(-0.5deg); }
+        .content { flex: 1; padding: 30px 50px; padding-bottom: 80px; overflow-y: auto; max-width: 1100px; }
+        .header-text { font-family: 'Caveat', cursive; font-size: 28px; font-weight: 600; color: #5b8fa8; margin-bottom: 12px; margin-top: 8px; }
+        .body-text { font-size: 22px; margin-bottom: 10px; line-height: 1.5; }
+        .bullet { font-size: 22px; margin-bottom: 6px; margin-left: 24px; line-height: 1.4; position: relative; padding-left: 20px; }
+        .bullet::before { content: ''; position: absolute; left: 0; top: 11px; width: 8px; height: 8px; background-color: #5b8fa8; border-radius: 50%; transform: rotate(5deg); }
+        .code-block { background-color: #f0ede8; border: 2px solid #b8c5d0; border-radius: 12px; padding: 18px 22px; margin: 16px 0; font-family: 'Fira Code', monospace; font-size: 16px; line-height: 1.5; color: #2d3436; overflow-x: auto; position: relative; box-shadow: 3px 3px 0 rgba(91, 143, 168, 0.15); transform: rotate(-0.2deg); white-space: pre; }
+        .code-block::before { content: '< / >'; position: absolute; top: -12px; right: 20px; background-color: #fdfcfa; padding: 2px 10px; font-family: 'Caveat', cursive; font-size: 16px; color: #5b8fa8; border: 2px solid #b8c5d0; border-radius: 8px; }
+        .code-block.compact::before { display: none; }
+        .sketch-box { border: 2px solid #5b8fa8; border-radius: 14px; padding: 18px; margin: 12px 0; position: relative; background-color: rgba(91, 143, 168, 0.04); box-shadow: 2px 2px 0 rgba(91, 143, 168, 0.1); }
+        .sketch-highlight { background: linear-gradient(180deg, transparent 60%, rgba(232, 168, 124, 0.3) 60%); padding: 0 4px; }
+        .answer-box { border: 2px dashed #85c88a; border-radius: 14px; padding: 16px 20px; margin: 14px 0; background-color: rgba(133, 200, 138, 0.08); position: relative; }
+        .answer-box::before { content: '!'; position: absolute; top: -14px; left: 16px; background-color: #85c88a; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Caveat', cursive; font-size: 20px; font-weight: 700; }
+        .insight-box { border: 2px solid #e8a87c; border-radius: 14px; padding: 16px 20px; margin: 14px 0; background-color: rgba(232, 168, 124, 0.08); text-align: center; font-family: 'Caveat', cursive; font-size: 26px; font-weight: 600; color: #2d3436; transform: rotate(-0.3deg); box-shadow: 3px 3px 0 rgba(232, 168, 124, 0.15); }
+        .slide-navigation { position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 20px; background-color: rgba(250, 248, 245, 0.95); padding: 8px 20px; border-radius: 25px; border: 2px solid #b8c5d0; box-shadow: 2px 2px 0 rgba(91, 143, 168, 0.1); }
+        .nav-btn { padding: 6px 18px; border: 2px solid #5b8fa8; border-radius: 20px; background-color: rgba(91, 143, 168, 0.1); color: #2d3436; font-size: 16px; font-family: 'Patrick Hand', cursive; cursor: pointer; transition: all 0.2s; }
+        .nav-btn:hover:not(:disabled) { background-color: rgba(91, 143, 168, 0.25); }
+        .nav-btn:disabled { border-color: #ccc; color: #aaa; background-color: transparent; cursor: not-allowed; }
+        .slide-counter { font-size: 16px; font-family: 'Caveat', cursive; font-weight: 600; color: #5b8fa8; min-width: 60px; text-align: center; }
+        .slide-title-page { background-image: none; background-color: #fdfcfa; }
+        .title-hero { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px; text-align: center; }
+        .title-hero .module-label { font-family: 'Patrick Hand', cursive; font-size: 22px; color: #5b8fa8; margin-bottom: 8px; letter-spacing: 2px; }
+        .title-hero .lesson-title { font-family: 'Caveat', cursive; font-size: 60px; font-weight: 700; color: #2d3436; margin-bottom: 24px; transform: rotate(-1deg); position: relative; }
+        .title-hero .lesson-title::after { content: ''; position: absolute; bottom: -4px; left: 10%; right: 10%; height: 4px; background-color: #e8a87c; border-radius: 2px; transform: rotate(0.5deg); }
+        .title-hero .divider-sketch { width: 120px; height: 3px; background: #b8c5d0; margin: 16px auto; border-radius: 2px; transform: rotate(-1deg); }
+        .title-content { display: flex; gap: 60px; margin-top: 20px; text-align: left; max-width: 900px; }
+        .title-section { flex: 1; }
+        .title-section h3 { font-family: 'Caveat', cursive; font-size: 26px; font-weight: 600; color: #5b8fa8; margin-bottom: 10px; border-bottom: 2px solid rgba(91, 143, 168, 0.2); padding-bottom: 4px; }
+        .title-section .bullet { font-size: 19px; }
+        .title-section .bullet::before { top: 9px; }
     </style>
 </head>
 <body>
@@ -687,27 +61,25 @@
             <h3>Lesson 8</h3>
         </div>
         <nav class="slide-nav">
-            <a href="#slide-1" class="nav-item" onclick="showSlide(0)">Title & Objectives</a>
-            <a href="#slide-2" class="nav-item" onclick="showSlide(1)">From Algorithm to Action</a>
-            <a href="#slide-3" class="nav-item" onclick="showSlide(2)">Navigator Class Design</a>
-            <a href="#slide-4" class="nav-item" onclick="showSlide(3)">The __init__ Method</a>
-            <a href="#slide-5" class="nav-item" onclick="showSlide(4)">get_needed_heading()</a>
-            <a href="#slide-6" class="nav-item" onclick="showSlide(5)">turn_to()</a>
-            <a href="#slide-7" class="nav-item" onclick="showSlide(6)">drive_path()</a>
-            <a href="#slide-8" class="nav-item" onclick="showSlide(7)">Putting It All Together</a>
-            <a href="#slide-9" class="nav-item" onclick="showSlide(8)">Your Turn!</a>
-            <a href="#slide-10" class="nav-item" onclick="showSlide(9)">What's Next</a>
+            <a href="#slide-1" class="nav-item" onclick="showSlide(0)">Title &amp; Objectives</a>
+            <a href="#slide-2" class="nav-item" onclick="showSlide(1)">From Paper to Python</a>
+            <a href="#slide-3" class="nav-item" onclick="showSlide(2)">Class Skeleton</a>
+            <a href="#slide-4" class="nav-item" onclick="showSlide(3)">Method 1: desired_heading</a>
+            <a href="#slide-5" class="nav-item" onclick="showSlide(4)">Method 2: turn_to</a>
+            <a href="#slide-6" class="nav-item" onclick="showSlide(5)">Method 3: drive_path</a>
+            <a href="#slide-7" class="nav-item" onclick="showSlide(6)">Run It</a>
+            <a href="#slide-8" class="nav-item" onclick="showSlide(7)">Your Turn!</a>
+            <a href="#slide-9" class="nav-item" onclick="showSlide(8)">What's Next</a>
         </nav>
     </div>
 
     <div class="slides-container">
 
-        <!-- ═══ SLIDE 1: Title ═══ -->
+        <!-- SLIDE 1 -->
         <div id="slide-1" class="slide slide-title-page">
             <div class="title-hero">
-                <!-- Robot illustration — PNG version -->
-                <svg width="80" height="80" viewBox="0 0 80 80" style="margin-bottom: 12px;">
-                    <image href="images/xrp-top-down.png" x="16" y="16" width="48" height="48"/>
+                <svg width="104" height="104" viewBox="0 0 80 80" style="margin-bottom: 12px;">
+                    <image href="images/xrp-top-down.png" x="15" y="12" width="50" height="50" transform="rotate(180, 40, 37)"/>
                 </svg>
                 <div class="module-label">MODULE 4 &middot; LESSON 8</div>
                 <div class="lesson-title">Implementing the Navigator Class</div>
@@ -715,657 +87,197 @@
                 <div class="title-content">
                     <div class="title-section">
                         <h3>Learning Objectives</h3>
-                        <p class="bullet">Design the Navigator class with position and heading</p>
-                        <p class="bullet">Implement drive_path() to turn and drive through a path</p>
-                        <p class="bullet">Track and update heading as the robot moves</p>
-                        <p class="bullet">Reuse LineTrack from Module 2 for physical movement</p>
+                        <p class="bullet">Build Navigator with <code style="font-family: 'Fira Code', monospace;">self.position</code> and <code style="font-family: 'Fira Code', monospace;">self.heading</code></p>
+                        <p class="bullet">Translate the three methods from Lesson 7 into Python</p>
+                        <p class="bullet">Reuse <code style="font-family: 'Fira Code', monospace;">LineTrack</code> from Module 2</p>
+                        <p class="bullet">Run the full program on the robot</p>
                     </div>
                     <div class="title-section">
                         <h3>Agenda</h3>
-                        <p class="bullet">Class design overview (5 min)</p>
-                        <p class="bullet">Implementing helper methods (10 min)</p>
-                        <p class="bullet">Building drive_path() (15 min)</p>
-                        <p class="bullet">Testing on the robot (15 min)</p>
+                        <p class="bullet">Class skeleton (5 min)</p>
+                        <p class="bullet">Method 1: desired_heading (5 min)</p>
+                        <p class="bullet">Method 2: turn_to (5 min)</p>
+                        <p class="bullet">Method 3: drive_path (10 min)</p>
+                        <p class="bullet">Run it on the robot (20 min)</p>
                     </div>
                 </div>
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn" disabled>Previous</button>
-                <span class="slide-counter">1 / 10</span>
+                <span class="slide-counter">1 / 9</span>
                 <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
             </div>
         </div>
 
-        <!-- ═══ SLIDE 2: Hook — From Algorithm to Action ═══ -->
+        <!-- SLIDE 2 -->
         <div id="slide-2" class="slide">
-            <div class="title-bar">
-                <h1>From Algorithm to Action</h1>
-            </div>
+            <div class="title-bar"><h1>From Paper to Python</h1></div>
             <div class="content">
-                <p class="header-text">We have TWO pieces working:</p>
-
-                <div class="progression">
-                    <div class="progression-step">
-                        <div class="step-label">Piece 1</div>
-                        <strong>Manhattan class</strong><br>computes the path<br>(list of tuples)
-                    </div>
-                    <div class="progression-arrow">&rarr;</div>
-                    <div class="progression-step">
-                        <div class="step-label">Piece 2</div>
-                        <strong>Turning logic</strong><br>tells us what turns<br>are needed
-                    </div>
-                    <div class="progression-arrow">&rarr;</div>
-                    <div class="progression-step current">
-                        <div class="step-label">Missing Piece!</div>
-                        <strong>???</strong><br>Something that actually<br>DRIVES the robot!
-                    </div>
-                </div>
-
-                <div class="code-block compact" style="max-width: 580px;">path = [(1,0), (2,0), (2,1), (2,2)]
-<span style="color: #85c88a;"># How does this become real robot movement?</span></div>
-
-                <div class="insight-box">
-                    Today: Build the Navigator class that turns and drives through any path.
-                </div>
-
-                <!-- SVG: path list becoming robot movement -->
-                <div class="illustration">
-                    <svg width="585" height="195" viewBox="0 0 450 150">
-                        <!-- Path list box -->
-                        <rect x="10" y="30" width="140" height="90" rx="10" fill="rgba(91, 143, 168, 0.1)" stroke="#5b8fa8" stroke-width="2"/>
-                        <text x="80" y="22" font-family="Caveat, cursive" font-size="15" fill="#5b8fa8" text-anchor="middle" font-weight="600">Path List</text>
-                        <text x="80" y="64" font-family="Fira Code, monospace" font-size="11" fill="#2d3436" text-anchor="middle">(1,0), (2,0)</text>
-                        <text x="80" y="84" font-family="Fira Code, monospace" font-size="11" fill="#2d3436" text-anchor="middle">(2,1), (2,2)</text>
-
-                        <!-- Arrow -->
-                        <path d="M160 75 C190 75, 190 75, 210 75" fill="none" stroke="#e8a87c" stroke-width="2.5" stroke-linecap="round"/>
-                        <polygon points="210,70 225,75 210,80" fill="#e8a87c"/>
-
-                        <!-- Navigator box -->
-                        <rect x="230" y="30" width="100" height="90" rx="10" fill="rgba(232, 168, 124, 0.12)" stroke="#e8a87c" stroke-width="2"/>
-                        <text x="280" y="22" font-family="Caveat, cursive" font-size="15" fill="#e8a87c" text-anchor="middle" font-weight="600">Navigator</text>
-                        <text x="280" y="58" font-family="Patrick Hand, cursive" font-size="13" fill="#2d3436" text-anchor="middle">turn + drive</text>
-                        <text x="280" y="78" font-family="Patrick Hand, cursive" font-size="13" fill="#2d3436" text-anchor="middle">turn + drive</text>
-                        <text x="280" y="98" font-family="Patrick Hand, cursive" font-size="13" fill="#2d3436" text-anchor="middle">turn + drive</text>
-
-                        <!-- Arrow -->
-                        <path d="M340 75 C370 75, 370 75, 390 75" fill="none" stroke="#e8a87c" stroke-width="2.5" stroke-linecap="round"/>
-                        <polygon points="390,70 405,75 390,80" fill="#e8a87c"/>
-
-                        <!-- Robot at destination — PNG version -->
-                        <image href="images/xrp-top-down.png" x="407" y="55" width="32" height="32"/>
-                        <text x="423" y="110" font-family="Caveat, cursive" font-size="14" fill="#85c88a" text-anchor="middle" font-weight="600">At (2,2)!</text>
-                    </svg>
-                </div>
+                <p class="body-text">Yesterday you designed three methods on paper. Today you type them in and run them on the robot.</p>
+                <p class="bullet"><code style="font-family: 'Fira Code', monospace;">desired_heading(current, next_pos)</code> &mdash; which of the 4 cases, 0/1/2/3</p>
+                <p class="bullet"><code style="font-family: 'Fira Code', monospace;">turn_to(desired)</code> &mdash; turn right, wrap 4&rarr;0, stop when aligned</p>
+                <p class="bullet"><code style="font-family: 'Fira Code', monospace;">drive_path(path)</code> &mdash; for each intersection: turn, then drive forward one</p>
+                <div class="insight-box">Nothing new to design. Just translate.</div>
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
-                <span class="slide-counter">2 / 10</span>
+                <span class="slide-counter">2 / 9</span>
                 <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
             </div>
         </div>
 
-        <!-- ═══ SLIDE 3: Navigator Class Design ═══ -->
+        <!-- SLIDE 3 -->
         <div id="slide-3" class="slide">
-            <div class="title-bar">
-                <h1>Navigator Class Design</h1>
-            </div>
+            <div class="title-bar"><h1>Class Skeleton</h1></div>
             <div class="content">
-                <p class="header-text">What does the Navigator need?</p>
-
-                <div class="two-col">
-                    <div class="col">
-                        <div class="sketch-box">
-                            <p class="header-text" style="margin-top: 0; font-size: 24px;">Data (stored in __init__)</p>
-                            <p class="bullet"><code style="font-family: 'Fira Code', monospace;">self.position</code> &mdash; current (row, col) tuple</p>
-                            <p class="bullet"><code style="font-family: 'Fira Code', monospace;">self.heading</code> &mdash; current heading number (0=N, 1=E, 2=S, 3=W)</p>
-                            <p class="bullet"><code style="font-family: 'Fira Code', monospace;">self.line_track</code> &mdash; the LineTrack object</p>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <div class="sketch-box" style="border-color: #e8a87c; background-color: rgba(232, 168, 124, 0.04);">
-                            <p class="header-text" style="margin-top: 0; font-size: 24px; color: #e8a87c;">Methods</p>
-                            <p class="bullet"><code style="font-family: 'Fira Code', monospace;">get_needed_heading(next_pos)</code></p>
-                            <p class="bullet"><code style="font-family: 'Fira Code', monospace;">turn_to(needed_heading)</code></p>
-                            <p class="bullet"><code style="font-family: 'Fira Code', monospace;">drive_path(path)</code></p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Class diagram SVG -->
-                <div class="illustration" style="margin-top: 18px;">
-                    <svg width="520" height="260" viewBox="0 0 400 200">
-                        <!-- Class box -->
-                        <rect x="80" y="10" width="240" height="180" rx="12" fill="rgba(91, 143, 168, 0.06)" stroke="#5b8fa8" stroke-width="2.5" transform="rotate(-0.5 200 100)"/>
-                        <!-- Class name header -->
-                        <rect x="80" y="10" width="240" height="40" rx="12" fill="rgba(91, 143, 168, 0.15)" stroke="#5b8fa8" stroke-width="2.5"/>
-                        <text x="200" y="37" font-family="Caveat, cursive" font-size="22" fill="#2d3436" text-anchor="middle" font-weight="700">Navigator</text>
-                        <!-- Divider -->
-                        <line x1="90" y1="50" x2="310" y2="50" stroke="#5b8fa8" stroke-width="1.5" stroke-dasharray="4,3"/>
-                        <!-- Data section -->
-                        <text x="100" y="72" font-family="Fira Code, monospace" font-size="12" fill="#2d3436">position: (row, col)</text>
-                        <text x="100" y="90" font-family="Fira Code, monospace" font-size="12" fill="#2d3436">heading: 0-3 (N/E/S/W)</text>
-                        <text x="100" y="108" font-family="Fira Code, monospace" font-size="12" fill="#2d3436">line_track: LineTrack</text>
-                        <!-- Divider -->
-                        <line x1="90" y1="118" x2="310" y2="118" stroke="#e8a87c" stroke-width="1.5" stroke-dasharray="4,3"/>
-                        <!-- Methods section -->
-                        <text x="100" y="138" font-family="Fira Code, monospace" font-size="12" fill="#636e72">get_needed_heading()</text>
-                        <text x="100" y="156" font-family="Fira Code, monospace" font-size="12" fill="#636e72">turn_to()</text>
-                        <text x="100" y="174" font-family="Fira Code, monospace" font-size="12" fill="#636e72">drive_path()</text>
-
-                        <!-- Label arrows -->
-                        <text x="335" y="85" font-family="Caveat, cursive" font-size="14" fill="#5b8fa8" font-weight="600">Data</text>
-                        <text x="335" y="155" font-family="Caveat, cursive" font-size="14" fill="#e8a87c" font-weight="600">Methods</text>
-                    </svg>
-                </div>
-            </div>
-            <div class="slide-navigation">
-                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
-                <span class="slide-counter">3 / 10</span>
-                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
-            </div>
-        </div>
-
-        <!-- ═══ SLIDE 4: The __init__ Method ═══ -->
-        <div id="slide-4" class="slide">
-            <div class="title-bar">
-                <h1>The __init__ Method</h1>
-            </div>
-            <div class="content">
-                <div class="code-block">from line_track import LineTrack
+                <p class="body-text">Navigator needs two pieces of state and a robot to drive.</p>
+                <div class="code-block"><pre>from line_track import LineTrack
 
 HEADING_NAMES = ["N", "E", "S", "W"]
 
 class Navigator:
     def __init__(self, start, heading):
         self.position = start
-        self.heading = heading  <span style="color: #85c88a;"># 0=N, 1=E, 2=S, 3=W</span>
-        self.line_track = LineTrack()</div>
-
-                <p class="header-text">Usage:</p>
-                <div class="code-block">nav = Navigator((0, 0), 0)
-print("Position:", nav.position)         <span style="color: #85c88a;"># (0, 0)</span>
-print("Heading:", HEADING_NAMES[nav.heading])  <span style="color: #85c88a;"># N</span></div>
-
+        self.heading = heading
+        self.line_track = LineTrack()</pre></div>
+                <p class="header-text">Usage</p>
+                <div class="code-block compact" style="font-size: 17px;"><pre>nav = Navigator((0, 0), 0)   # at (0,0), facing North</pre></div>
                 <div class="answer-box">
-                    <p class="body-text" style="margin-left: 8px;"><strong>Important:</strong> The starting heading must match how you physically place the robot on the grid!</p>
-                </div>
-
-                <!-- SVG: robot on grid with compass directions -->
-                <div class="illustration">
-                    <svg width="572" height="234" viewBox="0 0 440 180">
-                        <!-- Grid lines -->
-                        <line x1="60" y1="50" x2="340" y2="50" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
-                        <line x1="60" y1="130" x2="340" y2="130" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
-                        <line x1="100" y1="20" x2="100" y2="160" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
-                        <line x1="200" y1="20" x2="200" y2="160" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
-                        <line x1="300" y1="20" x2="300" y2="160" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
-
-                        <!-- Row/col labels -->
-                        <text x="45" y="68" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" text-anchor="middle">0</text>
-                        <text x="45" y="148" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" text-anchor="middle">1</text>
-                        <text x="100" y="14" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" text-anchor="middle">0</text>
-                        <text x="200" y="14" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" text-anchor="middle">1</text>
-                        <text x="300" y="14" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" text-anchor="middle">2</text>
-
-                        <!-- Robot at (0,0) facing North — PNG version -->
-                        <image href="images/xrp-top-down.png" x="82" y="30" width="35" height="35" transform="rotate(180, 99, 47)"/>
-
-                        <!-- Compass showing heading = 0 (N) -->
-                        <circle cx="370" cy="90" r="35" fill="rgba(232, 168, 124, 0.08)" stroke="#e8a87c" stroke-width="2"/>
-                        <text x="370" y="62" font-family="Caveat, cursive" font-size="14" fill="#e8a87c" text-anchor="middle" font-weight="700">0 (N)</text>
-                        <text x="370" y="132" font-family="Caveat, cursive" font-size="14" fill="#636e72" text-anchor="middle">2 (S)</text>
-                        <text x="330" y="94" font-family="Caveat, cursive" font-size="14" fill="#636e72" text-anchor="middle">3 (W)</text>
-                        <text x="410" y="94" font-family="Caveat, cursive" font-size="14" fill="#636e72" text-anchor="middle">1 (E)</text>
-                        <!-- North arrow -->
-                        <line x1="370" y1="95" x2="370" y2="68" stroke="#e8a87c" stroke-width="2.5" stroke-linecap="round"/>
-                        <polygon points="365,72 370,62 375,72" fill="#e8a87c"/>
-
-                        <!-- Label -->
-                        <text x="99" y="80" font-family="Caveat, cursive" font-size="16" fill="#85c88a" text-anchor="middle" font-weight="600">(0, 0)</text>
-                    </svg>
+                    <p class="body-text" style="margin-left: 8px;">Place the robot on the grid <strong>facing North</strong> so its physical direction matches <code style="font-family: 'Fira Code', monospace;">heading = 0</code>.</p>
                 </div>
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
-                <span class="slide-counter">4 / 10</span>
+                <span class="slide-counter">3 / 9</span>
                 <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
             </div>
         </div>
 
-        <!-- ═══ SLIDE 5: get_needed_heading() ═══ -->
-        <div id="slide-5" class="slide">
-            <div class="title-bar">
-                <h1>get_needed_heading()</h1>
-            </div>
+        <!-- SLIDE 4 -->
+        <div id="slide-4" class="slide">
+            <div class="title-bar"><h1>Method 1 &mdash; desired_heading</h1></div>
             <div class="content">
-                <p class="header-text">Determine heading number from current position to next position:</p>
-
-                <div class="two-col">
-                    <div class="col">
-                        <div class="code-block" style="font-size: 15px;">def get_needed_heading(self, next_pos):
+                <p class="body-text">The function from Lesson 7, now a method on Navigator that uses <code style="font-family: 'Fira Code', monospace;">self.position</code>:</p>
+                <div class="code-block"><pre>def desired_heading(self, next_pos):
     row_diff = next_pos[0] - self.position[0]
     col_diff = next_pos[1] - self.position[1]
-
-    if row_diff == -1:
-        return 0    <span style="color: #85c88a;"># North</span>
-    elif col_diff == 1:
-        return 1    <span style="color: #85c88a;"># East</span>
-    elif row_diff == 1:
-        return 2    <span style="color: #85c88a;"># South</span>
-    elif col_diff == -1:
-        return 3    <span style="color: #85c88a;"># West</span></div>
-                    </div>
-                    <div class="col">
-                        <!-- Direction diagram -->
-                        <div class="illustration">
-                            <svg width="286" height="260" viewBox="0 0 220 200">
-                                <!-- Center point -->
-                                <circle cx="110" cy="100" r="6" fill="#5b8fa8" stroke="#2d3436" stroke-width="1.5"/>
-                                <text x="110" y="100" font-family="Caveat, cursive" font-size="10" fill="white" text-anchor="middle" dy="3" font-weight="600">pos</text>
-
-                                <!-- North arrow (row -1) = 0 -->
-                                <line x1="110" y1="88" x2="110" y2="35" stroke="#e8a87c" stroke-width="2.5" stroke-linecap="round"/>
-                                <polygon points="105,40 110,28 115,40" fill="#e8a87c"/>
-                                <text x="110" y="20" font-family="Caveat, cursive" font-size="16" fill="#e8a87c" text-anchor="middle" font-weight="700">0 (N)</text>
-                                <text x="143" y="55" font-family="Fira Code, monospace" font-size="10" fill="#636e72">row -1</text>
-
-                                <!-- South arrow (row +1) = 2 -->
-                                <line x1="110" y1="112" x2="110" y2="165" stroke="#e8a87c" stroke-width="2.5" stroke-linecap="round"/>
-                                <polygon points="105,160 110,172 115,160" fill="#e8a87c"/>
-                                <text x="110" y="192" font-family="Caveat, cursive" font-size="16" fill="#e8a87c" text-anchor="middle" font-weight="700">2 (S)</text>
-                                <text x="143" y="150" font-family="Fira Code, monospace" font-size="10" fill="#636e72">row +1</text>
-
-                                <!-- East arrow (col +1) = 1 -->
-                                <line x1="122" y1="100" x2="175" y2="100" stroke="#5b8fa8" stroke-width="2.5" stroke-linecap="round"/>
-                                <polygon points="170,95 182,100 170,105" fill="#5b8fa8"/>
-                                <text x="198" y="104" font-family="Caveat, cursive" font-size="16" fill="#5b8fa8" text-anchor="middle" font-weight="700">1 (E)</text>
-
-                                <!-- West arrow (col -1) = 3 -->
-                                <line x1="98" y1="100" x2="45" y2="100" stroke="#5b8fa8" stroke-width="2.5" stroke-linecap="round"/>
-                                <polygon points="50,95 38,100 50,105" fill="#5b8fa8"/>
-                                <text x="22" y="104" font-family="Caveat, cursive" font-size="16" fill="#5b8fa8" text-anchor="middle" font-weight="700">3 (W)</text>
-
-                                <text x="62" y="82" font-family="Fira Code, monospace" font-size="10" fill="#636e72">col -1</text>
-                                <text x="158" y="82" font-family="Fira Code, monospace" font-size="10" fill="#636e72">col +1</text>
-                            </svg>
-                        </div>
-                    </div>
+    if row_diff == -1: return 0   # North
+    if col_diff ==  1: return 1   # East
+    if row_diff ==  1: return 2   # South
+    if col_diff == -1: return 3   # West</pre></div>
+                <div class="sketch-box">
+                    <p class="body-text"><strong>Input:</strong> the next intersection &nbsp;&nbsp;&rarr;&nbsp;&nbsp; <strong>Output:</strong> a heading number 0&ndash;3</p>
                 </div>
-
-                <div class="spacer"></div>
-
-                <p class="header-text">Example:</p>
-                <div class="code-block compact" style="max-width: 580px; font-size: 15px; margin: 8px 0;">nav = Navigator((0, 0), 0)
-direction = nav.get_needed_heading((1, 0))
-print(direction)   <span style="color: #85c88a;"># 2 — South (row increases)</span></div>
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
-                <span class="slide-counter">5 / 10</span>
+                <span class="slide-counter">4 / 9</span>
                 <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
             </div>
         </div>
 
-        <!-- ═══ SLIDE 6: turn_to() ═══ -->
-        <div id="slide-6" class="slide">
-            <div class="title-bar">
-                <h1>turn_to()</h1>
-            </div>
+        <!-- SLIDE 5 -->
+        <div id="slide-5" class="slide">
+            <div class="title-bar"><h1>Method 2 &mdash; turn_to</h1></div>
             <div class="content">
-                <p class="header-text">Turn the robot to face the needed heading:</p>
-
-                <div class="two-col">
-                    <div class="col">
-                        <div class="code-block" style="font-size: 15px; padding: 14px 18px;">def turn_to(self, needed_heading):
-    while self.heading != needed_heading:
+                <p class="body-text">Same while loop from Lesson 7, now calling the real robot:</p>
+                <div class="code-block"><pre>def turn_to(self, desired):
+    while self.heading != desired:
         self.line_track.turn_right()
         self.heading = self.heading + 1
         if self.heading == 4:
-            self.heading = 0</div>
-
-                        <div class="answer-box">
-                            <p class="body-text" style="margin-left: 8px;"><strong>Key idea:</strong> <code style="font-family: 'Fira Code', monospace;">turn_right()</code> is the sensor-based turn from Module 2 that finds the outbound line. The while loop keeps turning right until we face the right way!</p>
-                        </div>
-
-                        <p class="header-text" style="font-size: 22px;">Examples:</p>
-                        <div class="code-block compact" style="font-size: 14px; margin: 6px 0; max-width: 420px;">Heading 0(N), need 1(E):
-  0 &rarr; 1  <span style="color: #85c88a;"># 1 right turn</span>
-
-Heading 0(N), need 3(W):
-  0 &rarr; 1 &rarr; 2 &rarr; 3  <span style="color: #85c88a;"># 3 right turns</span></div>
-                    </div>
-                    <div class="col">
-                        <!-- Turn diagram - clockwise numbered -->
-                        <div class="illustration">
-                            <svg width="312" height="286" viewBox="0 0 240 220">
-                                <!-- Center compass -->
-                                <circle cx="120" cy="100" r="55" fill="rgba(91, 143, 168, 0.06)" stroke="#b8c5d0" stroke-width="2"/>
-
-                                <!-- 0=N, 1=E, 2=S, 3=W labels -->
-                                <text x="120" y="38" font-family="Caveat, cursive" font-size="17" fill="#2d3436" text-anchor="middle" font-weight="700">0 (N)</text>
-                                <text x="120" y="172" font-family="Caveat, cursive" font-size="17" fill="#2d3436" text-anchor="middle" font-weight="700">2 (S)</text>
-                                <text x="188" y="106" font-family="Caveat, cursive" font-size="17" fill="#2d3436" text-anchor="middle" font-weight="700">1 (E)</text>
-                                <text x="52" y="106" font-family="Caveat, cursive" font-size="17" fill="#2d3436" text-anchor="middle" font-weight="700">3 (W)</text>
-
-                                <!-- Clockwise arc from N to E (1 turn) -->
-                                <path d="M125 52 C158 52, 168 70, 170 95" fill="none" stroke="#85c88a" stroke-width="2.5" stroke-dasharray="5,3"/>
-                                <polygon points="167,90 175,98 165,98" fill="#85c88a"/>
-                                <text x="168" y="58" font-family="Caveat, cursive" font-size="13" fill="#85c88a" font-weight="600">1 turn</text>
-
-                                <!-- Full clockwise arc N->E->S->W (3 turns) -->
-                                <path d="M115 52 C82 52, 72 70, 70 95" fill="none" stroke="#e8a87c" stroke-width="2.5" stroke-dasharray="5,3"/>
-                                <polygon points="73,90 65,98 75,98" fill="#e8a87c"/>
-                                <text x="42" y="58" font-family="Caveat, cursive" font-size="13" fill="#e8a87c" font-weight="600">3 turns</text>
-
-                                <!-- 2 turns arc (N to S) -->
-                                <path d="M130 48 C200 48, 200 155, 125 158" fill="none" stroke="#5b8fa8" stroke-width="2.5" stroke-dasharray="5,3"/>
-                                <polygon points="130,154 122,164 122,152" fill="#5b8fa8"/>
-                                <text x="210" y="106" font-family="Caveat, cursive" font-size="13" fill="#5b8fa8" font-weight="600">2 turns</text>
-
-                                <!-- Key insight -->
-                                <text x="120" y="200" font-family="Caveat, cursive" font-size="15" fill="#e8a87c" text-anchor="middle" font-weight="600">Keep turning right until heading matches!</text>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
+            self.heading = 0</pre></div>
+                <p class="body-text">Each pass turns the robot right by 90&deg; and updates <code style="font-family: 'Fira Code', monospace;">self.heading</code>. The <code style="font-family: 'Fira Code', monospace;">if self.heading == 4</code> line wraps back to 0.</p>
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
-                <span class="slide-counter">6 / 10</span>
+                <span class="slide-counter">5 / 9</span>
                 <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
             </div>
         </div>
 
-        <!-- ═══ SLIDE 7: drive_path() ═══ -->
-        <div id="slide-7" class="slide">
-            <div class="title-bar">
-                <h1>drive_path()</h1>
-            </div>
+        <!-- SLIDE 6 -->
+        <div id="slide-6" class="slide">
+            <div class="title-bar"><h1>Method 3 &mdash; drive_path</h1></div>
             <div class="content">
-                <p class="header-text">The main method &mdash; drive through every step in the path:</p>
-
-                <div class="code-block" style="font-size: 15px;">def drive_path(self, path):
+                <p class="body-text">For each intersection in the path: turn to face it, then drive forward one intersection.</p>
+                <div class="code-block"><pre>def drive_path(self, path):
     for next_pos in path:
-        needed = self.get_needed_heading(next_pos)
-
-        if self.heading == needed:
-            <span style="color: #85c88a;"># Going straight — clear the intersection first</span>
-            self.line_track.drivetrain.straight(8)
-
-        self.turn_to(needed)
-        self.line_track.track_until_cross()
-        self.position = next_pos</div>
-
+        desired = self.desired_heading(next_pos)
+        if self.heading == desired:
+            self.line_track.drivetrain.straight(8)   # clear the cross
+        self.turn_to(desired)
+        self.line_track.track_until_cross()          # drive to the next
+        self.position = next_pos</pre></div>
                 <div class="answer-box">
-                    <p class="body-text" style="margin-left: 8px;"><strong>Why straight(8)?</strong> When going straight (0 turns), the robot is still sitting on the cross it just detected. We drive 8 cm to clear it, so <code style="font-family: 'Fira Code', monospace;">track_until_cross()</code> finds the NEXT intersection.</p>
-                </div>
-
-                <div class="insight-box">
-                    The loop: For each step &mdash; clear if straight, turn to heading, track to next cross, update position.
-                </div>
-
-                <!-- Loop visualization SVG -->
-                <div class="illustration">
-                    <svg width="650" height="104" viewBox="0 0 500 80">
-                        <!-- Step boxes connected by arrows -->
-                        <rect x="5" y="15" width="95" height="50" rx="10" fill="rgba(91, 143, 168, 0.1)" stroke="#5b8fa8" stroke-width="2"/>
-                        <text x="52" y="35" font-family="Caveat, cursive" font-size="13" fill="#5b8fa8" text-anchor="middle" font-weight="600">1. Heading</text>
-                        <text x="52" y="52" font-family="Patrick Hand, cursive" font-size="12" fill="#2d3436" text-anchor="middle">which way?</text>
-
-                        <polygon points="105,38 117,43 105,48" fill="#e8a87c"/>
-
-                        <rect x="123" y="15" width="95" height="50" rx="10" fill="rgba(232, 168, 124, 0.1)" stroke="#e8a87c" stroke-width="2"/>
-                        <text x="170" y="35" font-family="Caveat, cursive" font-size="13" fill="#e8a87c" text-anchor="middle" font-weight="600">2. Clear/Turn</text>
-                        <text x="170" y="52" font-family="Patrick Hand, cursive" font-size="12" fill="#2d3436" text-anchor="middle">straight(8) + turn</text>
-
-                        <polygon points="223,38 235,43 223,48" fill="#e8a87c"/>
-
-                        <rect x="241" y="15" width="110" height="50" rx="10" fill="rgba(133, 200, 138, 0.1)" stroke="#85c88a" stroke-width="2"/>
-                        <text x="296" y="35" font-family="Caveat, cursive" font-size="13" fill="#85c88a" text-anchor="middle" font-weight="600">3. Track</text>
-                        <text x="296" y="52" font-family="Patrick Hand, cursive" font-size="12" fill="#2d3436" text-anchor="middle">track_until_cross()</text>
-
-                        <polygon points="356,38 368,43 356,48" fill="#e8a87c"/>
-
-                        <rect x="374" y="15" width="90" height="50" rx="10" fill="rgba(91, 143, 168, 0.1)" stroke="#5b8fa8" stroke-width="2"/>
-                        <text x="419" y="35" font-family="Caveat, cursive" font-size="13" fill="#5b8fa8" text-anchor="middle" font-weight="600">4. Update</text>
-                        <text x="419" y="52" font-family="Patrick Hand, cursive" font-size="12" fill="#2d3436" text-anchor="middle">position</text>
-
-                        <!-- Loop back arrow -->
-                        <path d="M470 40 C490 40, 495 10, 485 0 C475 -5, 20 -5, 10 0 C0 5, 0 25, 5 35" fill="none" stroke="#b8c5d0" stroke-width="2" stroke-dasharray="5,3"/>
-                        <text x="250" y="-2" font-family="Caveat, cursive" font-size="12" fill="#636e72" text-anchor="middle">next position in path</text>
-                    </svg>
+                    <p class="body-text" style="margin-left: 8px;"><strong>Why the <code style="font-family: 'Fira Code', monospace;">if</code>?</strong> If we need to turn, the turn itself moves the robot off the crossing line. If we're already facing the right way, we drive 8&nbsp;cm first &mdash; otherwise <code style="font-family: 'Fira Code', monospace;">track_until_cross()</code> would re-detect the cross we're sitting on.</p>
                 </div>
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
-                <span class="slide-counter">7 / 10</span>
+                <span class="slide-counter">6 / 9</span>
                 <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
             </div>
         </div>
 
-        <!-- ═══ SLIDE 8: Putting It All Together ═══ -->
-        <div id="slide-8" class="slide">
-            <div class="title-bar">
-                <h1>Putting It All Together</h1>
-            </div>
+        <!-- SLIDE 7 -->
+        <div id="slide-7" class="slide">
+            <div class="title-bar"><h1>Run It</h1></div>
             <div class="content">
-                <p class="header-text">Complete test program:</p>
+                <div class="code-block"><pre>from XRPLib.board import Board
 
-                <div class="two-col">
-                    <div class="col">
-                        <div class="code-block" style="font-size: 14px; padding: 14px 18px;">from XRPLib.board import Board
-from line_track import LineTrack
-
-HEADING_NAMES = ["N", "E", "S", "W"]
-
-class Manhattan:
-    <span style="color: #85c88a;"># ... (from Lesson 5)</span>
-
-class Navigator:
-    <span style="color: #85c88a;"># ... (from this lesson)</span>
-
-<span style="color: #85c88a;"># Main program</span>
 board = Board.get_default_board()
 manhattan = Manhattan((0, 0))
 nav = Navigator((0, 0), 0)
 
 board.wait_for_button()
 
-<span style="color: #85c88a;"># Compute and drive a path</span>
-destination = (2, 2)
-path = manhattan.compute_path(destination)
+path = manhattan.compute_path((2, 2))
 print("Path:", path)
 
 nav.drive_path(path)
-print("Arrived at", nav.position)
-print("Heading:", HEADING_NAMES[nav.heading])</div>
-                    </div>
-                    <div class="col">
-                        <!-- SVG: robot navigating grid path -->
-                        <div class="illustration">
-                            <svg width="338" height="352" viewBox="0 0 260 270">
-                                <!-- Grid -->
-                                <line x1="40" y1="50" x2="230" y2="50" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
-                                <line x1="40" y1="130" x2="230" y2="130" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
-                                <line x1="40" y1="210" x2="230" y2="210" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
-                                <line x1="60" y1="30" x2="60" y2="230" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
-                                <line x1="140" y1="30" x2="140" y2="230" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
-                                <line x1="220" y1="30" x2="220" y2="230" stroke="#2d3436" stroke-width="2.5" stroke-linecap="round"/>
-
-                                <!-- Row/col labels -->
-                                <text x="25" y="68" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" text-anchor="middle">0</text>
-                                <text x="25" y="148" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" text-anchor="middle">1</text>
-                                <text x="25" y="228" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" text-anchor="middle">2</text>
-                                <text x="60" y="22" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" text-anchor="middle">0</text>
-                                <text x="140" y="22" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" text-anchor="middle">1</text>
-                                <text x="220" y="22" font-family="Caveat, cursive" font-size="18" fill="#5b8fa8" text-anchor="middle">2</text>
-
-                                <!-- Path: (0,0) -> (1,0) -> (2,0) -> (2,1) -> (2,2) -->
-                                <path d="M60 50 L60 130 L60 210 L140 210 L220 210" fill="none" stroke="#5b8fa8" stroke-width="3.5" stroke-linecap="round" stroke-dasharray="8,5" opacity="0.7"/>
-                                <!-- Arrow at end -->
-                                <polygon points="215,205 225,210 215,215" fill="#5b8fa8" opacity="0.7"/>
-
-                                <!-- Start marker — PNG version -->
-                                <image href="images/xrp-top-down.png" x="44" y="34" width="30" height="30"/>
-
-                                <text x="60" y="82" font-family="Caveat, cursive" font-size="16" fill="#636e72" text-anchor="middle">start</text>
-
-                                <!-- Destination marker -->
-                                <circle cx="220" cy="210" r="14" fill="rgba(133, 200, 138, 0.2)" stroke="#85c88a" stroke-width="2" stroke-dasharray="4,3"/>
-                                <text x="220" y="248" font-family="Caveat, cursive" font-size="16" fill="#85c88a" text-anchor="middle" font-weight="600">(2,2) goal!</text>
-
-                                <!-- Turn indicators -->
-                                <path d="M55 204 C48 200, 48 216, 55 216" fill="none" stroke="#e8a87c" stroke-width="2"/>
-                                <text x="32" y="228" font-family="Caveat, cursive" font-size="16" fill="#e8a87c" font-weight="600">turn</text>
-                            </svg>
-                        </div>
-                    </div>
-                </div>
+print("Arrived facing", HEADING_NAMES[nav.heading])</pre></div>
+                <div class="insight-box">Three classes working together: Manhattan plans, Navigator decides turns, LineTrack moves.</div>
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
-                <span class="slide-counter">8 / 10</span>
+                <span class="slide-counter">7 / 9</span>
                 <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
             </div>
         </div>
 
-        <!-- ═══ SLIDE 9: Your Turn! ═══ -->
-        <div id="slide-9" class="slide">
-            <div class="title-bar">
-                <h1>Your Turn!</h1>
-            </div>
+        <!-- SLIDE 8 -->
+        <div id="slide-8" class="slide">
+            <div class="title-bar"><h1>Your Turn!</h1></div>
             <div class="content">
-                <p class="header-text">Activity</p>
-
-                <div class="sketch-box">
-                    <div class="activity-step">
-                        <span class="step-number">1</span>
-                        <span class="step-text">Implement the Navigator class with all four methods</span>
-                    </div>
-                    <div class="activity-step">
-                        <span class="step-number">2</span>
-                        <span class="step-text">Test with a simple path first: (0, 0) to (2, 0) &mdash; straight line, may need one turn</span>
-                    </div>
-                    <div class="activity-step">
-                        <span class="step-number">3</span>
-                        <span class="step-text">Then try: (0, 0) to (2, 2) &mdash; requires a direction change mid-path</span>
-                    </div>
-                    <div class="activity-step">
-                        <span class="step-number">4</span>
-                        <span class="step-text">Verify the robot clears each intersection properly (the <code style="font-family: 'Fira Code', monospace;">straight(8)</code> clearing distance)</span>
-                    </div>
-                </div>
-
-                <div class="spacer"></div>
-
-                <p class="header-text">Debugging Tips</p>
-                <div class="sketch-box" style="border-color: #e8a87c; background-color: rgba(232, 168, 124, 0.04);">
-                    <p class="bullet">Print the heading and turn at each step</p>
-                    <p class="bullet">Start with a 2-step path before trying longer ones</p>
-                    <p class="bullet">Make sure the robot's physical starting heading matches <code style="font-family: 'Fira Code', monospace;">0</code> (North) or whichever you chose</p>
-                </div>
-
-                <div class="spacer"></div>
-
+                <p class="bullet">Type in the Navigator class with all three methods</p>
+                <p class="bullet">Test a straight path first: <code style="font-family: 'Fira Code', monospace;">(0, 0) &rarr; (2, 0)</code> &mdash; no turns needed</p>
+                <p class="bullet">Then a path with turns: <code style="font-family: 'Fira Code', monospace;">(0, 0) &rarr; (2, 2)</code></p>
+                <p class="bullet">Print <code style="font-family: 'Fira Code', monospace;">self.heading</code> inside <code style="font-family: 'Fira Code', monospace;">turn_to</code> so you can see the wrap 4&rarr;0 happen</p>
                 <p class="header-text">Checkpoints</p>
-                <div class="sketch-box" style="border-color: #85c88a; background-color: rgba(133, 200, 138, 0.04);">
-                    <div class="checkpoint">
-                        <span class="check-icon"></span>
-                        <span class="step-text">Does the robot turn correctly at each step?</span>
-                    </div>
-                    <div class="checkpoint">
-                        <span class="check-icon"></span>
-                        <span class="step-text">Does it arrive at the right intersection?</span>
-                    </div>
-                    <div class="checkpoint">
-                        <span class="check-icon"></span>
-                        <span class="step-text">Does the heading update properly?</span>
-                    </div>
-                </div>
-
-                <!-- Small robot success SVG -->
-                <div class="illustration" style="margin-top: 10px;">
-                    <svg width="260" height="78" viewBox="0 0 200 60">
-                        <!-- Robot facing East — PNG version -->
-                        <image href="images/xrp-top-down.png" x="76" y="8" width="35" height="35" transform="rotate(-90, 93, 25)"/>
-                        <text x="92" y="55" font-family="Caveat, cursive" font-size="14" fill="#85c88a" text-anchor="middle" font-weight="600">Test it out!</text>
-                    </svg>
-                </div>
+                <p class="bullet">Does the robot turn the right number of times at each step?</p>
+                <p class="bullet">Does it land on each intersection (not before, not after)?</p>
+                <p class="bullet">Does <code style="font-family: 'Fira Code', monospace;">self.position</code> match the real robot at the end?</p>
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
-                <span class="slide-counter">9 / 10</span>
+                <span class="slide-counter">8 / 9</span>
                 <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
             </div>
         </div>
 
-        <!-- ═══ SLIDE 10: Connection to Next Lesson ═══ -->
-        <div id="slide-10" class="slide">
-            <div class="title-bar">
-                <h1>What's Next</h1>
-            </div>
+        <!-- SLIDE 9 -->
+        <div id="slide-9" class="slide">
+            <div class="title-bar"><h1>What's Next</h1></div>
             <div class="content">
-                <div class="two-col">
-                    <div class="col">
-                        <p class="header-text">What you did today</p>
-                        <div class="sketch-box">
-                            <p class="bullet">Implemented the <span class="sketch-highlight">Navigator class</span> with drive_path()</p>
-                            <p class="bullet">Integrated <span class="sketch-highlight">LineTrack</span> from Module 2 with Navigator turning logic</p>
-                            <p class="bullet">Tested on real paths on the grid</p>
-                        </div>
-                    </div>
-                    <div class="col">
-                        <p class="header-text">Next lesson (Lesson 9 &mdash; Final Project)</p>
-                        <div class="sketch-box" style="border-color: #e8a87c; background-color: rgba(232, 168, 124, 0.04);">
-                            <p class="bullet">Integrate Manhattan + Navigator into a complete program</p>
-                            <p class="bullet">Navigate to a LIST of destinations (not just one)</p>
-                            <p class="bullet">Test with 4+ destinations on the grid</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="spacer"></div>
-
-                <div class="insight-box">
-                    Key achievement: You now have TWO classes working together &mdash; one computes, one drives. That's separation of concerns in action!
-                </div>
-
-                <!-- SVG: two classes working together -->
-                <div class="illustration" style="margin-top: 16px;">
-                    <svg width="585" height="208" viewBox="0 0 450 160">
-                        <!-- Manhattan class box -->
-                        <rect x="20" y="30" width="150" height="100" rx="12" fill="rgba(91, 143, 168, 0.1)" stroke="#5b8fa8" stroke-width="2.5" transform="rotate(-0.5 95 80)"/>
-                        <text x="95" y="58" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle" font-weight="700">Manhattan</text>
-                        <text x="95" y="80" font-family="Patrick Hand, cursive" font-size="15" fill="#2d3436" text-anchor="middle">computes the path</text>
-                        <text x="95" y="100" font-family="Fira Code, monospace" font-size="11" fill="#636e72" text-anchor="middle">[(1,0), (2,0), ...]</text>
-
-                        <!-- Arrow -->
-                        <path d="M180 80 C210 80, 210 80, 240 80" fill="none" stroke="#e8a87c" stroke-width="3" stroke-linecap="round"/>
-                        <polygon points="235,74 250,80 235,86" fill="#e8a87c"/>
-                        <text x="215" y="70" font-family="Caveat, cursive" font-size="14" fill="#e8a87c" text-anchor="middle" font-weight="600">path</text>
-
-                        <!-- Navigator class box -->
-                        <rect x="260" y="30" width="150" height="100" rx="12" fill="rgba(232, 168, 124, 0.1)" stroke="#e8a87c" stroke-width="2.5" transform="rotate(0.5 335 80)"/>
-                        <text x="335" y="58" font-family="Caveat, cursive" font-size="20" fill="#e8a87c" text-anchor="middle" font-weight="700">Navigator</text>
-                        <text x="335" y="80" font-family="Patrick Hand, cursive" font-size="15" fill="#2d3436" text-anchor="middle">drives the robot</text>
-                        <text x="335" y="100" font-family="Fira Code, monospace" font-size="11" fill="#636e72" text-anchor="middle">turn + drive</text>
-
-                        <!-- Separation of concerns label -->
-                        <text x="225" y="150" font-family="Caveat, cursive" font-size="16" fill="#85c88a" text-anchor="middle" font-weight="600">Separation of Concerns</text>
-                        <line x1="140" y1="148" x2="310" y2="148" stroke="#85c88a" stroke-width="1.5" stroke-dasharray="4,3"/>
-                    </svg>
-                </div>
-
-                <div class="question-box" style="text-align: center;">
-                    <p class="body-text" style="margin-left: 8px; font-family: 'Caveat', cursive; font-size: 28px; font-weight: 600;">
-                        Preview: Navigate to multiple destinations &rarr; a delivery robot!
-                    </p>
-                </div>
+                <p class="header-text">Today</p>
+                <p class="body-text">You built the Navigator &mdash; three methods, each a direct translation of yesterday's paper design.</p>
+                <p class="header-text">Next lesson &mdash; Final Project</p>
+                <p class="body-text">Drive to a <strong>list</strong> of destinations in sequence, computing a fresh path for each one.</p>
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
-                <span class="slide-counter">10 / 10</span>
+                <span class="slide-counter">9 / 9</span>
                 <button onclick="nextSlide()" class="nav-btn next-btn" disabled>Next</button>
             </div>
         </div>
@@ -1379,46 +291,24 @@ print("Heading:", HEADING_NAMES[nav.heading])</div>
 
         function showSlide(index) {
             slides.forEach((slide, i) => {
-                if (i === index) {
-                    slide.classList.add('active');
-                } else {
-                    slide.classList.remove('active');
-                }
+                if (i === index) slide.classList.add('active');
+                else slide.classList.remove('active');
             });
             currentSlide = index;
-
             navItems.forEach((item, i) => {
-                if (i === index) {
-                    item.classList.add('active');
-                } else {
-                    item.classList.remove('active');
-                }
+                if (i === index) item.classList.add('active');
+                else item.classList.remove('active');
             });
         }
 
-        function nextSlide() {
-            if (currentSlide < slides.length - 1) {
-                showSlide(currentSlide + 1);
-            }
-        }
-
-        function prevSlide() {
-            if (currentSlide > 0) {
-                showSlide(currentSlide - 1);
-            }
-        }
+        function nextSlide() { if (currentSlide < slides.length - 1) showSlide(currentSlide + 1); }
+        function prevSlide() { if (currentSlide > 0) showSlide(currentSlide - 1); }
 
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'ArrowRight' || e.key === ' ') {
-                e.preventDefault();
-                nextSlide();
-            } else if (e.key === 'ArrowLeft') {
-                e.preventDefault();
-                prevSlide();
-            }
+            if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+            else if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
         });
 
-        // Initialize first slide
         showSlide(0);
     </script>
 </body>

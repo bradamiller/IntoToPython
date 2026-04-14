@@ -144,7 +144,7 @@ The path lists only the intersections to drive to (the robot is already at the s
 | 3 | Lists — store paths as lists of positions |
 | 4-5 | Manhattan algorithm — compute the path |
 | 6 | Testing without a robot — verify before driving |
-| 7 | Turning logic — headings as numbers, counting right turns |
+| 7 | Turning logic — 4 cases, headings as numbers, turn right until aligned |
 | 8 | Navigator class — turn_to() and drive_path() |
 | 9 | Final project — put it all together! |
 

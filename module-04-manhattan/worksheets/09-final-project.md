@@ -123,7 +123,7 @@ Total: _____ steps.
 
 **Trace each step:**
 
-| Step | From | To | Needed Heading | Current Heading | Right Turns | New Heading |
+| Step | From | To | Desired Heading | Current Heading | `turn_to` heading values | New Heading |
 |---|---|---|---|---|---|---|
 | 1 | (__, __) | (__, __) | __________ | __________ | __________ | __________ |
 | 2 | (__, __) | (__, __) | __________ | __________ | __________ | __________ |
@@ -133,7 +133,7 @@ Total: _____ steps.
 | 6 | (__, __) | (__, __) | __________ | __________ | __________ | __________ |
 
 *Headings: 0 = North, 1 = East, 2 = South, 3 = West*
-*Right turns = count clockwise steps from current to needed*
+*`turn_to` each pass: turn right, add 1 to heading, wrap 4 → 0. Stop when heading == desired.*
 
 (Add more rows if needed on the back of this page.)
 
@@ -231,7 +231,7 @@ class Navigator:
         self.heading = heading
         self.line_track = LineTrack()
 
-    def get_needed_heading(self, next_pos):
+    def desired_heading(self, next_pos):
         row_diff = next_pos[0] - self.position[0]
         col_diff = next_pos[1] - self.position[1]
         if row_diff == 1:
@@ -243,8 +243,8 @@ class Navigator:
         elif col_diff == -1:
             return 3
 
-    def turn_to(self, needed_heading):
-        while self.heading != needed_heading:
+    def turn_to(self, desired):
+        while self.heading != desired:
             self.line_track.turn_right()
             self.heading = self.heading + 1
             if self.heading == 4:
@@ -252,7 +252,7 @@ class Navigator:
 
     def drive_path(self, path):
         for next_pos in path:
-            needed = self.get_needed_heading(next_pos)
+            needed = self.desired_heading(next_pos)
             if self.heading == needed:
                 self.line_track.drivetrain.straight(8)
             self.turn_to(needed)

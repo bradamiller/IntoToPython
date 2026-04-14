@@ -692,7 +692,7 @@
 
         <div class="code-block">HEADING_NAMES = ["N", "E", "S", "W"]
 
-def get_needed_heading(current_pos, next_pos):
+def desired_heading(current_pos, next_pos):
     row_diff = next_pos[0] - current_pos[0]
     col_diff = next_pos[1] - current_pos[1]
 
@@ -712,9 +712,9 @@ def get_needed_heading(current_pos, next_pos):
 
         <p style="margin-top: 14px;"><strong>Test your understanding:</strong></p>
         <ol class="questions">
-            <li>What does <code style="font-family: 'Fira Code', monospace; font-size: 14px;">get_needed_heading((0,0), (1,0))</code> return? <span class="inline-answer"></span></li>
-            <li>What does <code style="font-family: 'Fira Code', monospace; font-size: 14px;">get_needed_heading((2,3), (2,2))</code> return? <span class="inline-answer"></span></li>
-            <li>What does <code style="font-family: 'Fira Code', monospace; font-size: 14px;">get_needed_heading((1,1), (0,1))</code> return? <span class="inline-answer"></span></li>
+            <li>What does <code style="font-family: 'Fira Code', monospace; font-size: 14px;">desired_heading((0,0), (1,0))</code> return? <span class="inline-answer"></span></li>
+            <li>What does <code style="font-family: 'Fira Code', monospace; font-size: 14px;">desired_heading((2,3), (2,2))</code> return? <span class="inline-answer"></span></li>
+            <li>What does <code style="font-family: 'Fira Code', monospace; font-size: 14px;">desired_heading((1,1), (0,1))</code> return? <span class="inline-answer"></span></li>
         </ol>
     </div>
 

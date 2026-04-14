@@ -405,9 +405,9 @@
         </ol>
     </div>
 
-    <!-- ── Part B: get_needed_heading() Exercises ── -->
+    <!-- ── Part B: desired_heading() Exercises ── -->
     <div class="section">
-        <div class="section-header">Part B: get_needed_heading() Exercises</div>
+        <div class="section-header">Part B: desired_heading() Exercises</div>
 
         <div class="tip-box">
             <span class="tip-label">Heading numbers:</span> 0 = N, 1 = E, 2 = S, 3 = W<br>
@@ -549,7 +549,7 @@ class Navigator:
     <div class="section">
         <div class="section-header">Part E: Code Completion (continued)</div>
 
-        <div class="code-block">    def get_needed_heading(self, next_pos):
+        <div class="code-block">    def desired_heading(self, next_pos):
         row_diff = next_pos[<span class="code-blank" style="min-width: 30px;"></span>] - self.position[<span class="code-blank" style="min-width: 30px;"></span>]
         col_diff = next_pos[<span class="code-blank" style="min-width: 30px;"></span>] - self.position[<span class="code-blank" style="min-width: 30px;"></span>]
         if row_diff == -1:
@@ -570,7 +570,7 @@ class Navigator:
 
         <div class="code-block">    def drive_path(self, path):
         for <span class="code-blank" style="min-width: 80px;"></span> in <span class="code-blank" style="min-width: 60px;"></span>:
-            needed = self.get_needed_heading(<span class="code-blank" style="min-width: 80px;"></span>)
+            needed = self.desired_heading(<span class="code-blank" style="min-width: 80px;"></span>)
             if self.heading == <span class="code-blank" style="min-width: 60px;"></span>:
                 self.line_track.drivetrain.straight(<span class="code-blank" style="min-width: 30px;"></span>)
             self.turn_to(<span class="code-blank" style="min-width: 80px;"></span>)

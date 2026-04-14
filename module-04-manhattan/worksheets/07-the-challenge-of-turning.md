@@ -5,69 +5,73 @@
 
 ---
 
-## Part 1: Heading from Coordinates
+## Part 1: Desired Heading from Coordinate Change
 
-Given two consecutive coordinates, determine the **heading number** the robot needs. We use numbers for headings:
+Between two adjacent intersections, **either the row OR the column changes — never both**. That gives 4 cases, each mapping to one direction:
 
-| Heading Number | Direction | row_diff | col_diff |
-|---|---|---|---|
-| 0 | North (up) | -1 | 0 |
-| 1 | East (right) | 0 | +1 |
-| 2 | South (down) | +1 | 0 |
-| 3 | West (left) | 0 | -1 |
+| row/col change | Direction | Heading Number |
+|---|---|---|
+| row -1 | North | 0 |
+| col +1 | East | 1 |
+| row +1 | South | 2 |
+| col -1 | West | 3 |
 
 **`HEADING_NAMES = ["N", "E", "S", "W"]`** — index 0 is North, 1 is East, etc.
 
-| Current Position | Next Position | row_diff | col_diff | Heading (number and name) |
-|---|---|---|---|---|
-| (0, 0) | (1, 0) | 1 - 0 = _____ | 0 - 0 = _____ | __________ |
-| (2, 3) | (1, 3) | 1 - 2 = _____ | 3 - 3 = _____ | __________ |
-| (1, 1) | (1, 2) | _____ | _____ | __________ |
-| (3, 2) | (3, 1) | _____ | _____ | __________ |
-| (0, 3) | (1, 3) | _____ | _____ | __________ |
-| (2, 0) | (2, 1) | _____ | _____ | __________ |
-| (3, 1) | (2, 1) | _____ | _____ | __________ |
-| (0, 2) | (0, 1) | _____ | _____ | __________ |
+| Current Position | Next Position | row_diff | col_diff | What Changed | Desired Heading |
+|---|---|---|---|---|---|
+| (0, 0) | (1, 0) | 1 - 0 = _____ | 0 - 0 = _____ | __________ | __________ |
+| (2, 3) | (1, 3) | 1 - 2 = _____ | 3 - 3 = _____ | __________ | __________ |
+| (1, 1) | (1, 2) | _____ | _____ | __________ | __________ |
+| (3, 2) | (3, 1) | _____ | _____ | __________ | __________ |
+| (0, 3) | (1, 3) | _____ | _____ | __________ | __________ |
+| (2, 0) | (2, 1) | _____ | _____ | __________ | __________ |
+| (3, 1) | (2, 1) | _____ | _____ | __________ | __________ |
+| (0, 2) | (0, 1) | _____ | _____ | __________ | __________ |
 
 ---
 
-## Part 2: The Right Turns Table
+## Part 2: The `turn_to` While Loop
 
-Using only right turns, how many right turns does it take to go from the current heading to the needed heading? Fill in each cell with **0**, **1**, **2**, or **3**.
+Here is the code we will put in the Navigator class in Lesson 8:
 
-**Method:** Count clockwise steps from current heading to needed heading. Headings go clockwise: 0(N) -> 1(E) -> 2(S) -> 3(W) -> back to 0(N). Count how many steps clockwise to get from current to needed.
+```python
+def turn_to(self, desired):
+    while self.heading != desired:
+        self.robot.turn_right()
+        self.heading = self.heading + 1
+        if self.heading == 4:
+            self.heading = 0
+```
 
-| Current \ Needed | 0 (N) | 1 (E) | 2 (S) | 3 (W) |
-|---|---|---|---|---|
-| **0 (N)** | _____ | _____ | _____ | _____ |
-| **1 (E)** | _____ | _____ | _____ | _____ |
-| **2 (S)** | _____ | _____ | _____ | _____ |
-| **3 (W)** | _____ | _____ | _____ | _____ |
+**Each pass through the loop:** turn the robot right, add 1 to heading. If heading hits 4, reset to 0. Stop when heading equals desired.
 
-**How many cells have 0 right turns?** __________  **Why?** ____________________________
+**In your own words, what does the line `if self.heading == 4: self.heading = 0` do, and why is it necessary?**
 
-**What does 2 right turns mean physically?** ____________________________
+____________________________________________________________________
 
-**Do you notice a pattern in the table?** ____________________________
+____________________________________________________________________
 
 ---
 
-## Part 3: Determine the Number of Right Turns
+## Part 3: Trace `turn_to` by Hand
 
-For each scenario, count clockwise steps from current heading to needed heading to find the number of right turns.
+For each scenario, list the value of `self.heading` after each pass through the while loop, ending when the loop stops. Write "already there" if the loop runs zero times.
 
-| Scenario | Current Heading | Needed Heading | Clockwise Steps | Right Turns |
+| Scenario | Current Heading | Desired Heading | heading values during turn_to | Total Turns |
 |---|---|---|---|---|
-| 1 | 0 (N) | 1 (E) | 0->1 = _____ | _____ |
-| 2 | 1 (E) | 1 (E) | already there = _____ | _____ |
-| 3 | 2 (S) | 0 (N) | 2->3->0 = _____ | _____ |
-| 4 | 3 (W) | 2 (S) | 3->0->1->2 = _____ | _____ |
-| 5 | 1 (E) | 0 (N) | 1->2->3->0 = _____ | _____ |
-| 6 | 0 (N) | 3 (W) | 0->1->2->3 = _____ | _____ |
-| 7 | 2 (S) | 3 (W) | 2->3 = _____ | _____ |
-| 8 | 3 (W) | 1 (E) | 3->0->1 = _____ | _____ |
+| 1 | 0 (N) | 1 (E) | 0 → ___ | _____ |
+| 2 | 1 (E) | 1 (E) | __________ | _____ |
+| 3 | 2 (S) | 0 (N) | 2 → ___ → ___ | _____ |
+| 4 | 3 (W) | 2 (S) | 3 → ___ → ___ → ___ | _____ |
+| 5 | 1 (E) | 0 (N) | 1 → ___ → ___ → ___ | _____ |
+| 6 | 0 (N) | 3 (W) | 0 → ___ → ___ → ___ | _____ |
+| 7 | 2 (S) | 3 (W) | 2 → ___ | _____ |
+| 8 | 3 (W) | 1 (E) | 3 → ___ → ___ | _____ |
 
-**Why does counting clockwise always give the correct number of right turns?** ____________________________
+**Which scenarios above trigger the wrap from 4 back to 0?** ____________________________
+
+**What is the maximum number of turns the loop can ever run?** ____________________________
 
 ---
 
@@ -76,9 +80,9 @@ For each scenario, count clockwise steps from current heading to needed heading 
 **Path:** [(1, 0), (2, 0), (2, 1), (2, 2), (2, 3)]
 **Starting position:** (0, 0) &nbsp;&nbsp; **Starting heading:** 0 (N)
 
-Use a separate position variable starting at (0, 0). For each step, determine the needed heading, the number of right turns, and the new heading. Update position after each step.
+For each step, determine the desired heading, trace `turn_to`, and record the final heading.
 
-| Step | Position | Next | Needed Heading | Current Heading | Right Turns | New Heading |
+| Step | Position | Next | Desired | Current Heading | `turn_to` heading values | New Heading |
 |---|---|---|---|---|---|---|
 | 1 | (0, 0) | (1, 0) | __________ | 0 (N) | __________ | __________ |
 | 2 | (1, 0) | (2, 0) | __________ | __________ | __________ | __________ |
@@ -88,7 +92,7 @@ Use a separate position variable starting at (0, 0). For each step, determine th
 
 **How many steps required turning?** __________
 
-**How many steps required zero turns?** __________
+**How many steps ran the while loop zero times (no turn)?** __________
 
 **At which step did the robot change from row movement to column movement?** Step __________
 
@@ -99,7 +103,7 @@ Use a separate position variable starting at (0, 0). For each step, determine th
 **Path:** [(1, 3), (0, 3), (0, 2), (0, 1), (0, 0)]
 **Starting position:** (2, 3) &nbsp;&nbsp; **Starting heading:** 2 (S)
 
-| Step | Position | Next | Needed Heading | Current Heading | Right Turns | New Heading |
+| Step | Position | Next | Desired | Current Heading | `turn_to` heading values | New Heading |
 |---|---|---|---|---|---|---|
 | 1 | (2, 3) | (1, 3) | __________ | 2 (S) | __________ | __________ |
 | 2 | (1, 3) | (0, 3) | __________ | __________ | __________ | __________ |
@@ -116,7 +120,7 @@ Use a separate position variable starting at (0, 0). For each step, determine th
 **Path:** [(1, 2), (1, 3), (2, 3), (3, 3)]
 **Starting position:** (1, 1) &nbsp;&nbsp; **Starting heading:** 0 (N)
 
-| Step | Position | Next | Needed Heading | Current Heading | Right Turns | New Heading |
+| Step | Position | Next | Desired | Current Heading | `turn_to` heading values | New Heading |
 |---|---|---|---|---|---|---|
 | 1 | (1, 1) | (1, 2) | __________ | 0 (N) | __________ | __________ |
 | 2 | (1, 2) | (1, 3) | __________ | __________ | __________ | __________ |
@@ -135,7 +139,7 @@ ____________________________________________________________________
 
 For each scenario, draw an arrow inside the box showing which way the robot is facing. Then draw a curved arrow showing the turn(s) it needs to make, and draw the final facing direction.
 
-**Scenario A:** Facing 0 (N), need heading 1 (E)
+**Scenario A:** Facing 0 (N), desired 1 (E)
 
 ```
   Before turn:        After turn:
@@ -144,22 +148,10 @@ For each scenario, draw an arrow inside the box showing which way the robot is f
   |  [?]  |           |  [?]  |
   |       |           |       |
   +-------+           +-------+
-  Right turns needed: __________
+  turn_to loop runs this many times: __________
 ```
 
-**Scenario B:** Facing 1 (E), need heading 2 (S)
-
-```
-  Before turn:        After turn:
-  +-------+           +-------+
-  |       |           |       |
-  |  [?]  |           |  [?]  |
-  |       |           |       |
-  +-------+           +-------+
-  Right turns needed: __________
-```
-
-**Scenario C:** Facing 3 (W), need heading 1 (E)
+**Scenario B:** Facing 1 (E), desired 2 (S)
 
 ```
   Before turn:        After turn:
@@ -168,10 +160,10 @@ For each scenario, draw an arrow inside the box showing which way the robot is f
   |  [?]  |           |  [?]  |
   |       |           |       |
   +-------+           +-------+
-  Right turns needed: __________
+  turn_to loop runs this many times: __________
 ```
 
-**Scenario D:** Facing 2 (S), need heading 2 (S)
+**Scenario C:** Facing 3 (W), desired 1 (E)
 
 ```
   Before turn:        After turn:
@@ -180,19 +172,31 @@ For each scenario, draw an arrow inside the box showing which way the robot is f
   |  [?]  |           |  [?]  |
   |       |           |       |
   +-------+           +-------+
-  Right turns needed: __________
+  turn_to loop runs this many times: __________ (wrap triggered? ___)
+```
+
+**Scenario D:** Facing 2 (S), desired 2 (S)
+
+```
+  Before turn:        After turn:
+  +-------+           +-------+
+  |       |           |       |
+  |  [?]  |           |  [?]  |
+  |       |           |       |
+  +-------+           +-------+
+  turn_to loop runs this many times: __________
 ```
 
 ---
 
 ## Part 8: Heading Logic in Code
 
-Fill in the blanks to complete the `get_needed_heading` function:
+Fill in the blanks to complete the `desired_heading` function:
 
 ```python
 HEADING_NAMES = ["N", "E", "S", "W"]
 
-def get_needed_heading(current_pos, next_pos):
+def desired_heading(current_pos, next_pos):
     row_diff = next_pos[0] - current_pos[0]
     col_diff = next_pos[1] - current_pos[1]
 
@@ -208,19 +212,19 @@ def get_needed_heading(current_pos, next_pos):
 
 **Test your understanding:**
 
-**What does `get_needed_heading((0,0), (1,0))` return?** __________
+**What does `desired_heading((0,0), (1,0))` return?** __________
 
-**What does `get_needed_heading((2,3), (2,2))` return?** __________
+**What does `desired_heading((2,3), (2,2))` return?** __________
 
-**What does `get_needed_heading((1,1), (0,1))` return?** __________
+**What does `desired_heading((1,1), (0,1))` return?** __________
 
-*In the next lesson, the Navigator class will use a while loop to turn right until the heading matches -- the code version of counting clockwise steps.*
+*In the next lesson, you will type `turn_to` and `desired_heading` into the Navigator class and run them on the robot.*
 
 ---
 
 ## Reflection
 
-**The Manhattan algorithm tells the robot WHERE to go, but the turning logic tells it HOW to get there. What makes numeric headings and clockwise counting so powerful for solving the turning problem?**
+**The Manhattan algorithm tells the robot WHERE to go; the `turn_to` while loop handles HOW to face the right direction. In one or two sentences, explain why adding 1 and wrapping 4 → 0 is enough to handle every turning case.**
 
 _________________________________________________________________
 
@@ -230,4 +234,4 @@ _________________________________________________________________
 
 ---
 
-**Next Lesson:** We'll implement the turning logic in a **Navigator class** that can drive the robot along any path!
+**Next Lesson:** We'll build the **Navigator class** around these three methods and drive the robot along any path!

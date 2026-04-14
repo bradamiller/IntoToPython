@@ -60,12 +60,12 @@
 **Computed path:** [(1, 0), (2, 0)]
 
 *Headings: 0 = North, 1 = East, 2 = South, 3 = West*
-*Right turns = count clockwise steps from current to needed*
+*`turn_to` each pass: turn right, add 1 to heading, wrap 4 → 0. Stop when heading == desired.*
 
-| Step | From | To | Needed Heading | Current Heading | Right Turns | New Heading |
+| Step | From | To | Desired Heading | Current Heading | `turn_to` heading values | New Heading |
 |---|---|---|---|---|---|---|
-| 1 | (0, 0) | (1, 0) | 2 (S) | 0 (N) | count 0->1->2 = 2 | 2 (S) |
-| 2 | (1, 0) | (2, 0) | 2 (S) | 2 (S) | already there = 0 | 2 (S) |
+| 1 | (0, 0) | (1, 0) | 2 (S) | 0 (N) | 0 → 1 → 2 | 2 (S) |
+| 2 | (1, 0) | (2, 0) | 2 (S) | 2 (S) | already there | 2 (S) |
 
 **After this leg:**
 

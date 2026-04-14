@@ -132,7 +132,7 @@ class Navigator:
         # TODO: Set self.line_track to a new LineTrack object
         pass
 
-    def get_needed_heading(self, next_pos):
+    def desired_heading(self, next_pos):
         """Determine heading number to move from current position to next_pos.
 
         next_pos: a (row, col) tuple one step away from self.position
@@ -151,13 +151,13 @@ class Navigator:
         # TODO: Return the correct heading number based on the diff values
         pass
 
-    def turn_to(self, needed_heading):
+    def turn_to(self, desired):
         """Turn the robot to face the needed heading.
 
-        needed_heading: 0, 1, 2, or 3
+        desired: 0, 1, 2, or 3
 
         Logic:
-          - While self.heading != needed_heading:
+          - While self.heading != desired:
             - Call self.line_track.turn_right() to turn right once
             - Add 1 to self.heading
             - If self.heading == 4, reset it to 0
@@ -168,7 +168,7 @@ class Navigator:
           - Heading 3, need 0: one right turn (3 -> 0, wraps around)
         """
         # TODO: Use a while loop that keeps turning right
-        #       until self.heading equals needed_heading
+        #       until self.heading equals desired
         # TODO: Inside the loop: turn right, add 1 to heading,
         #       reset to 0 if heading reaches 4
         pass
@@ -182,7 +182,7 @@ class Navigator:
         Logic:
           - Loop through each position in the path
           - For each step:
-            1. Determine the needed heading using get_needed_heading()
+            1. Determine the needed heading using desired_heading()
             2. If already facing the right way, clear the intersection: straight(8)
             3. Turn to face the right direction using turn_to()
             4. Follow the line to the next intersection: track_until_cross()

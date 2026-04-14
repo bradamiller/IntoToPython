@@ -37,9 +37,9 @@ ____________________________________________________________________
 
 ---
 
-## Part B: `get_needed_heading()` Exercises
+## Part B: `desired_heading()` Exercises
 
-Given the Navigator's current position and the next position, determine the needed heading number.
+Given the Navigator's current position and the next position, determine the desired heading number.
 
 **Heading numbers:** 0 = N, 1 = E, 2 = S, 3 = W
 
@@ -49,7 +49,7 @@ Given the Navigator's current position and the next position, determine the need
 - Col increases --> East (heading 1)
 - Col decreases --> West (heading 3)
 
-| Navigator Position | Next Position | row_diff | col_diff | Heading |
+| Navigator Position | Next Position | row_diff | col_diff | Desired Heading |
 |---|---|---|---|---|
 | (0, 0) | (1, 0) | 1 - 0 = ____ | 0 - 0 = ____ | __________ |
 | (2, 1) | (1, 1) | 1 - 2 = ____ | 1 - 1 = ____ | __________ |
@@ -62,38 +62,47 @@ Given the Navigator's current position and the next position, determine the need
 
 ---
 
-## Part C: `turn_to()` Exercises
+## Part C: Trace `turn_to()` by Hand
 
-For each scenario, count clockwise steps from current heading to needed heading to find the number of right turns. Headings go clockwise: 0(N) -> 1(E) -> 2(S) -> 3(W) -> back to 0(N).
+```python
+def turn_to(self, desired):
+    while self.heading != desired:
+        self.line_track.turn_right()
+        self.heading = self.heading + 1
+        if self.heading == 4:
+            self.heading = 0
+```
 
-| Current Heading | Needed Heading | Clockwise Steps | Right Turns | New Heading |
-|---|---|---|---|---|
-| 0 (N) | 1 (E) | 0->1 = 1 | 1 | 1 (E) |
-| 0 (N) | 2 (S) | 0->1->2 = ____ | __________ | __________ |
-| 1 (E) | 1 (E) | already there = ____ | __________ | __________ |
-| 1 (E) | 0 (N) | 1->2->3->0 = ____ | __________ | __________ |
-| 2 (S) | 3 (W) | 2->3 = ____ | __________ | __________ |
-| 2 (S) | 0 (N) | 2->3->0 = ____ | __________ | __________ |
-| 3 (W) | 2 (S) | 3->0->1->2 = ____ | __________ | __________ |
-| 3 (W) | 1 (E) | 3->0->1 = ____ | __________ | __________ |
-| 0 (N) | 3 (W) | 0->1->2->3 = ____ | __________ | __________ |
-| 1 (E) | 3 (W) | 1->2->3 = ____ | __________ | __________ |
+Each pass: turn right, add 1, wrap 4 → 0. Stop when `self.heading == desired`. List the heading values the loop produces. Write "already there" if the loop runs zero times.
 
-**How many of the 10 scenarios above required 0 right turns?** __________
+| Current | Desired | heading values during turn_to | Total Turns |
+|---|---|---|---|
+| 0 (N) | 1 (E) | 0 → ___ | _____ |
+| 0 (N) | 2 (S) | 0 → ___ → ___ | _____ |
+| 1 (E) | 1 (E) | __________ | _____ |
+| 1 (E) | 0 (N) | 1 → ___ → ___ → ___ (wrap) | _____ |
+| 2 (S) | 3 (W) | 2 → ___ | _____ |
+| 2 (S) | 0 (N) | 2 → ___ → ___ (wrap) | _____ |
+| 3 (W) | 2 (S) | 3 → ___ (wrap) → ___ → ___ | _____ |
+| 3 (W) | 1 (E) | 3 → ___ (wrap) → ___ | _____ |
+| 0 (N) | 3 (W) | 0 → ___ → ___ → ___ | _____ |
+| 1 (E) | 3 (W) | 1 → ___ → ___ | _____ |
 
-**How many required 2 right turns (a 180)?** __________
+**How many of the 10 scenarios ran the while loop zero times?** __________
+
+**Which scenarios triggered the wrap from 4 back to 0?** __________
 
 ---
 
 ## Part D: `drive_path()` Tracing
 
-Trace through the entire `drive_path()` method for the given path. Fill in every column for each step.
+Trace through the entire `drive_path()` method for the given path. For each step, list the heading values produced by `turn_to` (or "already there" if no turn).
 
 **Path:** `[(1, 0), (2, 0), (2, 1), (2, 2)]`
 **Starting position:** (0, 0)
 **Starting heading:** 0 (N)
 
-| Step | next_pos | Needed Heading | Current Heading | Right Turns | New Heading | New Position |
+| Step | next_pos | Desired | Current | `turn_to` heading values | New Heading | New Position |
 |---|---|---|---|---|---|---|
 | 1 | (1, 0) | __________ | 0 (N) | __________ | __________ | (1, 0) |
 | 2 | (2, 0) | __________ | __________ | __________ | __________ | (2, 0) |
@@ -110,7 +119,7 @@ Trace through the entire `drive_path()` method for the given path. Fill in every
 **Starting position:** (3, 3)
 **Starting heading:** 1 (E)
 
-| Step | next_pos | Needed Heading | Current Heading | Right Turns | New Heading | New Position |
+| Step | next_pos | Desired | Current | `turn_to` heading values | New Heading | New Position |
 |---|---|---|---|---|---|---|
 | 1 | (3, 2) | __________ | 1 (E) | __________ | __________ | (3, 2) |
 | 2 | (3, 1) | __________ | __________ | __________ | __________ | (3, 1) |
@@ -138,7 +147,7 @@ class Navigator:
         self.heading = __________
         self.line_track = __________
 
-    def get_needed_heading(self, next_pos):
+    def desired_heading(self, next_pos):
         row_diff = next_pos[____] - self.position[____]
         col_diff = next_pos[____] - self.position[____]
         if row_diff == -1:
@@ -150,7 +159,7 @@ class Navigator:
         elif col_diff == -1:
             return ____
 
-    def turn_to(self, needed_heading):
+    def turn_to(self, desired):
         while self.heading != __________:
             self.line_track.______________()
             self.heading = self.heading + __________
@@ -159,7 +168,7 @@ class Navigator:
 
     def drive_path(self, path):
         for next_pos in ____________:
-            needed = self.get_needed_heading(____________)
+            desired = self.desired_heading(____________)
             if self.heading == ____________:
                 self.line_track.drivetrain.straight(____)
             self.turn_to(____________)
@@ -167,7 +176,7 @@ class Navigator:
             self.position = ____________
 ```
 
-**Why does `drive_path()` call `self.line_track.drivetrain.straight(8)` when the robot is already facing the right way?**
+**Why does `drive_path()` call `self.line_track.drivetrain.straight(8)` only when the robot is already facing the right way?**
 
 ____________________________________________________________________
 
@@ -197,13 +206,13 @@ ____________________________________________________________________
 
 ### Part A
 1. `position` (tuple) -- current (row, col) on the grid; `heading` (int) -- direction robot faces (0=N, 1=E, 2=S, 3=W); `line_track` (LineTrack) -- controls robot movement using line tracking from Module 2
-2. `get_needed_heading(next_pos)` -- returns heading number 0-3; `turn_to(needed_heading)` -- turns robot using right turns; `drive_path(path)` -- drives through entire path
+2. `desired_heading(next_pos)` -- returns heading number 0-3; `turn_to(desired)` -- turns right until heading matches desired; `drive_path(path)` -- drives through entire path
 3. The Navigator tracks its own position because it updates after each drive. The Manhattan class tracks position for path planning. Each class manages its own state.
 4. It uses a `LineTrack` object, created by calling `LineTrack()` in `__init__`. The LineTrack class (from Module 2) provides `turn_right()` and `track_until_cross()` for physical movement.
 
 ### Part B
 
-| Navigator Position | Next Position | row_diff | col_diff | Heading |
+| Navigator Position | Next Position | row_diff | col_diff | Desired Heading |
 |---|---|---|---|---|
 | (0, 0) | (1, 0) | 1 | 0 | 2 (S) |
 | (2, 1) | (1, 1) | -1 | 0 | 0 (N) |
@@ -216,41 +225,42 @@ ____________________________________________________________________
 
 ### Part C
 
-| Current Heading | Needed Heading | Clockwise Steps | Right Turns | New Heading |
-|---|---|---|---|---|
-| 0 (N) | 1 (E) | 0->1 = 1 | 1 | 1 (E) |
-| 0 (N) | 2 (S) | 0->1->2 = 2 | 2 | 2 (S) |
-| 1 (E) | 1 (E) | already there = 0 | 0 | 1 (E) |
-| 1 (E) | 0 (N) | 1->2->3->0 = 3 | 3 | 0 (N) |
-| 2 (S) | 3 (W) | 2->3 = 1 | 1 | 3 (W) |
-| 2 (S) | 0 (N) | 2->3->0 = 2 | 2 | 0 (N) |
-| 3 (W) | 2 (S) | 3->0->1->2 = 3 | 3 | 2 (S) |
-| 3 (W) | 1 (E) | 3->0->1 = 2 | 2 | 1 (E) |
-| 0 (N) | 3 (W) | 0->1->2->3 = 3 | 3 | 3 (W) |
-| 1 (E) | 3 (W) | 1->2->3 = 2 | 2 | 3 (W) |
+| Current | Desired | heading values during turn_to | Total Turns |
+|---|---|---|---|
+| 0 (N) | 1 (E) | 0 → **1** | **1** |
+| 0 (N) | 2 (S) | 0 → **1** → **2** | **2** |
+| 1 (E) | 1 (E) | **already there** | **0** |
+| 1 (E) | 0 (N) | 1 → **2** → **3** → **0 (wrap)** | **3** |
+| 2 (S) | 3 (W) | 2 → **3** | **1** |
+| 2 (S) | 0 (N) | 2 → **3** → **0 (wrap)** | **2** |
+| 3 (W) | 2 (S) | 3 → **0 (wrap)** → **1** → **2** | **3** |
+| 3 (W) | 1 (E) | 3 → **0 (wrap)** → **1** | **2** |
+| 0 (N) | 3 (W) | 0 → **1** → **2** → **3** | **3** |
+| 1 (E) | 3 (W) | 1 → **2** → **3** | **2** |
 
-0 right turns: 1 scenario. 2 right turns (180): 4 scenarios.
+- Zero-turn scenarios: **1** (the `1 (E) → 1 (E)` row)
+- Wrap-triggering scenarios: the four rows where the loop crosses 3 → 0
 
 ### Part D -- First Path
 
-| Step | next_pos | Needed Heading | Current Heading | Right Turns | New Heading | New Position |
+| Step | next_pos | Desired | Current | `turn_to` heading values | New Heading | New Position |
 |---|---|---|---|---|---|---|
-| 1 | (1, 0) | 2 (S) | 0 (N) | count 0->1->2 = 2 | 2 (S) | (1, 0) |
-| 2 | (2, 0) | 2 (S) | 2 (S) | already there = 0 | 2 (S) | (2, 0) |
-| 3 | (2, 1) | 1 (E) | 2 (S) | count 2->3->0->1 = 3 | 1 (E) | (2, 1) |
-| 4 | (2, 2) | 1 (E) | 1 (E) | already there = 0 | 1 (E) | (2, 2) |
+| 1 | (1, 0) | 2 (S) | 0 (N) | 0 → 1 → 2 | 2 (S) | (1, 0) |
+| 2 | (2, 0) | 2 (S) | 2 (S) | already there | 2 (S) | (2, 0) |
+| 3 | (2, 1) | 1 (E) | 2 (S) | 2 → 3 → 0 (wrap) → 1 | 1 (E) | (2, 1) |
+| 4 | (2, 2) | 1 (E) | 1 (E) | already there | 1 (E) | (2, 2) |
 
 Final position: (2, 2). Final heading: 1 (E).
 
 ### Part D -- Second Path
 
-| Step | next_pos | Needed Heading | Current Heading | Right Turns | New Heading | New Position |
+| Step | next_pos | Desired | Current | `turn_to` heading values | New Heading | New Position |
 |---|---|---|---|---|---|---|
-| 1 | (3, 2) | 3 (W) | 1 (E) | count 1->2->3 = 2 | 3 (W) | (3, 2) |
-| 2 | (3, 1) | 3 (W) | 3 (W) | already there = 0 | 3 (W) | (3, 1) |
-| 3 | (2, 1) | 0 (N) | 3 (W) | count 3->0 = 1 | 0 (N) | (2, 1) |
-| 4 | (1, 1) | 0 (N) | 0 (N) | already there = 0 | 0 (N) | (1, 1) |
-| 5 | (0, 1) | 0 (N) | 0 (N) | already there = 0 | 0 (N) | (0, 1) |
+| 1 | (3, 2) | 3 (W) | 1 (E) | 1 → 2 → 3 | 3 (W) | (3, 2) |
+| 2 | (3, 1) | 3 (W) | 3 (W) | already there | 3 (W) | (3, 1) |
+| 3 | (2, 1) | 0 (N) | 3 (W) | 3 → 0 (wrap) | 0 (N) | (2, 1) |
+| 4 | (1, 1) | 0 (N) | 0 (N) | already there | 0 (N) | (1, 1) |
+| 5 | (0, 1) | 0 (N) | 0 (N) | already there | 0 (N) | (0, 1) |
 
 Final position: (0, 1). Final heading: 0 (N).
 
@@ -267,7 +277,7 @@ class Navigator:
         self.heading = heading
         self.line_track = LineTrack()
 
-    def get_needed_heading(self, next_pos):
+    def desired_heading(self, next_pos):
         row_diff = next_pos[0] - self.position[0]
         col_diff = next_pos[1] - self.position[1]
         if row_diff == -1:
@@ -279,8 +289,8 @@ class Navigator:
         elif col_diff == -1:
             return 3
 
-    def turn_to(self, needed_heading):
-        while self.heading != needed_heading:
+    def turn_to(self, desired):
+        while self.heading != desired:
             self.line_track.turn_right()
             self.heading = self.heading + 1
             if self.heading == 4:
@@ -288,16 +298,16 @@ class Navigator:
 
     def drive_path(self, path):
         for next_pos in path:
-            needed = self.get_needed_heading(next_pos)
-            if self.heading == needed:
+            desired = self.desired_heading(next_pos)
+            if self.heading == desired:
                 self.line_track.drivetrain.straight(8)
-            self.turn_to(needed)
+            self.turn_to(desired)
             self.line_track.track_until_cross()
             self.position = next_pos
 ```
 
-**Blanks:** **path**, **next_pos**, **needed**, **8**, **needed**, **next_pos**
+**Blanks:** **path**, **next_pos**, **desired**, **8**, **desired**, **next_pos**
 
-`straight(8)` is called when the robot is already facing the right direction but is still sitting on the previous intersection. It needs to drive forward 8 cm to clear the intersection before `track_until_cross()` starts looking for the next crossing line.
+`straight(8)` is called only when the robot is already facing the right direction. In that case no turn happens, so the robot is still sitting on the previous intersection. It drives forward 8 cm to clear the cross before `track_until_cross()` starts looking for the next crossing line. When a turn does happen, the turning motion itself clears the intersection.
 
 The loop iterates directly with `for next_pos in path:` because the path does not include the starting position -- every element is a new cell to drive to.

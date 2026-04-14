@@ -14,22 +14,22 @@ Set three attributes:
 - `self.heading` — the starting heading number (0=N, 1=E, 2=S, 3=W).
 - `self.line_track` — create using `LineTrack()`.
 
-### Complete get_needed_heading()
+### Complete desired_heading()
 This is the same logic from Lesson 7, now as a class method:
 - Calculate `row_diff` and `col_diff` between `next_pos` and `self.position`.
 - Return the heading number: 0 for North, 1 for East, 2 for South, 3 for West.
 
 ### Complete turn_to()
 Turn the robot to face a given heading by turning right in a while loop:
-- Use `while self.heading != needed_heading`: call `self.line_track.turn_right()`, then increment `self.heading` by 1 (wrap 4 to 0).
+- Use `while self.heading != desired`: call `self.line_track.turn_right()`, then increment `self.heading` by 1 (wrap 4 to 0).
 - The loop naturally stops when the robot is facing the right direction.
 
 ### Complete drive_path()
 Drive the robot through a list of positions:
 - Iterate directly: `for next_pos in path:` (the path does not include the starting position, so every element is a new cell to drive to).
-- For each step: get the needed heading.
-- If already facing the right way (`self.heading == needed`), call `self.line_track.drivetrain.straight(8)` to clear the intersection.
-- Call `self.turn_to(needed)` to turn the robot.
+- For each step: get the desired heading.
+- If already facing the right way (`self.heading == desired`), call `self.line_track.drivetrain.straight(8)` to clear the intersection.
+- Call `self.turn_to(desired)` to turn the robot.
 - Call `self.line_track.track_until_cross()` to drive to the next intersection.
 - Update `self.position`.
 
@@ -43,8 +43,9 @@ Drive the robot through a list of positions:
 - The Navigator **does not plan** the path — it receives a path from Manhattan and drives it.
 - The Navigator **reuses LineTrack** from Module 2 — `track_until_cross()` for driving and `turn_right()` for turning.
 - The `for` loop iterates directly over the path with `for next_pos in path:` because the path does not include the starting position.
-- When `self.heading == needed`, the robot must drive forward 8 cm to clear the current intersection before `track_until_cross()` looks for the next one.
-- After each step, update `self.position` so `get_needed_heading()` works correctly for the next step.
+- When `self.heading == desired` (no turn needed), the robot must drive forward 8 cm to clear the current intersection before `track_until_cross()` looks for the next one. When a turn happens, the turning motion itself clears the cross.
+- **Turning by adding 1:** Each right turn adds 1 to `self.heading`. When heading reaches 4, wrap back to 0. The loop stops automatically when `self.heading == desired`.
+- After each step, update `self.position` so `desired_heading()` works correctly for the next step.
 - **Separation of concerns:** Manhattan plans, Navigator drives, LineTrack handles sensors.
 
 ## Expected Console Output
@@ -63,12 +64,12 @@ Final heading: E
 ## Common Mistakes
 
 - **Forgetting to update `self.heading`** after turning — the next turn calculation will be wrong.
-- **Forgetting to update `self.position`** after driving — `get_needed_heading()` will use the old position.
+- **Forgetting to update `self.position`** after driving — `desired_heading()` will use the old position.
 - **Including the start position in the path** — the robot will try to "drive" to where it already is.
 - **Not clearing the intersection** when going straight — `track_until_cross()` will immediately re-detect the current crossing line.
 
 ## When You Are Done
 
 - Does the robot physically arrive at (2, 2) on the grid?
-- Does it make the correct turns (two right turns for the first step, then three right turns at the corner)?
+- Does it make the correct turns (two right turns for the first step — heading 0 → 1 → 2 — then three right turns at the corner with the 4 → 0 wrap)?
 - Try a different path and verify the robot follows it correctly.

@@ -5,7 +5,7 @@
 HEADING_NAMES = ["N", "E", "S", "W"]
 
 
-def get_needed_heading(current, next_pos):
+def desired_heading(current, next_pos):
     row_diff = next_pos[0] - current[0]
     col_diff = next_pos[1] - current[1]
     if row_diff == -1:
@@ -22,7 +22,7 @@ def get_needed_heading(current, next_pos):
 print("=== Heading from Coordinates ===")
 test_pairs = [((0, 0), (1, 0)), ((1, 0), (0, 0)), ((0, 0), (0, 1)), ((0, 1), (0, 0))]
 for current, next_pos in test_pairs:
-    h = get_needed_heading(current, next_pos)
+    h = desired_heading(current, next_pos)
     print(f"  {current} to {next_pos}: {h} ({HEADING_NAMES[h]})")
 
 # Test: Full path trace
@@ -33,7 +33,7 @@ path = [(1, 0), (2, 0), (2, 1), (2, 2)]
 position = (0, 0)
 heading = 0  # North
 for next_pos in path:
-    needed = get_needed_heading(position, next_pos)
+    needed = desired_heading(position, next_pos)
     print(f"  At {position} heading {HEADING_NAMES[heading]}, need {HEADING_NAMES[needed]}")
     heading = needed
     position = next_pos

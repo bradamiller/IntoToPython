@@ -110,7 +110,7 @@ class Navigator:
         self.heading = heading
         self.line_track = LineTrack()
 
-    def get_needed_heading(self, next_pos):
+    def desired_heading(self, next_pos):
         row_diff = next_pos[0] - self.position[0]
         col_diff = next_pos[1] - self.position[1]
         if row_diff == -1:
@@ -122,8 +122,8 @@ class Navigator:
         elif col_diff == -1:
             return 3  # West
 
-    def turn_to(self, needed_heading):
-        while self.heading != needed_heading:
+    def turn_to(self, desired):
+        while self.heading != desired:
             self.line_track.turn_right()
             self.heading = self.heading + 1
             if self.heading == 4:
@@ -131,7 +131,7 @@ class Navigator:
 
     def drive_path(self, path):
         for next_pos in path:
-            needed = self.get_needed_heading(next_pos)
+            needed = self.desired_heading(next_pos)
             if self.heading == needed:
                 self.line_track.drivetrain.straight(8)
             self.turn_to(needed)

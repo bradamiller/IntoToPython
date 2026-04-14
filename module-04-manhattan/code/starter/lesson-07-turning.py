@@ -23,11 +23,11 @@
 HEADING_NAMES = ["N", "E", "S", "W"]
 
 
-# ===== PART 1: get_needed_heading =====
+# ===== PART 1: desired_heading =====
 # Given the current position and the next position, figure out
 # which heading number (0-3) the robot needs.
 
-def get_needed_heading(current, next_pos):
+def desired_heading(current, next_pos):
     """Return 0, 1, 2, or 3 based on how next_pos differs from current.
 
     current:  a (row, col) tuple
@@ -43,12 +43,12 @@ def get_needed_heading(current, next_pos):
 
 # ===== PART 2: Test Your Functions =====
 
-# TODO: Uncomment and test get_needed_heading
-# print("===== Testing get_needed_heading =====")
-# print("(0,0) to (1,0):", get_needed_heading((0,0), (1,0)))  # should be 2 (South)
-# print("(1,0) to (0,0):", get_needed_heading((1,0), (0,0)))  # should be 0 (North)
-# print("(0,0) to (0,1):", get_needed_heading((0,0), (0,1)))  # should be 1 (East)
-# print("(0,1) to (0,0):", get_needed_heading((0,1), (0,0)))  # should be 3 (West)
+# TODO: Uncomment and test desired_heading
+# print("===== Testing desired_heading =====")
+# print("(0,0) to (1,0):", desired_heading((0,0), (1,0)))  # should be 2 (South)
+# print("(1,0) to (0,0):", desired_heading((1,0), (0,0)))  # should be 0 (North)
+# print("(0,0) to (0,1):", desired_heading((0,0), (0,1)))  # should be 1 (East)
+# print("(0,1) to (0,0):", desired_heading((0,1), (0,0)))  # should be 3 (West)
 # print()
 
 # TODO: Trace through a path on paper
