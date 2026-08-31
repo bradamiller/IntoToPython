@@ -54,14 +54,13 @@
 
 ```python
 # Detect the intersection
-tracker.track_until_cross()
+track_until_cross()
 
 # Clear the intersection (drive past it)
-tracker.drivetrain.set_effort(0.3, 0.3)
-time.sleep(0.3)
+clear_intersection()
 
 # Now we can detect the NEXT intersection
-tracker.track_until_cross()
+track_until_cross()
 ```
 
 **The clearing drive:**
@@ -79,16 +78,15 @@ board.wait_for_button()
 
 # Intersection 1
 print("Driving to intersection 1...")
-tracker.track_until_cross()
+track_until_cross()
 print("Reached intersection 1!")
 
 # Clear
-tracker.drivetrain.set_effort(0.3, 0.3)
-time.sleep(0.3)
+clear_intersection()
 
 # Intersection 2
 print("Driving to intersection 2...")
-tracker.track_until_cross()
+track_until_cross()
 print("Reached intersection 2!")
 ```
 
@@ -104,13 +102,12 @@ intersections = 3
 
 for i in range(intersections):
     print("Driving to intersection", i + 1)
-    tracker.track_until_cross()
+    track_until_cross()
     print("Reached intersection", i + 1)
 
     # Clear (except after the last one!)
     if i < intersections - 1:
-        tracker.drivetrain.set_effort(0.3, 0.3)
-        time.sleep(0.3)
+        clear_intersection()
 ```
 
 **Why skip clearing on the last intersection?**
@@ -138,18 +135,17 @@ for i in range(intersections):
 **Wrap it in a reusable function:**
 
 ```python
-def drive_intersections(tracker, count):
+def drive_intersections(count):
     for i in range(count):
-        tracker.track_until_cross()
+        track_until_cross()
         if i < count - 1:
-            tracker.drivetrain.set_effort(0.3, 0.3)
-            time.sleep(0.3)
+            clear_intersection()
 ```
 
 **Usage:**
 ```python
-drive_intersections(tracker, 2)   # Drive 2 intersections
-drive_intersections(tracker, 4)   # Drive 4 intersections
+drive_intersections(2)   # Drive 2 intersections
+drive_intersections(4)   # Drive 4 intersections
 ```
 
 **This function will be very useful in the final project!**
@@ -160,7 +156,7 @@ drive_intersections(tracker, 4)   # Drive 4 intersections
 **Activity:**
 1. Write a program that drives exactly 2 intersections and stops
 2. Modify it to drive 3 intersections
-3. Create the `drive_intersections(tracker, count)` function
+3. Create the `drive_intersections(count)` function
 4. Test with different counts (1, 2, 3, 4)
 
 **Debugging:** If the robot counts wrong:

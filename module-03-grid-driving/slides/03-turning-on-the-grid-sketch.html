@@ -895,9 +895,9 @@
 
                 <div class="two-col">
                     <div class="col">
-                        <pre class="code-block"><code>drive_intersections(tracker, 2)
-tracker.turn_right()
-drive_intersections(tracker, 2)</code></pre>
+                        <pre class="code-block"><code>drive_intersections(2)
+turn_right()
+drive_intersections(2)</code></pre>
 
                         <div class="insight-box">
                             Three lines of code, one L-shaped path!
@@ -961,9 +961,9 @@ drive_intersections(tracker, 2)</code></pre>
                 <p class="header-text">Chain drive_intersections() and turns to navigate any path:</p>
 
                 <pre class="code-block"><code># Drive 2 intersections, turn right, drive 2 more
-drive_intersections(tracker, 2)
-tracker.turn_right()
-drive_intersections(tracker, 2)</code></pre>
+drive_intersections(2)
+turn_right()
+drive_intersections(2)</code></pre>
 
                 <div class="spacer"></div>
 
@@ -1090,11 +1090,11 @@ drive_intersections(tracker, 2)</code></pre>
                                     <text x="66" y="14" font-family="Caveat, cursive" font-size="11" fill="#85c88a" font-weight="600">E</text>
                                 </svg>
                             </div>
-                            <pre class="code-block" style="font-size: 13px; padding: 10px 12px; margin: 6px 0 0; transform: none;" data-no-badge><code>drive_intersections(tracker, 3)
-tracker.turn_right()
-drive_intersections(tracker, 1)
-tracker.turn_right()
-drive_intersections(tracker, 3)</code></pre>
+                            <pre class="code-block" style="font-size: 13px; padding: 10px 12px; margin: 6px 0 0; transform: none;" data-no-badge><code>drive_intersections(3)
+turn_right()
+drive_intersections(1)
+turn_right()
+drive_intersections(3)</code></pre>
                         </div>
                     </div>
                     <!-- Z-Shape -->
@@ -1122,11 +1122,11 @@ drive_intersections(tracker, 3)</code></pre>
                                     <text x="146" y="112" font-family="Caveat, cursive" font-size="11" fill="#85c88a" font-weight="600">E</text>
                                 </svg>
                             </div>
-                            <pre class="code-block" style="font-size: 13px; padding: 10px 12px; margin: 6px 0 0; transform: none;" data-no-badge><code>drive_intersections(tracker, 2)
-tracker.turn_right()
-drive_intersections(tracker, 1)
-tracker.turn_left()
-drive_intersections(tracker, 2)</code></pre>
+                            <pre class="code-block" style="font-size: 13px; padding: 10px 12px; margin: 6px 0 0; transform: none;" data-no-badge><code>drive_intersections(2)
+turn_right()
+drive_intersections(1)
+turn_left()
+drive_intersections(2)</code></pre>
                         </div>
                     </div>
                     <!-- Staircase -->
@@ -1154,10 +1154,10 @@ drive_intersections(tracker, 2)</code></pre>
                                 </svg>
                             </div>
                             <pre class="code-block" style="font-size: 13px; padding: 10px 12px; margin: 6px 0 0; transform: none;" data-no-badge><code>for i in range(2):
-    drive_intersections(tracker, 1)
-    tracker.turn_right()
-    drive_intersections(tracker, 1)
-    tracker.turn_left()</code></pre>
+    drive_intersections(1)
+    turn_right()
+    drive_intersections(1)
+    turn_left()</code></pre>
                         </div>
                     </div>
                 </div>
@@ -1180,14 +1180,14 @@ drive_intersections(tracker, 2)</code></pre>
                     <div class="two-col" style="margin-top: 6px;">
                         <div class="col">
                             <pre class="code-block" style="font-size: 14px; padding: 10px 14px; border-color: #e07070;" data-no-badge><code># Wrong — robot is mid-line!
-tracker.turn_right()
-drive_intersections(tracker, 2)</code></pre>
+turn_right()
+drive_intersections(2)</code></pre>
                         </div>
                         <div class="col">
                             <pre class="code-block" style="font-size: 14px; padding: 10px 14px; border-color: #85c88a;" data-no-badge><code># Correct — drive to intersection first
-drive_intersections(tracker, 1)
-tracker.turn_right()
-drive_intersections(tracker, 2)</code></pre>
+drive_intersections(1)
+turn_right()
+drive_intersections(2)</code></pre>
                         </div>
                     </div>
                 </div>
@@ -1298,8 +1298,8 @@ drive_intersections(tracker, 2)</code></pre>
                 </div>
 
                 <pre class="code-block" data-no-badge><code>for i in range(4):
-    drive_intersections(tracker, 2)
-    tracker.turn_right()</code></pre>
+    drive_intersections(2)
+    turn_right()</code></pre>
 
                 <div class="illustration" style="margin-top: 16px;">
                     <svg width="312" height="312" viewBox="0 0 240 240">

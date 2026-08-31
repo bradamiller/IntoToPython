@@ -1,10 +1,10 @@
 # Lesson 9 Slide Outline: Module 4 Final Project
 
 ## Slide 1: Title & Learning Objectives
-**Title:** Module 4 Final Project — Manhattan Navigator
+**Title:** Module 4 Final Project — Grid Navigation
 
 **Learning Objectives:**
-- Integrate the Manhattan and Navigator classes into one program
+- Integrate `compute_manhattan_path()` and `drive_path()` into one program
 - Navigate to a series of destinations on the grid
 - Debug and refine the complete system
 - Demonstrate separation of concerns in a working project
@@ -24,51 +24,48 @@
 **What you've built (Lessons 2-8):**
 - Tuples for coordinates
 - Lists for paths
-- Manhattan class to compute paths
-- Navigator class to drive paths using LineTrack
+- `compute_manhattan_path()` to compute paths
+- `drive_path()` to drive paths using the Module 2 toolkit
 
 **Today:** Put it ALL together. Your robot will navigate to multiple destinations on the grid — automatically!
 
 ---
 
 ## Slide 3: The Main Program Structure
-**Three components working together:**
+**Two functions, orchestrated by a loop:**
 
 ```python
-# 1. Manhattan class — computes the path
-manhattan = Manhattan((0, 0))
+# 1. compute_manhattan_path() — computes the path
+# 2. drive_path() — drives the path
 
-# 2. Navigator class — drives the path
-navigator = Navigator((0, 0), 0)  # heading North
+position = (0, 0)
+heading = 0  # heading North
 
 # 3. Main program — orchestrates everything
 destinations = [(2, 3), (0, 1), (3, 3), (1, 0)]
 
 for dest in destinations:
-    path = manhattan.compute_path(dest)
-    navigator.drive_path(path)
-    manhattan.position = navigator.position
+    path = compute_manhattan_path(position, dest)
+    position, heading = drive_path(path, position, heading)
 ```
 
-**The main program is simple because the classes do the work!**
+**The main program is simple because the functions do the work!**
+
+**Why reassign `position, heading = drive_path(...)`?** `drive_path()` computes the new position and heading internally and returns them -- it doesn't change anything outside itself. Skip the reassignment and every leg starts from (0, 0) again.
 
 ---
 
 ## Slide 4: Complete Main Program
 ```python
 from XRPLib.board import Board
-from line_track import LineTrack
 
 HEADING_NAMES = ["N", "E", "S", "W"]
-
-# Import your classes (or define them above)
 
 board = Board.get_default_board()
 
 # Setup
-start = (0, 0)
-manhattan = Manhattan(start)
-navigator = Navigator(start, 0)  # heading North
+position = (0, 0)
+heading = 0  # heading North
 
 # Destinations to visit
 destinations = [(2, 3), (0, 1), (3, 3), (1, 0)]
@@ -76,21 +73,18 @@ destinations = [(2, 3), (0, 1), (3, 3), (1, 0)]
 board.wait_for_button()
 print("Starting navigation!")
 
-for i in range(len(destinations)):
-    dest = destinations[i]
-    print("Leg", i + 1, "- Going to", dest)
+for dest in destinations:
+    print("--- Navigating to", dest, "---")
 
     # Compute the path
-    path = manhattan.compute_path(dest)
+    path = compute_manhattan_path(position, dest)
     print("  Path:", path)
 
-    # Drive the path
-    navigator.drive_path(path)
+    # Drive the path, capturing the updated position/heading
+    position, heading = drive_path(path, position, heading)
 
-    # Update Manhattan's position
-    manhattan.position = navigator.position
-    print("  Arrived at", dest)
-    print("  Heading:", HEADING_NAMES[navigator.heading])
+    print("  Arrived at", position)
+    print("  Heading:", HEADING_NAMES[heading])
 
 print("All destinations reached!")
 ```
@@ -100,8 +94,8 @@ print("All destinations reached!")
 ## Slide 5: Project Requirements
 **Your final project must:**
 
-1. Use the Manhattan class to compute paths
-2. Use the Navigator class to drive paths
+1. Use `compute_manhattan_path()` to compute paths
+2. Use `drive_path()` to drive paths
 3. Visit at least 4 destinations
 4. Start from (0, 0)
 5. Print the path for each leg
@@ -111,26 +105,26 @@ print("All destinations reached!")
 
 | Category | Points |
 |---|---|
-| Manhattan class works correctly | 15 |
-| Navigator class turns and drives correctly | 15 |
-| Main program visits 4+ destinations | 10 |
-| Code is organized and readable | 5 |
-| Robot completes the course | 5 |
+| `compute_manhattan_path()` works correctly | 10 |
+| Driving functions turn and drive correctly | 15 |
+| Main program visits 4+ destinations, reassigns position/heading | 10 |
+| Robot completes the course | 10 |
+| Planning & documentation | 5 |
 | Total | 50 |
 
 ---
 
 ## Slide 6: Testing Strategy
-**Step 1: Test Manhattan class alone (no robot)**
+**Step 1: Test `compute_manhattan_path()` alone (no robot)**
 ```python
-manhattan = Manhattan((0, 0))
+position = (0, 0)
 for dest in [(2,3), (0,1), (3,3), (1,0)]:
-    path = manhattan.compute_path(dest)
+    path = compute_manhattan_path(position, dest)
     print(dest, "->", path)
-    manhattan.position = dest
+    position = dest
 ```
 
-**Step 2: Test Navigator with one short path**
+**Step 2: Test `drive_path()` with one short path**
 - Start with (0, 0) to (1, 0) — one step
 - Then (0, 0) to (2, 0) — straight line
 - Then (0, 0) to (1, 1) — requires one turn
@@ -144,21 +138,21 @@ for dest in [(2,3), (0,1), (3,3), (1,0)]:
 ## Slide 7: Common Issues and Fixes
 **Issue 1: Robot turns wrong direction**
 - Check: Does physical starting heading match the code?
-- Check: Is turn_to() updating self.heading?
+- Check: Is `turn_to()` returning `heading`?
 - Fix: Print heading before and after each turn
 
 **Issue 2: Robot drifts off the line**
 - Check: Is the robot starting centered on a grid line?
-- Fix: track_until_cross() follows the line, so starting position matters
-- Fix: Make sure straight(8) clears the intersection fully
+- Fix: `track_until_cross()` follows the line, so starting position matters
+- Fix: Make sure `clear_intersection()` clears the intersection fully
 
-**Issue 3: Manhattan position not updating between legs**
-- Check: `manhattan.position = navigator.position` after each leg
+**Issue 3: Position not updating between legs**
+- Check: `position, heading = drive_path(path, position, heading)` after each leg
 - Without this, all paths start from (0, 0)!
 
 **Issue 4: Path correct on screen, wrong on robot**
 - This is usually a turning or line-following issue, not an algorithm issue
-- Test Manhattan class output first, then debug Navigator separately
+- Test `compute_manhattan_path()` output first, then debug `drive_path()` separately
 
 ---
 
@@ -185,9 +179,9 @@ for dest in [(2,3), (0,1), (3,3), (1,0)]:
 
 ## Slide 9: Your Turn!
 **Activity:**
-1. Combine your Manhattan and Navigator classes into one file
+1. Combine `compute_manhattan_path()` and the driving functions into one file
 2. Write the main program with at least 4 destinations
-3. Test Manhattan output on screen first (Step 1 from Slide 6)
+3. Test path output on screen first (Step 1 from Slide 6)
 4. Test with robot one leg at a time (Step 2)
 5. Run the full sequence (Step 3)
 
@@ -197,7 +191,7 @@ for dest in [(2,3), (0,1), (3,3), (1,0)]:
 - `[(1, 1), (2, 2), (1, 3), (3, 1)]` — zigzag
 
 **Checkpoints:**
-- Does Manhattan produce correct paths for all legs?
+- Does `compute_manhattan_path()` produce correct paths for all legs?
 - Does the robot complete at least one leg correctly?
 - Does the robot complete all 4 legs?
 
@@ -209,13 +203,15 @@ for dest in [(2,3), (0,1), (3,3), (1,0)]:
 - Tuples for positions, lists for paths
 - Manhattan algorithm for pathfinding
 - Testing without hardware
-- Navigator class for physical driving
+- `drive_path()` for physical driving
 - Separation of concerns: algorithm vs. action
 
 **Looking ahead to Module 5:**
 - What if an intersection is BLOCKED?
-- Manhattan can't handle obstacles — it always goes the same way
+- `compute_manhattan_path()` can't handle obstacles — it always goes the same way
 - Module 5 introduces **Dijkstra's algorithm** — finds the BEST path around obstacles
-- Your Navigator class stays the same — only the pathfinding changes!
+- Your `drive_path()` function stays the same — only the pathfinding changes!
 
 **Big picture:** You built a modular system. Swapping one component (Manhattan → Dijkstra) is easy because of separation of concerns.
+
+**Optional Extension:** Courses that also cover classes can see this same final project built on `Manhattan`/`Navigator` objects — see the lesson document.

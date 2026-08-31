@@ -451,9 +451,8 @@
         <div class="section-header">Part 3: Understanding the Test Code</div>
         <p class="instruction">Study this test function, then answer the questions below.</p>
 
-        <div class="code-block">def run_test(test_name, start, dest, expected):
-    manhattan = Manhattan(start)
-    actual = manhattan.compute_path(dest)
+        <div class="code-block">def run_test(test_name, position, dest, expected):
+    actual = compute_manhattan_path(position, dest)
     if actual == expected:
         print(test_name, "- PASS")
     else:
@@ -511,7 +510,7 @@
                 <tr><th>Property</th><th>How to Check</th></tr>
             </thead>
             <tbody>
-                <tr><td>Path starts with first step from start</td><td>Compare path[<span class="inline-answer short"></span>] to <span class="inline-answer"></span></td></tr>
+                <tr><td>Path does not include the start position</td><td>path should not contain <span class="inline-answer"></span></td></tr>
                 <tr><td>Path ends at destination</td><td>Compare path[<span class="inline-answer short"></span>] to <span class="inline-answer"></span></td></tr>
                 <tr><td>Number of steps equals Manhattan distance</td><td>len(path) should equal <span class="inline-answer long"></span></td></tr>
                 <tr><td>Each step moves exactly one row OR one column</td><td>For every pair of consecutive positions, the difference should be <span class="inline-answer long"></span></td></tr>
@@ -532,7 +531,7 @@
             <li>Test same row (column movement only)</li>
             <li>Test same column (row movement only)</li>
             <li>Test same position (no movement)</li>
-            <li>All paths begin with the correct first step</li>
+            <li>No path includes its start position</li>
             <li>All paths end at the destination</li>
             <li>All step counts match the Manhattan distance</li>
         </ul>

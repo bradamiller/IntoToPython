@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Worksheet: Implementing the Manhattan Class</title>
+    <title>Worksheet: A Reusable Manhattan Function</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Patrick+Hand&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
@@ -357,106 +357,103 @@
 <div class="page">
     <div class="worksheet-header">
         <div class="subtitle">Module 4: Manhattan &mdash; Lesson 5</div>
-        <h1>Implementing the Manhattan Class</h1>
+        <h1>A Reusable Manhattan Function</h1>
         <div class="student-info">
             <span><label>Name:</label> <span class="blank"></span></span>
             <span><label>Date:</label> <span class="blank"></span></span>
         </div>
     </div>
 
-    <!-- ── Part 1: Code Tracing — compute_path() Step by Step ── -->
+    <!-- ── Part 1: Code Tracing ── -->
     <div class="section">
-        <div class="section-header">Part 1: Code Tracing &mdash; compute_path() Step by Step</div>
-        <p class="instruction">Study the complete compute_path method, then trace through a specific call below.</p>
+        <div class="section-header">Part 1: Code Tracing &mdash; compute_manhattan_path() Step by Step</div>
+        <p class="instruction">Here is the complete renamed function with its 4-while-loop algorithm.</p>
 
-        <div class="code-block">class Manhattan:
-    def __init__(self, start):
-        self.position = start
+        <div class="code-block">def compute_manhattan_path(position, destination):
+    """Compute a Manhattan path from position to destination."""
+    path = []
+    current_row, current_col = position
+    dest_row, dest_col = destination
 
-    def compute_path(self, destination):
-        path = []
-        current_row = self.position[0]
-        current_col = self.position[1]
-        dest_row = destination[0]
-        dest_col = destination[1]
+    # Move south (rows increase)
+    while current_row &lt; dest_row:
+        current_row = current_row + 1
+        path.append((current_row, current_col))
 
-        while current_row != dest_row:
-            if dest_row > current_row:
-                current_row = current_row + 1
-            else:
-                current_row = current_row - 1
-            path.append((current_row, current_col))
+    # Move north (rows decrease)
+    while current_row &gt; dest_row:
+        current_row = current_row - 1
+        path.append((current_row, current_col))
 
-        while current_col != dest_col:
-            if dest_col > current_col:
-                current_col = current_col + 1
-            else:
-                current_col = current_col - 1
-            path.append((current_row, current_col))
+    # Move east (columns increase)
+    while current_col &lt; dest_col:
+        current_col = current_col + 1
+        path.append((current_row, current_col))
 
-        return path</div>
+    # Move west (columns decrease)
+    while current_col &gt; dest_col:
+        current_col = current_col - 1
+        path.append((current_row, current_col))
 
-        <p><strong>Trace the call:</strong> <code style="font-family: 'Fira Code', monospace; font-size: 15px; background: #f0ede8; padding: 2px 6px; border-radius: 4px;">Manhattan((0, 0)).compute_path((2, 3))</code></p>
+    return path</div>
 
-        <p style="margin-top: 10px;"><strong>Setup Variables:</strong></p>
+        <p><strong>Trace the call:</strong> <code style="font-family: 'Fira Code', monospace; font-size: 15px; background: #f0ede8; padding: 2px 6px; border-radius: 4px;">compute_manhattan_path((0, 0), (2, 3))</code></p>
+
+        <p style="margin-top: 10px;"><strong>Setup variables:</strong></p>
         <table>
-            <thead>
-                <tr><th>Variable</th><th>Initial Value</th></tr>
-            </thead>
+            <thead><tr><th>Variable</th><th>Initial Value</th></tr></thead>
             <tbody>
-                <tr><td>self.position</td><td><span class="answer"></span></td></tr>
+                <tr><td>position</td><td><span class="answer"></span></td></tr>
                 <tr><td>current_row</td><td><span class="answer"></span></td></tr>
                 <tr><td>current_col</td><td><span class="answer"></span></td></tr>
                 <tr><td>dest_row</td><td><span class="answer"></span></td></tr>
                 <tr><td>dest_col</td><td><span class="answer"></span></td></tr>
-                <tr><td>path (initial)</td><td><span class="answer answer-wide"></span></td></tr>
+                <tr><td>path (initial)</td><td><span class="answer"></span></td></tr>
             </tbody>
         </table>
+
+        <p style="margin-top: 10px;"><strong>South while loop &mdash; trace each iteration:</strong></p>
+        <table>
+            <thead><tr><th>Iteration</th><th>current_row (before)</th><th>&lt; dest_row?</th><th>current_row (after)</th><th>Appended to path</th></tr></thead>
+            <tbody>
+                <tr><td>1</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer answer-wide"></span></td></tr>
+                <tr><td>2</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer answer-wide"></span></td></tr>
+                <tr><td>Check</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td>&mdash; (loop ends)</td><td>&mdash;</td></tr>
+            </tbody>
+        </table>
+
+        <p style="margin-top: 8px;"><strong>North while loop:</strong> Does it execute? <span class="choice">YES / NO</span> &nbsp;&nbsp; <strong>Why?</strong> <span class="inline-answer x-long"></span></p>
     </div>
 </div>
 
 <!-- ════════ PAGE 2 ════════ -->
 <div class="page page-break">
-
     <div class="section">
-        <p><strong>Row while loop trace:</strong></p>
+        <p style="margin-top: 4px;"><strong>East while loop &mdash; trace each iteration:</strong></p>
         <table>
-            <thead>
-                <tr><th style="width: 80px;">Iteration</th><th>current_row (before)</th><th>!= dest_row?</th><th>current_row (after)</th><th>Appended to path</th></tr>
-            </thead>
+            <thead><tr><th>Iteration</th><th>current_col (before)</th><th>&lt; dest_col?</th><th>current_col (after)</th><th>Appended to path</th></tr></thead>
             <tbody>
-                <tr><td>1</td><td><span class="answer"></span></td><td><span class="choice">YES / NO</span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
-                <tr><td>2</td><td><span class="answer"></span></td><td><span class="choice">YES / NO</span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
-                <tr><td>Check</td><td><span class="answer"></span></td><td><span class="choice">YES / NO</span></td><td>&mdash; (loop ends)</td><td>&mdash;</td></tr>
+                <tr><td>1</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer answer-wide"></span></td></tr>
+                <tr><td>2</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer answer-wide"></span></td></tr>
+                <tr><td>3</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer answer-wide"></span></td></tr>
+                <tr><td>Check</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td>&mdash; (loop ends)</td><td>&mdash;</td></tr>
             </tbody>
         </table>
 
-        <p style="margin-top: 14px;"><strong>Column while loop trace:</strong></p>
-        <table>
-            <thead>
-                <tr><th style="width: 80px;">Iteration</th><th>current_col (before)</th><th>!= dest_col?</th><th>current_col (after)</th><th>Appended to path</th></tr>
-            </thead>
-            <tbody>
-                <tr><td>1</td><td><span class="answer"></span></td><td><span class="choice">YES / NO</span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
-                <tr><td>2</td><td><span class="answer"></span></td><td><span class="choice">YES / NO</span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
-                <tr><td>3</td><td><span class="answer"></span></td><td><span class="choice">YES / NO</span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
-                <tr><td>Check</td><td><span class="answer"></span></td><td><span class="choice">YES / NO</span></td><td>&mdash; (loop ends)</td><td>&mdash;</td></tr>
-            </tbody>
-        </table>
+        <p style="margin-top: 8px;"><strong>West while loop:</strong> Does it execute? <span class="choice">YES / NO</span> &nbsp;&nbsp; <strong>Why?</strong> <span class="inline-answer x-long"></span></p>
 
-        <p style="margin-top: 12px;"><strong>Final returned path:</strong> <span class="inline-answer x-long"></span></p>
+        <p style="margin-top: 10px;"><strong>Final returned path:</strong> <span class="answer-full"></span></p>
+        <p style="margin-top: 6px;"><strong>len(path):</strong> <span class="inline-answer short"></span></p>
     </div>
 
     <!-- ── Part 2: Trace a Reverse Path ── -->
     <div class="section">
         <div class="section-header">Part 2: Trace a Reverse Path</div>
-        <p><strong>Trace:</strong> <code style="font-family: 'Fira Code', monospace; font-size: 15px; background: #f0ede8; padding: 2px 6px; border-radius: 4px;">Manhattan((2, 3)).compute_path((0, 1))</code></p>
+        <p><strong>Trace the call:</strong> <code style="font-family: 'Fira Code', monospace; font-size: 15px; background: #f0ede8; padding: 2px 6px; border-radius: 4px;">compute_manhattan_path((3, 3), (1, 0))</code></p>
 
-        <p style="margin-top: 10px;"><strong>Setup Variables:</strong></p>
+        <p style="margin-top: 10px;"><strong>Setup variables:</strong></p>
         <table>
-            <thead>
-                <tr><th>Variable</th><th>Initial Value</th></tr>
-            </thead>
+            <thead><tr><th>Variable</th><th>Initial Value</th></tr></thead>
             <tbody>
                 <tr><td>current_row</td><td><span class="answer"></span></td></tr>
                 <tr><td>current_col</td><td><span class="answer"></span></td></tr>
@@ -465,170 +462,253 @@
             </tbody>
         </table>
 
-        <p style="margin-top: 10px;"><strong>Row while loop trace:</strong></p>
-        <table>
-            <thead>
-                <tr><th style="width: 80px;">Iteration</th><th>current_row (before)</th><th>!= dest_row?</th><th>current_row (after)</th><th>Appended to path</th></tr>
-            </thead>
-            <tbody>
-                <tr><td>1</td><td><span class="answer"></span></td><td><span class="choice">YES / NO</span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
-                <tr><td>2</td><td><span class="answer"></span></td><td><span class="choice">YES / NO</span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
-                <tr><td>Check</td><td><span class="answer"></span></td><td><span class="choice">YES / NO</span></td><td>&mdash; (loop ends)</td><td>&mdash;</td></tr>
-            </tbody>
-        </table>
+        <p style="margin-top: 8px;"><strong>Which two while loops execute?</strong> <span class="inline-answer"></span> and <span class="inline-answer"></span></p>
 
-        <p style="margin-top: 10px;"><strong>Column while loop trace:</strong></p>
-        <table>
-            <thead>
-                <tr><th style="width: 80px;">Iteration</th><th>current_col (before)</th><th>!= dest_col?</th><th>current_col (after)</th><th>Appended to path</th></tr>
-            </thead>
-            <tbody>
-                <tr><td>1</td><td><span class="answer"></span></td><td><span class="choice">YES / NO</span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
-                <tr><td>2</td><td><span class="answer"></span></td><td><span class="choice">YES / NO</span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
-                <tr><td>Check</td><td><span class="answer"></span></td><td><span class="choice">YES / NO</span></td><td>&mdash; (loop ends)</td><td>&mdash;</td></tr>
-            </tbody>
-        </table>
+        <div class="two-col" style="margin-top: 10px;">
+            <div>
+                <p><strong>North while loop:</strong></p>
+                <table>
+                    <thead><tr><th>Iter</th><th>before</th><th>after</th><th>Appended</th></tr></thead>
+                    <tbody>
+                        <tr><td>1</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
+                        <tr><td>2</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+            <div>
+                <p><strong>West while loop:</strong></p>
+                <table>
+                    <thead><tr><th>Iter</th><th>before</th><th>after</th><th>Appended</th></tr></thead>
+                    <tbody>
+                        <tr><td>1</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
+                        <tr><td>2</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
+                        <tr><td>3</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
 
-        <p style="margin-top: 12px;"><strong>Final returned path:</strong> <span class="inline-answer x-long"></span></p>
+        <p style="margin-top: 10px;"><strong>Final returned path:</strong> <span class="answer-full"></span></p>
+        <p style="margin-top: 6px;"><strong>len(path):</strong> <span class="inline-answer short"></span></p>
     </div>
 </div>
 
 <!-- ════════ PAGE 3 ════════ -->
 <div class="page page-break">
-
     <!-- ── Part 3: Fill in the Blanks ── -->
     <div class="section">
         <div class="section-header">Part 3: Fill in the Blanks</div>
-        <p class="instruction">Complete the Manhattan class by filling in the missing parts.</p>
+        <p class="instruction">Complete the missing parts of the function.</p>
 
-        <div class="code-block">class Manhattan:
-    def __init__(self, start):
-        self.position = <span class="code-blank" style="min-width: 80px;"></span>
+        <div class="code-block">def compute_manhattan_path(<span class="code-blank"></span>, <span class="code-blank"></span>):
+    """Compute a Manhattan path from position to destination."""
+    path = <span class="code-blank" style="min-width: 30px;"></span>
 
-    def compute_path(self, destination):
-        path = <span class="code-blank" style="min-width: 40px;"></span>
-        current_row = self.position[<span class="code-blank" style="min-width: 30px;"></span>]
-        current_col = self.position[<span class="code-blank" style="min-width: 30px;"></span>]
-        dest_row = <span class="code-blank" style="min-width: 120px;"></span>
-        dest_col = <span class="code-blank" style="min-width: 120px;"></span>
+    current_row, current_col = <span class="code-blank"></span>
+    dest_row, dest_col = <span class="code-blank"></span>
 
-        while <span class="code-blank" style="min-width: 180px;"></span>:
-            if dest_row > current_row:
-                current_row = current_row + <span class="code-blank" style="min-width: 30px;"></span>
-            else:
-                current_row = current_row - <span class="code-blank" style="min-width: 30px;"></span>
-            path.append((<span class="code-blank" style="min-width: 80px;"></span>, <span class="code-blank" style="min-width: 80px;"></span>))
+    # Move south
+    while current_row <span class="code-blank" style="min-width: 30px;"></span> dest_row:
+        current_row = current_row + <span class="code-blank" style="min-width: 30px;"></span>
+        path.<span class="code-blank"></span>((<span class="code-blank" style="min-width: 60px;"></span>,  <span class="code-blank" style="min-width: 60px;"></span>))
 
-        while <span class="code-blank" style="min-width: 180px;"></span>:
-            if dest_col > current_col:
-                current_col = current_col + <span class="code-blank" style="min-width: 30px;"></span>
-            else:
-                current_col = current_col - <span class="code-blank" style="min-width: 30px;"></span>
-            path.append((<span class="code-blank" style="min-width: 80px;"></span>, <span class="code-blank" style="min-width: 80px;"></span>))
+    # Move north
+    while current_row <span class="code-blank" style="min-width: 30px;"></span> dest_row:
+        current_row = current_row - <span class="code-blank" style="min-width: 30px;"></span>
+        path.<span class="code-blank"></span>((<span class="code-blank" style="min-width: 60px;"></span>,  <span class="code-blank" style="min-width: 60px;"></span>))
 
-        return <span class="code-blank" style="min-width: 60px;"></span></div>
-    </div>
+    # Move east
+    while current_col <span class="code-blank" style="min-width: 30px;"></span> dest_col:
+        current_col = current_col + <span class="code-blank" style="min-width: 30px;"></span>
+        path.<span class="code-blank"></span>((<span class="code-blank" style="min-width: 60px;"></span>,  <span class="code-blank" style="min-width: 60px;"></span>))
 
-    <!-- ── Part 4: Predict the Output ── -->
-    <div class="section">
-        <div class="section-header">Part 4: Predict the Output</div>
-        <p class="instruction">For each program, predict what will be printed.</p>
+    # Move west
+    while current_col <span class="code-blank" style="min-width: 30px;"></span> dest_col:
+        current_col = current_col - <span class="code-blank" style="min-width: 30px;"></span>
+        path.<span class="code-blank"></span>((<span class="code-blank" style="min-width: 60px;"></span>,  <span class="code-blank" style="min-width: 60px;"></span>))
 
-        <p style="margin-top: 10px;"><strong>Program A:</strong></p>
-        <div class="code-block">manhattan = Manhattan((0, 0))
-path = manhattan.compute_path((0, 3))
-print(path)
-print("Steps:", len(path))</div>
-        <p>Line 1: <span class="inline-answer x-long"></span></p>
-        <p>Line 2: <span class="inline-answer long"></span></p>
-        <p>What kind of edge case is this? <span class="inline-answer x-long"></span></p>
-
-        <p style="margin-top: 14px;"><strong>Program B:</strong></p>
-        <div class="code-block">manhattan = Manhattan((2, 2))
-path = manhattan.compute_path((2, 2))
-print(path)
-print("Steps:", len(path))</div>
-        <p>Line 1: <span class="inline-answer long"></span></p>
-        <p>Line 2: <span class="inline-answer long"></span></p>
-        <p>Why is the path empty? <span class="answer-line"></span></p>
+    return <span class="code-blank"></span></div>
     </div>
 </div>
 
 <!-- ════════ PAGE 4 ════════ -->
 <div class="page page-break">
-
+    <!-- ── Part 4: Predict the Output ── -->
     <div class="section">
-        <p><strong>Program C:</strong></p>
-        <div class="code-block">manhattan = Manhattan((0, 0))
-path1 = manhattan.compute_path((2, 3))
-path2 = manhattan.compute_path((1, 1))
-print("Path 1:", path1)
-print("Path 2:", path2)</div>
-        <p>Line 1: <span class="inline-answer x-long"></span></p>
-        <p>Line 2: <span class="inline-answer x-long"></span></p>
-        <p>Do both paths start from the same position? <span class="choice">YES / NO</span></p>
-        <p>Why? <span class="answer-line"></span></p>
-    </div>
+        <div class="section-header">Part 4: Predict the Output</div>
 
-    <!-- ── Part 5: Find and Fix the Bug ── -->
-    <div class="section">
-        <div class="section-header">Part 5: Find and Fix the Bug</div>
-        <p class="instruction">Each code snippet has a bug. Identify it, explain the problem, and write the fix.</p>
+        <p><strong>Program A:</strong></p>
+        <div class="code-block">path = compute_manhattan_path((0, 0), (0, 3))
+print(path)
+print("Steps:", len(path))</div>
+        <p style="margin-top: 6px;"><strong>Predicted output:</strong></p>
+        <p>Line 1: <span class="answer-full"></span></p>
+        <p style="margin-top: 6px;">Line 2: <span class="answer-full"></span></p>
+        <p style="margin-top: 6px;"><strong>What kind of edge case is this?</strong> <span class="inline-answer x-long"></span></p>
 
-        <p style="margin-top: 10px;"><strong>Bug 1:</strong> Path includes the start</p>
-        <div class="code-block">def compute_path(self, destination):
-    path = [self.position]
-    current_row = self.position[0]
-    ...</div>
-        <p>What is wrong? <span class="answer-line"></span></p>
-        <p>Fix: <span class="answer-line"></span></p>
-
-        <p style="margin-top: 14px;"><strong>Bug 2:</strong> Wrong loop condition</p>
-        <div class="code-block">while current_row < dest_row:
-    if dest_row > current_row:
-        current_row = current_row + 1
-    else:
-        current_row = current_row - 1
-    path.append((current_row, current_col))</div>
-        <p>What is wrong? <span class="answer-line"></span></p>
-        <p>When would this bug cause a problem? Give specific start and destination:</p>
-        <p>Start: (<span class="inline-answer short"></span>, <span class="inline-answer short"></span>) &nbsp; Destination: (<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</p>
-        <p>Fix: <span class="answer-line"></span></p>
-
-        <p style="margin-top: 14px;"><strong>Bug 3:</strong> Swapped coordinates in append</p>
-        <div class="code-block">while current_col != dest_col:
-    if dest_col > current_col:
-        current_col = current_col + 1
-    else:
-        current_col = current_col - 1
-    path.append((current_col, current_row))</div>
-        <p>What is wrong? <span class="answer-line"></span></p>
-        <p>If start is (0, 0) and destination is (2, 3), what would the <strong>incorrect</strong> last three elements be?</p>
-        <p><span class="inline-answer x-long"></span></p>
-        <p>What <strong>should</strong> they be?</p>
-        <p><span class="inline-answer x-long"></span></p>
+        <p style="margin-top: 16px;"><strong>Program B:</strong></p>
+        <div class="code-block">path = compute_manhattan_path((2, 2), (2, 2))
+print(path)
+print("Steps:", len(path))</div>
+        <p style="margin-top: 6px;"><strong>Predicted output:</strong></p>
+        <p>Line 1: <span class="answer-full"></span></p>
+        <p style="margin-top: 6px;">Line 2: <span class="answer-full"></span></p>
+        <p style="margin-top: 6px;"><strong>Why is the path empty?</strong> <span class="inline-answer x-long"></span></p>
     </div>
 </div>
 
 <!-- ════════ PAGE 5 ════════ -->
 <div class="page page-break">
+    <div class="section">
+        <p><strong>Program C:</strong></p>
+        <div class="code-block">path1 = compute_manhattan_path((0, 0), (2, 3))
+path2 = compute_manhattan_path((0, 0), (1, 1))
+print("Path 1:", path1)
+print("Path 2:", path2)</div>
+        <p style="margin-top: 6px;"><strong>Predicted output:</strong></p>
+        <p>Line 1: <span class="answer-full"></span></p>
+        <p style="margin-top: 6px;">Line 2: <span class="answer-full"></span></p>
+        <p style="margin-top: 6px;"><strong>Do both paths start from the same position?</strong> <span class="choice">YES / NO</span></p>
+        <p style="margin-top: 6px;"><strong>Why?</strong> <span class="answer-full"></span></p>
+    </div>
 
+    <!-- ── Part 5: Find and Fix the Bug ── -->
+    <div class="section">
+        <div class="section-header">Part 5: Find and Fix the Bug</div>
+        <p class="instruction">Each version of compute_manhattan_path has a bug. Identify the problem and write the fix.</p>
+
+        <p><strong>Bug 1:</strong></p>
+        <div class="code-block">def compute_manhattan_path(position, destination):
+    path = [position]                 # &lt;-- Look here
+    current_row, current_col = position
+    dest_row, dest_col = destination
+    # ... rest of function (4 while loops)</div>
+        <p style="margin-top: 6px;"><strong>What is wrong?</strong> <span class="answer-full"></span></p>
+        <p style="margin-top: 6px;"><strong>Fix:</strong> <span class="answer-full"></span></p>
+    </div>
+</div>
+
+<!-- ════════ PAGE 6 ════════ -->
+<div class="page page-break">
+    <div class="section">
+        <p><strong>Bug 2:</strong></p>
+        <div class="code-block" style="font-size: 13px;">def compute_manhattan_path(position, destination):
+    path = []
+    current_row, current_col = position
+    dest_row, dest_col = destination
+
+    while current_row &lt; dest_row:
+        current_row = current_row + 1
+        path.append((current_row, current_col))
+
+    while current_row &gt; dest_row:
+        current_row = current_row - 1
+        path.append((current_row, current_col))
+
+    while current_col &lt; dest_col:
+        current_col = current_col + 1
+        path.append((current_row, current_col))
+
+    while current_col &gt; dest_col:
+        current_col = current_col + 1          # &lt;-- Look here
+        path.append((current_row, current_col))</div>
+        <p style="margin-top: 6px;"><strong>What is wrong?</strong> <span class="answer-full"></span></p>
+        <p style="margin-top: 6px;"><strong>What would happen if you called <code style="font-family: 'Fira Code', monospace; font-size: 14px; background: #f0ede8; padding: 1px 4px; border-radius: 3px;">compute_manhattan_path((3, 3), (2, 3))</code>?</strong></p>
+        <p style="margin-top: 4px;"><span class="answer-full"></span></p>
+        <p style="margin-top: 6px;"><strong>Fix:</strong> <span class="answer-full"></span></p>
+    </div>
+
+    <div class="section">
+        <p><strong>Bug 3:</strong></p>
+        <div class="code-block" style="font-size: 13px;">def compute_manhattan_path(position, destination):
+    path = []
+    current_row, current_col = position
+    dest_row, dest_col = destination
+
+    while current_row &lt; dest_row:
+        current_row = current_row + 1
+        path.append((current_row, current_col))
+
+    while current_row &gt; dest_row:
+        current_row = current_row - 1
+        path.append((current_row, current_col))
+
+    while current_col &lt; dest_col:
+        current_col = current_col + 1
+        path.append((current_col, current_row))    # &lt;-- Look here
+
+    while current_col &gt; dest_col:
+        current_col = current_col - 1
+        path.append((current_row, current_col))</div>
+        <p style="margin-top: 6px;"><strong>What is wrong?</strong> <span class="answer-full"></span></p>
+        <p style="margin-top: 6px;"><strong>If position is (0, 0) and destination is (2, 3), what would the INCORRECT last three elements of the path be?</strong></p>
+        <p style="margin-top: 4px;"><span class="answer-full"></span></p>
+        <p style="margin-top: 6px;"><strong>What should they be?</strong></p>
+        <p style="margin-top: 4px;"><span class="answer-full"></span></p>
+    </div>
+</div>
+
+<!-- ════════ PAGE 7 ════════ -->
+<div class="page page-break">
     <!-- ── Reflection ── -->
     <div class="section">
+        <div class="section-header">Reflection</div>
         <div class="reflection-box">
-            <div class="reflection-label">Reflection</div>
-            <p><strong>The compute_path() method uses while loops instead of for loops. Why is <code style="font-family: 'Fira Code', monospace; font-size: 15px; background: rgba(232, 168, 124, 0.12); padding: 2px 6px; border-radius: 4px;">while current_row != dest_row</code> better than using a for loop for this problem?</strong></p>
-            <div class="answer-lines-3">
+            <div class="reflection-label">Think about it</div>
+            <p><code style="font-family: 'Fira Code', monospace; font-size: 14px; background: rgba(255,255,255,0.5); padding: 1px 4px; border-radius: 3px;">compute_manhattan_path()</code> uses 4 separate while loops instead of if/else statements with 2 while loops. Why does this simpler approach work? (Hint: think about what happens when a while loop's condition is already false.)</p>
+            <div class="answer-lines-3" style="margin-top: 10px;">
                 <span class="answer-line"></span>
                 <span class="answer-line"></span>
                 <span class="answer-line"></span>
             </div>
         </div>
+
+        <div class="next-lesson">
+            <strong>Next Lesson:</strong> We'll learn how to write test programs to verify our Manhattan function works correctly &mdash; without needing a robot!
+        </div>
     </div>
 
-    <!-- ── Next Lesson ── -->
-    <div class="next-lesson">
-        <strong>Next Lesson:</strong> We'll learn how to write test programs to verify our Manhattan class works correctly &mdash; without needing a robot!
+    <!-- ── Part 6: Optional Extension ── -->
+    <div class="section">
+        <div class="section-header">Part 6 (Optional Extension): Wrap It in a Class</div>
+        <p class="instruction">Skip this section if your course doesn't cover classes.</p>
+
+        <ol class="questions">
+            <li>
+                <strong>Fill in the blanks to turn compute_manhattan_path into a class:</strong>
+                <p style="margin-top: 6px;"><strong>Function version:</strong></p>
+                <div class="code-block" style="font-size: 13px;">def compute_manhattan_path(position, destination):
+    path = []
+    current_row, current_col = position
+    ...</div>
+                <p style="margin-top: 8px;"><strong>Class version:</strong></p>
+                <div class="code-block" style="font-size: 13px;">class Manhattan:
+    def __init__(<span class="code-blank"></span>, start):
+        <span class="code-blank"></span>.position = start
+
+    def compute_path(<span class="code-blank"></span>, destination):
+        path = []
+        current_row, current_col = <span class="code-blank"></span>.position
+        ...</div>
+            </li>
+            <li>
+                <strong>In the function version, every call must supply both a position and a destination:</strong>
+                <div class="code-block" style="font-size: 13px;">path1 = compute_manhattan_path((0, 0), (2, 3))
+path2 = compute_manhattan_path((0, 0), (1, 1))</div>
+                <p style="margin-top: 8px;"><strong>Rewrite these two calls using the class version, creating the object once:</strong></p>
+                <div class="code-block" style="font-size: 13px;">nav = <span class="code-blank" style="min-width: 220px;"></span>
+path1 = <span class="code-blank" style="min-width: 220px;"></span>
+path2 = <span class="code-blank" style="min-width: 220px;"></span></div>
+            </li>
+            <li>
+                <strong>Does compute_path (the method) ever change self.position?</strong>
+                <p style="margin-top: 6px;"><span class="choice">YES / NO</span> &mdash; <strong>Why or why not?</strong></p>
+                <div class="answer-lines-3" style="margin-top: 8px;">
+                    <span class="answer-line"></span>
+                    <span class="answer-line"></span>
+                </div>
+            </li>
+        </ol>
     </div>
 </div>
 

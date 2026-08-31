@@ -13,11 +13,11 @@ How does the grid compare to the circle from Module 2?
 |---|---|---|
 | Shape of the track | __________ | __________ |
 | Number of crosses/intersections | __________ | __________ |
-| Method to follow the line | __________ | __________ |
-| Method to detect a cross | __________ | __________ |
+| Function to follow the line | __________ | __________ |
+| Function to detect a cross | __________ | __________ |
 | What happens at a cross? | __________ | __________ |
 
-**Question:** Do you need to change your LineTrack class for the grid? Why or why not?
+**Question:** Do you need to change your Module 2 toolkit for the grid? Why or why not?
 
 ______________________________________________________________
 
@@ -55,9 +55,9 @@ Row 3  ___  ---  ___  ---  ___  ---  ___
 
 ## Part 3: Code Matching
 
-Match each LineTrack method to what it does on the grid:
+Match each toolkit function to what it does on the grid:
 
-| Method | What it does on the grid |
+| Function | What it does on the grid |
 |---|---|
 | `track_until_cross()` | A. Turns left onto the perpendicular line at an intersection |
 | `turn_right()` | B. Follows the line until the robot reaches the next intersection |
@@ -77,22 +77,22 @@ For each program, predict what the robot will do:
 
 **Program 1:**
 ```python
-tracker.track_until_cross()
+track_until_cross()
 ```
 What happens? ______________________________________________________________
 
 **Program 2:**
 ```python
-tracker.track_until_cross()
-tracker.turn_right()
+track_until_cross()
+turn_right()
 ```
 What happens? ______________________________________________________________
 
 **Program 3:**
 ```python
-tracker.track_until_cross()
-tracker.turn_right()
-tracker.track_until_cross()
+track_until_cross()
+turn_right()
+track_until_cross()
 ```
 What happens? ______________________________________________________________
 

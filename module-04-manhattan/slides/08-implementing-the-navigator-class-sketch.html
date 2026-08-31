@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Implementing the Navigator Class - Module 4: Manhattan</title>
+    <title>Driving the Path - Module 4: Manhattan</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Patrick+Hand&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
@@ -63,10 +63,10 @@
         <nav class="slide-nav">
             <a href="#slide-1" class="nav-item" onclick="showSlide(0)">Title &amp; Objectives</a>
             <a href="#slide-2" class="nav-item" onclick="showSlide(1)">From Paper to Python</a>
-            <a href="#slide-3" class="nav-item" onclick="showSlide(2)">Class Skeleton</a>
-            <a href="#slide-4" class="nav-item" onclick="showSlide(3)">Method 1: desired_heading</a>
-            <a href="#slide-5" class="nav-item" onclick="showSlide(4)">Method 2: turn_to</a>
-            <a href="#slide-6" class="nav-item" onclick="showSlide(5)">Method 3: drive_path</a>
+            <a href="#slide-3" class="nav-item" onclick="showSlide(2)">The Driving Toolkit</a>
+            <a href="#slide-4" class="nav-item" onclick="showSlide(3)">Function 1: desired_heading</a>
+            <a href="#slide-5" class="nav-item" onclick="showSlide(4)">Function 2: turn_to</a>
+            <a href="#slide-6" class="nav-item" onclick="showSlide(5)">Function 3: drive_path</a>
             <a href="#slide-7" class="nav-item" onclick="showSlide(6)">Run It</a>
             <a href="#slide-8" class="nav-item" onclick="showSlide(7)">Your Turn!</a>
             <a href="#slide-9" class="nav-item" onclick="showSlide(8)">What's Next</a>
@@ -82,22 +82,22 @@
                     <image href="images/xrp-top-down.png" x="15" y="12" width="50" height="50" transform="rotate(180, 40, 37)"/>
                 </svg>
                 <div class="module-label">MODULE 4 &middot; LESSON 8</div>
-                <div class="lesson-title">Implementing the Navigator Class</div>
+                <div class="lesson-title">Driving the Path</div>
                 <div class="divider-sketch"></div>
                 <div class="title-content">
                     <div class="title-section">
                         <h3>Learning Objectives</h3>
-                        <p class="bullet">Build Navigator with <code style="font-family: 'Fira Code', monospace;">self.position</code> and <code style="font-family: 'Fira Code', monospace;">self.heading</code></p>
-                        <p class="bullet">Translate the three methods from Lesson 7 into Python</p>
-                        <p class="bullet">Reuse <code style="font-family: 'Fira Code', monospace;">LineTrack</code> from Module 2</p>
+                        <p class="bullet">Thread <code style="font-family: 'Fira Code', monospace;">position</code> and <code style="font-family: 'Fira Code', monospace;">heading</code> through parameters and return values</p>
+                        <p class="bullet">Translate the three functions from Lesson 7 into Python</p>
+                        <p class="bullet">Reuse the driving toolkit from Module 2/3</p>
                         <p class="bullet">Run the full program on the robot</p>
                     </div>
                     <div class="title-section">
                         <h3>Agenda</h3>
-                        <p class="bullet">Class skeleton (5 min)</p>
-                        <p class="bullet">Method 1: desired_heading (5 min)</p>
-                        <p class="bullet">Method 2: turn_to (5 min)</p>
-                        <p class="bullet">Method 3: drive_path (10 min)</p>
+                        <p class="bullet">Why no class is needed (5 min)</p>
+                        <p class="bullet">Function 1: desired_heading (5 min)</p>
+                        <p class="bullet">Function 2: turn_to (5 min)</p>
+                        <p class="bullet">Function 3: drive_path (10 min)</p>
                         <p class="bullet">Run it on the robot (20 min)</p>
                     </div>
                 </div>
@@ -113,10 +113,10 @@
         <div id="slide-2" class="slide">
             <div class="title-bar"><h1>From Paper to Python</h1></div>
             <div class="content">
-                <p class="body-text">Yesterday you designed three methods on paper. Today you type them in and run them on the robot.</p>
-                <p class="bullet"><code style="font-family: 'Fira Code', monospace;">desired_heading(current, next_pos)</code> &mdash; which of the 4 cases, 0/1/2/3</p>
-                <p class="bullet"><code style="font-family: 'Fira Code', monospace;">turn_to(desired)</code> &mdash; turn right, wrap 4&rarr;0, stop when aligned</p>
-                <p class="bullet"><code style="font-family: 'Fira Code', monospace;">drive_path(path)</code> &mdash; for each intersection: turn, then drive forward one</p>
+                <p class="body-text">Yesterday you designed three functions on paper. Today you type them in and run them on the robot.</p>
+                <p class="bullet"><code style="font-family: 'Fira Code', monospace;">desired_heading(position, next_pos)</code> &mdash; which of the 4 cases, 0/1/2/3</p>
+                <p class="bullet"><code style="font-family: 'Fira Code', monospace;">turn_to(heading, desired)</code> &mdash; turn right, wrap 4&rarr;0, return the new heading</p>
+                <p class="bullet"><code style="font-family: 'Fira Code', monospace;">drive_path(path, position, heading)</code> &mdash; for each intersection: turn, drive forward, return the final position/heading</p>
                 <div class="insight-box">Nothing new to design. Just translate.</div>
             </div>
             <div class="slide-navigation">
@@ -128,22 +128,17 @@
 
         <!-- SLIDE 3 -->
         <div id="slide-3" class="slide">
-            <div class="title-bar"><h1>Class Skeleton</h1></div>
+            <div class="title-bar"><h1>Why No Class Is Needed</h1></div>
             <div class="content">
-                <p class="body-text">Navigator needs two pieces of state and a robot to drive.</p>
-                <div class="code-block"><pre>from line_track import LineTrack
+                <p class="body-text">There's only ever one robot &mdash; one position, one heading. No need to store that on an object.</p>
+                <div class="code-block"><pre>HEADING_NAMES = ["N", "E", "S", "W"]
 
-HEADING_NAMES = ["N", "E", "S", "W"]
-
-class Navigator:
-    def __init__(self, start, heading):
-        self.position = start
-        self.heading = heading
-        self.line_track = LineTrack()</pre></div>
-                <p class="header-text">Usage</p>
-                <div class="code-block compact" style="font-size: 17px;"><pre>nav = Navigator((0, 0), 0)   # at (0,0), facing North</pre></div>
+position = (0, 0)
+heading = 0   # facing North</pre></div>
+                <p class="header-text">The pattern</p>
+                <div class="code-block compact" style="font-size: 17px;"><pre>position, heading = drive_path(path, position, heading)</pre></div>
                 <div class="answer-box">
-                    <p class="body-text" style="margin-left: 8px;">Place the robot on the grid <strong>facing North</strong> so its physical direction matches <code style="font-family: 'Fira Code', monospace;">heading = 0</code>.</p>
+                    <p class="body-text" style="margin-left: 8px;">Same tuple-unpacking pattern from Module 4 Lesson 2 &mdash; just returning <strong>two</strong> values instead of one. Place the robot on the grid <strong>facing North</strong> so its physical direction matches <code style="font-family: 'Fira Code', monospace;">heading = 0</code>.</p>
                 </div>
             </div>
             <div class="slide-navigation">
@@ -155,18 +150,18 @@ class Navigator:
 
         <!-- SLIDE 4 -->
         <div id="slide-4" class="slide">
-            <div class="title-bar"><h1>Method 1 &mdash; desired_heading</h1></div>
+            <div class="title-bar"><h1>Function 1 &mdash; desired_heading</h1></div>
             <div class="content">
-                <p class="body-text">The function from Lesson 7, now a method on Navigator that uses <code style="font-family: 'Fira Code', monospace;">self.position</code>:</p>
-                <div class="code-block"><pre>def desired_heading(self, next_pos):
-    row_diff = next_pos[0] - self.position[0]
-    col_diff = next_pos[1] - self.position[1]
+                <p class="body-text">The exact function from Lesson 7 &mdash; <code style="font-family: 'Fira Code', monospace;">position</code> is a parameter, not <code style="font-family: 'Fira Code', monospace;">self.position</code>:</p>
+                <div class="code-block"><pre>def desired_heading(position, next_pos):
+    row_diff = next_pos[0] - position[0]
+    col_diff = next_pos[1] - position[1]
     if row_diff == -1: return 0   # North
     if col_diff ==  1: return 1   # East
     if row_diff ==  1: return 2   # South
     if col_diff == -1: return 3   # West</pre></div>
                 <div class="sketch-box">
-                    <p class="body-text"><strong>Input:</strong> the next intersection &nbsp;&nbsp;&rarr;&nbsp;&nbsp; <strong>Output:</strong> a heading number 0&ndash;3</p>
+                    <p class="body-text"><strong>Input:</strong> the current position + the next intersection &nbsp;&nbsp;&rarr;&nbsp;&nbsp; <strong>Output:</strong> a heading number 0&ndash;3</p>
                 </div>
             </div>
             <div class="slide-navigation">
@@ -178,16 +173,17 @@ class Navigator:
 
         <!-- SLIDE 5 -->
         <div id="slide-5" class="slide">
-            <div class="title-bar"><h1>Method 2 &mdash; turn_to</h1></div>
+            <div class="title-bar"><h1>Function 2 &mdash; turn_to</h1></div>
             <div class="content">
-                <p class="body-text">Same while loop from Lesson 7, now calling the real robot:</p>
-                <div class="code-block"><pre>def turn_to(self, desired):
-    while self.heading != desired:
-        self.line_track.turn_right()
-        self.heading = self.heading + 1
-        if self.heading == 4:
-            self.heading = 0</pre></div>
-                <p class="body-text">Each pass turns the robot right by 90&deg; and updates <code style="font-family: 'Fira Code', monospace;">self.heading</code>. The <code style="font-family: 'Fira Code', monospace;">if self.heading == 4</code> line wraps back to 0.</p>
+                <p class="body-text">Same while loop from Lesson 7, now calling the real robot &mdash; and returning the updated heading:</p>
+                <div class="code-block"><pre>def turn_to(heading, desired):
+    while heading != desired:
+        turn_right()
+        heading = heading + 1
+        if heading == 4:
+            heading = 0
+    return heading</pre></div>
+                <p class="body-text">Each pass turns the robot right by 90&deg; and updates the local <code style="font-family: 'Fira Code', monospace;">heading</code>. Forgetting <code style="font-family: 'Fira Code', monospace;">return heading</code> is the #1 bug in this lesson &mdash; the caller's heading would never update.</p>
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
@@ -198,19 +194,20 @@ class Navigator:
 
         <!-- SLIDE 6 -->
         <div id="slide-6" class="slide">
-            <div class="title-bar"><h1>Method 3 &mdash; drive_path</h1></div>
+            <div class="title-bar"><h1>Function 3 &mdash; drive_path</h1></div>
             <div class="content">
                 <p class="body-text">For each intersection in the path: turn to face it, then drive forward one intersection.</p>
-                <div class="code-block"><pre>def drive_path(self, path):
+                <div class="code-block"><pre>def drive_path(path, position, heading):
     for next_pos in path:
-        desired = self.desired_heading(next_pos)
-        if self.heading == desired:
-            self.line_track.drivetrain.straight(8)   # clear the cross
-        self.turn_to(desired)
-        self.line_track.track_until_cross()          # drive to the next
-        self.position = next_pos</pre></div>
+        needed = desired_heading(position, next_pos)
+        if heading == needed:
+            clear_intersection()          # already facing right way
+        heading = turn_to(heading, needed)
+        track_until_cross()               # drive to the next
+        position = next_pos
+    return position, heading</pre></div>
                 <div class="answer-box">
-                    <p class="body-text" style="margin-left: 8px;"><strong>Why the <code style="font-family: 'Fira Code', monospace;">if</code>?</strong> If we need to turn, the turn itself moves the robot off the crossing line. If we're already facing the right way, we drive 8&nbsp;cm first &mdash; otherwise <code style="font-family: 'Fira Code', monospace;">track_until_cross()</code> would re-detect the cross we're sitting on.</p>
+                    <p class="body-text" style="margin-left: 8px;"><strong>Why the <code style="font-family: 'Fira Code', monospace;">if</code>?</strong> If we need to turn, the turn itself moves the robot off the crossing line. If we're already facing the right way, we call <code style="font-family: 'Fira Code', monospace;">clear_intersection()</code> first &mdash; otherwise <code style="font-family: 'Fira Code', monospace;">track_until_cross()</code> would re-detect the cross we're sitting on.</p>
                 </div>
             </div>
             <div class="slide-navigation">
@@ -227,17 +224,17 @@ class Navigator:
                 <div class="code-block"><pre>from XRPLib.board import Board
 
 board = Board.get_default_board()
-manhattan = Manhattan((0, 0))
-nav = Navigator((0, 0), 0)
+position = (0, 0)
+heading = 0
 
 board.wait_for_button()
 
-path = manhattan.compute_path((2, 2))
+path = compute_manhattan_path(position, (2, 2))
 print("Path:", path)
 
-nav.drive_path(path)
-print("Arrived facing", HEADING_NAMES[nav.heading])</pre></div>
-                <div class="insight-box">Three classes working together: Manhattan plans, Navigator decides turns, LineTrack moves.</div>
+position, heading = drive_path(path, position, heading)
+print("Arrived facing", HEADING_NAMES[heading])</pre></div>
+                <div class="insight-box">Three toolkits working together: the Manhattan function plans, drive_path decides turns, the driving toolkit moves.</div>
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
@@ -250,14 +247,14 @@ print("Arrived facing", HEADING_NAMES[nav.heading])</pre></div>
         <div id="slide-8" class="slide">
             <div class="title-bar"><h1>Your Turn!</h1></div>
             <div class="content">
-                <p class="bullet">Type in the Navigator class with all three methods</p>
+                <p class="bullet">Type in all three functions: <code style="font-family: 'Fira Code', monospace;">desired_heading</code>, <code style="font-family: 'Fira Code', monospace;">turn_to</code>, <code style="font-family: 'Fira Code', monospace;">drive_path</code></p>
                 <p class="bullet">Test a straight path first: <code style="font-family: 'Fira Code', monospace;">(0, 0) &rarr; (2, 0)</code> &mdash; no turns needed</p>
                 <p class="bullet">Then a path with turns: <code style="font-family: 'Fira Code', monospace;">(0, 0) &rarr; (2, 2)</code></p>
-                <p class="bullet">Print <code style="font-family: 'Fira Code', monospace;">self.heading</code> inside <code style="font-family: 'Fira Code', monospace;">turn_to</code> so you can see the wrap 4&rarr;0 happen</p>
+                <p class="bullet">Print <code style="font-family: 'Fira Code', monospace;">heading</code> inside <code style="font-family: 'Fira Code', monospace;">turn_to</code> so you can see the wrap 4&rarr;0 happen</p>
                 <p class="header-text">Checkpoints</p>
                 <p class="bullet">Does the robot turn the right number of times at each step?</p>
                 <p class="bullet">Does it land on each intersection (not before, not after)?</p>
-                <p class="bullet">Does <code style="font-family: 'Fira Code', monospace;">self.position</code> match the real robot at the end?</p>
+                <p class="bullet">Did you remember <code style="font-family: 'Fira Code', monospace;">position, heading = drive_path(...)</code> to capture the result?</p>
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
@@ -271,9 +268,10 @@ print("Arrived facing", HEADING_NAMES[nav.heading])</pre></div>
             <div class="title-bar"><h1>What's Next</h1></div>
             <div class="content">
                 <p class="header-text">Today</p>
-                <p class="body-text">You built the Navigator &mdash; three methods, each a direct translation of yesterday's paper design.</p>
+                <p class="body-text">You built the driving functions &mdash; three functions, each a direct translation of yesterday's paper design, threading position and heading through parameters and return values instead of storing them on an object.</p>
                 <p class="header-text">Next lesson &mdash; Final Project</p>
                 <p class="body-text">Drive to a <strong>list</strong> of destinations in sequence, computing a fresh path for each one.</p>
+                <div class="insight-box">Optional Extension: courses that also cover classes can package these same three functions as a <code style="font-family: 'Fira Code', monospace;">Navigator</code> class that composes <code style="font-family: 'Fira Code', monospace;">LineTrack</code> &mdash; see the lesson document.</div>
             </div>
             <div class="slide-navigation">
                 <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>

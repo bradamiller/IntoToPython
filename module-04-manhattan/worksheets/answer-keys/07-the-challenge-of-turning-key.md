@@ -19,9 +19,9 @@
 
 ## Part 2: The `turn_to` While Loop
 
-**What does `if self.heading == 4: self.heading = 0` do, and why is it necessary?**
+**What does `if heading == 4: heading = 0` do, and why is it necessary?**
 
-It resets `self.heading` back to 0 (North) after it increments past the last valid heading. Without this, after turning right from 3 (West), `self.heading` would become 4, which is not a valid heading. The wrap makes the heading values form a cycle: 0 → 1 → 2 → 3 → 0 → 1 → ... — matching how the compass actually works.
+It resets `heading` back to 0 (North) after it increments past the last valid heading. Without this, after turning right from 3 (West), `heading` would become 4, which is not a valid heading. The wrap makes the heading values form a cycle: 0 → 1 → 2 → 3 → 0 → 1 → ... — matching how the compass actually works.
 
 ---
 

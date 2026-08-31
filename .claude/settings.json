@@ -3,7 +3,18 @@
     "allow": [
       "Bash(python generate_pptx_lesson07.py)",
       "mcp__plugin_playwright_playwright__browser_navigate",
-      "mcp__plugin_playwright_playwright__browser_run_code"
+      "mcp__plugin_playwright_playwright__browser_run_code",
+      "Bash(\"/Applications/Google Chrome.app/Contents/MacOS/Google Chrome\" --version)",
+      "Bash(chmod +x /private/tmp/claude-501/-Users-bradmiller-GitHub-IntoToPython/1da35b95-828a-4713-8697-b9ca5ab35036/scratchpad/keys/gen_key_pdf.sh)",
+      "Bash(/private/tmp/claude-501/-Users-bradmiller-GitHub-IntoToPython/1da35b95-828a-4713-8697-b9ca5ab35036/scratchpad/keys/gen_key_pdf.sh /Users/bradmiller/GitHub/IntoToPython/module-04-manhattan/worksheets/answer-keys/05-implementing-the-manhattan-class-key.md 'Lesson 5 Answer Key: A Reusable Manhattan Function' 05-test)",
+      "Bash(curl -sI https://fonts.googleapis.com/css2?family=Patrick+Hand)",
+      "Bash(curl -sI \"https://fonts.googleapis.com/css2?family=Patrick+Hand\")",
+      "Bash(curl -s -A \"Mozilla/5.0\" \"https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Patrick+Hand&family=Fira+Code:wght@400;500&display=swap\")",
+      "Bash(/private/tmp/claude-501/-Users-bradmiller-GitHub-IntoToPython/1da35b95-828a-4713-8697-b9ca5ab35036/scratchpad/keys/gen_key_pdf.sh /Users/bradmiller/GitHub/IntoToPython/module-04-manhattan/worksheets/answer-keys/05-implementing-the-manhattan-class-key.md 'Lesson 5 Answer Key: A Reusable Manhattan Function' 05-test2)",
+      "Bash(/private/tmp/claude-501/-Users-bradmiller-GitHub-IntoToPython/1da35b95-828a-4713-8697-b9ca5ab35036/scratchpad/keys/gen_key_pdf.sh /Users/bradmiller/GitHub/IntoToPython/module-04-manhattan/worksheets/answer-keys/05-implementing-the-manhattan-class-key.md 'Lesson 5 Answer Key: A Reusable Manhattan Function' 05-final)",
+      "Bash(/private/tmp/claude-501/-Users-bradmiller-GitHub-IntoToPython/1da35b95-828a-4713-8697-b9ca5ab35036/scratchpad/keys/gen_key_pdf.sh /Users/bradmiller/GitHub/IntoToPython/module-04-manhattan/worksheets/answer-keys/07-the-challenge-of-turning-key.md 'Lesson 7 Answer Key: The Challenge of Turning' 07-final)",
+      "Bash(/private/tmp/claude-501/-Users-bradmiller-GitHub-IntoToPython/1da35b95-828a-4713-8697-b9ca5ab35036/scratchpad/keys/gen_key_pdf.sh /Users/bradmiller/GitHub/IntoToPython/module-04-manhattan/worksheets/answer-keys/08-implementing-the-navigator-class-key.md 'Lesson 8 Answer Key: Driving the Path' 08-final)",
+      "Bash(/private/tmp/claude-501/-Users-bradmiller-GitHub-IntoToPython/1da35b95-828a-4713-8697-b9ca5ab35036/scratchpad/keys/gen_key_pdf.sh /Users/bradmiller/GitHub/IntoToPython/module-04-manhattan/worksheets/answer-keys/09-final-project-key.md 'Lesson 9 Answer Key: Final Project' 09-final)"
     ]
   }
 }

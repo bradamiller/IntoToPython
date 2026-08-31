@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A Reusable Manhattan Function - Module 4: Manhattan</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Patrick+Hand&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Patrick Hand', cursive; background-color: #faf8f5; overflow: hidden; color: #2d3436; }
+        .nav-sidebar { position: fixed; left: 0; top: 0; width: 240px; height: 100vh; background-color: #faf8f5; border-right: 3px solid #b8c5d0; padding: 24px 16px; overflow-y: auto; z-index: 1000; background-image: linear-gradient(rgba(180, 200, 220, 0.15) 1px, transparent 1px); background-size: 100% 28px; }
+        .nav-header h2 { font-family: 'Caveat', cursive; font-size: 20px; color: #5b8fa8; margin-bottom: 4px; font-weight: 600; }
+        .nav-header h3 { font-family: 'Caveat', cursive; font-size: 16px; color: #636e72; margin-bottom: 20px; font-weight: 400; }
+        .slide-nav { display: flex; flex-direction: column; }
+        .nav-item { color: #2d3436; text-decoration: none; padding: 6px 10px; margin-bottom: 3px; border-radius: 6px; font-size: 15px; line-height: 1.3; transition: all 0.2s; font-family: 'Patrick Hand', cursive; }
+        .nav-item:hover { background-color: rgba(91, 143, 168, 0.15); }
+        .nav-item.active { background-color: rgba(91, 143, 168, 0.2); font-weight: bold; border-left: 3px solid #5b8fa8; }
+        .slides-container { margin-left: 240px; height: 100vh; position: relative; }
+        .slide { position: absolute; top: 0; left: 0; width: calc(100vw - 240px); height: 100vh; background-color: #fdfcfa; display: none; flex-direction: column; background-image: linear-gradient(rgba(180, 200, 220, 0.12) 1px, transparent 1px); background-size: 100% 32px; background-position: 0 80px; }
+        .slide.active { display: flex; }
+        .title-bar { padding: 20px 50px; min-height: 80px; display: flex; align-items: center; position: relative; border-bottom: 3px solid #5b8fa8; background-color: rgba(91, 143, 168, 0.06); }
+        .title-bar::after { content: ''; position: absolute; bottom: -6px; left: 30px; right: 60px; height: 3px; background-color: rgba(91, 143, 168, 0.15); transform: rotate(-0.3deg); }
+        .title-bar h1 { font-family: 'Caveat', cursive; font-size: 36px; font-weight: 700; color: #2d3436; transform: rotate(-0.5deg); }
+        .content { flex: 1; padding: 30px 50px; padding-bottom: 80px; overflow-y: auto; max-width: 1100px; }
+        .header-text { font-family: 'Caveat', cursive; font-size: 28px; font-weight: 600; color: #5b8fa8; margin-bottom: 12px; margin-top: 8px; }
+        .body-text { font-size: 22px; margin-bottom: 10px; line-height: 1.5; }
+        .bullet { font-size: 22px; margin-bottom: 6px; margin-left: 24px; line-height: 1.4; position: relative; padding-left: 20px; }
+        .bullet::before { content: ''; position: absolute; left: 0; top: 11px; width: 8px; height: 8px; background-color: #5b8fa8; border-radius: 50%; transform: rotate(5deg); }
+        .code-block { background-color: #f0ede8; border: 2px solid #b8c5d0; border-radius: 12px; padding: 18px 22px; margin: 16px 0; font-family: 'Fira Code', monospace; font-size: 16px; line-height: 1.5; color: #2d3436; overflow-x: auto; position: relative; box-shadow: 3px 3px 0 rgba(91, 143, 168, 0.15); transform: rotate(-0.2deg); white-space: pre; }
+        .code-block::before { content: '< / >'; position: absolute; top: -12px; right: 20px; background-color: #fdfcfa; padding: 2px 10px; font-family: 'Caveat', cursive; font-size: 16px; color: #5b8fa8; border: 2px solid #b8c5d0; border-radius: 8px; }
+        .code-block.compact::before { display: none; }
+        .sketch-box { border: 2px solid #5b8fa8; border-radius: 14px; padding: 18px; margin: 12px 0; position: relative; background-color: rgba(91, 143, 168, 0.04); box-shadow: 2px 2px 0 rgba(91, 143, 168, 0.1); }
+        .sketch-highlight { background: linear-gradient(180deg, transparent 60%, rgba(232, 168, 124, 0.3) 60%); padding: 0 4px; }
+        .answer-box { border: 2px dashed #85c88a; border-radius: 14px; padding: 16px 20px; margin: 14px 0; background-color: rgba(133, 200, 138, 0.08); position: relative; }
+        .answer-box::before { content: '!'; position: absolute; top: -14px; left: 16px; background-color: #85c88a; color: white; width: 28px; height: 28px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: 'Caveat', cursive; font-size: 20px; font-weight: 700; }
+        .insight-box { border: 2px solid #e8a87c; border-radius: 14px; padding: 16px 20px; margin: 14px 0; background-color: rgba(232, 168, 124, 0.08); text-align: center; font-family: 'Caveat', cursive; font-size: 26px; font-weight: 600; color: #2d3436; transform: rotate(-0.3deg); box-shadow: 3px 3px 0 rgba(232, 168, 124, 0.15); }
+        .slide-navigation { position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 20px; background-color: rgba(250, 248, 245, 0.95); padding: 8px 20px; border-radius: 25px; border: 2px solid #b8c5d0; box-shadow: 2px 2px 0 rgba(91, 143, 168, 0.1); }
+        .nav-btn { padding: 6px 18px; border: 2px solid #5b8fa8; border-radius: 20px; background-color: rgba(91, 143, 168, 0.1); color: #2d3436; font-size: 16px; font-family: 'Patrick Hand', cursive; cursor: pointer; transition: all 0.2s; }
+        .nav-btn:hover:not(:disabled) { background-color: rgba(91, 143, 168, 0.25); }
+        .nav-btn:disabled { border-color: #ccc; color: #aaa; background-color: transparent; cursor: not-allowed; }
+        .slide-counter { font-size: 16px; font-family: 'Caveat', cursive; font-weight: 600; color: #5b8fa8; min-width: 60px; text-align: center; }
+        .slide-title-page { background-image: none; background-color: #fdfcfa; }
+        .title-hero { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px; text-align: center; }
+        .title-hero .module-label { font-family: 'Patrick Hand', cursive; font-size: 22px; color: #5b8fa8; margin-bottom: 8px; letter-spacing: 2px; }
+        .title-hero .lesson-title { font-family: 'Caveat', cursive; font-size: 60px; font-weight: 700; color: #2d3436; margin-bottom: 24px; transform: rotate(-1deg); position: relative; }
+        .title-hero .lesson-title::after { content: ''; position: absolute; bottom: -4px; left: 10%; right: 10%; height: 4px; background-color: #e8a87c; border-radius: 2px; transform: rotate(0.5deg); }
+        .title-hero .divider-sketch { width: 120px; height: 3px; background: #b8c5d0; margin: 16px auto; border-radius: 2px; transform: rotate(-1deg); }
+        .title-content { display: flex; gap: 60px; margin-top: 20px; text-align: left; max-width: 900px; }
+        .title-section { flex: 1; }
+        .title-section h3 { font-family: 'Caveat', cursive; font-size: 26px; font-weight: 600; color: #5b8fa8; margin-bottom: 10px; border-bottom: 2px solid rgba(91, 143, 168, 0.2); padding-bottom: 4px; }
+        .title-section .bullet { font-size: 19px; }
+        .title-section .bullet::before { top: 9px; }
+    </style>
+</head>
+<body>
+    <div class="nav-sidebar">
+        <div class="nav-header">
+            <h2>Module 4: Manhattan</h2>
+            <h3>Lesson 5</h3>
+        </div>
+        <nav class="slide-nav">
+            <a href="#slide-1" class="nav-item" onclick="showSlide(0)">Title &amp; Objectives</a>
+            <a href="#slide-2" class="nav-item" onclick="showSlide(1)">Which Algorithm Is This?</a>
+            <a href="#slide-3" class="nav-item" onclick="showSlide(2)">What Changes / Stays</a>
+            <a href="#slide-4" class="nav-item" onclick="showSlide(3)">Adding a Docstring</a>
+            <a href="#slide-5" class="nav-item" onclick="showSlide(4)">Regression Test</a>
+            <a href="#slide-6" class="nav-item" onclick="showSlide(5)">The Complete Function</a>
+            <a href="#slide-7" class="nav-item" onclick="showSlide(6)">Your Turn!</a>
+            <a href="#slide-8" class="nav-item" onclick="showSlide(7)">What's Next</a>
+        </nav>
+    </div>
+
+    <div class="slides-container">
+
+        <!-- SLIDE 1 -->
+        <div id="slide-1" class="slide slide-title-page">
+            <div class="title-hero">
+                <svg width="80" height="80" viewBox="0 0 80 80" style="margin-bottom: 12px;">
+                    <image href="images/xrp-top-down.png" x="18" y="18" width="44" height="44"/>
+                </svg>
+                <div class="module-label">MODULE 4 &middot; LESSON 5</div>
+                <div class="lesson-title">A Reusable Manhattan Function</div>
+                <div class="divider-sketch"></div>
+                <div class="title-content">
+                    <div class="title-section">
+                        <h3>Learning Objectives</h3>
+                        <p class="bullet">Explain why a specific name matters once there's more than one algorithm</p>
+                        <p class="bullet">Add a docstring documenting parameters and return value</p>
+                        <p class="bullet">Rename a function without changing its behavior</p>
+                        <p class="bullet">Regression-test against Lesson 4's output</p>
+                    </div>
+                    <div class="title-section">
+                        <h3>Agenda</h3>
+                        <p class="bullet">Which algorithm is this? (5 min)</p>
+                        <p class="bullet">Rename and document (10 min)</p>
+                        <p class="bullet">Regression test (10 min)</p>
+                        <p class="bullet">Practice: test 4+ pairs (15 min)</p>
+                    </div>
+                </div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn" disabled>Previous</button>
+                <span class="slide-counter">1 / 8</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- SLIDE 2 -->
+        <div id="slide-2" class="slide">
+            <div class="title-bar"><h1>Which Algorithm Is This?</h1></div>
+            <div class="content">
+                <p class="body-text">In Module 5, you'll write a <strong>second</strong> pathfinding function: Dijkstra's algorithm.</p>
+                <div class="code-block"><pre>def compute_path(start, end):   # <- Lesson 4's name
+    ...
+
+def compute_path(position, destination):   # <- Module 5's Dijkstra, same name!
+    ...</pre></div>
+                <div class="answer-box">
+                    <p class="body-text" style="margin-left: 8px;">What happens if both are named <code style="font-family: 'Fira Code', monospace;">compute_path</code>? The second <code style="font-family: 'Fira Code', monospace;">def</code> silently replaces the first &mdash; no warning. You'd lose the Manhattan version entirely.</p>
+                </div>
+                <div class="insight-box">The fix: name each algorithm specifically.</div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">2 / 8</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- SLIDE 3 -->
+        <div id="slide-3" class="slide">
+            <div class="title-bar"><h1>What Changes, What Stays the Same</h1></div>
+            <div class="content">
+                <div class="code-block"><pre>Lesson 4:   compute_path(start, end)
+Lesson 5:   compute_manhattan_path(position, destination)</pre></div>
+                <div class="sketch-box">
+                    <p class="body-text"><strong>A rename, not a rewrite:</strong> every line of logic inside the function is identical to Lesson 4 &mdash; only the <code style="font-family: 'Fira Code', monospace;">def</code> line and parameter names change.</p>
+                </div>
+                <p class="body-text"><strong>Why <code style="font-family: 'Fira Code', monospace;">position</code> instead of <code style="font-family: 'Fira Code', monospace;">start</code>?</strong> It matches how the function gets used later: the robot's <em>current</em> position, called again and again as it moves.</p>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">3 / 8</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- SLIDE 4 -->
+        <div id="slide-4" class="slide">
+            <div class="title-bar"><h1>Adding a Docstring</h1></div>
+            <div class="content">
+                <div class="code-block"><pre>def compute_manhattan_path(position, destination):
+    """Compute a Manhattan path from position to destination.
+
+    position:    a (row, col) tuple -- where the robot is now
+    destination: a (row, col) tuple -- where it needs to go
+
+    Returns a list of (row, col) tuples the robot should move to,
+    not including position itself.
+    """
+    path = []
+    ...</pre></div>
+                <p class="body-text">A docstring is a string literal right after <code style="font-family: 'Fira Code', monospace;">def</code> &mdash; shows up in <code style="font-family: 'Fira Code', monospace;">help()</code> and editor tooltips. Once there are two pathfinding functions in the same program, a reader needs to tell them apart at a glance.</p>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">4 / 8</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- SLIDE 5 -->
+        <div id="slide-5" class="slide">
+            <div class="title-bar"><h1>Regression Test</h1></div>
+            <div class="content">
+                <p class="body-text">The whole point of a rename is that behavior doesn't change. Prove it:</p>
+                <div class="code-block"><pre>print("===== Regression Test =====")
+path = compute_manhattan_path((0, 0), (2, 3))
+print("(0,0) to (2,3):", path)
+
+path = compute_manhattan_path((3, 3), (1, 0))
+print("(3,3) to (1,0):", path)</pre></div>
+                <div class="insight-box">Compare the output character-for-character against Lesson 4. It should match exactly.</div>
+                <p class="body-text">This is called a <strong>regression test</strong> &mdash; confirming a change didn't break anything that used to work.</p>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">5 / 8</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- SLIDE 6 -->
+        <div id="slide-6" class="slide">
+            <div class="title-bar"><h1>The Complete Renamed Function</h1></div>
+            <div class="content">
+                <div class="code-block" style="font-size: 15px;"><pre>def compute_manhattan_path(position, destination):
+    """Compute a Manhattan path from position to destination."""
+    path = []
+    current_row, current_col = position
+    dest_row, dest_col = destination
+
+    while current_row < dest_row:
+        current_row = current_row + 1
+        path.append((current_row, current_col))
+    while current_row > dest_row:
+        current_row = current_row - 1
+        path.append((current_row, current_col))
+    while current_col < dest_col:
+        current_col = current_col + 1
+        path.append((current_row, current_col))
+    while current_col > dest_col:
+        current_col = current_col - 1
+        path.append((current_row, current_col))
+
+    return path</pre></div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">6 / 8</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- SLIDE 7 -->
+        <div id="slide-7" class="slide">
+            <div class="title-bar"><h1>Your Turn!</h1></div>
+            <div class="content">
+                <p class="bullet">Rename your Lesson 4 function to <code style="font-family: 'Fira Code', monospace;">compute_manhattan_path(position, destination)</code></p>
+                <p class="bullet">Add the docstring</p>
+                <p class="bullet">Regression-test against your Lesson 4 hand traces</p>
+                <p class="bullet">Test at least 4 position/destination pairs:</p>
+                <p class="bullet" style="margin-left: 48px;"><code style="font-family: 'Fira Code', monospace;">(0,0)&rarr;(2,3)</code>, <code style="font-family: 'Fira Code', monospace;">(2,3)&rarr;(0,1)</code>, <code style="font-family: 'Fira Code', monospace;">(3,0)&rarr;(1,2)</code>, <code style="font-family: 'Fira Code', monospace;">(1,3)&rarr;(3,1)</code></p>
+                <p class="bullet">Bonus: test the edge cases (same row, same column, same position)</p>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">7 / 8</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn">Next</button>
+            </div>
+        </div>
+
+        <!-- SLIDE 8 -->
+        <div id="slide-8" class="slide">
+            <div class="title-bar"><h1>What's Next</h1></div>
+            <div class="content">
+                <p class="header-text">Today</p>
+                <p class="body-text">Renamed and documented <code style="font-family: 'Fira Code', monospace;">compute_manhattan_path</code> &mdash; same algorithm, a name specific enough to survive Module 5.</p>
+                <p class="header-text">Next lesson &mdash; Testing Without a Robot</p>
+                <p class="body-text">Systematic testing with a <code style="font-family: 'Fira Code', monospace;">run_test()</code> helper, comparing output to hand traces.</p>
+                <div class="insight-box">Optional Extension: courses that also cover classes can wrap this same function in a <code style="font-family: 'Fira Code', monospace;">Manhattan</code> class &mdash; see the separate "Implementing the Manhattan Class" deck.</div>
+            </div>
+            <div class="slide-navigation">
+                <button onclick="prevSlide()" class="nav-btn prev-btn">Previous</button>
+                <span class="slide-counter">8 / 8</span>
+                <button onclick="nextSlide()" class="nav-btn next-btn" disabled>Next</button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const navItems = document.querySelectorAll('.nav-item');
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                if (i === index) slide.classList.add('active');
+                else slide.classList.remove('active');
+            });
+            currentSlide = index;
+            navItems.forEach((item, i) => {
+                if (i === index) item.classList.add('active');
+                else item.classList.remove('active');
+            });
+        }
+
+        function nextSlide() { if (currentSlide < slides.length - 1) showSlide(currentSlide + 1); }
+        function prevSlide() { if (currentSlide > 0) showSlide(currentSlide - 1); }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); nextSlide(); }
+            else if (e.key === 'ArrowLeft') { e.preventDefault(); prevSlide(); }
+        });
+
+        showSlide(0);
+    </script>
+</body>
+</html>

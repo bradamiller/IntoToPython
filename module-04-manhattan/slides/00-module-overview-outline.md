@@ -5,7 +5,7 @@
 
 **Learning Objectives:**
 - See the complete system we are building in this module
-- Understand what the Manhattan and Navigator classes do
+- Understand what `compute_manhattan_path` and `drive_path` do
 - Learn what "top-down design" means and why it helps
 - Know which lesson builds which piece
 
@@ -39,51 +39,50 @@ Visual: Grid diagram with a path drawn through 3 destinations, arrows showing th
 - How does it physically drive there? → Need a **robot driver**
 - How does it handle multiple destinations? → Need a **loop**
 
-**That gives us two classes and a main program.**
+**That gives us two functions and a main program.**
 
 ---
 
 ## Slide 4: The Main Program
-**This is the ENTIRE main program:**
 
 ```python
-manhattan = Manhattan((0, 0))
-navigator = Navigator((0, 0), 0)
+position = (0, 0)
+heading = 0
+
 destinations = [(2, 0), (2, 3), (0, 3)]
 
 for dest in destinations:
-    path = manhattan.compute_path(dest)
-    navigator.drive_path(path)
-    manhattan.position = navigator.position
+    path = compute_manhattan_path(position, dest)
+    position, heading = drive_path(path, position, heading)
 ```
 
-**Seven lines.** It is short because the classes do the work.
+**Seven lines.** It is short because the functions do the work.
 
 **In plain English:**
-- Create a path planner and a robot driver
-- For each destination: compute the path, drive it, update your position
+- Track the robot's position and heading, and the list of destinations
+- For each destination: compute the path, drive it, and update where we are and which way we're facing from what driving returned
 
 ---
 
-## Slide 5: Two Classes, Two Jobs
+## Slide 5: Two Functions, Two Jobs
 
-**Manhattan class — "Where do I go?"**
+**`compute_manhattan_path` — "Where do I go?"**
 - Input: current position + destination
 - Output: a list of intersections to visit
 - Example: (0,0) to (2,3) → `[(1,0), (2,0), (2,1), (2,2), (2,3)]`
 
-**Navigator class — "How do I get there?"**
-- Input: a list of intersections (the path)
-- Output: the robot physically drives there
+**`drive_path` — "How do I get there?"**
+- Input: a path, the current position, the current heading
+- Output: the robot physically drives there, and the new position/heading
 
-**Manhattan never touches the robot. Navigator never computes routes.**
+**`compute_manhattan_path` never touches the robot. `drive_path` never computes routes.**
 
-Each class has one job. This is called **separation of concerns**.
+Each function has one job. This is called **separation of concerns**. They connect through the path list -- and through the plain `position`/`heading` variables the main program carries from one call to the next.
 
 ---
 
-## Slide 6: What Does Manhattan Compute?
-**Given a start and destination, compute the path:**
+## Slide 6: What Does `compute_manhattan_path` Compute?
+**Given a position and destination, compute the path:**
 
 Visual: Grid with path from (0,0) to (2,3) highlighted — go down 2 rows, then right 3 columns.
 
@@ -99,7 +98,7 @@ The path lists only the intersections to drive to (the robot is already at the s
 
 ---
 
-## Slide 7: What Does Navigator Do?
+## Slide 7: What Does `drive_path` Do?
 **At each intersection, the robot must:**
 
 1. **Figure out which direction to face**
@@ -112,7 +111,7 @@ The path lists only the intersections to drive to (the robot is already at the s
 
 3. **Drive forward to the next intersection**
    - Follow the line until detecting a cross
-   - This is LineTrack from Module 2 — you already built it!
+   - This is the driving toolkit from Module 2 — you already built it!
 
 **Lessons 7-8 will teach you how to build this.**
 
@@ -121,15 +120,15 @@ The path lists only the intersections to drive to (the robot is already at the s
 ## Slide 8: Building on What You Know
 **You are not starting from scratch.**
 
-**Module 2 gave you:**
-- LineSensor — reads the line sensors
-- LineTrack — follows lines and turns at intersections
+**Module 2 gave you a driving toolkit:**
+- Sensor functions — read the line sensors
+- Driving functions — follow lines and turn at intersections
   - `track_until_cross()` — drive to the next intersection
   - `turn_right()` — turn right until finding the next line
 
 **Module 4 adds:**
-- Manhattan — plan the path (which intersections to visit)
-- Navigator — execute the path (calls LineTrack to move)
+- `compute_manhattan_path` — plan the path (which intersections to visit)
+- `drive_path` — execute the path (calls the driving toolkit to move)
 
 **Each module builds on the last. That is the power of reusable code.**
 
@@ -145,7 +144,7 @@ The path lists only the intersections to drive to (the robot is already at the s
 | 4-5 | Manhattan algorithm — compute the path |
 | 6 | Testing without a robot — verify before driving |
 | 7 | Turning logic — 4 cases, headings as numbers, turn right until aligned |
-| 8 | Navigator class — turn_to() and drive_path() |
+| 8 | Driving the path — `turn_to()` and `drive_path()` |
 | 9 | Final project — put it all together! |
 
 **Every lesson builds one piece. Nothing is random.**
@@ -157,16 +156,18 @@ The path lists only the intersections to drive to (the robot is already at the s
 **Show the main program one more time:**
 
 ```python
-manhattan = Manhattan((0, 0))
-navigator = Navigator((0, 0), 0)
+position = (0, 0)
+heading = 0
+
 destinations = [(2, 0), (2, 3), (0, 3)]
 
 for dest in destinations:
-    path = manhattan.compute_path(dest)
-    navigator.drive_path(path)
-    manhattan.position = navigator.position
+    path = compute_manhattan_path(position, dest)
+    position, heading = drive_path(path, position, heading)
 ```
 
 **By Lesson 9, you will understand every line of this code — because you will have written every piece yourself.**
+
+**Optional Extension:** Courses that also cover classes will see this same system rebuilt with `Manhattan` and `Navigator` objects in each lesson's Optional Extension, once the functions version is understood.
 
 Let's get started.

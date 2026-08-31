@@ -4,7 +4,7 @@
 **Title:** Module 5 Capstone Project
 
 **Learning Objectives:**
-- Integrate Dijkstra pathfinding, Navigator, rangefinder obstacle detection, and obstacle memory into a single program
+- Integrate Dijkstra pathfinding, `drive_path()`, rangefinder obstacle detection, and obstacle memory into a single program
 - Design a program that visits 4 or more destinations while detecting and avoiding obstacles
 - Demonstrate learning by showing improved performance across multiple runs
 - Present and explain a working autonomous navigation system
@@ -27,8 +27,8 @@
 | Lesson 1 | Understanding the grid as a graph |
 | Lesson 2 | Dictionaries to represent the graph in Python |
 | Lesson 3 | Dijkstra's algorithm — the concept |
-| Lessons 4-5 | The Dijkstra class with `compute_path` |
-| Lesson 6 | Testing and swapping Dijkstra into Navigator |
+| Lessons 4-5 | `build_dijkstra_graph()` and `compute_dijkstra_path()` |
+| Lesson 6 | Testing and swapping Dijkstra in via the dispatch function |
 | Lesson 7 | Obstacle detection with the rangefinder |
 | Lesson 8 | Building experience — remembering obstacles across runs |
 
@@ -59,8 +59,7 @@
 **The overall structure of your capstone program:**
 
 ```python
-from dijkstra import Dijkstra
-from navigator import Navigator
+from dijkstra import build_dijkstra_graph, compute_dijkstra_path
 from XRPLib.rangefinder import Rangefinder
 
 # Setup
@@ -78,8 +77,8 @@ for dest in destinations:
     print(f"Heading to {dest}...")
     arrived = False
     while not arrived:
-        pathfinder = Dijkstra(current, blocked_nodes)
-        path = pathfinder.compute_path(dest)
+        graph = build_dijkstra_graph(4, 4, blocked_nodes)
+        path = compute_dijkstra_path(current, dest, graph)
         # Navigate along path with obstacle checking
         # If obstacle found: update blocked_nodes, recompute
         # If no obstacle: drive to next intersection
@@ -101,8 +100,8 @@ print(f"Obstacles found: {blocked_nodes}")
 for dest in destinations:
     arrived = False
     while not arrived:
-        pathfinder = Dijkstra(current, blocked_nodes)
-        path = pathfinder.compute_path(dest)
+        graph = build_dijkstra_graph(4, 4, blocked_nodes)
+        path = compute_dijkstra_path(current, dest, graph)
 
         if len(path) == 0:
             print(f"No path to {dest}! Skipping.")
@@ -117,8 +116,7 @@ for dest in destinations:
                 print(f"Blocked: {path[i + 1]}, rerouting...")
                 rerouted = True
                 break
-            # Drive one segment
-            nav.drive_segment(path[i], path[i + 1])
+            # Drive one segment (turn_to + track_until_cross)
             current = path[i + 1]
             step_count = step_count + 1
 
@@ -159,8 +157,8 @@ Run 2: Total steps = 16, Obstacles discovered = 0, Reroutes = 0
 
 | Category | Points | Criteria |
 |---|---|---|
-| **Dijkstra Pathfinding** | 10 | Uses Dijkstra class to compute paths; paths are correct |
-| **Navigator Integration** | 10 | Robot physically drives the computed paths on the grid |
+| **Dijkstra Pathfinding** | 10 | Uses `compute_dijkstra_path()` to compute paths; paths are correct and shortest |
+| **Driving Integration** | 10 | Robot physically drives the computed paths on the grid |
 | **Obstacle Detection** | 10 | Rangefinder detects obstacles; blocked list updates correctly |
 | **Path Recomputation** | 10 | Robot recomputes path after discovering obstacle; new path avoids it |
 | **Experience (File I/O)** | 10 | Obstacles saved after Run 1; loaded at start of Run 2 |
@@ -202,7 +200,7 @@ Run 2: Total steps = 16, Obstacles discovered = 0, Reroutes = 0
 **Activity: Build Your Capstone Program**
 
 **Step 1:** Start with your code from Lessons 7 and 8
-- You should already have: Dijkstra class, Navigator, rangefinder reading, save/load functions
+- You should already have: `build_dijkstra_graph()`/`compute_dijkstra_path()`, `drive_path()`, rangefinder reading, save/load functions
 
 **Step 2:** Create the main program
 1. Load obstacles from file

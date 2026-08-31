@@ -130,67 +130,59 @@ After check 2: blocked_nodes = [(1, 3), (2, 1)]
 
 ---
 
-## Slide 7: Re-routing After Detection
-**After discovering a new obstacle, recompute the path using the updated blocked list.**
+## Slide 7: Which Intersection Is Ahead?
+**Before we can add to the blocked list, we need to know which intersection the rangefinder is pointed at.**
 
 ```python
-from dijkstra import Dijkstra
+NORTH = 0
+EAST = 1
+SOUTH = 2
+WEST = 3
 
-blocked_nodes = [(1, 3)]  # discovered so far
+def get_next_intersection(current_pos, heading):
+    """Return the intersection directly ahead of the robot."""
+    row, col = current_pos
+    if heading == NORTH:
+        return (row - 1, col)
+    elif heading == EAST:
+        return (row, col + 1)
+    elif heading == SOUTH:
+        return (row + 1, col)
+    elif heading == WEST:
+        return (row, col - 1)
+```
 
-# Robot is at (1, 2), heading to (3, 3)
-# Obstacle detected ahead at (1, 3) — already added to blocked_nodes
+**We already have `desired_heading()` from Module 4 Lesson 8 doing the reverse of this.** Here we just need the forward version: given position and heading, what's ahead?
 
-# Recompute path from current position with updated blocked list
-pathfinder = Dijkstra((1, 2), blocked_nodes)
-new_path = pathfinder.compute_path((3, 3))
-print("New path:", new_path)
+---
+
+## Slide 8: Re-routing After Detection
+**After discovering a new obstacle, rebuild the graph and recompute the path using the updated blocked list.**
+
+```python
+# At each intersection, before driving to the next one:
+distance = rangefinder.distance()
+
+if distance < OBSTACLE_THRESHOLD:
+    blocked_node = get_next_intersection(current_pos, heading)
+    if blocked_node not in blocked_list:
+        blocked_list.append(blocked_node)
+        print(f"Obstacle detected at {blocked_node}!")
+        print(f"Blocked list is now: {blocked_list}")
+
+        # Recompute the path with updated blocked list
+        graph = build_dijkstra_graph(rows, cols, blocked_list)
+        new_path = compute_dijkstra_path(current_pos, destination, graph)
+        print(f"New path: {new_path}")
 ```
 
 **The flow:**
 1. Robot arrives at intersection
 2. Check rangefinder for obstacle ahead
-3. If blocked: add to blocked list, recompute path from current position
+3. If blocked: add to blocked list, rebuild the graph, recompute path from current position
 4. If clear: continue on current path
 5. Drive to next intersection
 6. Repeat
-
----
-
-## Slide 8: Integration with Navigator
-**Putting it all together — obstacle detection inside the navigation loop:**
-
-```python
-from dijkstra import Dijkstra
-from navigator import Navigator
-from XRPLib.rangefinder import Rangefinder
-
-rangefinder = Rangefinder.get_default_rangefinder()
-blocked_nodes = []
-THRESHOLD = 15
-
-current = (0, 0)
-destination = (3, 3)
-
-pathfinder = Dijkstra(current, blocked_nodes)
-path = pathfinder.compute_path(destination)
-
-for i in range(len(path) - 1):
-    # Check ahead before driving
-    distance = rangefinder.distance()
-    if distance < THRESHOLD:
-        # Add next intersection to blocked list
-        blocked_nodes.append(path[i + 1])
-        # Recompute from current position
-        pathfinder = Dijkstra(path[i], blocked_nodes)
-        path = pathfinder.compute_path(destination)
-        # Restart loop with new path
-        break
-    # Drive to next intersection
-    # nav.drive_segment(path[i], path[i + 1])
-```
-
-**Note:** This is a simplified version. The full implementation will handle the loop restart more cleanly.
 
 ---
 

@@ -3,7 +3,7 @@
 ## Overview
 Students learn to see the familiar grid of intersections as a **graph** -- a collection of nodes connected by edges. This is a conceptual lesson with no Python coding. Students work with paper, pencils, and the physical grid to understand graph terminology (nodes, edges, neighbors), discover why the Manhattan algorithm from Module 4 fails when intersections are blocked, and practice finding shortest paths by hand around obstacles. By the end of the lesson, students can draw any grid as a graph, remove blocked nodes, and trace shortest paths that detour around obstacles.
 
-This lesson is the bridge between Module 4's Manhattan pathfinding and Module 5's Dijkstra's algorithm. Students already know how to navigate a clear grid using (row, column) coordinates, tuples, lists, and the Manhattan class. Now they confront the reality that real-world grids have obstacles -- and they need a new way of thinking about the grid to handle them. The graph perspective introduced here is the foundation for dictionaries (Lesson 2), Dijkstra's algorithm (Lesson 3), and the Dijkstra class (Lessons 4-5).
+This lesson is the bridge between Module 4's Manhattan pathfinding and Module 5's Dijkstra's algorithm. Students already know how to navigate a clear grid using (row, column) coordinates, tuples, lists, and `compute_manhattan_path()`. Now they confront the reality that real-world grids have obstacles -- and they need a new way of thinking about the grid to handle them. The graph perspective introduced here is the foundation for dictionaries (Lesson 2), Dijkstra's algorithm (Lesson 3), and the Dijkstra functions (Lessons 4-5).
 
 ## Learning Objectives
 By the end of this lesson, students will be able to:
@@ -290,5 +290,5 @@ print(graph[(0, 0)])    # [(0, 1), (1, 0)]
 ## Connections to Next Lessons
 - **Lesson 2** will introduce **dictionaries** -- Python's key-value data structure that can represent a graph in code. The graph students drew on paper today will become a Python dictionary: `{(0,0): [(0,1), (1,0)], ...}`
 - **Lesson 3** will teach **Dijkstra's algorithm** -- the systematic method for finding shortest paths on a graph with obstacles. Students will hand-trace the algorithm on the same grids they drew today.
-- **Lessons 4-5** will implement Dijkstra's algorithm as a Python class with the same `compute_path` interface as the Manhattan class from Module 4, so the Navigator class works with both.
+- **Lessons 4-5** will implement Dijkstra's algorithm as `build_dijkstra_graph()` and `compute_dijkstra_path()` -- returning the same list-of-tuples shape as `compute_manhattan_path()` from Module 4, so `drive_path()` works with either.
 - The graph vocabulary introduced here (nodes, edges, neighbors) is used in every remaining lesson of Module 5.

@@ -1,4 +1,4 @@
-# Lesson 5 Worksheet: Implementing compute_path
+# Lesson 5 Worksheet: Implementing compute_dijkstra_path
 
 **Name:** ________________________
 **Date:** ________________________
@@ -37,7 +37,7 @@ Dijkstra's algorithm finds the shortest path from a start node to a destination.
 
 ---
 
-## Part B: Trace compute_path Step by Step
+## Part B: Trace compute_dijkstra_path Step by Step
 
 **Grid:** 3x3 with (1, 1) blocked
 
@@ -49,7 +49,7 @@ Dijkstra's algorithm finds the shortest path from a start node to a destination.
 (2,0) --- (2,1) --- (2,2)
 ```
 
-**Start:** (0, 0)    **Destination:** (2, 2)
+**Call:** `compute_dijkstra_path((0, 0), (2, 2), graph)`
 
 Trace the algorithm using the tables below.
 
@@ -138,11 +138,11 @@ Reversed path: __________ -> __________ -> __________ -> __________ -> _________
 
 ## Part C: Code Reading
 
-Read each section of the `compute_path` method and describe what it does.
+Read each section of `compute_dijkstra_path` and describe what it does.
 
 **Section 1:**
 ```python
-if destination not in self.graph:
+if destination not in graph:
     print("Destination is blocked!")
     return []
 ```
@@ -157,12 +157,12 @@ distances = {}
 previous = {}
 to_visit = []
 
-for node in self.graph:
+for node in graph:
     distances[node] = 999999
     previous[node] = None
     to_visit.append(node)
 
-distances[self.position] = 0
+distances[position] = 0
 ```
 
 What does this section do? ____________________________________________________
@@ -183,7 +183,7 @@ Why not just pick the first node in to_visit? __________________________________
 
 **Section 4:**
 ```python
-for neighbor in self.graph[current]:
+for neighbor in graph[current]:
     if neighbor in to_visit:
         new_dist = distances[current] + 1
         if new_dist < distances[neighbor]:
@@ -219,11 +219,11 @@ Each code snippet below has a bug. Find it and explain what goes wrong.
 
 **Bug 1:**
 ```python
-def compute_path(self, destination):
+def compute_dijkstra_path(position, destination, graph):
     distances = {}
-    for node in self.graph:
+    for node in graph:
         distances[node] = 999999
-    # Missing: distances[self.position] = 0
+    # Missing: distances[position] = 0
 ```
 
 What is the bug? ____________________________________________________
@@ -259,7 +259,7 @@ What happens? ____________________________________________________
 
 **Bug 4:**
 ```python
-for neighbor in self.graph[current]:
+for neighbor in graph[current]:
     new_dist = distances[current] + 1
     if new_dist < distances[neighbor]:
         distances[neighbor] = new_dist
@@ -302,3 +302,24 @@ What happens? ____________________________________________________
 2. Uses `>` instead of `<`. This finds the node with the LARGEST distance instead of smallest, so it explores the wrong nodes first.
 3. The path is built from destination to start but never reversed. The returned path goes backwards.
 4. Missing `if neighbor in to_visit` check. Already-visited nodes could have their distances incorrectly updated, potentially creating wrong paths.
+
+---
+
+## Part E (Optional Extension): The Completed Class
+
+*Skip this section if your course doesn't cover classes.*
+
+**Rewrite Section 2 from Part C as it would appear inside `Dijkstra.compute_path(self, destination)`:**
+
+```python
+distances = {}
+previous = {}
+to_visit = []
+
+for node in __________:
+    distances[node] = 999999
+    previous[node] = None
+    to_visit.append(node)
+
+distances[__________] = 0
+```

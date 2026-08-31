@@ -1,7 +1,7 @@
 # Lesson 7: The Challenge of Turning
 
 ## Overview
-Students confront the problem that their robot has a **heading** -- a direction it is currently facing -- and that moving to the next grid coordinate may require turning first. This lesson introduces two core insights: (1) between adjacent grid intersections, either the row OR the column changes but never both, giving exactly 4 cases that map to the 4 compass directions; and (2) representing heading as a number 0-3 lets us turn by simply adding 1 and wrapping 4 back to 0. Students design three methods on paper: `desired_heading` (which of the 4 cases is this step?), `turn_to` (a while loop that turns right until heading matches desired), and `drive_path` (for each intersection in the path, turn and drive forward one). Code implementation comes in Lesson 8.
+Students confront the problem that their robot has a **heading** -- a direction it is currently facing -- and that moving to the next grid coordinate may require turning first. This lesson introduces two core insights: (1) between adjacent grid intersections, either the row OR the column changes but never both, giving exactly 4 cases that map to the 4 compass directions; and (2) representing heading as a number 0-3 lets us turn by simply adding 1 and wrapping 4 back to 0. Students design three functions on paper: `desired_heading` (which of the 4 cases is this step?), `turn_to` (a while loop that turns right until heading matches desired), and `drive_path` (for each intersection in the path, turn and drive forward one). Code implementation comes in Lesson 8.
 
 ## Learning Objectives
 By the end of this lesson, students will be able to:
@@ -16,7 +16,7 @@ By the end of this lesson, students will be able to:
 - **Heading as a number**: The robot's current facing direction stored as 0 (North), 1 (East), 2 (South), or 3 (West). `HEADING_NAMES = ["N", "E", "S", "W"]` converts back to letters for display.
 - **Desired heading**: The heading number needed to move from the current intersection to the next one. Derived from whether the row or column changed and in which direction.
 - **Turn by adding 1**: Each right turn adds 1 to the heading. When heading reaches 4, reset to 0. This wrap is the entire mechanism of the `turn_to` while loop.
-- **The three methods**: `desired_heading(current, next_pos)` picks the case. `turn_to(desired)` runs a while loop that turns right and increments heading until it matches. `drive_path(path)` ties them together, calling both for every intersection in the list.
+- **The three functions**: `desired_heading(current, next_pos)` picks the case. `turn_to(heading, desired)` runs a while loop that turns right and increments heading until it matches, then returns the new heading. `drive_path(path, position, heading)` ties them together, calling both for every intersection in the list, and returns the final `(position, heading)`.
 
 ## Materials Required
 - XRP Robot (for demonstration only in this lesson)
@@ -95,37 +95,39 @@ By the end of this lesson, students will be able to:
    - Ask: "If I am heading 0 (North) and I turn right once, what is my new heading?" (1.) "Turn right again?" (2.) "Again?" (3.) "Again?" (0 — it wraps!)
    - Physical check: Have students stand facing the front (heading 0, North) and turn right. Call out the heading at each turn: 1, 2, 3, 0.
    - "Here is the idea: keep turning right — adding 1 each time, wrapping 4 back to 0 — until the heading matches what we want. We do not count ahead of time. We just turn until we are aligned."
-   - Write the method on the board:
+   - Write the function on the board:
      ```python
-     def turn_to(self, desired):
-         while self.heading != desired:
-             self.robot.turn_right()
-             self.heading = self.heading + 1
-             if self.heading == 4:
-                 self.heading = 0
+     def turn_to(heading, desired):
+         while heading != desired:
+             turn_right()
+             heading = heading + 1
+             if heading == 4:
+                 heading = 0
+         return heading
      ```
    - Trace it for several cases by walking through the while loop line by line:
      - Start heading 0 (N), desired 2 (S): loop runs — turn, heading=1; turn, heading=2; stop. Two right turns.
      - Start heading 2 (S), desired 1 (E): loop runs — turn, heading=3; turn, heading=4, wrap to 0; turn, heading=1; stop. Three right turns (wrap triggered!).
      - Start heading 1 (E), desired 1 (E): loop condition false immediately. Zero turns.
-   - Emphasize: "The while loop handles every case — 0, 1, 2, or 3 turns. You do not need to count ahead. The wrap from 4 to 0 is what makes 'turn right to go from West to North' just work."
+   - Emphasize: "The while loop handles every case — 0, 1, 2, or 3 turns. You do not need to count ahead. The wrap from 4 to 0 is what makes 'turn right to go from West to North' just work." Point out the `return heading` at the end -- since `heading` is just a local variable inside the function, the caller needs the updated value handed back.
 
 3. **Method 3 — `drive_path` for a List of Intersections**:
    - Once we have `desired_heading` and `turn_to`, driving a whole path is short:
      ```python
-     def drive_path(self, path):
+     def drive_path(path, position, heading):
          for next_pos in path:
-             desired = self.desired_heading(next_pos)
-             self.turn_to(desired)
-             self.robot.drive_forward_one()
-             self.position = next_pos
+             desired = desired_heading(position, next_pos)
+             heading = turn_to(heading, desired)
+             drive_forward_one()
+             position = next_pos
+         return position, heading
      ```
-   - "For every intersection in the path: figure out which way to face, turn until you face it, drive forward one intersection, update position. Repeat."
-   - Note: `self.position` must be updated after each step so the next call to `desired_heading` works correctly.
+   - "For every intersection in the path: figure out which way to face, turn until you face it, drive forward one intersection, update position. Repeat. At the end, hand back the final position and heading so the caller can keep using them."
+   - Note: `position` must be updated after each step so the next call to `desired_heading` works correctly -- and because it's a local variable, the function returns it (along with `heading`) rather than changing something outside itself.
 
 4. **Tracing a Full Path**:
    - Example path: `[(1,0), (2,0), (2,1), (2,2)]`, starting position `(0,0)`, starting heading 0 (N).
-   - Trace on the board, showing each value of `self.heading` as `turn_to` runs:
+   - Trace on the board, showing each value of `heading` as `turn_to` runs:
      ```
      At (0,0) heading 0(N), next (1,0): row+1 --> desired 2(S).  turn_to: 0->1->2. Drive to (1,0).
      At (1,0) heading 2(S), next (2,0): row+1 --> desired 2(S).  turn_to: already 2. Drive to (2,0).
@@ -149,7 +151,7 @@ By the end of this lesson, students will be able to:
 - Answers: row+1/2(S); row-1/0(N); col+1/1(E); col-1/3(W); row+1/2(S)
 
 **Exercise 2: Trace `turn_to` on Paper**
-- For each scenario, list the value of `self.heading` after each pass through the while loop, until the loop stops:
+- For each scenario, list the value of `heading` after each pass through the while loop, until the loop stops:
   1. Current 0(N), desired 1(E) --> heading values: ___
   2. Current 1(E), desired 1(E) --> heading values: ___
   3. Current 2(S), desired 0(N) --> heading values: ___
@@ -184,15 +186,15 @@ By the end of this lesson, students will be able to:
 **Formative (during lesson)**:
 - Can students identify which coordinate changed (row or column) between two adjacent intersections?
 - Can they map each of the 4 cases to the correct compass direction?
-- Can they trace the `turn_to` while loop step by step, showing each value of `self.heading` including the wrap from 4 back to 0?
+- Can they trace the `turn_to` while loop step by step, showing each value of `heading` including the wrap from 4 back to 0?
 - Can they trace a multi-step path calling `desired_heading`, `turn_to`, and drive in sequence?
 
 **Summative (worksheet/exit ticket)**:
 1. Between two adjacent intersections, what can change? How many total cases are there?
 2. If the robot is at (3,1) and needs to go to (3,2), what changed? What is the desired heading number and letter?
 3. Write out the while loop in `turn_to` from memory.
-4. If the robot is heading 3 (W) and desired is 1 (E), list the values of `self.heading` after each loop iteration until the loop stops.
-5. Why does `turn_to` need the line `if self.heading == 4: self.heading = 0`? Give a scenario where it matters.
+4. If the robot is heading 3 (W) and desired is 1 (E), list the values of `heading` after each loop iteration until the loop stops.
+5. Why does `turn_to` need the line `if heading == 4: heading = 0`? Give a scenario where it matters.
 6. Trace through path `[(2,1), (2,2)]` with starting position `(1,1)` and starting heading 2 (S).
 
 ## Common Misconceptions
@@ -201,7 +203,7 @@ By the end of this lesson, students will be able to:
 |---|---|
 | "North means up on the screen, so row should decrease" | This is correct! Row 0 is at the top. Moving North (up) decreases the row number. Students sometimes second-guess themselves on this. |
 | "Right and left depend on which way I'm looking at the grid" | Right and left are relative to the robot's heading, not the viewer. The while loop works with heading numbers, so spatial reasoning is not needed once the numbers are right. |
-| "What if the heading goes past 3?" | It wraps back to 0. The code checks: `if self.heading == 4: self.heading = 0`. This is the only tricky line in the whole method. |
+| "What if the heading goes past 3?" | It wraps back to 0. The code checks: `if heading == 4: heading = 0`. This is the only tricky line in the whole function. |
 | "Wouldn't it be faster to count turns ahead of time and loop that many times?" | It would be roughly the same amount of code, but the while loop is simpler because it stops when aligned — no separate calculation needed. Trust the loop. |
 | "The heading numbers seem arbitrary" | They follow a consistent clockwise pattern: 0=N, 1=E, 2=S, 3=W. Each right turn adds 1. That consistency is what makes the wrap-around math work. |
 | "Row +1 means North because numbers go up" | Numbers going up means the row index increases, which means moving DOWN on the grid. Down is South. This is the most common confusion. |
@@ -217,7 +219,7 @@ By the end of this lesson, students will be able to:
 - For `turn_to` tracing, let students draw the compass and physically step around it to verify.
 
 **For advanced students**:
-- Ask: "How would you modify `turn_to` to use left turns instead?" (subtract 1, wrap 0 back to 3 — i.e., `if self.heading == -1: self.heading = 3`).
+- Ask: "How would you modify `turn_to` to use left turns instead?" (subtract 1, wrap 0 back to 3 — i.e., `if heading == -1: heading = 3`).
 - Could you extend this to 8 directions (adding NE, NW, SE, SW) by wrapping at 8 instead of 4? What else would `desired_heading` need to detect?
 - Write a visual path tracer that prints the grid with arrows showing the robot's heading at each step.
 - Prove: for any starting and desired heading, the while loop always terminates in at most 3 iterations.
@@ -318,6 +320,6 @@ Step 5: (3,3) heading ___, next (3,2): ___ changed, desired ___, turn_to values 
 - **Why only right turns?** One turn primitive keeps the code simple: one method, one loop, no special cases. The robot does not care whether 270 degrees right or 90 degrees left is "faster" — both get it to the same heading. Simplicity wins.
 
 ## Connections to Next Lessons
-- **Lesson 8** will implement the `Navigator` class with `desired_heading`, `turn_to`, and `drive_path` as methods — translating the paper design directly into Python.
-- **Lesson 9** (Final Project) will combine the `Manhattan` class and `Navigator` class to drive through a list of destinations.
-- The three methods and the while-loop turning mechanic introduced here become the foundation for the Navigator class. Students already understand the logic; Lesson 8 just puts it into code.
+- **Lesson 8** will implement `desired_heading`, `turn_to`, and `drive_path` as working functions that call the Module 2/3 driving toolkit — translating the paper design directly into Python.
+- **Lesson 9** (Final Project) will combine `compute_manhattan_path()` and `drive_path()` to drive through a list of destinations.
+- The three functions and the while-loop turning mechanic introduced here become the foundation for Lesson 8. Students already understand the logic; Lesson 8 just puts it into code.

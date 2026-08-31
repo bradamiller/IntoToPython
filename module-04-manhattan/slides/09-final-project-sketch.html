@@ -670,7 +670,7 @@
         </div>
         <nav class="slide-nav">
             <a href="#slide-1" class="nav-item" onclick="showSlide(0)">Title & Objectives</a>
-            <a href="#slide-2" class="nav-item" onclick="showSlide(1)">The Complete Navigator</a>
+            <a href="#slide-2" class="nav-item" onclick="showSlide(1)">The Complete Robot Navigator</a>
             <a href="#slide-3" class="nav-item" onclick="showSlide(2)">Main Program Structure</a>
             <a href="#slide-4" class="nav-item" onclick="showSlide(3)">Complete Main Program</a>
             <a href="#slide-5" class="nav-item" onclick="showSlide(4)">Project Requirements</a>
@@ -750,7 +750,7 @@
                     <span class="progression-arrow">&rarr;</span>
                     <div class="progression-step">
                         <div class="step-label">Lessons 5-8</div>
-                        Manhattan &amp; Navigator classes
+                        compute_manhattan_path &amp; drive_path
                     </div>
                     <span class="progression-arrow">&rarr;</span>
                     <div class="progression-step current">
@@ -819,15 +819,16 @@
                 <h1>The Main Program Structure</h1>
             </div>
             <div class="content">
-                <p class="header-text">Three components working together</p>
+                <p class="header-text">Two functions, orchestrated by a loop</p>
 
                 <div class="illustration">
                     <svg width="780" height="180" viewBox="0 0 610 140">
-                        <!-- Manhattan box -->
+                        <!-- compute_manhattan_path box -->
                         <rect x="10" y="20" width="150" height="95" rx="12" fill="rgba(91, 143, 168, 0.1)" stroke="#5b8fa8" stroke-width="2.5" transform="rotate(-0.5 85 67)"/>
-                        <text x="85" y="48" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle" font-weight="700">Manhattan</text>
-                        <text x="85" y="70" font-family="Patrick Hand, cursive" font-size="14" fill="#636e72" text-anchor="middle">computes the path</text>
-                        <text x="85" y="95" font-family="Fira Code, monospace" font-size="12" fill="#2d3436" text-anchor="middle">compute_path()</text>
+                        <text x="85" y="45" font-family="Fira Code, monospace" font-size="12" fill="#5b8fa8" text-anchor="middle" font-weight="700">compute_manhattan</text>
+                        <text x="85" y="60" font-family="Fira Code, monospace" font-size="12" fill="#5b8fa8" text-anchor="middle" font-weight="700">_path()</text>
+                        <text x="85" y="82" font-family="Patrick Hand, cursive" font-size="14" fill="#636e72" text-anchor="middle">computes the path</text>
+                        <text x="85" y="100" font-family="Patrick Hand, cursive" font-size="12" fill="#636e72" text-anchor="middle">position, dest</text>
 
                         <!-- Arrow 1 -->
                         <path d="M165 67 C185 57, 195 57, 210 67" fill="none" stroke="#e8a87c" stroke-width="2.5" stroke-linecap="round"/>
@@ -846,32 +847,31 @@
                         <polygon points="452,62 460,67 452,72" fill="#e8a87c"/>
                         <text x="435" y="50" font-family="Caveat, cursive" font-size="14" fill="#e8a87c" font-weight="600">path</text>
 
-                        <!-- Navigator box -->
+                        <!-- drive_path box -->
                         <rect x="465" y="20" width="125" height="95" rx="12" fill="rgba(133, 200, 138, 0.1)" stroke="#85c88a" stroke-width="2.5" transform="rotate(0.5 522 67)"/>
-                        <text x="522" y="48" font-family="Caveat, cursive" font-size="20" fill="#85c88a" text-anchor="middle" font-weight="700">Navigator</text>
+                        <text x="522" y="48" font-family="Fira Code, monospace" font-size="15" fill="#85c88a" text-anchor="middle" font-weight="700">drive_path()</text>
                         <text x="522" y="70" font-family="Patrick Hand, cursive" font-size="14" fill="#636e72" text-anchor="middle">drives the path</text>
-                        <text x="522" y="88" font-family="Fira Code, monospace" font-size="11" fill="#2d3436" text-anchor="middle">line_track</text>
-                        <text x="522" y="105" font-family="Fira Code, monospace" font-size="11" fill="#2d3436" text-anchor="middle">heading: 0-3</text>
+                        <text x="522" y="88" font-family="Fira Code, monospace" font-size="11" fill="#2d3436" text-anchor="middle">returns position,</text>
+                        <text x="522" y="105" font-family="Fira Code, monospace" font-size="11" fill="#2d3436" text-anchor="middle">heading</text>
                     </svg>
                 </div>
 
                 <div class="code-block">
-<span style="color: #636e72;"># 1. Manhattan class -- computes the path</span>
-manhattan = Manhattan((0, 0))
+<span style="color: #636e72;"># 1. compute_manhattan_path() -- computes the path</span>
+<span style="color: #636e72;"># 2. drive_path() -- drives the path</span>
 
-<span style="color: #636e72;"># 2. Navigator class -- drives the path</span>
-navigator = Navigator((0, 0), 0)  <span style="color: #636e72;"># heading 0 = North</span>
+position = (0, 0)
+heading = 0  <span style="color: #636e72;"># heading North</span>
 
 <span style="color: #636e72;"># 3. Main program -- orchestrates everything</span>
 destinations = [(2, 3), (0, 1), (3, 3), (1, 0)]
 
 for dest in destinations:
-    path = manhattan.compute_path(dest)
-    navigator.drive_path(path)
-    manhattan.position = navigator.position</div>
+    path = compute_manhattan_path(position, dest)
+    position, heading = drive_path(path, position, heading)</div>
 
                 <div class="insight-box">
-                    The main program is simple because the classes do the work!
+                    The main program is simple because the functions do the work!
                 </div>
             </div>
             <div class="slide-navigation">
@@ -892,15 +892,12 @@ for dest in destinations:
                         <div class="code-block compact" style="font-size: 14px;">
 from XRPLib.board import Board
 
-<span style="color: #636e72;"># Import your classes (or define above)</span>
-
 HEADING_NAMES = ["N", "E", "S", "W"]
 board = Board.get_default_board()
 
 <span style="color: #636e72;"># Setup</span>
-start = (0, 0)
-manhattan = Manhattan(start)
-navigator = Navigator(start, 0)  <span style="color: #636e72;"># 0 = North</span>
+position = (0, 0)
+heading = 0  <span style="color: #636e72;"># heading North</span>
 
 <span style="color: #636e72;"># Destinations to visit</span>
 destinations = [(2, 3), (0, 1),
@@ -909,21 +906,20 @@ destinations = [(2, 3), (0, 1),
 board.wait_for_button()
 print("Starting navigation!")
 
-for i in range(len(destinations)):
-    dest = destinations[i]
-    print("Leg", i + 1, "- Going to", dest)
+for dest in destinations:
+    print("--- Navigating to", dest, "---")
 
     <span style="color: #636e72;"># Compute the path</span>
-    path = manhattan.compute_path(dest)
+    path = compute_manhattan_path(position, dest)
     print("  Path:", path)
 
-    <span style="color: #636e72;"># Drive the path</span>
-    navigator.drive_path(path)
+    <span style="color: #636e72;"># Drive the path, capturing</span>
+    <span style="color: #636e72;"># the updated position/heading</span>
+    position, heading = drive_path(
+        path, position, heading)
 
-    <span style="color: #636e72;"># Update Manhattan's position</span>
-    manhattan.position = navigator.position
-    heading = HEADING_NAMES[navigator.heading]
-    print("  Arrived at", dest, "facing", heading)
+    print("  Arrived at", position)
+    print("  Heading:", HEADING_NAMES[heading])
 
 print("All destinations reached!")</div>
                     </div>
@@ -933,7 +929,7 @@ print("All destinations reached!")</div>
                                 <!-- Flow diagram -->
                                 <!-- Setup box -->
                                 <rect x="55" y="5" width="170" height="40" rx="10" fill="rgba(91, 143, 168, 0.1)" stroke="#5b8fa8" stroke-width="2"/>
-                                <text x="140" y="30" font-family="Caveat, cursive" font-size="16" fill="#5b8fa8" text-anchor="middle" font-weight="600">Setup objects</text>
+                                <text x="140" y="30" font-family="Caveat, cursive" font-size="16" fill="#5b8fa8" text-anchor="middle" font-weight="600">Setup position/heading</text>
 
                                 <!-- Arrow -->
                                 <line x1="140" y1="45" x2="140" y2="62" stroke="#b8c5d0" stroke-width="2"/>
@@ -953,19 +949,19 @@ print("All destinations reached!")</div>
 
                                 <!-- Inner steps -->
                                 <rect x="35" y="155" width="210" height="28" rx="8" fill="rgba(91, 143, 168, 0.08)" stroke="#5b8fa8" stroke-width="1.5"/>
-                                <text x="140" y="174" font-family="Fira Code, monospace" font-size="11" fill="#2d3436" text-anchor="middle">compute_path(dest)</text>
+                                <text x="140" y="174" font-family="Fira Code, monospace" font-size="10" fill="#2d3436" text-anchor="middle">compute_manhattan_path(pos, dest)</text>
 
                                 <line x1="140" y1="183" x2="140" y2="193" stroke="#b8c5d0" stroke-width="1.5"/>
                                 <polygon points="136,191 140,198 144,191" fill="#b8c5d0"/>
 
                                 <rect x="35" y="198" width="210" height="28" rx="8" fill="rgba(133, 200, 138, 0.08)" stroke="#85c88a" stroke-width="1.5"/>
-                                <text x="140" y="217" font-family="Fira Code, monospace" font-size="11" fill="#2d3436" text-anchor="middle">drive_path(path)</text>
+                                <text x="140" y="217" font-family="Fira Code, monospace" font-size="10" fill="#2d3436" text-anchor="middle">drive_path(path, pos, heading)</text>
 
                                 <line x1="140" y1="226" x2="140" y2="236" stroke="#b8c5d0" stroke-width="1.5"/>
                                 <polygon points="136,234 140,241 144,234" fill="#b8c5d0"/>
 
                                 <rect x="35" y="240" width="210" height="28" rx="8" fill="rgba(232, 168, 124, 0.06)" stroke="#e8a87c" stroke-width="1"/>
-                                <text x="140" y="259" font-family="Fira Code, monospace" font-size="10" fill="#2d3436" text-anchor="middle">manhattan.pos = navigator.pos</text>
+                                <text x="140" y="259" font-family="Fira Code, monospace" font-size="10" fill="#2d3436" text-anchor="middle">pos, heading = drive_path(...)</text>
 
                                 <!-- Arrow out of loop -->
                                 <line x1="140" y1="278" x2="140" y2="293" stroke="#b8c5d0" stroke-width="2"/>
@@ -997,11 +993,11 @@ print("All destinations reached!")</div>
                 <div class="sketch-box">
                     <div class="activity-step">
                         <span class="step-number">1</span>
-                        <span class="step-text">Use the <span class="sketch-highlight">Manhattan class</span> to compute paths</span>
+                        <span class="step-text">Use <span class="sketch-highlight">compute_manhattan_path()</span> to compute paths</span>
                     </div>
                     <div class="activity-step">
                         <span class="step-number">2</span>
-                        <span class="step-text">Use the <span class="sketch-highlight">Navigator class</span> to drive paths</span>
+                        <span class="step-text">Use <span class="sketch-highlight">drive_path()</span> to drive paths</span>
                     </div>
                     <div class="activity-step">
                         <span class="step-number">3</span>
@@ -1033,23 +1029,23 @@ print("All destinations reached!")</div>
                     </thead>
                     <tbody>
                         <tr>
-                            <td style="text-align: left; padding-left: 24px;">Manhattan class works correctly</td>
-                            <td>15</td>
-                        </tr>
-                        <tr>
-                            <td style="text-align: left; padding-left: 24px;">Navigator class turns and drives correctly</td>
-                            <td>15</td>
-                        </tr>
-                        <tr>
-                            <td style="text-align: left; padding-left: 24px;">Main program visits 4+ destinations</td>
+                            <td style="text-align: left; padding-left: 24px;">compute_manhattan_path() works correctly</td>
                             <td>10</td>
                         </tr>
                         <tr>
-                            <td style="text-align: left; padding-left: 24px;">Code is organized and readable</td>
-                            <td>5</td>
+                            <td style="text-align: left; padding-left: 24px;">Driving functions turn and drive correctly</td>
+                            <td>15</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: left; padding-left: 24px;">Main program visits 4+ destinations, reassigns position/heading</td>
+                            <td>10</td>
                         </tr>
                         <tr>
                             <td style="text-align: left; padding-left: 24px;">Robot completes the course</td>
+                            <td>10</td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: left; padding-left: 24px;">Planning &amp; documentation</td>
                             <td>5</td>
                         </tr>
                         <tr style="font-weight: bold;">
@@ -1077,7 +1073,7 @@ print("All destinations reached!")</div>
                         <!-- Step 1 -->
                         <rect x="10" y="15" width="140" height="55" rx="10" fill="rgba(91, 143, 168, 0.1)" stroke="#5b8fa8" stroke-width="2"/>
                         <text x="80" y="38" font-family="Caveat, cursive" font-size="16" fill="#5b8fa8" text-anchor="middle" font-weight="700">Step 1</text>
-                        <text x="80" y="58" font-family="Patrick Hand, cursive" font-size="13" fill="#636e72" text-anchor="middle">Manhattan alone</text>
+                        <text x="80" y="58" font-family="Patrick Hand, cursive" font-size="13" fill="#636e72" text-anchor="middle">Path function alone</text>
                         <!-- Arrow -->
                         <path d="M155 42 C170 38, 178 38, 188 42" fill="none" stroke="#b8c5d0" stroke-width="2"/>
                         <polygon points="185,38 193,42 185,46" fill="#b8c5d0"/>
@@ -1095,17 +1091,17 @@ print("All destinations reached!")</div>
                     </svg>
                 </div>
 
-                <p class="header-text">Step 1: Test Manhattan class alone (no robot)</p>
+                <p class="header-text">Step 1: Test compute_manhattan_path() alone (no robot)</p>
                 <div class="code-block compact" style="font-size: 14px; padding: 14px 18px; margin: 10px 0;">
-manhattan = Manhattan((0, 0))
+position = (0, 0)
 for dest in [(2,3), (0,1), (3,3), (1,0)]:
-    path = manhattan.compute_path(dest)
+    path = compute_manhattan_path(position, dest)
     print(dest, "->", path)
-    manhattan.position = dest</div>
+    position = dest</div>
 
                 <div class="spacer"></div>
 
-                <p class="header-text">Step 2: Test Navigator with one short path</p>
+                <p class="header-text">Step 2: Test drive_path() with one short path</p>
                 <div class="sketch-box" style="padding: 14px;">
                     <p class="bullet">Start with (0, 0) to (1, 0) -- one step</p>
                     <p class="bullet">Then (0, 0) to (2, 0) -- straight line</p>
@@ -1138,27 +1134,27 @@ for dest in [(2,3), (0,1), (3,3), (1,0)]:
                         <div class="question-box">
                             <p class="body-text" style="margin-left: 8px; font-size: 20px;"><strong>Issue 1: Robot turns wrong direction</strong></p>
                             <p class="bullet" style="font-size: 18px;">Does physical starting heading match the code?</p>
-                            <p class="bullet" style="font-size: 18px;">Is <code style="font-family: 'Fira Code', monospace;">turn_to()</code> updating <code style="font-family: 'Fira Code', monospace;">self.heading</code>?</p>
+                            <p class="bullet" style="font-size: 18px;">Is <code style="font-family: 'Fira Code', monospace;">turn_to()</code> returning <code style="font-family: 'Fira Code', monospace;">heading</code>?</p>
                             <p class="bullet" style="font-size: 18px;">Print heading before and after each turn</p>
                         </div>
 
                         <div class="question-box">
-                            <p class="body-text" style="margin-left: 8px; font-size: 20px;"><strong>Issue 2: Robot overshoots intersections</strong></p>
-                            <p class="bullet" style="font-size: 18px;">Is <code style="font-family: 'Fira Code', monospace;">track_until_cross()</code> detecting the cross reliably?</p>
-                            <p class="bullet" style="font-size: 18px;">Check line-following parameters and <code style="font-family: 'Fira Code', monospace;">straight(8)</code> clearing distance</p>
+                            <p class="body-text" style="margin-left: 8px; font-size: 20px;"><strong>Issue 2: Robot drifts off the line</strong></p>
+                            <p class="bullet" style="font-size: 18px;">Is the robot starting centered on a grid line?</p>
+                            <p class="bullet" style="font-size: 18px;">Make sure <code style="font-family: 'Fira Code', monospace;">clear_intersection()</code> clears the intersection fully</p>
                         </div>
                     </div>
                     <div class="col">
                         <div class="question-box">
                             <p class="body-text" style="margin-left: 8px; font-size: 20px;"><strong>Issue 3: Position not updating between legs</strong></p>
-                            <p class="bullet" style="font-size: 18px;">Check: <code style="font-family: 'Fira Code', monospace;">manhattan.position = navigator.position</code></p>
+                            <p class="bullet" style="font-size: 18px;">Check: <code style="font-family: 'Fira Code', monospace;">position, heading = drive_path(path, position, heading)</code></p>
                             <p class="bullet" style="font-size: 18px;">Without this, ALL paths start from (0, 0)!</p>
                         </div>
 
                         <div class="question-box">
                             <p class="body-text" style="margin-left: 8px; font-size: 20px;"><strong>Issue 4: Path correct on screen, wrong on robot</strong></p>
                             <p class="bullet" style="font-size: 18px;">This is usually a turning or distance issue</p>
-                            <p class="bullet" style="font-size: 18px;">Test Manhattan output first, then debug Navigator separately</p>
+                            <p class="bullet" style="font-size: 18px;">Test compute_manhattan_path() output first, then debug drive_path() separately</p>
                         </div>
                     </div>
                 </div>
@@ -1169,14 +1165,14 @@ for dest in [(2,3), (0,1), (3,3), (1,0)]:
                     <svg width="600" height="110" viewBox="0 0 460 85">
                         <!-- Debug flow -->
                         <rect x="5" y="15" width="120" height="50" rx="10" fill="rgba(91, 143, 168, 0.1)" stroke="#5b8fa8" stroke-width="2"/>
-                        <text x="65" y="35" font-family="Caveat, cursive" font-size="14" fill="#5b8fa8" text-anchor="middle" font-weight="600">Test Manhattan</text>
+                        <text x="65" y="35" font-family="Caveat, cursive" font-size="14" fill="#5b8fa8" text-anchor="middle" font-weight="600">Test path function</text>
                         <text x="65" y="52" font-family="Caveat, cursive" font-size="14" fill="#5b8fa8" text-anchor="middle" font-weight="600">(print paths)</text>
 
                         <path d="M130 40 C145 36, 150 36, 158 40" fill="none" stroke="#e8a87c" stroke-width="2"/>
                         <polygon points="155,36 163,40 155,44" fill="#e8a87c"/>
 
                         <rect x="165" y="15" width="120" height="50" rx="10" fill="rgba(232, 168, 124, 0.1)" stroke="#e8a87c" stroke-width="2"/>
-                        <text x="225" y="35" font-family="Caveat, cursive" font-size="14" fill="#e8a87c" text-anchor="middle" font-weight="600">Test Navigator</text>
+                        <text x="225" y="35" font-family="Caveat, cursive" font-size="14" fill="#e8a87c" text-anchor="middle" font-weight="600">Test drive_path</text>
                         <text x="225" y="52" font-family="Caveat, cursive" font-size="14" fill="#e8a87c" text-anchor="middle" font-weight="600">(one leg)</text>
 
                         <path d="M290 40 C305 36, 310 36, 318 40" fill="none" stroke="#e8a87c" stroke-width="2"/>
@@ -1189,7 +1185,7 @@ for dest in [(2,3), (0,1), (3,3), (1,0)]:
                 </div>
 
                 <div class="answer-box">
-                    <p class="body-text" style="margin-left: 8px;"><strong>Key debugging strategy:</strong> Always separate algorithm issues from physical robot issues. Test Manhattan on screen first!</p>
+                    <p class="body-text" style="margin-left: 8px;"><strong>Key debugging strategy:</strong> Always separate algorithm issues from physical robot issues. Test compute_manhattan_path() on screen first!</p>
                 </div>
             </div>
             <div class="slide-navigation">
@@ -1288,7 +1284,7 @@ for dest in [(2,3), (0,1), (3,3), (1,0)]:
                 <div class="sketch-box">
                     <div class="activity-step">
                         <span class="step-number">1</span>
-                        <span class="step-text">Combine your Manhattan and Navigator classes into one file</span>
+                        <span class="step-text">Combine compute_manhattan_path() and the driving functions into one file</span>
                     </div>
                     <div class="activity-step">
                         <span class="step-number">2</span>
@@ -1296,7 +1292,7 @@ for dest in [(2,3), (0,1), (3,3), (1,0)]:
                     </div>
                     <div class="activity-step">
                         <span class="step-number">3</span>
-                        <span class="step-text">Test Manhattan output on screen first (Step 1 from Slide 6)</span>
+                        <span class="step-text">Test path output on screen first (Step 1 from Slide 6)</span>
                     </div>
                     <div class="activity-step">
                         <span class="step-number">4</span>
@@ -1323,7 +1319,7 @@ for dest in [(2,3), (0,1), (3,3), (1,0)]:
                 <div class="sketch-box" style="border-color: #85c88a; background-color: rgba(133, 200, 138, 0.04);">
                     <div class="checkpoint">
                         <span class="check-icon"></span>
-                        <span class="step-text">Does Manhattan produce correct paths for all legs?</span>
+                        <span class="step-text">Does compute_manhattan_path() produce correct paths for all legs?</span>
                     </div>
                     <div class="checkpoint">
                         <span class="check-icon"></span>
@@ -1356,7 +1352,7 @@ for dest in [(2,3), (0,1), (3,3), (1,0)]:
                             <p class="bullet" style="font-size: 19px;">Tuples for positions, lists for paths</p>
                             <p class="bullet" style="font-size: 19px;">Manhattan algorithm for pathfinding</p>
                             <p class="bullet" style="font-size: 19px;">Testing without hardware</p>
-                            <p class="bullet" style="font-size: 19px;">Navigator class with numeric headings and LineTrack</p>
+                            <p class="bullet" style="font-size: 19px;">drive_path() with numeric headings and the driving toolkit</p>
                             <p class="bullet" style="font-size: 19px;">Separation of concerns: algorithm vs. action</p>
                         </div>
                     </div>
@@ -1364,22 +1360,25 @@ for dest in [(2,3), (0,1), (3,3), (1,0)]:
                         <p class="header-text">Looking ahead to Module 5</p>
                         <div class="sketch-box" style="border-color: #e8a87c; background-color: rgba(232, 168, 124, 0.04);">
                             <p class="bullet" style="font-size: 19px;">What if an intersection is <span class="sketch-highlight">BLOCKED</span>?</p>
-                            <p class="bullet" style="font-size: 19px;">Manhattan can't handle obstacles</p>
+                            <p class="bullet" style="font-size: 19px;">compute_manhattan_path() can't handle obstacles</p>
                             <p class="bullet" style="font-size: 19px;">Module 5: <strong>Dijkstra's algorithm</strong> -- finds the BEST path around obstacles</p>
-                            <p class="bullet" style="font-size: 19px;">Your Navigator class stays the same -- only the pathfinding changes!</p>
+                            <p class="bullet" style="font-size: 19px;">Your drive_path() function stays the same -- only the pathfinding changes!</p>
                         </div>
                     </div>
                 </div>
+
+                <div class="insight-box" style="margin-top: 8px; font-size: 20px; border-color: #e8a87c; background-color: rgba(232, 168, 124, 0.08);">Optional Extension: courses that also cover classes can see this same final project built on Manhattan/Navigator objects &mdash; see the lesson document.</div>
 
                 <div class="spacer"></div>
 
                 <div class="illustration">
                     <svg width="720" height="175" viewBox="0 0 545 135">
                         <!-- Separation of concerns diagram -->
-                        <!-- Manhattan box (crossed out lightly) -->
+                        <!-- compute_manhattan_path box (crossed out lightly) -->
                         <rect x="20" y="20" width="140" height="70" rx="12" fill="rgba(91, 143, 168, 0.08)" stroke="#5b8fa8" stroke-width="2" stroke-dasharray="5,3"/>
-                        <text x="90" y="50" font-family="Caveat, cursive" font-size="17" fill="#5b8fa8" text-anchor="middle" font-weight="600">Manhattan</text>
-                        <text x="90" y="72" font-family="Patrick Hand, cursive" font-size="13" fill="#636e72" text-anchor="middle">swap this out!</text>
+                        <text x="90" y="45" font-family="Fira Code, monospace" font-size="12" fill="#5b8fa8" text-anchor="middle" font-weight="600">compute_manhattan</text>
+                        <text x="90" y="60" font-family="Fira Code, monospace" font-size="12" fill="#5b8fa8" text-anchor="middle" font-weight="600">_path()</text>
+                        <text x="90" y="80" font-family="Patrick Hand, cursive" font-size="13" fill="#636e72" text-anchor="middle">swap this out!</text>
                         <!-- X mark -->
                         <line x1="30" y1="25" x2="150" y2="85" stroke="#e85d5d" stroke-width="2" opacity="0.4"/>
                         <line x1="150" y1="25" x2="30" y2="85" stroke="#e85d5d" stroke-width="2" opacity="0.4"/>
@@ -1397,11 +1396,11 @@ for dest in [(2,3), (0,1), (3,3), (1,0)]:
                         <!-- Plus sign -->
                         <text x="375" y="62" font-family="Caveat, cursive" font-size="30" fill="#636e72" text-anchor="middle">+</text>
 
-                        <!-- Navigator box (stays the same) -->
+                        <!-- drive_path box (stays the same) -->
                         <rect x="395" y="15" width="130" height="80" rx="12" fill="rgba(91, 143, 168, 0.1)" stroke="#5b8fa8" stroke-width="2"/>
-                        <text x="460" y="40" font-family="Caveat, cursive" font-size="17" fill="#5b8fa8" text-anchor="middle" font-weight="600">Navigator</text>
+                        <text x="460" y="40" font-family="Fira Code, monospace" font-size="15" fill="#5b8fa8" text-anchor="middle" font-weight="600">drive_path()</text>
                         <text x="460" y="57" font-family="Patrick Hand, cursive" font-size="13" fill="#636e72" text-anchor="middle">stays the same!</text>
-                        <text x="460" y="76" font-family="Fira Code, monospace" font-size="10" fill="#2d3436" text-anchor="middle">LineTrack + heading 0-3</text>
+                        <text x="460" y="76" font-family="Fira Code, monospace" font-size="10" fill="#2d3436" text-anchor="middle">toolkit + heading 0-3</text>
 
                         <!-- Bottom label -->
                         <text x="290" y="120" font-family="Caveat, cursive" font-size="16" fill="#e8a87c" text-anchor="middle" font-weight="600">Separation of concerns makes swapping easy</text>
@@ -1409,7 +1408,7 @@ for dest in [(2,3), (0,1), (3,3), (1,0)]:
                 </div>
 
                 <div class="insight-box">
-                    You built a modular system. Swapping one component (Manhattan to Dijkstra) is easy because of separation of concerns.
+                    You built a modular system. Swapping one component (compute_manhattan_path to compute_dijkstra_path) is easy because of separation of concerns.
                 </div>
             </div>
             <div class="slide-navigation">

@@ -7,22 +7,18 @@
 from XRPLib.reflectance import Reflectance
 from XRPLib.differential_drive import DifferentialDrive
 from XRPLib.board import Board
-import time
 
 
-# ===== LINESENSOR CLASS =====
-# (Copy your working LineSensor class from Lesson 8 here)
+# ===== SENSOR TOOLKIT =====
+# (Copy your working sensor toolkit from Lesson 8 here)
 
 
-# ===== LINETRACK CLASS =====
-# (Copy your working LineTrack class from Lesson 9 here)
+# ===== DRIVING TOOLKIT =====
+# (Copy your working driving toolkit from Lesson 9 here)
 
 
 # ===== MAIN PROGRAM =====
 board = Board.get_default_board()
-
-# TODO: Create a LineTrack object
-# tracker = ???
 
 board.wait_for_button()
 print("Module 2 Final Project - Starting!")
@@ -33,5 +29,5 @@ print("Module 2 Final Project - Starting!")
 #   3. Print that cross was detected
 #   4. Turn around (how will you reverse direction?)
 
-# TODO: Stop and print completion message
+# TODO: Print completion message
 print("Complete! 4 reversals done.")

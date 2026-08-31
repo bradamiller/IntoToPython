@@ -7,56 +7,49 @@
 from XRPLib.reflectance import Reflectance
 from XRPLib.differential_drive import DifferentialDrive
 from XRPLib.board import Board
-import time
+
+# ===== SENSOR TOOLKIT (from Module 2 Lesson 8) =====
+reflectance = Reflectance.get_default_reflectance()
+THRESHOLD = 0.5
+
+def get_left():
+    return reflectance.get_left()
+
+def get_right():
+    return reflectance.get_right()
+
+def get_error():
+    return get_left() - get_right()
+
+def is_at_cross():
+    return get_left() > THRESHOLD and get_right() > THRESHOLD
+
+def is_off_line():
+    return get_left() < THRESHOLD and get_right() < THRESHOLD
 
 
-# ===== LINESENSOR CLASS =====
-# (Copy your working LineSensor class from Module 2 here)
-class LineSensor:
-    def __init__(self):
-        self.reflectance = Reflectance.get_default_reflectance()
-        self.threshold = 0.5
+# ===== DRIVING TOOLKIT (from Module 2 Lesson 9) =====
+drivetrain = DifferentialDrive.get_default_differential_drive()
+BASE_EFFORT = 0.4
+KP = 0.5
 
-    def get_left(self):
-        return self.reflectance.get_left()
+def clear_intersection():
+    drivetrain.straight(8, 0.5)
 
-    def get_right(self):
-        return self.reflectance.get_right()
+# TODO: Copy your track_until_cross() function here
 
-    def get_error(self):
-        return self.get_left() - self.get_right()
+# TODO: Copy your turn_right() function here
 
-    def is_at_cross(self):
-        return self.get_left() > self.threshold and self.get_right() > self.threshold
-
-    def is_off_line(self):
-        return self.get_left() < self.threshold and self.get_right() < self.threshold
-
-
-# ===== LINETRACK CLASS =====
-# (Copy your working LineTrack class from Module 2 here)
-class LineTrack:
-    def __init__(self):
-        self.sensor = LineSensor()
-        self.drivetrain = DifferentialDrive.get_default_differential_drive()
-        self.base_effort = 0.4
-        self.Kp = 0.5
-
-    # TODO: Copy your track_until_cross() method here
-
-    # TODO: Copy your turn_right() method here
-
-    # TODO: Copy your turn_left() method here
+# TODO: Copy your turn_left() function here
 
 
 # ===== MAIN PROGRAM =====
 board = Board.get_default_board()
-tracker = LineTrack()
 
 board.wait_for_button()
 
 # TODO: Drive to the first intersection
-# Use tracker.track_until_cross()
+# Use track_until_cross()
 print("Driving to first intersection...")
 
 # TODO: Print a message when you arrive

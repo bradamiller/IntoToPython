@@ -1,24 +1,23 @@
-# Lesson 5: Implementing the Manhattan Class
+# Lesson 5: A Reusable Manhattan Function
 
 ## Overview
-Students convert the `compute_path` function they wrote in Lesson 4 into a `Manhattan` class. The focus of this lesson is on understanding why classes are useful and how to mechanically transform a standalone function into a method inside a class. Students learn that `__init__` stores the robot's starting position, and `compute_path` becomes a method that uses `self.position` instead of accepting a start parameter. The algorithm itself -- four while loops that build a path list -- is already familiar from Lesson 4. By the end of the lesson, students have a fully functional `Manhattan` class they can test with print statements.
+Students take the `compute_path` function they wrote in Lesson 4 and turn it into a properly named, documented, reusable function: `compute_manhattan_path(position, destination)`. The algorithm itself -- four while loops that build a path list -- does not change at all; this lesson is about giving it a name specific enough to survive contact with Module 5, where a second pathfinding algorithm (Dijkstra) will need its own, differently-named function. Students test the renamed function against several start/destination pairs and confirm the output still matches their Lesson 4 hand traces.
+
+This lesson stands on its own -- classes are never required. An **optional extension** at the end of this file shows the same function wrapped in a `Manhattan` class, for courses that also cover OOP.
 
 ## Learning Objectives
 By the end of this lesson, students will be able to:
-- Explain why wrapping a function in a class is useful (bundles data with behavior, reusable object)
-- Design a class with `__init__` that stores position as a tuple
-- Convert a standalone function into a method by adding `self` and using `self.position`
-- Write a method that accepts a parameter (destination) and returns a result (path)
-- Use tuple unpacking to extract row and column values
-- Test a class by creating an instance and calling its methods with print statements
+- Explain why a specific function name matters once a codebase has more than one algorithm
+- Add a docstring to a function explaining its parameters and return value
+- Rename a function and its parameters without changing its behavior
+- Test a function against multiple start/destination pairs, including edge cases
+- Confirm function output matches hand-traced results from Lesson 4
 
 ## Key Concepts
-- **Why Classes?**: A class bundles data (the robot's position) with behavior (computing a path). Instead of passing the start position every time you call the function, the object remembers it.
-- **From Function to Method**: The function's `start` parameter disappears -- the class stores it as `self.position` in `__init__`, and the method reads it from there.
-- **The `self` Prefix**: Inside a method, `self.position` accesses the data stored in `__init__`. Local variables like `current_row` do NOT need `self` because they are temporary.
-- **Tuple Unpacking**: `current_row, current_col = self.position` extracts both values in one line -- cleaner than indexing with `[0]` and `[1]`.
-- **Building a List with append()**: Starting with an empty list `[]` and adding each new position one at a time inside the while loops.
-- **Return Value**: The `compute_path` method returns the completed path list to the caller.
+- **Naming for the future**: `compute_path` is a fine name when there's only one algorithm. Once Module 5 introduces Dijkstra, code that calls "the Manhattan one" needs a name that says so -- `compute_manhattan_path`.
+- **Docstring**: A string literal right after `def` that documents what a function does, its parameters, and its return value. Shows up in editor tooltips and `help()`.
+- **Parameter naming**: `compute_manhattan_path(position, destination)` -- naming the first parameter `position` (not `start`) matches how it will be used later: the robot's *current* position, not just a one-time starting point.
+- **Regression testing**: Confirming that renaming/refactoring a function didn't change its behavior, by re-running the same test cases from before the change.
 
 ## Materials Required
 - Computer with VS Code and Python installed
@@ -33,186 +32,106 @@ By the end of this lesson, students will be able to:
 **For 50-min classes:** 8 min
 **For 3-hour sessions:** 10-12 min
 
-1. **Hook: The Problem with Functions**
+1. **Hook: Which Algorithm Is This?**
    - Display (or have students open) their `compute_path` function from Lesson 4
-   - Ask students to write code that computes three paths from the same starting position:
-     ```python
-     path1 = compute_path((0, 0), (2, 3))
-     path2 = compute_path((0, 0), (1, 1))
-     path3 = compute_path((0, 0), (3, 2))
-     ```
-   - Point out the repetition: "We typed `(0, 0)` three times. What if the robot starts at a different position? We would have to change it in every single call."
-   - Now show the class version:
-     ```python
-     nav = Manhattan((0, 0))
-     path1 = nav.compute_path((2, 3))
-     path2 = nav.compute_path((1, 1))
-     path3 = nav.compute_path((3, 2))
-     ```
-   - Ask: "Which version is easier to read? Which is easier to change if the start position changes?"
-   - Key idea: A class lets us store the starting position once and reuse it across multiple method calls.
+   - Ask: "In Module 5, you're going to write a second pathfinding function called Dijkstra's algorithm. If both functions are named `compute_path`, what happens when you try to have both in the same file?"
+   - Answer: "The second `def compute_path(...)` would silently replace the first one -- Python doesn't warn you. You'd lose access to the Manhattan version entirely."
+   - Reveal: "The fix is simple -- give each algorithm a name that says which one it is: `compute_manhattan_path` and, later, `compute_dijkstra_path`."
 
 2. **What Changes, What Stays the Same**:
    - Write on the board:
      ```
-     Function version:  compute_path(start, destination)
-     Class version:     nav.compute_path(destination)
+     Lesson 4:  compute_path(start, end)
+     Lesson 5:  compute_manhattan_path(position, destination)
      ```
-   - Ask: "Where did the `start` parameter go?" (It is stored inside the object when we create it.)
-   - The algorithm inside `compute_path` stays exactly the same. The only changes are:
-     - `start` becomes `self.position`
-     - The function moves inside a class
-     - We add `self` as the first parameter
+   - Ask: "What's actually different here?" (Just the name, and slightly clearer parameter names. The four while loops inside are identical.)
+   - This is a deliberate, low-risk kind of change: a **rename**, not a rewrite. The algorithm students already tested in Lesson 4 doesn't need to be re-derived.
 
-3. **Preview the Class Structure**:
-   - Show the skeleton on the board:
+3. **Preview the Goal**:
+   - Show the finished signature with a docstring:
      ```python
-     class Manhattan:
-         def __init__(self, start):
-             # Store the starting position
-             pass
+     def compute_manhattan_path(position, destination):
+         """Compute a Manhattan path from position to destination.
 
-         def compute_path(self, destination):
-             # Same algorithm as Lesson 4, but uses self.position
-             pass
+         position:    a (row, col) tuple -- where the robot is now
+         destination: a (row, col) tuple -- where it needs to go
+
+         Returns a list of (row, col) tuples the robot should move to,
+         not including position itself.
+         """
      ```
-   - Explain: The class is called `Manhattan` (CamelCase, like `LineSensor` from Module 2). It takes a starting position when created and has a method to compute a path to any destination.
+   - Ask: "Why might a docstring matter more now than it did in Lesson 4?" (Once there are two pathfinding functions in the same program, a reader needs to be able to tell them apart at a glance -- the docstring plus the name both help.)
 
-### Guided Practice: Converting the Function to a Class (20 minutes)
-**For 50-min classes:** 22 min
-**For 3-hour sessions:** 30 min
+### Guided Practice: Renaming and Documenting (15 minutes)
+**For 50-min classes:** 15 min
+**For 3-hour sessions:** 20 min
 
-1. **Step 1: The `__init__` Method**
-   - Start with storing the position:
+1. **Step 1: Copy and Rename**
+   - Start from the working Lesson 4 function and rename it:
      ```python
-     class Manhattan:
-         def __init__(self, start):
-             self.position = start
-     ```
-   - Explain each part:
-     - `start` is a tuple like `(0, 0)` -- the robot's starting grid position
-     - `self.position = start` saves it so other methods can use it
-   - Test it immediately:
-     ```python
-     nav = Manhattan((0, 0))
-     print(nav.position)       # Output: (0, 0)
-     ```
-   - Ask: "Where does `(0, 0)` end up?" (It goes into the `start` parameter, then gets stored as `self.position`.)
-
-2. **Step 2: Starting compute_path -- Setup Variables**
-   - Begin the method by extracting the values we need:
-     ```python
-     def compute_path(self, destination):
+     def compute_manhattan_path(position, destination):
          path = []
-         current_row, current_col = self.position
+         current_row, current_col = position
          dest_row, dest_col = destination
-     ```
-   - Walk through each line:
-     - `path = []` -- Start with an empty path list. We will add each position the robot moves TO.
-     - `current_row, current_col = self.position` -- Tuple unpacking! If `self.position` is `(0, 0)`, then `current_row` gets `0` and `current_col` gets `0`.
-     - `dest_row, dest_col = destination` -- Same unpacking for the destination.
-   - Compare to the Lesson 4 function: "In the function, you wrote `current_row, current_col = start`. Now `start` is replaced by `self.position`. That is the only difference."
-   - Ask: "Why do we create separate variables instead of modifying `self.position` directly?" (Because we do not want to change our stored position -- we just want to calculate a path.)
 
-3. **Step 3: The Four While Loops**
-   - Add the while loops -- students should recognize these from Lesson 4:
-     ```python
          # Move south (rows increase)
          while current_row < dest_row:
              current_row = current_row + 1
              path.append((current_row, current_col))
-
          # Move north (rows decrease)
          while current_row > dest_row:
              current_row = current_row - 1
              path.append((current_row, current_col))
-
          # Move east (columns increase)
          while current_col < dest_col:
              current_col = current_col + 1
              path.append((current_row, current_col))
-
          # Move west (columns decrease)
          while current_col > dest_col:
              current_col = current_col - 1
              path.append((current_row, current_col))
-     ```
-   - Ask: "Do you recognize these loops?" (They are the same four while loops from the Lesson 4 function -- nothing changed.)
-   - Briefly trace through (0,0) to (2,3) to confirm:
-     - South loop: current_row goes 0 -> 1 -> 2, appending (1,0) and (2,0)
-     - North loop: skipped (current_row is not greater than dest_row)
-     - East loop: current_col goes 0 -> 1 -> 2 -> 3, appending (2,1), (2,2), (2,3)
-     - West loop: skipped
-   - Note the tuple syntax: `(current_row, current_col)` creates a new tuple. The parentheses inside `append()` are the tuple, not extra function parentheses.
 
-4. **Step 4: Return the Path**
-   - Add the return statement:
-     ```python
          return path
      ```
-   - Explain: The caller gets back the list of positions the robot visits. The starting position is NOT in the path -- only the positions the robot moves to.
+   - Point out: "Every line inside the function is identical to Lesson 4 -- we changed the `def` line and the two variable names it unpacks from (`position`/`destination` instead of `start`/`end`)."
 
-5. **Step 5: The Complete Class**
-   - Show the entire class together:
+2. **Step 2: Add the Docstring**
+   - Insert the docstring as the first line inside the function:
      ```python
-     class Manhattan:
-         def __init__(self, start):
-             self.position = start
+     def compute_manhattan_path(position, destination):
+         """Compute a Manhattan path from position to destination.
 
-         def compute_path(self, destination):
-             path = []
-             current_row, current_col = self.position
-             dest_row, dest_col = destination
+         position:    a (row, col) tuple -- where the robot is now
+         destination: a (row, col) tuple -- where it needs to go
 
-             while current_row < dest_row:
-                 current_row = current_row + 1
-                 path.append((current_row, current_col))
-             while current_row > dest_row:
-                 current_row = current_row - 1
-                 path.append((current_row, current_col))
-             while current_col < dest_col:
-                 current_col = current_col + 1
-                 path.append((current_row, current_col))
-             while current_col > dest_col:
-                 current_col = current_col - 1
-                 path.append((current_row, current_col))
-
-             return path
+         Returns a list of (row, col) tuples the robot should move to,
+         not including position itself.
+         """
+         path = []
+         ...
      ```
-   - Ask: "What is different from the Lesson 4 function?" Students should identify: (1) it is inside a class, (2) `self` is the first parameter, (3) `start` was replaced by `self.position`.
+   - Show `help(compute_manhattan_path)` in the Python shell, or hovering over the function name in VS Code, to see the docstring appear.
 
-6. **Step 6: Test with Print Statements**
-   - Add test code below the class:
+3. **Step 3: Re-run the Lesson 4 Tests**
+   - The whole point of a rename is that behavior doesn't change. Prove it:
      ```python
-     nav = Manhattan((0, 0))
-     path = nav.compute_path((2, 3))
-     print("Path from (0,0) to (2,3):")
-     print(path)
-     print("Steps:", len(path))
+     print("===== Regression Test =====")
+     path = compute_manhattan_path((0, 0), (2, 3))
+     print("(0,0) to (2,3):", path)
+
+     path = compute_manhattan_path((3, 3), (1, 0))
+     print("(3,3) to (1,0):", path)
      ```
-   - Run it. Expected output:
-     ```
-     Path from (0,0) to (2,3):
-     [(1, 0), (2, 0), (2, 1), (2, 2), (2, 3)]
-     Steps: 5
-     ```
-   - Compare to the hand-traced result from Lesson 4. They should match!
-   - Test a second path:
-     ```python
-     path2 = nav.compute_path((1, 1))
-     print("Path from (0,0) to (1,1):")
-     print(path2)
-     ```
-   - Ask: "We created `nav` at position (0,0). Does calling `compute_path` change `nav.position`?" (No! We used local variables `current_row` and `current_col`. `self.position` is unchanged.)
-   - Ask: "How many steps is the path from (0,0) to (2,3)?" (5 -- just `len(path)` since the path only contains positions the robot moves to.)
+   - Compare the output character-for-character against the Lesson 4 output. It should match exactly.
+   - "This is called a **regression test** -- confirming a change didn't break anything that used to work."
 
 ### Independent Practice (20 minutes)
 **For 50-min classes:** 15 min
 **For 3-hour sessions:** 25 min
 
-**Exercise: Implement and Test the Manhattan Class**
-- Students convert their Lesson 4 `compute_path` function into a `Manhattan` class (or type it from scratch with minimal reference to the board)
-- Write test code that computes and prints paths for at least 4 different start/destination pairs:
+**Exercise: Test `compute_manhattan_path()` Thoroughly**
+- Students rename their own Lesson 4 function and add the docstring
+- Write test code that computes and prints paths for at least 4 different position/destination pairs:
 
 1. `(0, 0)` to `(2, 3)` -- south then east
 2. `(2, 3)` to `(0, 1)` -- north then west
@@ -222,255 +141,106 @@ By the end of this lesson, students will be able to:
 - For each test, compare the printed output to their hand-traced worksheets from Lesson 4
 - Expected test program:
   ```python
-  class Manhattan:
-      def __init__(self, start):
-          self.position = start
+  def compute_manhattan_path(position, destination):
+      """Compute a Manhattan path from position to destination."""
+      path = []
+      current_row, current_col = position
+      dest_row, dest_col = destination
 
-      def compute_path(self, destination):
-          path = []
-          current_row, current_col = self.position
-          dest_row, dest_col = destination
+      while current_row < dest_row:
+          current_row = current_row + 1
+          path.append((current_row, current_col))
+      while current_row > dest_row:
+          current_row = current_row - 1
+          path.append((current_row, current_col))
+      while current_col < dest_col:
+          current_col = current_col + 1
+          path.append((current_row, current_col))
+      while current_col > dest_col:
+          current_col = current_col - 1
+          path.append((current_row, current_col))
 
-          while current_row < dest_row:
-              current_row = current_row + 1
-              path.append((current_row, current_col))
-          while current_row > dest_row:
-              current_row = current_row - 1
-              path.append((current_row, current_col))
-          while current_col < dest_col:
-              current_col = current_col + 1
-              path.append((current_row, current_col))
-          while current_col > dest_col:
-              current_col = current_col - 1
-              path.append((current_row, current_col))
-
-          return path
+      return path
 
   # Test 1: South then east
-  nav = Manhattan((0, 0))
-  path = nav.compute_path((2, 3))
+  path = compute_manhattan_path((0, 0), (2, 3))
   print("(0,0) to (2,3):", path)
 
   # Test 2: North then west
-  nav2 = Manhattan((2, 3))
-  path = nav2.compute_path((0, 1))
+  path = compute_manhattan_path((2, 3), (0, 1))
   print("(2,3) to (0,1):", path)
 
   # Test 3: North then east
-  nav3 = Manhattan((3, 0))
-  path = nav3.compute_path((1, 2))
+  path = compute_manhattan_path((3, 0), (1, 2))
   print("(3,0) to (1,2):", path)
 
   # Test 4: South then west
-  nav4 = Manhattan((1, 3))
-  path = nav4.compute_path((3, 1))
+  path = compute_manhattan_path((1, 3), (3, 1))
   print("(1,3) to (3,1):", path)
   ```
 
 - **Bonus: Test the edge cases**
   ```python
   # Same row (only column movement)
-  nav5 = Manhattan((1, 0))
-  print("(1,0) to (1,3):", nav5.compute_path((1, 3)))
+  print("(1,0) to (1,3):", compute_manhattan_path((1, 0), (1, 3)))
 
   # Same column (only row movement)
-  nav6 = Manhattan((0, 2))
-  print("(0,2) to (3,2):", nav6.compute_path((3, 2)))
+  print("(0,2) to (3,2):", compute_manhattan_path((0, 2), (3, 2)))
 
   # Same position (no movement needed)
-  nav7 = Manhattan((2, 1))
-  print("(2,1) to (2,1):", nav7.compute_path((2, 1)))
+  print("(2,1) to (2,1):", compute_manhattan_path((2, 1), (2, 1)))
   ```
 
 ## Assessment
 
 **Formative (during lesson)**:
-- Can students explain why wrapping the function in a class is useful?
-- Can students identify the three changes needed to convert the function to a method? (`self` parameter, `self.position` replaces `start`, function moves inside a class)
-- Can students explain what `self.position` stores and why it is a tuple?
-- Does the student's code produce output that matches their hand-traced paths from Lesson 4?
+- Can students explain why a specific name matters once there's more than one algorithm?
+- Can students identify that a docstring documents parameters and return value?
+- Does the student's renamed function produce output that matches their Lesson 4 hand-traced paths exactly?
 
 **Summative (worksheet/exit ticket)**:
-1. What is the advantage of using a `Manhattan` class over a standalone `compute_path` function?
-2. In the class version, the function parameter `start` disappears. Where does that information come from instead?
-3. What does `current_row, current_col = self.position` do? What is this called?
-4. If we call `nav.compute_path((2, 1))` and `nav` was created with `Manhattan((2, 1))`, what does the method return? Why?
-5. Write the `compute_path` method from memory (or with minimal hints).
+1. Why did we rename `compute_path` to `compute_manhattan_path`?
+2. What is a docstring, and where does it go in a function?
+3. What does `current_row, current_col = position` do? What is this called?
+4. If we call `compute_manhattan_path((2, 1), (2, 1))`, what does it return? Why?
+5. Write the function from memory (or with minimal hints).
 
 ## Common Misconceptions
 
 | Misconception | Reality |
 |---|---|
-| "I need to modify `self.position` as the algorithm runs" | Never modify `self.position` inside `compute_path`. Use local variables (`current_row`, `current_col`) instead. The object's stored position should stay unchanged so you can compute multiple paths from the same start. |
-| "`append` replaces the list" | `append` adds one element to the END of the existing list. It modifies the list in place and does not create a new list. |
-| "I need to add `self.` to every variable in the method" | Only data that needs to persist between method calls uses `self.` (like `self.position`). Temporary variables like `current_row`, `path`, and `dest_col` are local to the method and do not need `self.`. |
-| "The parentheses in `path.append((current_row, current_col))` are doubled by mistake" | The outer parentheses are for the `append()` function call. The inner parentheses create the tuple `(current_row, current_col)`. Both are necessary. |
-| "I need two separate classes for rows and columns" | One class handles both. The `compute_path` method has four while loops -- two for rows (south and north), two for columns (east and west) -- in sequence. For any given path, only the relevant loops actually execute. |
+| "Renaming a function changes what it does" | A rename by itself changes nothing about behavior -- only what you call it. This lesson's whole point is to prove that with a regression test. |
+| "The docstring is just a comment" | A docstring is a string literal, not a `#` comment -- Python and editors treat it specially (`help()`, tooltips). A regular comment does not show up that way. |
+| "`compute_manhattan_path` and `compute_path` need to behave differently" | They are the same function with a new name and slightly renamed parameters. Every line of logic is identical to Lesson 4. |
+| "I need to add `self` now" | No -- this stays a plain function. `self` only appears in the Optional Extension below, for courses that wrap it in a class. |
 
 ## Differentiation
 
 **For struggling students**:
-- Have them open their working Lesson 4 function side-by-side with the class skeleton
-- Walk them through the conversion one change at a time: (1) add the class wrapper and `__init__`, (2) indent the function inside the class, (3) add `self` as the first parameter, (4) replace `start` with `self.position`
-- Provide the class skeleton with comments indicating what goes where:
-  ```python
-  class Manhattan:
-      def __init__(self, start):
-          # Store start as self.position
-
-      def compute_path(self, destination):
-          # Create empty path list
-          # Unpack self.position into current_row, current_col
-          # Unpack destination into dest_row, dest_col
-          # Four while loops (same as Lesson 4)
-          # Return path
-  ```
-- Have them fill in one section at a time, testing after each addition
-- Keep Lesson 4 worksheets open side-by-side for reference
+- Provide the renamed function as a handout; focus on writing the docstring and running the tests rather than retyping the whole algorithm
+- Keep the Lesson 4 file open side-by-side for direct comparison
 - Allow reference to the complete code on the board
 
 **For advanced students**:
-- Add a `get_distance()` method that returns the Manhattan distance without computing the full path
-- Add a `__str__` method so `print(nav)` shows the current position nicely
-- Modify `compute_path` to also update `self.position` to the destination after computing the path (discuss: is this a good idea? when might you want this vs. not?)
-- Add a `compute_path_columns_first()` method that does columns before rows and compare the results
-- Think about: What other data or methods might a Manhattan navigation class need for a real robot?
+- Add a `manhattan_distance(position, destination)` helper function that returns just the distance (an integer), without computing the full path -- and confirm it equals `len(compute_manhattan_path(position, destination))`
+- Write a `compute_manhattan_path_columns_first()` variant that does columns before rows, and compare the results
+- Work through the Optional Extension below and compare the two versions directly
 
 ## Materials & Code Examples
 
-### Complete Manhattan Class
+### Complete Renamed Function
 ```python
-class Manhattan:
-    def __init__(self, start):
-        self.position = start
+def compute_manhattan_path(position, destination):
+    """Compute a Manhattan path from position to destination.
 
-    def compute_path(self, destination):
-        path = []
-        current_row, current_col = self.position
-        dest_row, dest_col = destination
+    position:    a (row, col) tuple -- where the robot is now
+    destination: a (row, col) tuple -- where it needs to go
 
-        while current_row < dest_row:
-            current_row = current_row + 1
-            path.append((current_row, current_col))
-        while current_row > dest_row:
-            current_row = current_row - 1
-            path.append((current_row, current_col))
-        while current_col < dest_col:
-            current_col = current_col + 1
-            path.append((current_row, current_col))
-        while current_col > dest_col:
-            current_col = current_col - 1
-            path.append((current_row, current_col))
-
-        return path
-```
-
-### Test Program
-```python
-class Manhattan:
-    def __init__(self, start):
-        self.position = start
-
-    def compute_path(self, destination):
-        path = []
-        current_row, current_col = self.position
-        dest_row, dest_col = destination
-
-        while current_row < dest_row:
-            current_row = current_row + 1
-            path.append((current_row, current_col))
-        while current_row > dest_row:
-            current_row = current_row - 1
-            path.append((current_row, current_col))
-        while current_col < dest_col:
-            current_col = current_col + 1
-            path.append((current_row, current_col))
-        while current_col > dest_col:
-            current_col = current_col - 1
-            path.append((current_row, current_col))
-
-        return path
-
-# --- Test cases ---
-print("=== Manhattan Path Tests ===")
-print()
-
-# Test 1: South then east
-nav = Manhattan((0, 0))
-path = nav.compute_path((2, 3))
-print("(0,0) to (2,3):")
-print("  Path:", path)
-print("  Steps:", len(path))
-print()
-
-# Test 2: North then west
-nav2 = Manhattan((2, 3))
-path = nav2.compute_path((0, 1))
-print("(2,3) to (0,1):")
-print("  Path:", path)
-print("  Steps:", len(path))
-print()
-
-# Test 3: North then east
-nav3 = Manhattan((3, 0))
-path = nav3.compute_path((1, 2))
-print("(3,0) to (1,2):")
-print("  Path:", path)
-print("  Steps:", len(path))
-print()
-
-# Test 4: South then west
-nav4 = Manhattan((1, 3))
-path = nav4.compute_path((3, 1))
-print("(1,3) to (3,1):")
-print("  Path:", path)
-print("  Steps:", len(path))
-print()
-
-# Edge case: Same row
-nav5 = Manhattan((1, 0))
-print("(1,0) to (1,3):", nav5.compute_path((1, 3)))
-
-# Edge case: Same column
-nav6 = Manhattan((0, 2))
-print("(0,2) to (3,2):", nav6.compute_path((3, 2)))
-
-# Edge case: Same position
-nav7 = Manhattan((2, 1))
-print("(2,1) to (2,1):", nav7.compute_path((2, 1)))
-```
-
-### Expected Output
-```
-=== Manhattan Path Tests ===
-
-(0,0) to (2,3):
-  Path: [(1, 0), (2, 0), (2, 1), (2, 2), (2, 3)]
-  Steps: 5
-
-(2,3) to (0,1):
-  Path: [(1, 3), (0, 3), (0, 2), (0, 1)]
-  Steps: 4
-
-(3,0) to (1,2):
-  Path: [(2, 0), (1, 0), (1, 1), (1, 2)]
-  Steps: 4
-
-(1,3) to (3,1):
-  Path: [(2, 3), (3, 3), (3, 2), (3, 1)]
-  Steps: 4
-
-(1,0) to (1,3): [(1, 1), (1, 2), (1, 3)]
-(0,2) to (3,2): [(1, 2), (2, 2), (3, 2)]
-(2,1) to (2,1): []
-```
-
-### Side-by-Side Comparison: Function vs. Class (for Board Reference)
-```python
-# LESSON 4: Standalone function
-def compute_path(start, destination):
+    Returns a list of (row, col) tuples the robot should move to,
+    not including position itself.
+    """
     path = []
-    current_row, current_col = start          # <-- uses start parameter
+    current_row, current_col = position
     dest_row, dest_col = destination
 
     while current_row < dest_row:
@@ -487,52 +257,99 @@ def compute_path(start, destination):
         path.append((current_row, current_col))
 
     return path
+```
 
-# Calling:
-path = compute_path((0, 0), (2, 3))
+### Expected Output
+```
+(0,0) to (2,3): [(1, 0), (2, 0), (2, 1), (2, 2), (2, 3)]
+(2,3) to (0,1): [(1, 3), (0, 3), (0, 2), (0, 1)]
+(3,0) to (1,2): [(2, 0), (1, 0), (1, 1), (1, 2)]
+(1,3) to (3,1): [(2, 3), (3, 3), (3, 2), (3, 1)]
 
-
-# LESSON 5: Class version
-class Manhattan:
-    def __init__(self, start):
-        self.position = start
-
-    def compute_path(self, destination):
-        path = []
-        current_row, current_col = self.position  # <-- uses self.position
-        dest_row, dest_col = destination
-
-        while current_row < dest_row:
-            current_row = current_row + 1
-            path.append((current_row, current_col))
-        while current_row > dest_row:
-            current_row = current_row - 1
-            path.append((current_row, current_col))
-        while current_col < dest_col:
-            current_col = current_col + 1
-            path.append((current_row, current_col))
-        while current_col > dest_col:
-            current_col = current_col - 1
-            path.append((current_row, current_col))
-
-        return path
-
-# Calling:
-nav = Manhattan((0, 0))
-path = nav.compute_path((2, 3))
+(1,0) to (1,3): [(1, 1), (1, 2), (1, 3)]
+(0,2) to (3,2): [(1, 2), (2, 2), (3, 2)]
+(2,1) to (2,1): []
 ```
 
 ## Teaching Notes
-- **Frame this lesson as a conversion, not a blank-page exercise.** Students already wrote and tested the algorithm in Lesson 4. The cognitive load here should be on the class mechanics (self, __init__, method), not on the algorithm. Keep the algorithm familiar so students can focus on what is new.
-- **Use the side-by-side comparison.** Put the Lesson 4 function and the Lesson 5 class on the board next to each other. Highlight the three differences: (1) class wrapper + `__init__`, (2) `self` parameter, (3) `self.position` replaces `start`. Students should see that the algorithm inside is identical.
-- **Live-code the class one step at a time.** Do not show the complete class and expect students to absorb it. Build it piece by piece, testing after each addition. Students should type along with you.
-- **Test after every step.** After writing `__init__`, create an instance and print `nav.position`. After adding the while loops, print the path. Immediate feedback prevents errors from accumulating.
-- **The double parentheses in `path.append((row, col))` will confuse students.** Spend time on this. Show that `(current_row, current_col)` creates a tuple, and `append(...)` adds it to the list. Draw it out: `append( (2, 1) )` -- the outer parens are the function call, the inner parens are the tuple.
-- **Emphasize that `self.` is only for persistent data.** Students will want to put `self.` in front of every variable. Clarify: `self.position` persists because other methods (or future code) need it. `current_row`, `path`, `dest_col` are temporary -- they exist only while `compute_path` is running.
-- **The empty path for same-position is correct.** If a student asks "what if start equals destination?", trace through: all four while-loop conditions are false, so no loops execute, and the method returns `[]`. That is correct -- the robot is already there, so there are zero steps to take.
-- **Do not worry about efficiency.** The algorithm visits every cell along the L-shaped path, which is optimal for Manhattan distance. There is nothing to optimize here, and students should not be distracted by performance concerns.
+- **This is a rename, not a rewrite.** Keep the cognitive load on naming and docstrings, not on re-deriving the algorithm. Students already earned that understanding in Lesson 4.
+- **Regression testing is a real professional habit.** Frame the "re-run the same tests" step as something working developers actually do after every refactor, not busywork.
+- **Foreshadow Module 5 explicitly.** Say out loud: "The reason we're doing this now, and not waiting, is that Module 5 will hand you a second function with a similar job. Distinct names prevent a nasty bug where one function silently overwrites the other."
+- **Docstrings are new -- don't over-teach them.** A one- or two-sentence description plus a parameter list is enough. Students don't need `:param:`/`:returns:` formal docstring styles at this stage.
 
 ## Connections to Next Lessons
-- **Lesson 6** will focus on systematic testing of the `Manhattan` class -- students will write a dedicated test program and compare output to their Lesson 4 hand-traced paths.
-- **Later lessons** will integrate the `Manhattan` class with the robot's drivetrain to execute the computed paths on the physical grid.
-- **The pattern of "compute first, then execute"** is a key software design principle that will recur throughout the course -- separating the planning (path computation) from the action (robot movement).
+- **Lesson 6** will focus on systematic testing of `compute_manhattan_path()` using a `run_test()` helper -- students will compare output directly to the paths from this lesson.
+- **Later lessons** will connect the computed path to actual robot movement on the physical grid.
+- **Module 5** will introduce `compute_dijkstra_path()` -- a second function with a matching call shape, setting up the "swap the algorithm" lesson in Module 5 Lesson 6.
+
+---
+
+## Optional Extension: Wrap It in a `Manhattan` Class
+
+*For courses that also cover classes/objects. Skip this section entirely otherwise -- nothing later in the course depends on it. The robot behaves identically either way; this only changes how the code is packaged.*
+
+### Why Wrap It?
+`compute_manhattan_path(position, destination)` requires the caller to pass in `position` every single call. If a program computes several paths from the same starting position, that position gets typed repeatedly:
+```python
+path1 = compute_manhattan_path((0, 0), (2, 3))
+path2 = compute_manhattan_path((0, 0), (1, 1))
+path3 = compute_manhattan_path((0, 0), (3, 2))
+```
+A class lets an object remember its own position, so the caller only supplies the destination:
+```python
+nav = Manhattan((0, 0))
+path1 = nav.compute_path((2, 3))
+path2 = nav.compute_path((1, 1))
+path3 = nav.compute_path((3, 2))
+```
+
+### From Function to Class, Step by Step
+
+1. **The `__init__` method** stores the position:
+   ```python
+   class Manhattan:
+       def __init__(self, start):
+           self.position = start
+   ```
+
+2. **`compute_path` becomes a method** that reads `self.position` instead of receiving it as a parameter -- the four while loops are otherwise untouched:
+   ```python
+       def compute_path(self, destination):
+           path = []
+           current_row, current_col = self.position
+           dest_row, dest_col = destination
+
+           while current_row < dest_row:
+               current_row = current_row + 1
+               path.append((current_row, current_col))
+           while current_row > dest_row:
+               current_row = current_row - 1
+               path.append((current_row, current_col))
+           while current_col < dest_col:
+               current_col = current_col + 1
+               path.append((current_row, current_col))
+           while current_col > dest_col:
+               current_col = current_col - 1
+               path.append((current_row, current_col))
+
+           return path
+   ```
+
+3. **Test it:**
+   ```python
+   nav = Manhattan((0, 0))
+   path = nav.compute_path((2, 3))
+   print("Path from (0,0) to (2,3):", path)
+   print("Steps:", len(path))
+   ```
+   Expected output matches the function version exactly:
+   ```
+   Path from (0,0) to (2,3): [(1, 0), (2, 0), (2, 1), (2, 2), (2, 3)]
+   Steps: 5
+   ```
+
+### Discussion Prompt
+"`compute_path` never modifies `self.position` -- it only reads it. Why might that matter?" (If it changed `self.position`, calling `compute_path` twice in a row would compute the second path from the wrong starting point. The object's stored position should stay put until the caller explicitly updates it -- which becomes important in Lesson 9's final project.)
+
+### Worksheet
+See the "Optional Extension" section at the end of the Lesson 5 worksheet for matching exercises.

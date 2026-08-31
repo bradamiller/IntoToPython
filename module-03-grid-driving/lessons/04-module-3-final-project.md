@@ -3,6 +3,8 @@
 ## Overview
 Students integrate driving multiple intersections and turning to create a complete square pattern on the grid. The robot drives 2 intersections forward, turns right, and repeats 4 times — returning to its starting position. This demonstrates the power of loops, code reuse, and sequential programming on a physical grid.
 
+*If your course covers the Module 2 Optional Extension (classes), everything below works identically through `tracker.track_until_cross()` and `tracker.turn_right()` instead of bare function calls.*
+
 ## Learning Objectives
 By the end of this lesson, students will be able to:
 - Design a complete program that navigates a square pattern on the grid
@@ -14,12 +16,12 @@ By the end of this lesson, students will be able to:
 - **Square pattern**: Drive N intersections, turn right — repeat 4 times
 - **Loop structure**: One iteration = one side of the square
 - **Closed path**: The robot should end where it started
-- **Hardware debugging**: Adjusting timing, speed, and placement for reliable operation
+- **Hardware debugging**: Adjusting speed and placement for reliable operation
 
 ## Materials Required
 - XRP Robot with reflectance sensors
 - White surface with taped grid (at least 4×4 intersections)
-- Working `LineSensor` and `LineTrack` classes from Module 2
+- Working sensor and driving toolkit from Module 2
 - VS Code with XRPLib installed
 
 ## Lesson Flow
@@ -41,7 +43,7 @@ By the end of this lesson, students will be able to:
 ### Project Requirements (5 minutes)
 
 **The program must:**
-1. Use the `LineTrack` class from Module 2
+1. Use the sensor and driving toolkit from Module 2
 2. Drive a square pattern (2 intersections per side)
 3. Use a `for` loop for the 4 repetitions
 4. Print progress messages (which leg, which intersection)
@@ -51,7 +53,7 @@ By the end of this lesson, students will be able to:
 
 | Category | Points |
 |---|---|
-| Code uses LineTrack class correctly | 10 |
+| Code uses the Module 2 toolkit correctly | 10 |
 | Square uses for loop (not copy-paste) | 10 |
 | Robot completes all 4 sides | 10 |
 | Robot returns to starting position | 10 |
@@ -66,27 +68,27 @@ By the end of this lesson, students will be able to:
    from XRPLib.reflectance import Reflectance
    from XRPLib.differential_drive import DifferentialDrive
    from XRPLib.board import Board
-   import time
 
-   # --- LineSensor class (from Module 2) ---
-   class LineSensor:
-       # ... (copy from Module 2)
+   # --- Sensor toolkit (from Module 2 Lesson 8) ---
+   reflectance = Reflectance.get_default_reflectance()
+   THRESHOLD = 0.5
+   # ... (copy the rest from Module 2)
 
-   # --- LineTrack class (from Module 2) ---
-   class LineTrack:
-       # ... (copy from Module 2)
+   # --- Driving toolkit (from Module 2 Lesson 9) ---
+   drivetrain = DifferentialDrive.get_default_differential_drive()
+   BASE_EFFORT = 0.4
+   KP = 0.5
+   # ... (copy the rest from Module 2)
 
-   # --- Helper function ---
-   def drive_intersections(tracker, count):
+   # --- Helper function (from Module 3 Lesson 2) ---
+   def drive_intersections(count):
        for i in range(count):
-           tracker.track_until_cross()
+           track_until_cross()
            if i < count - 1:
-               tracker.drivetrain.set_effort(0.3, 0.3)
-               time.sleep(0.3)
+               clear_intersection()
 
    # --- Main Program ---
    board = Board.get_default_board()
-   tracker = LineTrack()
 
    board.wait_for_button()
    print("Module 3 Final Project - Square Pattern!")
@@ -95,9 +97,9 @@ By the end of this lesson, students will be able to:
 
    for leg in range(4):
        print("Side", leg + 1, "of 4")
-       drive_intersections(tracker, sides)
+       drive_intersections(sides)
        print("  Turning right...")
-       tracker.turn_right()
+       turn_right()
 
    print("Square complete! Back at start.")
    ```
@@ -123,9 +125,8 @@ By the end of this lesson, students will be able to:
 
 4. **Debugging Tips**:
    - If the robot doesn't return to start, check if turns are exactly 90°
-   - If the robot skips an intersection, slow down or adjust clearing time
+   - If the robot skips an intersection, slow down (`BASE_EFFORT`) or check clearing
    - If the robot veers after turning, check that `turn_right()` finds the line properly
-   - Add `time.sleep(0.5)` between sides if the robot needs a pause
 
 ### Extension Challenges (if time permits)
 
@@ -138,8 +139,8 @@ By the end of this lesson, students will be able to:
      ```python
      lengths = [2, 3, 2, 3]
      for leg in range(4):
-         drive_intersections(tracker, lengths[leg])
-         tracker.turn_right()
+         drive_intersections(lengths[leg])
+         turn_right()
      ```
 
 3. **Challenge C: Left-Turn Square**
@@ -159,7 +160,7 @@ By the end of this lesson, students will be able to:
    - How is this different from the polygon function in Module 1?
 
 2. **Module 3 Summary**:
-   - You reused the `LineTrack` class from Module 2 on a new surface (the grid)
+   - You reused the Module 2 toolkit on a new surface (the grid)
    - You learned to clear intersections and drive multiple segments
    - You sequenced drives and turns to navigate complex paths
    - No new Python concepts — just putting existing tools to work!
@@ -171,8 +172,8 @@ By the end of this lesson, students will be able to:
 
 ## Common Issues
 - **Robot doesn't complete the square**: Usually a turning or clearing issue. Test one side at a time.
-- **Robot ends up in the wrong place**: Turns aren't exactly 90°. Adjust `turn_right()` timing.
-- **Robot skips intersections**: Going too fast. Reduce `base_effort` or add delay.
+- **Robot ends up in the wrong place**: Turns aren't exactly 90°. Check the physical turn calibration.
+- **Robot skips intersections**: Going too fast. Reduce `BASE_EFFORT`.
 - **Code too long**: Make sure you're using a for loop, not duplicating code 4 times.
 
 ## Assessment

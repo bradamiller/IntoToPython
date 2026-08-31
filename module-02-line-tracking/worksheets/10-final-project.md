@@ -16,7 +16,7 @@ Check off each requirement as you complete it:
 - [ ] Robot continues following after reversing
 - [ ] Robot completes 4 total reversals
 - [ ] Robot stops and prints a completion message
-- [ ] Code uses LineSensor and LineTrack classes
+- [ ] Code uses the sensor and driving toolkit functions
 - [ ] Code includes print statements showing progress
 - [ ] Code is organized and commented
 
@@ -37,23 +37,24 @@ Write your main program plan in plain English:
 
 ---
 
-## Part 2: Class Inventory
+## Part 2: Toolkit Inventory
 
-List the methods available in each class:
+List the functions available in each toolkit:
 
-**LineSensor:**
-| Method | What It Returns | When to Use |
+**Sensor toolkit:**
+| Function | What It Returns | When to Use |
 |---|---|---|
 | `get_error()` | ________________ | ________________ |
 | `is_at_cross()` | ________________ | ________________ |
 | `is_off_line()` | ________________ | ________________ |
 
-**LineTrack:**
-| Method | What It Does | When to Use |
+**Driving toolkit:**
+| Function | What It Does | When to Use |
 |---|---|---|
 | `track_until_cross()` | ________________ | ________________ |
 | `turn_right()` | ________________ | ________________ |
 | `turn_left()` | ________________ | ________________ |
+| `clear_intersection()` | ________________ | ________________ |
 
 ---
 
@@ -85,10 +86,9 @@ Record the parameters that work best for your robot:
 
 | Parameter | Starting Value | Final Value | Why I Changed It |
 |---|---|---|---|
-| `threshold` | 0.5 | __________ | ________________________ |
-| `base_effort` | 0.4 | __________ | ________________________ |
-| `Kp` | 0.5 | __________ | ________________________ |
-| `time.sleep()` in turns | 0.3 | __________ | ________________________ |
+| `THRESHOLD` | 0.5 | __________ | ________________________ |
+| `BASE_EFFORT` | 0.4 | __________ | ________________________ |
+| `KP` | 0.5 | __________ | ________________________ |
 
 ---
 
@@ -105,8 +105,8 @@ Match each concept to when it was introduced:
 | Proportional control | Lesson ___ |
 | Two-sensor following | Lesson ___ |
 | Intersection detection | Lesson ___ |
-| Classes (`class`, `__init__`, `self`) | Lesson ___ |
-| Object composition | Lesson ___ |
+| Global variables and function toolkits | Lesson ___ |
+| Functions calling functions | Lesson ___ |
 
 ---
 
@@ -116,7 +116,7 @@ Match each concept to when it was introduced:
 
    ____________________________________________________________________
 
-2. **How did using classes (LineSensor, LineTrack) make the final project easier compared to writing everything in one big program?**
+2. **How did organizing your code into toolkits (sensor functions, driving functions) make the final project easier compared to writing everything in one big program?**
 
    ____________________________________________________________________
 
@@ -138,9 +138,29 @@ Match each concept to when it was introduced:
    | if/else | ___ |
    | import / modules | ___ |
    | Proportional control | ___ |
-   | Classes and methods | ___ |
-   | Object composition | ___ |
+   | Functions and global variables | ___ |
+   | Functions calling functions | ___ |
 
 ---
 
-**Congratulations on completing Module 2!** Your LineSensor and LineTrack classes will be used again in Module 3 when you drive on the grid.
+**Congratulations on completing Module 2!** Your sensor and driving toolkits will be used again in Module 3 when you drive on the grid.
+
+---
+
+## Part 7 (Optional Extension): Classes Version
+
+*Skip this section if your course doesn't cover classes.*
+
+1. **In the class version's main program, what line replaces every bare `track_until_cross()` call?**
+
+   _________________________________________________________________
+
+2. **Why does the class version only need one line (`tracker = LineTrack()`) before the loop starts, while the functions version needs none at all?**
+
+   _________________________________________________________________
+
+3. **Is the robot's physical behavior different between the two versions?**
+
+   YES / NO -- **Why or why not?**
+
+   _________________________________________________________________

@@ -4,154 +4,129 @@
 from XRPLib.reflectance import Reflectance
 from XRPLib.differential_drive import DifferentialDrive
 from XRPLib.board import Board
-import time
 
 
-# ===== LineSensor Class (from Module 2) =====
+# ===== Sensor toolkit (from Module 2 Lesson 8) =====
 
-class LineSensor:
-    def __init__(self):
-        self.reflectance = Reflectance.get_default_reflectance()
-        self.threshold = 0.5
+reflectance = Reflectance.get_default_reflectance()
+THRESHOLD = 0.5
 
-    def get_left(self):
-        return self.reflectance.get_left()
+def get_left():
+    return reflectance.get_left()
 
-    def get_right(self):
-        return self.reflectance.get_right()
+def get_right():
+    return reflectance.get_right()
 
-    def get_error(self):
-        return self.get_left() - self.get_right()
+def get_error():
+    return get_left() - get_right()
 
-    def is_at_cross(self):
-        return self.get_left() > self.threshold and self.get_right() > self.threshold
+def is_at_cross():
+    return get_left() > THRESHOLD and get_right() > THRESHOLD
 
-    def is_off_line(self):
-        return self.get_left() < self.threshold and self.get_right() < self.threshold
+def is_off_line():
+    return get_left() < THRESHOLD and get_right() < THRESHOLD
 
 
-# ===== LineTrack Class (from Module 2) =====
+# ===== Driving toolkit (from Module 2 Lesson 9) =====
 
-class LineTrack:
-    def __init__(self):
-        self.sensor = LineSensor()
-        self.drivetrain = DifferentialDrive.get_default_differential_drive()
-        self.base_effort = 0.4
-        self.Kp = 0.5
+drivetrain = DifferentialDrive.get_default_differential_drive()
+BASE_EFFORT = 0.4
+KP = 0.5
 
-    def track_until_cross(self):
-        while not self.sensor.is_at_cross():
-            error = self.sensor.get_error()
-            correction = error * self.Kp
-            self.drivetrain.arcade(self.base_effort, -correction)
-        self.drivetrain.stop()
+def clear_intersection():
+    drivetrain.straight(8, 0.5)
 
-    def turn_right(self):
-        self.drivetrain.arcade(self.base_effort, 0)
-        time.sleep(0.3)
-        self.drivetrain.arcade(0, 0.3)
-        time.sleep(0.3)
-        while self.sensor.is_off_line():
-            pass
-        self.drivetrain.stop()
+def track_until_cross():
+    while not is_at_cross():
+        error = get_error()
+        left = BASE_EFFORT - error * KP
+        right = BASE_EFFORT + error * KP
+        drivetrain.set_effort(left, right)
+    drivetrain.stop()
 
-    def turn_left(self):
-        self.drivetrain.arcade(self.base_effort, 0)
-        time.sleep(0.3)
-        self.drivetrain.arcade(0, -0.3)
-        time.sleep(0.3)
-        while self.sensor.is_off_line():
-            pass
-        self.drivetrain.stop()
+def turn_right():
+    clear_intersection()
+    drivetrain.set_effort(0.3, -0.3)
+    while is_off_line():
+        pass
+    drivetrain.stop()
 
 
-# ===== Manhattan Class =====
+# ===== Manhattan algorithm (from Lesson 5) =====
 
-class Manhattan:
+def compute_manhattan_path(position, destination):
+    path = []
+    current_row, current_col = position
+    dest_row, dest_col = destination
 
-    def __init__(self, start):
-        self.position = start
+    while current_row < dest_row:
+        current_row = current_row + 1
+        path.append((current_row, current_col))
+    while current_row > dest_row:
+        current_row = current_row - 1
+        path.append((current_row, current_col))
+    while current_col < dest_col:
+        current_col = current_col + 1
+        path.append((current_row, current_col))
+    while current_col > dest_col:
+        current_col = current_col - 1
+        path.append((current_row, current_col))
 
-    def compute_path(self, destination):
-        path = []
-
-        current_row, current_col = self.position
-        dest_row, dest_col = destination
-
-        while current_row < dest_row:
-            current_row = current_row + 1
-            path.append((current_row, current_col))
-
-        while current_row > dest_row:
-            current_row = current_row - 1
-            path.append((current_row, current_col))
-
-        while current_col < dest_col:
-            current_col = current_col + 1
-            path.append((current_row, current_col))
-
-        while current_col > dest_col:
-            current_col = current_col - 1
-            path.append((current_row, current_col))
-
-        return path
+    return path
 
 
-# ===== Navigator Class =====
+# ===== Driving functions (from Lesson 8) =====
 # Headings: 0 = North, 1 = East, 2 = South, 3 = West
 
 HEADING_NAMES = ["N", "E", "S", "W"]
 
 
-class Navigator:
+def desired_heading(position, next_pos):
+    row_diff = next_pos[0] - position[0]
+    col_diff = next_pos[1] - position[1]
+    if row_diff == -1:
+        return 0  # North
+    elif col_diff == 1:
+        return 1  # East
+    elif row_diff == 1:
+        return 2  # South
+    elif col_diff == -1:
+        return 3  # West
 
-    def __init__(self, start, heading):
-        self.position = start
-        self.heading = heading
-        self.line_track = LineTrack()
 
-    def desired_heading(self, next_pos):
-        row_diff = next_pos[0] - self.position[0]
-        col_diff = next_pos[1] - self.position[1]
-        if row_diff == -1:
-            return 0  # North
-        elif col_diff == 1:
-            return 1  # East
-        elif row_diff == 1:
-            return 2  # South
-        elif col_diff == -1:
-            return 3  # West
+def turn_to(heading, desired):
+    while heading != desired:
+        turn_right()
+        heading = heading + 1
+        if heading == 4:
+            heading = 0
+    return heading
 
-    def turn_to(self, desired):
-        while self.heading != desired:
-            self.line_track.turn_right()
-            self.heading = self.heading + 1
-            if self.heading == 4:
-                self.heading = 0
 
-    def drive_path(self, path):
-        for next_pos in path:
-            needed = self.desired_heading(next_pos)
-            if self.heading == needed:
-                self.line_track.drivetrain.straight(8)
-            self.turn_to(needed)
-            self.line_track.track_until_cross()
-            self.position = next_pos
+def drive_path(path, position, heading):
+    for next_pos in path:
+        needed = desired_heading(position, next_pos)
+        if heading == needed:
+            clear_intersection()
+        heading = turn_to(heading, needed)
+        track_until_cross()
+        position = next_pos
+    return position, heading
 
 
 # ===== Main Program =====
 
 board = Board.get_default_board()
 
-manhattan = Manhattan((0, 0))
-navigator = Navigator((0, 0), 0)  # Start heading North
+position = (0, 0)
+heading = 0  # heading North
 
 # Four destinations that form a tour of the grid
 destinations = [(3, 0), (3, 3), (0, 3), (0, 0)]
 
 print("=== XRP Grid Navigation: Final Project ===")
-print("Starting at:", manhattan.position)
-print("Heading:", HEADING_NAMES[navigator.heading])
+print("Starting at:", position)
+print("Heading:", HEADING_NAMES[heading])
 print("Destinations:", destinations)
 print()
 
@@ -165,20 +140,17 @@ for dest in destinations:
     print("--- Navigating to", dest, "---")
 
     # Compute the path from current position to this destination
-    path = manhattan.compute_path(dest)
+    path = compute_manhattan_path(position, dest)
     print("Path:", path)
     print("Steps:", len(path))
 
     # Drive the computed path
-    navigator.drive_path(path)
+    position, heading = drive_path(path, position, heading)
 
-    # Update Manhattan's position for the next leg
-    manhattan.position = navigator.position
-
-    print("Arrived at:", navigator.position)
-    print("Heading:", HEADING_NAMES[navigator.heading])
+    print("Arrived at:", position)
+    print("Heading:", HEADING_NAMES[heading])
     print()
 
 print("=== All destinations reached! ===")
-print("Final position:", navigator.position)
+print("Final position:", position)
 print("Total destinations visited:", len(destinations))

@@ -67,12 +67,13 @@ def desired_heading(current, next_pos):
 Keep turning right, adding 1 to the heading each time. If heading reaches 4, reset to 0. Stop when it equals the desired heading.
 
 ```python
-def turn_to(self, desired):
-    while self.heading != desired:
-        self.robot.turn_right()
-        self.heading = self.heading + 1
-        if self.heading == 4:
-            self.heading = 0
+def turn_to(heading, desired):
+    while heading != desired:
+        turn_right()
+        heading = heading + 1
+        if heading == 4:
+            heading = 0
+    return heading
 ```
 
 **That's it.** No counting turns ahead of time. No math tricks. Just turn right until you're pointing the right way.
@@ -83,12 +84,13 @@ def turn_to(self, desired):
 Walk through the list of intersections. For each one: turn to face it, then drive forward one intersection.
 
 ```python
-def drive_path(self, path):
+def drive_path(path, position, heading):
     for next_pos in path:
-        desired = desired_heading(self.position, next_pos)
-        self.turn_to(desired)
-        self.robot.drive_forward_one()
-        self.position = next_pos
+        desired = desired_heading(position, next_pos)
+        heading = turn_to(heading, desired)
+        drive_forward_one()
+        position = next_pos
+    return position, heading
 ```
 
 **Three methods, working together:**
@@ -108,7 +110,7 @@ def drive_path(self, path):
 | 3 | (2,0) | (2,1) | col +1 | 1 (E) | 2→3→0→1 (wraps 4→0) |
 | 4 | (2,1) | (2,2) | col +1 | 1 (E) | already 1 |
 
-The wrap from 3 back to 0 is exactly the `if self.heading == 4: self.heading = 0` line.
+The wrap from 3 back to 0 is exactly the `if heading == 4: heading = 0` line.
 
 ---
 
@@ -123,7 +125,7 @@ The wrap from 3 back to 0 is exactly the `if self.heading == 4: self.heading = 0
 
 **For each step write:**
 - Did the row or the column change? → desired heading
-- Each value of `self.heading` as the while loop runs
+- Each value of `heading` as the while loop runs
 - Final heading after the step
 
 ---

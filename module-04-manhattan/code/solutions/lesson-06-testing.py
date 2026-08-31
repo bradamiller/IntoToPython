@@ -1,46 +1,40 @@
 # Lesson 6: Testing — Does Our Algorithm Work? - SOLUTION
-# Write test cases to verify the Manhattan class produces correct paths.
+# Write test cases to verify compute_manhattan_path() produces correct paths.
 #
 # Good tests cover:
 #   - Normal cases (south-east, north-west, etc.)
 #   - Edge cases (same row, same column, same position)
 
 
-# The Manhattan class (complete — use this for testing)
-class Manhattan:
+# compute_manhattan_path (complete — use this for testing)
+def compute_manhattan_path(position, destination):
+    path = []
 
-    def __init__(self, start):
-        self.position = start
+    current_row, current_col = position
+    dest_row, dest_col = destination
 
-    def compute_path(self, destination):
-        path = []
+    while current_row < dest_row:
+        current_row = current_row + 1
+        path.append((current_row, current_col))
 
-        current_row, current_col = self.position
-        dest_row, dest_col = destination
+    while current_row > dest_row:
+        current_row = current_row - 1
+        path.append((current_row, current_col))
 
-        while current_row < dest_row:
-            current_row = current_row + 1
-            path.append((current_row, current_col))
+    while current_col < dest_col:
+        current_col = current_col + 1
+        path.append((current_row, current_col))
 
-        while current_row > dest_row:
-            current_row = current_row - 1
-            path.append((current_row, current_col))
+    while current_col > dest_col:
+        current_col = current_col - 1
+        path.append((current_row, current_col))
 
-        while current_col < dest_col:
-            current_col = current_col + 1
-            path.append((current_row, current_col))
-
-        while current_col > dest_col:
-            current_col = current_col - 1
-            path.append((current_row, current_col))
-
-        return path
+    return path
 
 
 # ===== Test Helper Function =====
-def run_test(test_name, start, destination, expected_path):
-    nav = Manhattan(start)
-    actual_path = nav.compute_path(destination)
+def run_test(test_name, position, destination, expected_path):
+    actual_path = compute_manhattan_path(position, destination)
     if actual_path == expected_path:
         print("PASS:", test_name)
     else:

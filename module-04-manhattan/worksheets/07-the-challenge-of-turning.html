@@ -188,6 +188,7 @@
 
         .inline-answer.short { min-width: 50px; }
         .inline-answer.long { min-width: 140px; }
+        .inline-answer.x-long { min-width: 260px; }
 
         /* ── Code blocks ── */
         .code-block {
@@ -200,6 +201,15 @@
             white-space: pre;
             margin: 10px 0;
             line-height: 1.5;
+        }
+
+        /* ── Code block with blanks ── */
+        .code-blank {
+            display: inline-block;
+            min-width: 100px;
+            border-bottom: 2px solid #d4a373;
+            background: rgba(212, 163, 115, 0.1);
+            margin: 0 2px;
         }
 
         /* ── Question lists ── */
@@ -383,312 +393,215 @@
         </div>
     </div>
 
-    <!-- ── Part 1: Heading from Coordinates ── -->
+    <!-- ── Part 1: Desired Heading from Coordinate Change ── -->
     <div class="section">
-        <div class="section-header">Part 1: Heading from Coordinates</div>
-        <p class="instruction">Given two consecutive coordinates, determine the <strong>heading number</strong> the robot needs. We use numbers for headings:</p>
-
-        <div class="tip-box">
-            <div class="tip-label">Heading Numbers:</div>
-            <table style="border: none; margin: 4px 0 0 0; font-size: 15px;">
-                <thead>
-                    <tr><th>Heading Number</th><th>Direction</th><th>row_diff</th><th>col_diff</th></tr>
-                </thead>
-                <tbody>
-                    <tr><td>0</td><td>North (up)</td><td>-1</td><td>0</td></tr>
-                    <tr><td>1</td><td>East (right)</td><td>0</td><td>+1</td></tr>
-                    <tr><td>2</td><td>South (down)</td><td>+1</td><td>0</td></tr>
-                    <tr><td>3</td><td>West (left)</td><td>0</td><td>-1</td></tr>
-                </tbody>
-            </table>
-            <p style="margin-top: 6px;"><code style="font-family: 'Fira Code', monospace; font-size: 14px;">HEADING_NAMES = ["N", "E", "S", "W"]</code> &mdash; index 0 is North, 1 is East, etc.</p>
-        </div>
+        <div class="section-header">Part 1: Desired Heading from Coordinate Change</div>
+        <p class="instruction">Between two adjacent intersections, either the row OR the column changes &mdash; never both. That gives 4 cases, each mapping to one direction.</p>
 
         <table>
-            <thead>
-                <tr>
-                    <th>Current Position</th>
-                    <th>Next Position</th>
-                    <th>row_diff</th>
-                    <th>col_diff</th>
-                    <th>Heading (number and name)</th>
-                </tr>
-            </thead>
+            <thead><tr><th>row/col change</th><th>Direction</th><th>Heading Number</th></tr></thead>
             <tbody>
-                <tr><td>(0, 0)</td><td>(1, 0)</td><td>1 - 0 = <span class="inline-answer short"></span></td><td>0 - 0 = <span class="inline-answer short"></span></td><td><span class="inline-answer"></span></td></tr>
-                <tr><td>(2, 3)</td><td>(1, 3)</td><td>1 - 2 = <span class="inline-answer short"></span></td><td>3 - 3 = <span class="inline-answer short"></span></td><td><span class="inline-answer"></span></td></tr>
-                <tr><td>(1, 1)</td><td>(1, 2)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer"></span></td></tr>
-                <tr><td>(3, 2)</td><td>(3, 1)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer"></span></td></tr>
-                <tr><td>(0, 3)</td><td>(1, 3)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer"></span></td></tr>
-                <tr><td>(2, 0)</td><td>(2, 1)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer"></span></td></tr>
-                <tr><td>(3, 1)</td><td>(2, 1)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer"></span></td></tr>
-                <tr><td>(0, 2)</td><td>(0, 1)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer"></span></td></tr>
-            </tbody>
-        </table>
-    </div>
-
-    <!-- ── Part 2: The Right Turns Table ── -->
-    <div class="section">
-        <div class="section-header">Part 2: The Right Turns Table</div>
-        <p class="instruction">Using only right turns, how many right turns does it take to go from the current heading to the needed heading? Fill in each cell with <strong>0</strong>, <strong>1</strong>, <strong>2</strong>, or <strong>3</strong>.</p>
-
-        <div class="tip-box">
-            <div class="tip-label">Clockwise counting:</div>
-            Starting at your current heading, count clockwise steps to the needed heading: 0 &rarr; 1 &rarr; 2 &rarr; 3 &rarr; 0
-        </div>
-
-        <table>
-            <thead>
-                <tr><th>Current \ Needed</th><th>0 (N)</th><th>1 (E)</th><th>2 (S)</th><th>3 (W)</th></tr>
-            </thead>
-            <tbody>
-                <tr><td><strong>0 (N)</strong></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
-                <tr><td><strong>1 (E)</strong></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
-                <tr><td><strong>2 (S)</strong></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
-                <tr><td><strong>3 (W)</strong></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
+                <tr><td>row -1</td><td>North</td><td>0</td></tr>
+                <tr><td>col +1</td><td>East</td><td>1</td></tr>
+                <tr><td>row +1</td><td>South</td><td>2</td></tr>
+                <tr><td>col -1</td><td>West</td><td>3</td></tr>
             </tbody>
         </table>
 
-        <p>How many cells have 0 right turns? <span class="inline-answer short"></span> &nbsp; Why? <span class="inline-answer long"></span></p>
-        <p>What does 2 right turns mean physically? <span class="inline-answer long"></span></p>
-        <p>Do you notice a pattern in the table? <span class="inline-answer long"></span></p>
+        <p style="margin-top: 8px;"><code style="font-family: 'Fira Code', monospace; font-size: 15px; background: #f0ede8; padding: 2px 6px; border-radius: 4px;">HEADING_NAMES = ["N", "E", "S", "W"]</code> &mdash; index 0 is North, 1 is East, etc.</p>
+
+        <table style="margin-top: 10px; font-size: 14px;">
+            <thead><tr><th>Current Pos</th><th>Next Pos</th><th>row_diff</th><th>col_diff</th><th>What Changed</th><th>Desired Heading</th></tr></thead>
+            <tbody>
+                <tr><td>(0, 0)</td><td>(1, 0)</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
+                <tr><td>(2, 3)</td><td>(1, 3)</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
+                <tr><td>(1, 1)</td><td>(1, 2)</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
+                <tr><td>(3, 2)</td><td>(3, 1)</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
+                <tr><td>(0, 3)</td><td>(1, 3)</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
+                <tr><td>(2, 0)</td><td>(2, 1)</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
+                <tr><td>(3, 1)</td><td>(2, 1)</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
+                <tr><td>(0, 2)</td><td>(0, 1)</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
+            </tbody>
+        </table>
     </div>
 </div>
 
 <!-- ════════ PAGE 2 ════════ -->
 <div class="page page-break">
-
-    <!-- ── Part 3: Determine the Number of Right Turns ── -->
+    <!-- ── Part 2: The turn_to While Loop ── -->
     <div class="section">
-        <div class="section-header">Part 3: Determine the Number of Right Turns</div>
-        <p class="instruction">For each scenario, count clockwise steps from the current heading to the needed heading to find the number of right turns.</p>
+        <div class="section-header">Part 2: The turn_to While Loop</div>
+        <p class="instruction">Here is the function we will write in Lesson 8.</p>
 
-        <table>
-            <thead>
-                <tr><th style="width: 60px;">Scenario</th><th>Current Heading</th><th>Needed Heading</th><th>Clockwise Steps</th><th>Right Turns</th></tr>
-            </thead>
-            <tbody>
-                <tr><td>1</td><td>0 (N)</td><td>1 (E)</td><td>0&rarr;1 = <span class="inline-answer short"></span> step</td><td><span class="inline-answer short"></span></td></tr>
-                <tr><td>2</td><td>1 (E)</td><td>1 (E)</td><td>already there = <span class="inline-answer short"></span> steps</td><td><span class="inline-answer short"></span></td></tr>
-                <tr><td>3</td><td>2 (S)</td><td>0 (N)</td><td>2&rarr;<span class="inline-answer short"></span>&rarr;<span class="inline-answer short"></span> = <span class="inline-answer short"></span> steps</td><td><span class="inline-answer short"></span></td></tr>
-                <tr><td>4</td><td>3 (W)</td><td>2 (S)</td><td>3&rarr;<span class="inline-answer short"></span>&rarr;<span class="inline-answer short"></span>&rarr;<span class="inline-answer short"></span> = <span class="inline-answer short"></span> steps</td><td><span class="inline-answer short"></span></td></tr>
-                <tr><td>5</td><td>1 (E)</td><td>0 (N)</td><td>1&rarr;<span class="inline-answer short"></span>&rarr;<span class="inline-answer short"></span>&rarr;<span class="inline-answer short"></span> = <span class="inline-answer short"></span> steps</td><td><span class="inline-answer short"></span></td></tr>
-                <tr><td>6</td><td>0 (N)</td><td>3 (W)</td><td>0&rarr;<span class="inline-answer short"></span>&rarr;<span class="inline-answer short"></span>&rarr;<span class="inline-answer short"></span> = <span class="inline-answer short"></span> steps</td><td><span class="inline-answer short"></span></td></tr>
-                <tr><td>7</td><td>2 (S)</td><td>3 (W)</td><td>2&rarr;3 = <span class="inline-answer short"></span> step</td><td><span class="inline-answer short"></span></td></tr>
-                <tr><td>8</td><td>3 (W)</td><td>1 (E)</td><td>3&rarr;<span class="inline-answer short"></span>&rarr;<span class="inline-answer short"></span> = <span class="inline-answer short"></span> steps</td><td><span class="inline-answer short"></span></td></tr>
-            </tbody>
-        </table>
+        <div class="code-block">def turn_to(heading, desired):
+    while heading != desired:
+        turn_right()
+        heading = heading + 1
+        if heading == 4:
+            heading = 0
+    return heading</div>
 
-        <p style="margin-top: 10px;"><strong>Why does counting clockwise always give the correct number of right turns?</strong> <span class="inline-answer long"></span></p>
+        <p style="margin-top: 8px;"><strong>Each pass through the loop:</strong> turn the robot right, add 1 to heading. If heading hits 4, reset to 0. Stop when heading equals desired, then return it.</p>
+
+        <p style="margin-top: 10px;"><strong>In your own words, what does the line <code style="font-family: 'Fira Code', monospace; font-size: 14px; background: #f0ede8; padding: 1px 4px; border-radius: 3px;">if heading == 4: heading = 0</code> do, and why is it necessary?</strong></p>
+        <div class="answer-lines-3" style="margin-top: 8px;">
+            <span class="answer-line"></span>
+            <span class="answer-line"></span>
+        </div>
     </div>
 
-    <!-- ── Part 4: Trace a Path with Heading Updates ── -->
+    <!-- ── Part 3: Trace turn_to by Hand ── -->
     <div class="section">
-        <div class="section-header">Part 4: Trace a Path with Heading Updates</div>
-        <p><strong>Path:</strong> [(0, 0), (1, 0), (2, 0), (2, 1), (2, 2), (2, 3)]</p>
-        <p><strong>Starting heading:</strong> 0 (N)</p>
+        <div class="section-header">Part 3: Trace turn_to by Hand</div>
+        <p class="instruction">For each scenario, list the value of heading after each pass through the while loop, ending when the loop stops. Write &ldquo;already there&rdquo; if the loop runs zero times.</p>
 
-        <table>
-            <thead>
-                <tr><th style="width:45px;">Step</th><th>From</th><th>To</th><th>Needed Heading</th><th>Current Heading</th><th>Right Turns</th><th>New Heading</th></tr>
-            </thead>
+        <table style="font-size: 14px;">
+            <thead><tr><th>#</th><th>Current Heading</th><th>Desired Heading</th><th>heading values during turn_to</th><th>Total Turns</th></tr></thead>
             <tbody>
-                <tr><td>1</td><td>(0, 0)</td><td>(1, 0)</td><td><span class="inline-answer short"></span></td><td>0 (N)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
-                <tr><td>2</td><td>(1, 0)</td><td>(2, 0)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
-                <tr><td>3</td><td>(2, 0)</td><td>(2, 1)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
-                <tr><td>4</td><td>(2, 1)</td><td>(2, 2)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
-                <tr><td>5</td><td>(2, 2)</td><td>(2, 3)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>1</td><td>0 (N)</td><td>1 (E)</td><td>0 &rarr; <span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>2</td><td>1 (E)</td><td>1 (E)</td><td><span class="answer answer-wide"></span></td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>3</td><td>2 (S)</td><td>0 (N)</td><td>2 &rarr; <span class="inline-answer short"></span> &rarr; <span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>4</td><td>3 (W)</td><td>2 (S)</td><td>3 &rarr; <span class="inline-answer short"></span> &rarr; <span class="inline-answer short"></span> &rarr; <span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>5</td><td>1 (E)</td><td>0 (N)</td><td>1 &rarr; <span class="inline-answer short"></span> &rarr; <span class="inline-answer short"></span> &rarr; <span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>6</td><td>0 (N)</td><td>3 (W)</td><td>0 &rarr; <span class="inline-answer short"></span> &rarr; <span class="inline-answer short"></span> &rarr; <span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>7</td><td>2 (S)</td><td>3 (W)</td><td>2 &rarr; <span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>8</td><td>3 (W)</td><td>1 (E)</td><td>3 &rarr; <span class="inline-answer short"></span> &rarr; <span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
             </tbody>
         </table>
 
-        <p>How many steps required turning? <span class="inline-answer short"></span></p>
-        <p>How many steps required zero turns? <span class="inline-answer short"></span></p>
-        <p>At which step did the robot change from row movement to column movement? Step <span class="inline-answer short"></span></p>
-    </div>
-
-    <!-- ── Part 5: Trace a Second Path ── -->
-    <div class="section">
-        <div class="section-header">Part 5: Trace a Second Path</div>
-        <p><strong>Path:</strong> [(2, 3), (1, 3), (0, 3), (0, 2), (0, 1), (0, 0)]</p>
-        <p><strong>Starting heading:</strong> 2 (S)</p>
-
-        <table>
-            <thead>
-                <tr><th style="width:45px;">Step</th><th>From</th><th>To</th><th>Needed Heading</th><th>Current Heading</th><th>Right Turns</th><th>New Heading</th></tr>
-            </thead>
-            <tbody>
-                <tr><td>1</td><td>(2, 3)</td><td>(1, 3)</td><td><span class="inline-answer short"></span></td><td>2 (S)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
-                <tr><td>2</td><td>(1, 3)</td><td>(0, 3)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
-                <tr><td>3</td><td>(0, 3)</td><td>(0, 2)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
-                <tr><td>4</td><td>(0, 2)</td><td>(0, 1)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
-                <tr><td>5</td><td>(0, 1)</td><td>(0, 0)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
-            </tbody>
-        </table>
-
-        <p>What is the robot&rsquo;s final heading after completing this path? <span class="inline-answer short"></span></p>
+        <p style="margin-top: 8px;"><strong>Which scenarios above trigger the wrap from 4 back to 0?</strong> <span class="inline-answer x-long"></span></p>
+        <p style="margin-top: 6px;"><strong>What is the maximum number of turns the loop can ever run?</strong> <span class="inline-answer"></span></p>
     </div>
 </div>
 
 <!-- ════════ PAGE 3 ════════ -->
 <div class="page page-break">
-
-    <!-- ── Part 6: Trace a Third Path ── -->
+    <!-- ── Part 4: Trace a Path with Heading Updates ── -->
     <div class="section">
-        <div class="section-header">Part 6: Trace a Third Path</div>
-        <p><strong>Path:</strong> [(1, 1), (1, 2), (1, 3), (2, 3), (3, 3)]</p>
-        <p><strong>Starting heading:</strong> 0 (N)</p>
+        <div class="section-header">Part 4: Trace a Path with Heading Updates</div>
+        <p><strong>Path:</strong> [(1, 0), (2, 0), (2, 1), (2, 2), (2, 3)] &nbsp;&nbsp; <strong>Starting position:</strong> (0, 0) &nbsp;&nbsp; <strong>Starting heading:</strong> 0 (N)</p>
+        <p class="instruction">For each step, determine the desired heading, trace turn_to, and record the final heading.</p>
 
-        <table>
-            <thead>
-                <tr><th style="width:45px;">Step</th><th>From</th><th>To</th><th>Needed Heading</th><th>Current Heading</th><th>Right Turns</th><th>New Heading</th></tr>
-            </thead>
+        <table style="font-size: 13px;">
+            <thead><tr><th>Step</th><th>Position</th><th>Next</th><th>Desired</th><th>Current Heading</th><th>turn_to heading values</th><th>New Heading</th></tr></thead>
             <tbody>
-                <tr><td>1</td><td>(1, 1)</td><td>(1, 2)</td><td><span class="inline-answer short"></span></td><td>0 (N)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
-                <tr><td>2</td><td>(1, 2)</td><td>(1, 3)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
-                <tr><td>3</td><td>(1, 3)</td><td>(2, 3)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
-                <tr><td>4</td><td>(2, 3)</td><td>(3, 3)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>1</td><td>(0, 0)</td><td>(1, 0)</td><td><span class="answer"></span></td><td>0 (N)</td><td><span class="answer answer-wide"></span></td><td><span class="answer"></span></td></tr>
+                <tr><td>2</td><td>(1, 0)</td><td>(2, 0)</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer answer-wide"></span></td><td><span class="answer"></span></td></tr>
+                <tr><td>3</td><td>(2, 0)</td><td>(2, 1)</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer answer-wide"></span></td><td><span class="answer"></span></td></tr>
+                <tr><td>4</td><td>(2, 1)</td><td>(2, 2)</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer answer-wide"></span></td><td><span class="answer"></span></td></tr>
+                <tr><td>5</td><td>(2, 2)</td><td>(2, 3)</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer answer-wide"></span></td><td><span class="answer"></span></td></tr>
             </tbody>
         </table>
 
-        <p>What is the robot&rsquo;s final heading? <span class="inline-answer short"></span></p>
-        <p>Does the first step require turning? Why?</p>
-        <span class="answer-line"></span>
+        <p style="margin-top: 8px;"><strong>How many steps required turning?</strong> <span class="inline-answer"></span></p>
+        <p style="margin-top: 6px;"><strong>How many steps ran the while loop zero times (no turn)?</strong> <span class="inline-answer"></span></p>
+        <p style="margin-top: 6px;"><strong>At which step did the robot change from row movement to column movement?</strong> Step <span class="inline-answer"></span></p>
     </div>
 
-    <!-- ── Part 7: Robot Orientation Diagrams ── -->
+    <!-- ── Part 5: Trace a Second Path ── -->
     <div class="section">
-        <div class="section-header">Part 7: Robot Orientation Diagrams</div>
-        <p class="instruction">For each scenario, look at the before/after diagrams showing the robot&rsquo;s facing direction. Write the number of right turns needed.</p>
+        <div class="section-header">Part 5: Trace a Second Path</div>
+        <p><strong>Path:</strong> [(1, 3), (0, 3), (0, 2), (0, 1), (0, 0)] &nbsp;&nbsp; <strong>Starting position:</strong> (2, 3) &nbsp;&nbsp; <strong>Starting heading:</strong> 2 (S)</p>
 
-        <!-- Scenario A: Facing 0 (N), need heading 1 (E) -->
-        <p style="margin-top: 10px;"><strong>Scenario A:</strong> Facing 0 (N), need heading 1 (E)</p>
-        <div class="orientation-pair">
-            <div class="orientation-box">
-                <div class="label">Before Turn</div>
-                <svg width="80" height="80" viewBox="0 0 80 80">
-                    <circle cx="40" cy="44" r="22" fill="none" stroke="#2d3436" stroke-width="2"/>
-                    <!-- Arrow pointing North (up) -->
-                    <line x1="40" y1="44" x2="40" y2="16" stroke="#5b8fa8" stroke-width="3"/>
-                    <polygon points="40,10 34,20 46,20" fill="#5b8fa8"/>
-                    <text x="40" y="76" font-family="Caveat, cursive" font-size="14" fill="#636e72" text-anchor="middle">N</text>
-                </svg>
-            </div>
-            <svg width="30" height="30" viewBox="0 0 30 30">
-                <line x1="4" y1="15" x2="22" y2="15" stroke="#d4a373" stroke-width="2.5"/>
-                <polygon points="26,15 19,10 19,20" fill="#d4a373"/>
-            </svg>
-            <div class="orientation-box">
-                <div class="label">After Turn</div>
-                <svg width="80" height="80" viewBox="0 0 80 80">
-                    <circle cx="40" cy="44" r="22" fill="none" stroke="#2d3436" stroke-width="2"/>
-                    <!-- Arrow pointing East (right) -->
-                    <line x1="40" y1="44" x2="68" y2="44" stroke="#5b8fa8" stroke-width="3"/>
-                    <polygon points="74,44 64,38 64,50" fill="#5b8fa8"/>
-                    <text x="40" y="76" font-family="Caveat, cursive" font-size="14" fill="#636e72" text-anchor="middle">E</text>
-                </svg>
-            </div>
-            <span style="margin-left: 12px;">Right turns needed: <span class="inline-answer"></span></span>
-        </div>
+        <table style="font-size: 13px;">
+            <thead><tr><th>Step</th><th>Position</th><th>Next</th><th>Desired</th><th>Current Heading</th><th>turn_to heading values</th><th>New Heading</th></tr></thead>
+            <tbody>
+                <tr><td>1</td><td>(2, 3)</td><td>(1, 3)</td><td><span class="answer"></span></td><td>2 (S)</td><td><span class="answer answer-wide"></span></td><td><span class="answer"></span></td></tr>
+                <tr><td>2</td><td>(1, 3)</td><td>(0, 3)</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer answer-wide"></span></td><td><span class="answer"></span></td></tr>
+                <tr><td>3</td><td>(0, 3)</td><td>(0, 2)</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer answer-wide"></span></td><td><span class="answer"></span></td></tr>
+                <tr><td>4</td><td>(0, 2)</td><td>(0, 1)</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer answer-wide"></span></td><td><span class="answer"></span></td></tr>
+                <tr><td>5</td><td>(0, 1)</td><td>(0, 0)</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer answer-wide"></span></td><td><span class="answer"></span></td></tr>
+            </tbody>
+        </table>
 
-        <!-- Scenario B: Facing 1 (E), need heading 2 (S) -->
-        <p style="margin-top: 10px;"><strong>Scenario B:</strong> Facing 1 (E), need heading 2 (S)</p>
-        <div class="orientation-pair">
-            <div class="orientation-box">
-                <div class="label">Before Turn</div>
-                <svg width="80" height="80" viewBox="0 0 80 80">
-                    <circle cx="40" cy="44" r="22" fill="none" stroke="#2d3436" stroke-width="2"/>
-                    <!-- Arrow pointing East (right) -->
-                    <line x1="40" y1="44" x2="68" y2="44" stroke="#5b8fa8" stroke-width="3"/>
-                    <polygon points="74,44 64,38 64,50" fill="#5b8fa8"/>
-                    <text x="40" y="76" font-family="Caveat, cursive" font-size="14" fill="#636e72" text-anchor="middle">E</text>
-                </svg>
-            </div>
-            <svg width="30" height="30" viewBox="0 0 30 30">
-                <line x1="4" y1="15" x2="22" y2="15" stroke="#d4a373" stroke-width="2.5"/>
-                <polygon points="26,15 19,10 19,20" fill="#d4a373"/>
-            </svg>
-            <div class="orientation-box">
-                <div class="label">After Turn</div>
-                <svg width="80" height="80" viewBox="0 0 80 80">
-                    <circle cx="40" cy="44" r="22" fill="none" stroke="#2d3436" stroke-width="2"/>
-                    <!-- Arrow pointing South (down) -->
-                    <line x1="40" y1="44" x2="40" y2="72" stroke="#5b8fa8" stroke-width="3"/>
-                    <polygon points="40,78 34,68 46,68" fill="#5b8fa8"/>
-                    <text x="40" y="76" font-family="Caveat, cursive" font-size="14" fill="#636e72" text-anchor="middle">S</text>
-                </svg>
-            </div>
-            <span style="margin-left: 12px;">Right turns needed: <span class="inline-answer"></span></span>
-        </div>
-
-        <!-- Scenario C: Facing 3 (W), need heading 1 (E) -->
-        <p style="margin-top: 10px;"><strong>Scenario C:</strong> Facing 3 (W), need heading 1 (E)</p>
-        <div class="orientation-pair">
-            <div class="orientation-box">
-                <div class="label">Before Turn</div>
-                <svg width="80" height="80" viewBox="0 0 80 80">
-                    <circle cx="40" cy="44" r="22" fill="none" stroke="#2d3436" stroke-width="2"/>
-                    <!-- Arrow pointing West (left) -->
-                    <line x1="40" y1="44" x2="12" y2="44" stroke="#5b8fa8" stroke-width="3"/>
-                    <polygon points="6,44 16,38 16,50" fill="#5b8fa8"/>
-                    <text x="40" y="76" font-family="Caveat, cursive" font-size="14" fill="#636e72" text-anchor="middle">W</text>
-                </svg>
-            </div>
-            <svg width="30" height="30" viewBox="0 0 30 30">
-                <line x1="4" y1="15" x2="22" y2="15" stroke="#d4a373" stroke-width="2.5"/>
-                <polygon points="26,15 19,10 19,20" fill="#d4a373"/>
-            </svg>
-            <div class="orientation-box">
-                <div class="label">After Turn</div>
-                <svg width="80" height="80" viewBox="0 0 80 80">
-                    <circle cx="40" cy="44" r="22" fill="none" stroke="#2d3436" stroke-width="2"/>
-                    <!-- Arrow pointing East (right) -->
-                    <line x1="40" y1="44" x2="68" y2="44" stroke="#5b8fa8" stroke-width="3"/>
-                    <polygon points="74,44 64,38 64,50" fill="#5b8fa8"/>
-                    <text x="40" y="76" font-family="Caveat, cursive" font-size="14" fill="#636e72" text-anchor="middle">E</text>
-                </svg>
-            </div>
-            <span style="margin-left: 12px;">Right turns needed: <span class="inline-answer"></span></span>
-        </div>
-
-        <!-- Scenario D: Facing 2 (S), need heading 2 (S) -->
-        <p style="margin-top: 10px;"><strong>Scenario D:</strong> Facing 2 (S), need heading 2 (S)</p>
-        <div class="orientation-pair">
-            <div class="orientation-box">
-                <div class="label">Before Turn</div>
-                <svg width="80" height="80" viewBox="0 0 80 80">
-                    <circle cx="40" cy="44" r="22" fill="none" stroke="#2d3436" stroke-width="2"/>
-                    <!-- Arrow pointing South (down) -->
-                    <line x1="40" y1="44" x2="40" y2="72" stroke="#5b8fa8" stroke-width="3"/>
-                    <polygon points="40,78 34,68 46,68" fill="#5b8fa8"/>
-                    <text x="40" y="76" font-family="Caveat, cursive" font-size="14" fill="#636e72" text-anchor="middle">S</text>
-                </svg>
-            </div>
-            <svg width="30" height="30" viewBox="0 0 30 30">
-                <line x1="4" y1="15" x2="22" y2="15" stroke="#d4a373" stroke-width="2.5"/>
-                <polygon points="26,15 19,10 19,20" fill="#d4a373"/>
-            </svg>
-            <div class="orientation-box">
-                <div class="label">After Turn</div>
-                <svg width="80" height="80" viewBox="0 0 80 80">
-                    <circle cx="40" cy="44" r="22" fill="none" stroke="#2d3436" stroke-width="2"/>
-                    <!-- Arrow pointing South (down) -->
-                    <line x1="40" y1="44" x2="40" y2="72" stroke="#5b8fa8" stroke-width="3"/>
-                    <polygon points="40,78 34,68 46,68" fill="#5b8fa8"/>
-                    <text x="40" y="76" font-family="Caveat, cursive" font-size="14" fill="#636e72" text-anchor="middle">S</text>
-                </svg>
-            </div>
-            <span style="margin-left: 12px;">Right turns needed: <span class="inline-answer"></span></span>
-        </div>
+        <p style="margin-top: 8px;"><strong>What is the robot's final heading after completing this path?</strong> <span class="inline-answer"></span></p>
     </div>
 </div>
 
 <!-- ════════ PAGE 4 ════════ -->
 <div class="page page-break">
+    <!-- ── Part 6: Trace a Third Path ── -->
+    <div class="section">
+        <div class="section-header">Part 6: Trace a Third Path</div>
+        <p><strong>Path:</strong> [(1, 2), (1, 3), (2, 3), (3, 3)] &nbsp;&nbsp; <strong>Starting position:</strong> (1, 1) &nbsp;&nbsp; <strong>Starting heading:</strong> 0 (N)</p>
 
+        <table style="font-size: 13px;">
+            <thead><tr><th>Step</th><th>Position</th><th>Next</th><th>Desired</th><th>Current Heading</th><th>turn_to heading values</th><th>New Heading</th></tr></thead>
+            <tbody>
+                <tr><td>1</td><td>(1, 1)</td><td>(1, 2)</td><td><span class="answer"></span></td><td>0 (N)</td><td><span class="answer answer-wide"></span></td><td><span class="answer"></span></td></tr>
+                <tr><td>2</td><td>(1, 2)</td><td>(1, 3)</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer answer-wide"></span></td><td><span class="answer"></span></td></tr>
+                <tr><td>3</td><td>(1, 3)</td><td>(2, 3)</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer answer-wide"></span></td><td><span class="answer"></span></td></tr>
+                <tr><td>4</td><td>(2, 3)</td><td>(3, 3)</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer answer-wide"></span></td><td><span class="answer"></span></td></tr>
+            </tbody>
+        </table>
+
+        <p style="margin-top: 8px;"><strong>What is the robot's final heading?</strong> <span class="inline-answer"></span></p>
+        <p style="margin-top: 8px;"><strong>Does the first step require turning? Why?</strong></p>
+        <div class="answer-lines-3" style="margin-top: 6px;">
+            <span class="answer-line"></span>
+            <span class="answer-line"></span>
+        </div>
+    </div>
+
+    <!-- ── Part 7: Robot Orientation Diagrams ── -->
+    <div class="section">
+        <div class="section-header">Part 7: Robot Orientation Diagrams</div>
+        <p class="instruction">For each scenario, draw an arrow inside the box showing which way the robot is facing. Then draw a curved arrow showing the turn(s) it needs to make, and draw the final facing direction.</p>
+
+        <div class="two-col">
+            <div>
+                <p><strong>Scenario A:</strong> Facing 0 (N), desired 1 (E)</p>
+                <div class="code-block" style="font-size: 12px; text-align: center;">Before turn:        After turn:
++-------+           +-------+
+|       |           |       |
+|  [?]  |           |  [?]  |
+|       |           |       |
++-------+           +-------+
+turn_to loop runs this many times: <span class="code-blank" style="min-width: 30px;"></span></div>
+            </div>
+            <div>
+                <p><strong>Scenario B:</strong> Facing 1 (E), desired 2 (S)</p>
+                <div class="code-block" style="font-size: 12px; text-align: center;">Before turn:        After turn:
++-------+           +-------+
+|       |           |       |
+|  [?]  |           |  [?]  |
+|       |           |       |
++-------+           +-------+
+turn_to loop runs this many times: <span class="code-blank" style="min-width: 30px;"></span></div>
+            </div>
+        </div>
+
+        <div class="two-col" style="margin-top: 10px;">
+            <div>
+                <p><strong>Scenario C:</strong> Facing 3 (W), desired 1 (E)</p>
+                <div class="code-block" style="font-size: 12px; text-align: center;">Before turn:        After turn:
++-------+           +-------+
+|       |           |       |
+|  [?]  |           |  [?]  |
+|       |           |       |
++-------+           +-------+
+runs: <span class="code-blank" style="min-width: 30px;"></span>  wrap? <span class="code-blank" style="min-width: 30px;"></span></div>
+            </div>
+            <div>
+                <p><strong>Scenario D:</strong> Facing 2 (S), desired 2 (S)</p>
+                <div class="code-block" style="font-size: 12px; text-align: center;">Before turn:        After turn:
++-------+           +-------+
+|       |           |       |
+|  [?]  |           |  [?]  |
+|       |           |       |
++-------+           +-------+
+turn_to loop runs this many times: <span class="code-blank" style="min-width: 30px;"></span></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ════════ PAGE 5 ════════ -->
+<div class="page page-break">
     <!-- ── Part 8: Heading Logic in Code ── -->
     <div class="section">
         <div class="section-header">Part 8: Heading Logic in Code</div>
-        <p class="instruction">Fill in the blanks to complete the heading and turning functions.</p>
+        <p class="instruction">Fill in the blanks to complete the desired_heading function.</p>
 
         <div class="code-block">HEADING_NAMES = ["N", "E", "S", "W"]
 
@@ -697,33 +610,28 @@ def desired_heading(current_pos, next_pos):
     col_diff = next_pos[1] - current_pos[1]
 
     if row_diff == -1:
-        return <span class="inline-answer short"></span>      # North
-    elif col_diff == <span class="inline-answer short"></span>:
-        return <span class="inline-answer short"></span>      # East
-    elif row_diff == <span class="inline-answer short"></span>:
-        return <span class="inline-answer short"></span>      # South
-    elif col_diff == <span class="inline-answer short"></span>:
-        return <span class="inline-answer short"></span>      # West
+        return <span class="code-blank" style="min-width: 30px;"></span>      # North
+    elif col_diff == <span class="code-blank" style="min-width: 30px;"></span>:
+        return <span class="code-blank" style="min-width: 30px;"></span>      # East
+    elif row_diff == <span class="code-blank" style="min-width: 30px;"></span>:
+        return <span class="code-blank" style="min-width: 30px;"></span>      # South
+    elif col_diff == <span class="code-blank" style="min-width: 30px;"></span>:
+        return <span class="code-blank" style="min-width: 30px;"></span>      # West</div>
 
+        <p style="margin-top: 10px;"><strong>Test your understanding:</strong></p>
+        <p style="margin-top: 6px;"><strong>What does <code style="font-family: 'Fira Code', monospace; font-size: 14px; background: #f0ede8; padding: 1px 4px; border-radius: 3px;">desired_heading((0,0), (1,0))</code> return?</strong> <span class="inline-answer"></span></p>
+        <p style="margin-top: 6px;"><strong>What does <code style="font-family: 'Fira Code', monospace; font-size: 14px; background: #f0ede8; padding: 1px 4px; border-radius: 3px;">desired_heading((2,3), (2,2))</code> return?</strong> <span class="inline-answer"></span></p>
+        <p style="margin-top: 6px;"><strong>What does <code style="font-family: 'Fira Code', monospace; font-size: 14px; background: #f0ede8; padding: 1px 4px; border-radius: 3px;">desired_heading((1,1), (0,1))</code> return?</strong> <span class="inline-answer"></span></p>
 
-# Count right turns on paper:
-# count clockwise from current to needed
-# The Navigator class (Lesson 8) will code this!</div>
-
-        <p style="margin-top: 14px;"><strong>Test your understanding:</strong></p>
-        <ol class="questions">
-            <li>What does <code style="font-family: 'Fira Code', monospace; font-size: 14px;">desired_heading((0,0), (1,0))</code> return? <span class="inline-answer"></span></li>
-            <li>What does <code style="font-family: 'Fira Code', monospace; font-size: 14px;">desired_heading((2,3), (2,2))</code> return? <span class="inline-answer"></span></li>
-            <li>What does <code style="font-family: 'Fira Code', monospace; font-size: 14px;">desired_heading((1,1), (0,1))</code> return? <span class="inline-answer"></span></li>
-        </ol>
+        <p style="margin-top: 10px; font-style: italic; color: #636e72;">In the next lesson, you will type turn_to and desired_heading as real functions and run them on the robot.</p>
     </div>
 
     <!-- ── Reflection ── -->
     <div class="section">
         <div class="reflection-box">
             <div class="reflection-label">Reflection</div>
-            <p>The Manhattan algorithm tells the robot <strong>WHERE</strong> to go, but the turning logic tells it <strong>HOW</strong> to get there. What makes numeric headings and clockwise counting so powerful for solving the turning problem?</p>
-            <div class="answer-lines-3">
+            <p><strong>The Manhattan algorithm tells the robot WHERE to go; the turn_to while loop handles HOW to face the right direction. In one or two sentences, explain why adding 1 and wrapping 4 &rarr; 0 is enough to handle every turning case.</strong></p>
+            <div class="answer-lines-3" style="margin-top: 8px;">
                 <span class="answer-line"></span>
                 <span class="answer-line"></span>
                 <span class="answer-line"></span>
@@ -731,9 +639,8 @@ def desired_heading(current_pos, next_pos):
         </div>
     </div>
 
-    <!-- ── Next Lesson ── -->
     <div class="next-lesson">
-        <strong>Next Lesson:</strong> We&rsquo;ll implement the turning logic in a <strong>Navigator class</strong> that can drive the robot along any path!
+        <strong>Next Lesson:</strong> We&rsquo;ll turn these three functions into real code and drive the robot along any path!
     </div>
 </div>
 

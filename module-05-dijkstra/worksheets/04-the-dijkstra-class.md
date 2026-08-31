@@ -1,15 +1,15 @@
-# Lesson 4 Worksheet: The Dijkstra Class
+# Lesson 4 Worksheet: The Dijkstra Functions
 
 **Name:** ________________________
 **Date:** ________________________
 
 ---
 
-## Part A: Class Design
+## Part A: Function Design
 
-We are going to build a `Dijkstra` class that knows how to find shortest paths on our grid.
+We are going to build `build_dijkstra_graph()` and `compute_dijkstra_path()` -- two functions that work together to find shortest paths on our grid.
 
-**1. What information does the Dijkstra pathfinder need to know when it is created?**
+**1. What information does `build_dijkstra_graph()` need to know to build the graph?**
 
 List at least 3 things:
 
@@ -17,25 +17,21 @@ List at least 3 things:
 - ____________________________________________________________________
 - ____________________________________________________________________
 
-**2. Fill in the blanks for the `__init__` method:**
+**2. Fill in the blanks for `build_dijkstra_graph()`'s signature and first line:**
 
 ```python
-class Dijkstra:
-    def __init__(self, start, blocked):
-        self.position = __________    # Where the robot is now
-        self.blocked = __________     # List of blocked cells
-        self.graph = self.__________  # Build the graph
+def build_dijkstra_graph(__________, __________, __________):
+    graph = __________
 ```
 
-**3. What methods should the Dijkstra class have?**
+**3. What do the two Dijkstra functions do?**
 
-| Method Name | What It Does |
+| Function Name | What It Does |
 |---|---|
-| `__init__` | Initializes the pathfinder with start position and blocked list |
-| `__________` | Creates the graph dictionary from the grid |
-| `__________` | Finds the shortest path from current position to a destination |
+| `build_dijkstra_graph(rows, cols, blocked)` | __________________________________ |
+| `compute_dijkstra_path(position, destination, graph)` | __________________________________ |
 
-**4. Why do we build the graph inside the class instead of passing it in?**
+**4. Why does `compute_dijkstra_path()` take `graph` as a parameter instead of building it itself?**
 
 ____________________________________________________________________
 
@@ -43,11 +39,11 @@ ____________________________________________________________________
 
 ---
 
-## Part B: build_graph() Exercises
+## Part B: build_dijkstra_graph() Exercises
 
-The `build_graph()` method creates a dictionary where each key is a node `(row, col)` and each value is a list of that node's neighbors.
+`build_dijkstra_graph()` creates a dictionary where each key is a node `(row, col)` and each value is a list of that node's neighbors.
 
-**1. For a 2x2 grid with NO blocked cells, what does `build_graph(2, 2)` return?**
+**1. For a 2x2 grid with NO blocked cells, what does `build_dijkstra_graph(2, 2, [])` return?**
 
 ```python
 graph = {
@@ -58,7 +54,7 @@ graph = {
 }
 ```
 
-**2. For a 2x2 grid with (0, 1) blocked, what does `build_graph(2, 2)` return?**
+**2. For a 2x2 grid with (0, 1) blocked, what does `build_dijkstra_graph(2, 2, [(0, 1)])` return?**
 
 ```python
 graph = {
@@ -92,40 +88,34 @@ graph = {
 
 ---
 
-## Part C: Testing the Class — Predict Output
+## Part C: Testing the Functions — Predict Output
 
 Given this code:
 
 ```python
-class Dijkstra:
-    def __init__(self, start, blocked):
-        self.position = start
-        self.blocked = blocked
-        self.graph = self.build_graph(4, 4)
+def build_dijkstra_graph(rows, cols, blocked):
+    graph = {}
+    for r in range(rows):
+        for c in range(cols):
+            if (r, c) in blocked:
+                continue
+            neighbors = []
+            for dr, dc in [(-1,0),(1,0),(0,-1),(0,1)]:
+                nr, nc = r + dr, c + dc
+                if 0 <= nr < rows and 0 <= nc < cols and (nr,nc) not in blocked:
+                    neighbors.append((nr, nc))
+            graph[(r, c)] = neighbors
+    return graph
 
-    def build_graph(self, rows, cols):
-        graph = {}
-        for r in range(rows):
-            for c in range(cols):
-                if (r, c) in self.blocked:
-                    continue
-                neighbors = []
-                for dr, dc in [(-1,0),(1,0),(0,-1),(0,1)]:
-                    nr, nc = r + dr, c + dc
-                    if 0 <= nr < rows and 0 <= nc < cols and (nr,nc) not in self.blocked:
-                        neighbors.append((nr, nc))
-                graph[(r, c)] = neighbors
-        return graph
-
-    def compute_path(self, destination):
-        return []  # Placeholder for now
+def compute_dijkstra_path(position, destination, graph):
+    return []  # Placeholder for now
 ```
 
 **Program 1:**
 
 ```python
-pathfinder = Dijkstra((0, 0), [])
-print(len(pathfinder.graph))
+graph = build_dijkstra_graph(4, 4, [])
+print(len(graph))
 ```
 
 **Predicted output:** __________
@@ -135,9 +125,9 @@ print(len(pathfinder.graph))
 **Program 2:**
 
 ```python
-pathfinder = Dijkstra((0, 0), [(1, 1)])
-print((1, 1) in pathfinder.graph)
-print(pathfinder.graph[(0, 1)])
+graph = build_dijkstra_graph(4, 4, [(1, 1)])
+print((1, 1) in graph)
+print(graph[(0, 1)])
 ```
 
 **Predicted output:**
@@ -150,8 +140,8 @@ __________
 **Program 3:**
 
 ```python
-pathfinder = Dijkstra((0, 0), [(0, 1), (1, 0)])
-print(pathfinder.graph[(0, 0)])
+graph = build_dijkstra_graph(4, 4, [(0, 1), (1, 0)])
+print(graph[(0, 0)])
 ```
 
 **Predicted output:** __________
@@ -161,27 +151,21 @@ print(pathfinder.graph[(0, 0)])
 **Program 4:**
 
 ```python
-pathfinder = Dijkstra((2, 2), [(1, 1), (1, 2), (2, 1)])
-print(pathfinder.position)
-print(len(pathfinder.graph[(2, 2)]))
+graph = build_dijkstra_graph(4, 4, [(1, 1), (1, 2), (2, 1)])
+print(len(graph[(2, 2)]))
 ```
 
-**Predicted output:**
-
-```
-__________
-__________
-```
+**Predicted output:** __________
 
 ---
 
 ## Answer Key
 
 ### Part A:
-1. Start position, list of blocked cells, grid size (rows and columns)
-2. `self.position = start`, `self.blocked = blocked`, `self.graph = self.build_graph(4, 4)`
-3. `build_graph` — Creates the graph dictionary from the grid; `compute_path` — Finds shortest path to destination
-4. The graph depends on which cells are blocked, which the class knows about. Building it inside keeps everything together and ensures the graph is always consistent with the blocked list.
+1. Grid size (rows and columns), list of blocked cells
+2. `def build_dijkstra_graph(rows, cols, blocked):` / `graph = {}`
+3. `build_dijkstra_graph` — Creates the graph dictionary from the grid; `compute_dijkstra_path` — Finds shortest path to destination
+4. Building it once and passing it in avoids rebuilding it every single call. The caller only needs to rebuild the graph when the blocked list actually changes.
 
 ### Part B:
 1. `(0,0): [(1,0),(0,1)]`, `(0,1): [(1,1),(0,0)]`, `(1,0): [(0,0),(1,1)]`, `(1,1): [(0,1),(1,0)]`
@@ -194,4 +178,24 @@ __________
 - Program 1: `16` — A 4x4 grid with no blocked cells has 16 nodes.
 - Program 2: `False` then `[(0, 0), (0, 2)]` — (1,1) is blocked so not in graph. (0,1)'s neighbors skip (1,1).
 - Program 3: `[]` — Both neighbors of (0,0) are blocked, so it has an empty neighbor list.
-- Program 4: `(2, 2)` then `1` — Three of (2,2)'s neighbors are blocked. Only (2,3) remains, so length is 1.
+- Program 4: `1` — Three of (2,2)'s neighbors are blocked. Only (2,3) remains, so length is 1.
+
+---
+
+## Part D (Optional Extension): Wrap It in a Class
+
+*Skip this section if your course doesn't cover classes.*
+
+**1. Fill in the blanks:**
+
+```python
+class Dijkstra:
+    def __init__(self, start, blocked):
+        self.position = __________    # Where the robot is now
+        self.blocked = __________     # List of blocked cells
+        self.graph = self.__________  # Build the graph
+```
+
+**2. Which functions-version parameter disappears when you switch to the class version, and why?**
+
+____________________________________________________________________

@@ -213,7 +213,7 @@ previous = {
 | Steps | Cannot complete | 4 |
 | Result | Fails | Finds shortest path around obstacle |
 
-**Key design insight:** Dijkstra's `compute_path` returns a list of tuples — the **same format** as Manhattan's `compute_path`. So our Navigator class doesn't need to change!
+**Key design insight:** `compute_dijkstra_path()` returns a list of tuples — the **same format** as `compute_manhattan_path()`. So `drive_path()` doesn't need to change!
 
 ---
 
@@ -257,8 +257,8 @@ previous = {
 - Compared Dijkstra to Manhattan pathfinding
 
 **Next lesson (Lesson 4):**
-- Implement Dijkstra's algorithm as a **Python class**
-- Write `compute_path(destination)` that returns a list of tuples
-- Same interface as Manhattan — so Navigator works with both!
+- Implement Dijkstra's algorithm as **Python functions**
+- Design `compute_dijkstra_path(position, destination, graph)` to return a list of tuples
+- Same return shape as `compute_manhattan_path()` — so `drive_path()` works with both!
 
 **Key insight:** You traced the algorithm by hand today. Next lesson, you'll teach the computer to do the exact same steps.

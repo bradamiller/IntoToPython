@@ -52,9 +52,9 @@ Before turn:        After turn_right():
 **Drive 2 intersections forward, turn right, drive 2 more:**
 
 ```python
-drive_intersections(tracker, 2)
-tracker.turn_right()
-drive_intersections(tracker, 2)
+drive_intersections(2)
+turn_right()
+drive_intersections(2)
 ```
 
 **Visual:**
@@ -75,13 +75,13 @@ Start → + → + ┐
 
 ```python
 # After drive_intersections, robot is AT the intersection
-drive_intersections(tracker, 2)
+drive_intersections(2)
 
 # turn_right() handles clearing internally
-tracker.turn_right()
+turn_right()
 
 # Go straight into next drive — no extra clearing!
-drive_intersections(tracker, 2)
+drive_intersections(2)
 ```
 
 **Why?** The turn method drives forward as part of the turn. The robot is already past the intersection.
@@ -120,29 +120,29 @@ drive_intersections(tracker, 2)
 ## Slide 7: More Path Examples
 **U-Turn:**
 ```python
-drive_intersections(tracker, 3)
-tracker.turn_right()
-drive_intersections(tracker, 1)
-tracker.turn_right()
-drive_intersections(tracker, 3)
+drive_intersections(3)
+turn_right()
+drive_intersections(1)
+turn_right()
+drive_intersections(3)
 ```
 
 **Z-Shape:**
 ```python
-drive_intersections(tracker, 2)
-tracker.turn_right()
-drive_intersections(tracker, 2)
-tracker.turn_left()
-drive_intersections(tracker, 2)
+drive_intersections(2)
+turn_right()
+drive_intersections(2)
+turn_left()
+drive_intersections(2)
 ```
 
 **Staircase:**
 ```python
 for i in range(3):
-    drive_intersections(tracker, 1)
-    tracker.turn_right()
-    drive_intersections(tracker, 1)
-    tracker.turn_left()
+    drive_intersections(1)
+    turn_right()
+    drive_intersections(1)
+    turn_left()
 ```
 
 ---
@@ -151,19 +151,18 @@ for i in range(3):
 **Mistake 1: Forgetting to be at intersection before turning**
 ```python
 # WRONG — robot is in the middle of a line
-tracker.turn_right()
+turn_right()
 
 # CORRECT — drive to intersection first, then turn
-tracker.track_until_cross()
-tracker.turn_right()
+track_until_cross()
+turn_right()
 ```
 
 **Mistake 2: Clearing after a turn**
 ```python
 # WRONG — double clearing causes skipped intersection
-tracker.turn_right()
-tracker.drivetrain.set_effort(0.3, 0.3)  # Not needed!
-time.sleep(0.3)
+turn_right()
+clear_intersection()
 ```
 
 **Mistake 3: Wrong turn direction**

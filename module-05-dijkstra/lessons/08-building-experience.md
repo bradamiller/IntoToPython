@@ -3,6 +3,8 @@
 ## Overview
 Students extend the obstacle detection system from Lesson 7 by adding **memory** -- the ability for the robot to remember obstacles discovered during one run and use that knowledge to navigate more efficiently on subsequent runs. In Run 1, the robot starts with an empty blocked list and discovers obstacles the hard way: it drives toward them, detects them with the rangefinder, reroutes, and eventually reaches the destination. In Run 2, the robot starts with the obstacles it discovered during Run 1 already in its blocked list, so it plans a smarter initial path and encounters fewer surprises. Students measure the improvement by comparing total steps taken and number of reroutes between runs. This lesson makes the GPS/Waze analogy concrete: just as Waze learns from drivers who report accidents and construction, the robot learns from its own experience. Advanced students implement persistent storage by writing the blocked list to a file and reading it back, so the robot's knowledge survives between program restarts.
 
+*If your course covers the Module 5 Lesson 4-5 Optional Extensions (the `Dijkstra` class), everything below works the same way through `pathfinder = Dijkstra(rows, cols, blocked_list)` instead of `build_dijkstra_graph()`/`compute_dijkstra_path()` -- only the call syntax changes.*
+
 This lesson is the bridge between single-run obstacle detection (Lesson 7) and the capstone project (Lesson 9). It introduces a key idea in robotics and artificial intelligence: **systems that improve with experience**. The robot is not "smarter" in the traditional sense -- it uses the same Dijkstra algorithm every time -- but it has better data on subsequent runs, which leads to better paths. Students see that intelligence is often about having good information, not just good algorithms.
 
 ## Learning Objectives
@@ -55,7 +57,7 @@ By the end of this lesson, students will be able to:
 2. **Why Memory Matters**
    - "In Lesson 7, every time we ran the program, the robot started with an empty blocked list. It had to rediscover every obstacle from scratch. That's like forgetting your commute every morning and being surprised by the same construction zone."
    - "Today we fix that. The robot remembers what it learned."
-   - Key insight: The Dijkstra algorithm does not change. The Navigator does not change. Only the INPUT changes -- the blocked list starts with more information. **Better data leads to better performance.**
+   - Key insight: `compute_dijkstra_path()` does not change. The driving functions do not change. Only the INPUT changes -- the blocked list starts with more information. **Better data leads to better performance.**
 
 3. **Measuring Improvement**
    - "How do we know Run 2 is better than Run 1? We measure."
@@ -72,7 +74,7 @@ By the end of this lesson, students will be able to:
 1. **Run 1: Discover and Remember**
    - Walk through the code structure together:
      ```python
-     from dijkstra import Dijkstra
+     from dijkstra import build_dijkstra_graph, compute_dijkstra_path
      from XRPLib.rangefinder import Rangefinder
 
      # Obstacle memory -- starts empty for Run 1
@@ -106,8 +108,8 @@ By the end of this lesson, students will be able to:
      current_pos = start
 
      # Compute initial path WITH known obstacles
-     pathfinder = Dijkstra(rows, cols, blocked_list)
-     path = pathfinder.compute_path(current_pos, destination)
+     graph = build_dijkstra_graph(rows, cols, blocked_list)
+     path = compute_dijkstra_path(current_pos, destination, graph)
      print(f"Initial path (with prior knowledge): {path}")
 
      # Navigate again with the same check-detect loop
@@ -218,7 +220,7 @@ By the end of this lesson, students will be able to:
 
 | Misconception | Reality |
 |---|---|
-| "The robot gets smarter on Run 2 because it learns a better algorithm" | The algorithm (Dijkstra) is identical on both runs. What changes is the DATA -- the blocked list. Better data in, better paths out. The "intelligence" is in the information, not the algorithm. |
+| "The robot gets smarter on Run 2 because it learns a better algorithm" | `compute_dijkstra_path()` is identical on both runs. What changes is the DATA -- the blocked list. Better data in, better paths out. The "intelligence" is in the information, not the algorithm. |
 | "Run 2 always takes fewer steps than Run 1" | Run 2 usually takes fewer steps because it avoids known obstacles from the start. However, if Run 1 happened to take a path that avoided obstacles by luck, or if Run 2 discovers new obstacles, the difference may be small. |
 | "The robot remembers obstacles forever automatically" | Within a single program execution, the list variable persists. But if you stop and restart the program, the list is gone -- Python variables do not survive between runs. You need file I/O to persist data. |
 | "Once the robot knows all obstacles, it never needs the rangefinder" | The rangefinder is still useful because new obstacles could appear (someone moves an object). In a real-world system, the environment can change, so sensors are always needed. |
@@ -245,10 +247,7 @@ By the end of this lesson, students will be able to:
 
 ### Two-Run Navigation with Memory
 ```python
-# two_run_navigation.py
-# Demonstrates how obstacle memory improves performance across runs
-
-from dijkstra import Dijkstra
+from dijkstra import build_dijkstra_graph, compute_dijkstra_path
 
 # Simulated obstacles (replace with rangefinder for physical robot)
 ACTUAL_OBSTACLES = [(1, 0), (2, 2), (1, 3)]
@@ -275,8 +274,8 @@ def navigate_one_run(run_number, blocked_list, start, destination):
     print(f"{'=' * 50}")
 
     # Compute initial path
-    pathfinder = Dijkstra(rows, cols, blocked_list)
-    path = pathfinder.compute_path(start, destination)
+    graph = build_dijkstra_graph(rows, cols, blocked_list)
+    path = compute_dijkstra_path(start, destination, graph)
     print(f"Initial path: {path}")
     print(f"Initial path length: {len(path) - 1} steps")
 
@@ -299,8 +298,8 @@ def navigate_one_run(run_number, blocked_list, start, destination):
 
             # Recompute path
             reroutes += 1
-            pathfinder = Dijkstra(rows, cols, blocked_list)
-            path = pathfinder.compute_path(current_pos, destination)
+            graph = build_dijkstra_graph(rows, cols, blocked_list)
+            path = compute_dijkstra_path(current_pos, destination, graph)
             print(f"  Rerouted: {path}")
             next_pos = path[1]
 
@@ -343,11 +342,8 @@ print(f"{'Reroutes':<25} {reroutes1:>8} {reroutes2:>8} {reroutes2 - reroutes1:>+
 print(f"{'New obstacles found':<25} {new1:>8} {new2:>8} {new2 - new1:>+8}")
 ```
 
-### Saving Obstacles to a File
+### Saving and Loading Obstacles to a File
 ```python
-# save_obstacles.py
-# Write the blocked list to a file so it persists between program runs
-
 def save_blocked_list(blocked_list, filename="obstacles.txt"):
     """Save the blocked list to a text file."""
     with open(filename, "w") as f:
@@ -384,57 +380,9 @@ print(f"Starting with: {blocked_list}")
 save_blocked_list(blocked_list)
 ```
 
-### Reading the File Back
-```python
-# load_and_navigate.py
-# Start a navigation run with previously saved obstacle data
-
-from dijkstra import Dijkstra
-
-def load_blocked_list(filename="obstacles.txt"):
-    """Load the blocked list from a text file."""
-    blocked_list = []
-    try:
-        with open(filename, "r") as f:
-            for line in f:
-                line = line.strip()
-                if line:
-                    row, col = line.split(",")
-                    blocked_list.append((int(row), int(col)))
-        print(f"Loaded {len(blocked_list)} obstacles from {filename}")
-    except FileNotFoundError:
-        print("No saved obstacles found. Starting fresh.")
-    return blocked_list
-
-# Load prior knowledge
-blocked_list = load_blocked_list()
-print(f"Prior obstacles: {blocked_list}")
-
-# Plan initial path using prior knowledge
-rows = 4
-cols = 4
-pathfinder = Dijkstra(rows, cols, blocked_list)
-path = pathfinder.compute_path((0, 0), (3, 3))
-print(f"Initial path with prior knowledge: {path}")
-print(f"Path length: {len(path) - 1} steps")
-
-# Compare to path without prior knowledge
-pathfinder_fresh = Dijkstra(rows, cols, [])
-path_fresh = pathfinder_fresh.compute_path((0, 0), (3, 3))
-print(f"\nPath without prior knowledge: {path_fresh}")
-print(f"Path length: {len(path_fresh) - 1} steps")
-
-if len(path) > len(path_fresh):
-    print(f"\nPrior knowledge adds {len(path) - len(path_fresh)} steps to avoid known obstacles.")
-    print("But this is BETTER because the robot won't hit those obstacles and have to reroute!")
-```
-
 ### Multi-Destination Navigation with Growing Memory
 ```python
-# multi_destination.py
-# Navigate to multiple destinations, building obstacle knowledge along the way
-
-from dijkstra import Dijkstra
+from dijkstra import build_dijkstra_graph, compute_dijkstra_path
 
 ACTUAL_OBSTACLES = [(1, 0), (2, 2), (0, 2)]
 
@@ -451,8 +399,8 @@ def simulate_rangefinder(next_pos):
 
 def navigate_to(start, destination, blocked_list):
     """Navigate from start to destination, returning the final position."""
-    pathfinder = Dijkstra(rows, cols, blocked_list)
-    path = pathfinder.compute_path(start, destination)
+    graph = build_dijkstra_graph(rows, cols, blocked_list)
+    path = compute_dijkstra_path(start, destination, graph)
     current_pos = start
     steps = 0
     reroutes = 0
@@ -466,8 +414,8 @@ def navigate_to(start, destination, blocked_list):
                 blocked_list.append(next_pos)
                 print(f"    Discovered obstacle at {next_pos}")
             reroutes += 1
-            pathfinder = Dijkstra(rows, cols, blocked_list)
-            path = pathfinder.compute_path(current_pos, destination)
+            graph = build_dijkstra_graph(rows, cols, blocked_list)
+            path = compute_dijkstra_path(current_pos, destination, graph)
             next_pos = path[1]
 
         current_pos = next_pos
@@ -494,14 +442,14 @@ print(f"Total obstacles discovered: {len(blocked_list)}")
 ## Teaching Notes
 - **The GPS/Waze analogy is extremely effective.** Students immediately understand why remembering obstacles is useful when you frame it in terms of technology they use every day. Extend the analogy: "What if Waze forgot all traffic reports every time you closed the app? You'd hit the same traffic jam every day."
 - **Run 1 and Run 2 should be dramatic.** Set up the grid so Run 1 has at least 2-3 reroutes. The contrast with Run 2 (which may have zero reroutes) is the "aha" moment. Display the comparison table prominently.
-- **Use the simulation first, hardware second.** The `two_run_navigation.py` simulation lets students focus on the concept of memory and improvement without hardware complications. Once they understand the idea, move to the physical robot.
-- **The file I/O challenge is optional but valuable.** Writing to and reading from files is a real-world programming skill that many students have not encountered. If time permits, the challenge exercise is well worth doing. If not, the in-memory approach (keeping the list between runs in the same program) teaches the same concept.
+- **Use the simulation first, hardware second.** The simulation lets students focus on the concept of memory and improvement without hardware complications. Once they understand the idea, move to the physical robot.
+- **The file I/O challenge is optional but valuable.** Writing to and reading from files is a real-world programming skill that many students have not encountered. If time permits, the challenge exercise is well worth doing.
 - **Discuss limitations honestly.** What if obstacles move? What if the robot's sensor was wrong? Real systems need ways to remove outdated information, not just add new data. This is a good discussion topic for advanced students.
-- **Connect to AI and machine learning.** The robot is "learning" in a very simple sense: it accumulates data and uses it to make better decisions. This is the same basic principle behind machine learning, just much simpler. Students interested in AI will find this connection motivating.
+- **Connect to AI and machine learning.** The robot is "learning" in a very simple sense: it accumulates data and uses it to make better decisions. This is the same basic principle behind machine learning, just much simpler.
 - **Metrics matter.** Have students record numbers -- total steps, reroutes, new obstacles -- for every run. The quantitative comparison is much more convincing than a qualitative "it seemed faster."
 
 ## Connections to Next Lessons
 - **Lesson 9** (Capstone) requires students to demonstrate improvement between Run 1 and Run 2 as a grading criterion. The obstacle memory system built in this lesson is directly assessed in the capstone.
-- The capstone project combines ALL components: Dijkstra pathfinding (Lessons 3-5), shared interface and swap (Lesson 6), rangefinder detection (Lesson 7), and obstacle memory (this lesson) into one integrated system.
+- The capstone project combines ALL components: Dijkstra pathfinding (Lessons 3-5), the swap (Lesson 6), rangefinder detection (Lesson 7), and obstacle memory (this lesson) into one integrated system.
 - The file I/O skills from the challenge exercise apply to many future programming tasks: saving game state, logging data, reading configuration files, and more.
 - The concept of systems that improve with experience is foundational to machine learning and artificial intelligence -- fields students may explore in future courses.

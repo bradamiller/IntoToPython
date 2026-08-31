@@ -11,8 +11,8 @@ The capstone project combines everything from this module. Draw arrows to show h
 
 **Components:**
 
-1. **Dijkstra class** — Finds shortest paths on the grid graph
-2. **Navigator class** — Drives the robot along a path (turn + drive)
+1. **`build_dijkstra_graph()` / `compute_dijkstra_path()`** — Find shortest paths on the grid graph
+2. **`drive_path()`** — Drives the robot along a path (turn + drive)
 3. **Rangefinder** — Detects obstacles ahead of the robot
 4. **Obstacle memory** (blocked list) — Remembers discovered obstacles
 5. **Main program** — Coordinates everything
@@ -22,9 +22,9 @@ The capstone project combines everything from this module. Draw arrows to show h
 ```
 Main Program
     |
-    |--- Creates __________ with start position and blocked list
+    |--- Calls __________ with position, destination, and blocked list
     |
-    |--- Creates __________ to drive the robot
+    |--- Calls __________ to drive the robot
     |
     |--- Uses __________ to check for obstacles
     |
@@ -138,11 +138,11 @@ Before running your capstone on the actual robot, verify each item:
 
 | Check | Done? |
 |---|---|
-| Dijkstra class has `__init__`, `build_graph`, `compute_path` | ______ |
-| `build_graph` correctly excludes blocked nodes | ______ |
-| `compute_path` returns a list of (row, col) tuples | ______ |
-| `compute_path` handles blocked destinations | ______ |
-| Navigator class can follow a path of (row, col) tuples | ______ |
+| `build_dijkstra_graph()` and `compute_dijkstra_path()` are both defined | ______ |
+| `build_dijkstra_graph()` correctly excludes blocked nodes | ______ |
+| `compute_dijkstra_path()` returns a list of (row, col) tuples | ______ |
+| `compute_dijkstra_path()` handles blocked destinations | ______ |
+| `drive_path()` can follow a path of (row, col) tuples | ______ |
 | Rangefinder setup uses correct import and initialization | ______ |
 | Obstacle detection uses a reasonable threshold | ______ |
 | Blocked list is updated when obstacles are found | ______ |

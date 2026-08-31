@@ -4,7 +4,7 @@
 **Title:** Module 2 Final Project
 
 **Learning Objectives:**
-- Integrate LineSensor and LineTrack classes into a complete program
+- Integrate the sensor and driving toolkits into a complete program
 - Write a main program that follows the circle and reverses at the cross
 - Test, debug, and refine a working robot program
 - Present and reflect on your work
@@ -26,8 +26,8 @@
 5. Lesson 5: Proportional control ✓
 6. Lesson 6: Two-sensor line following ✓
 7. Lesson 7: Intersection detection ✓
-8. Lesson 8: LineSensor class ✓
-9. Lesson 9: LineTrack class ✓
+8. Lesson 8: Sensor functions toolkit ✓
+9. Lesson 9: Driving functions toolkit ✓
 10. **Today: Put it ALL together!**
 
 ---
@@ -42,7 +42,7 @@
 6. Stop and print a completion message
 
 **Code must:**
-- Use LineSensor and LineTrack classes
+- Use the sensor and driving toolkit functions
 - Include print statements showing progress
 - Be organized and commented
 
@@ -51,10 +51,10 @@
 ## Slide 4: Project Options
 **Option A: Standard (Recommended)**
 - Follow → detect → reverse → repeat 4 times → stop
-- Use existing classes without modification
+- Use existing toolkit functions without modification
 
 **Option B: Enhanced**
-- Option A plus: add `turn_around()` method, timing, LED feedback
+- Option A plus: add `turn_around()` function, timing prints, LED feedback
 
 **Option C: Advanced**
 - Option A plus: off-line recovery, variable speed, creative additions
@@ -64,22 +64,21 @@
 ## Slide 5: The Main Program
 ```python
 board = Board.get_default_board()
-tracker = LineTrack()
 
 board.wait_for_button()
 print("Starting!")
 
 for i in range(4):
     print("Leg", i + 1, "- Following...")
-    tracker.track_until_cross()
+    track_until_cross()
     print("Cross! Reversing...")
-    tracker.turn_right()
-    tracker.turn_right()
+    turn_right()
+    turn_right()
 
 print("Done! 4 reversals complete.")
 ```
 
-**The power of classes:** The main program is just 10 lines!
+**The power of organized toolkits:** The main program is just 10 lines!
 
 ---
 
@@ -93,7 +92,7 @@ print("Done! 4 reversals complete.")
 | Test 3 | Does 1 full reversal work? |
 | Test 4 | Do all 4 reversals complete? |
 
-**If something fails:** Add print statements, check threshold, adjust parameters.
+**If something fails:** Add print statements, check `THRESHOLD`, adjust parameters.
 
 ---
 
@@ -101,18 +100,18 @@ print("Done! 4 reversals complete.")
 
 | Problem | Fix |
 |---|---|
-| Robot doesn't detect cross | Adjust threshold, widen tape cross |
-| Robot loses line after turn | Adjust time.sleep() in turn methods |
-| Robot goes wrong way after turn | Try turn_left() instead of turn_right() |
-| Robot oscillates on the line | Reduce Kp value |
-| Robot is too slow/fast | Adjust base_effort |
+| Robot doesn't detect cross | Adjust `THRESHOLD`, widen tape cross |
+| Robot loses line after turn | Check `clear_intersection()`'s 8 cm against your robot |
+| Robot goes wrong way after turn | Try `turn_left()` instead of `turn_right()` |
+| Robot oscillates on the line | Reduce `KP` value |
+| Robot is too slow/fast | Adjust `BASE_EFFORT` |
 
 ---
 
 ## Slide 8: Rubric (50 points)
 | Category | Points |
 |---|---|
-| Code organization (classes correct) | 10 |
+| Code organization (toolkits correct) | 10 |
 | Line following works | 5 |
 | Cross detection works | 5 |
 | Reversal works | 5 |
@@ -128,7 +127,7 @@ print("Done! 4 reversals complete.")
 
 ## Slide 9: Build Time!
 **Steps:**
-1. Verify LineSensor and LineTrack classes work
+1. Verify the sensor and driving toolkits work
 2. Write main program
 3. Test incrementally (1 reversal → 4 reversals)
 4. Debug and tune
@@ -140,11 +139,29 @@ print("Done! 4 reversals complete.")
 
 ## Slide 10: Looking Ahead — Module 3
 **What you've built:**
-- Reusable LineSensor and LineTrack classes
-- Skills: loops, conditionals, classes, composition
+- Reusable sensor and driving function toolkits
+- Skills: loops, conditionals, global variables, function composition
 
 **Module 3: Grid Driving**
-- Use `LineTrack` on a taped GRID
+- Use the driving toolkit on a taped GRID
 - `track_until_cross()` drives between intersections
 - `turn_right()` and `turn_left()` navigate the grid
-- **Your Module 2 classes are the foundation for everything that follows!**
+- **Your Module 2 toolkits are the foundation for everything that follows!**
+
+---
+
+## Slide 11: Optional Extension -- The Final Project with Classes
+
+*For courses that also cover classes/objects. Skip if not covering classes.*
+
+```python
+tracker = LineTrack()
+
+board.wait_for_button()
+for i in range(4):
+    tracker.track_until_cross()
+    tracker.turn_right()
+    tracker.turn_right()
+```
+
+**Every call has a direct counterpart:** `tracker.track_until_cross()` ↔ `track_until_cross()`, `tracker.turn_right()` ↔ `turn_right()`. Robot behavior is identical either way -- only the packaging differs.

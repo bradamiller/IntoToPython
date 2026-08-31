@@ -2,11 +2,13 @@
 
 ## Course Overview
 
-This course teaches high school students Python programming through hands-on robotics using XRP robots. Students begin with visual block-based programming, transition to Python, and progressively build reusable classes that culminate in autonomous grid navigation using pathfinding algorithms. Every Python concept is introduced just-in-time — at the moment students need it to accomplish something concrete with their robot.
+This course teaches high school students Python programming through hands-on robotics using XRP robots. Students begin with visual block-based programming, transition to Python, and progressively build reusable toolkits of functions that culminate in autonomous grid navigation using pathfinding algorithms. Every Python concept is introduced just-in-time — at the moment students need it to accomplish something concrete with their robot.
 
 **Capstone goal:** The robot navigates a taped grid to a series of destinations using pathfinding algorithms (Manhattan, then Dijkstra), detecting and avoiding obstacles, and building "experience" over multiple runs.
 
 **Prerequisites:** None beyond basic computer literacy. No prior programming experience required.
+
+**Classes are optional.** Every module's core content is taught with plain functions — the same skill set as Module 1. Selected lessons include an Optional Extension that repackages the working functions as a class, for courses that also want to cover OOP. See `teacher-guide/classes-optional.md` for the full breakdown of where these appear and why.
 
 ---
 
@@ -24,10 +26,11 @@ This course teaches high school students Python programming through hands-on rob
 | Comparison and logical operators | Module 2 | Modules 3–5 |
 | `import`, using libraries | Module 2 | Modules 3–5 |
 | `random` module | Module 2 | — |
-| Classes (`class`, `__init__`, `self`) | Module 2 | Modules 3–5 |
-| Methods | Module 2 | Modules 3–5 |
-| Object composition (class uses class) | Module 2 | Modules 3–5 |
-| Program structure (main program + classes) | Module 3 | Modules 4–5 |
+| Global variables, function toolkits | Module 2 | Modules 3–5 |
+| *(Optional)* Classes (`class`, `__init__`, `self`) | Module 2 | Modules 3–5 |
+| *(Optional)* Methods | Module 2 | Modules 3–5 |
+| *(Optional)* Object composition (class uses class) | Module 2 | Modules 3–5 |
+| Program structure (main program + reusable functions) | Module 3 | Modules 4–5 |
 | Tuples | Module 4 | Module 5 |
 | Lists, `append()`, iteration | Module 4 | Module 5 |
 | Separation of concerns / interfaces | Module 4 | Module 5 |
@@ -116,8 +119,8 @@ Variables, `print()`, `for` loops, `range()`, `def`, parameters, function calls,
 ## Module 2: Line Tracking
 
 **Duration:** ~4–5 weeks
-**Theme:** Sensors, control loops, and building your first Python classes
-**Final project:** Robot follows a circle with a cross, reversing direction 4 times using LineSensor and LineTrack classes
+**Theme:** Sensors, control loops, and organizing code into reusable toolkits
+**Final project:** Robot follows a circle with a cross, reversing direction 4 times using the sensor and driving toolkits
 
 ### Phase A: Understanding Sensors (Lessons 1–4)
 
@@ -160,41 +163,43 @@ Variables, `print()`, `for` loops, `range()`, `def`, parameters, function calls,
 - Adding the taped cross to the circle
 - *Exercise:* Follow the circle and, upon reaching the cross, turn around and continue in the opposite direction
 
-### Phase C: Building Classes (Lessons 8–10)
+### Phase C: Building Reusable Toolkits (Lessons 8–10)
 
-**Lesson 8: Introduction to Classes — LineSensor**
-- Why classes? Organizing related code together
-- `class`, `__init__()`, `self`, methods
-- *Exercise:* Create a `LineSensor` class with methods:
+**Lesson 8: Sensor Functions**
+- Why organize code into functions? Grouping related logic together
+- Global variables shared across functions, functions calling functions
+- *Exercise:* Build a sensor toolkit with:
   - `get_error()` — returns left − right sensor value
   - `is_at_cross()` — returns True when both sensors detect the line
   - `is_off_line()` — returns True when neither sensor detects the line
+- *Optional Extension:* Refactor the toolkit into a `LineSensor` class (`class`, `__init__()`, `self`, methods)
 
-**Lesson 9: Object Composition — LineTrack**
-- Using one class inside another
-- The `LineTrack` class uses a `LineSensor` object
-- *Exercise:* Create a `LineTrack` class with methods:
+**Lesson 9: Line-Tracking Functions**
+- One toolkit calling into another
+- The driving toolkit calls the Lesson 8 sensor functions
+- *Exercise:* Build a driving toolkit with:
   - `track_until_cross()` — follows the line until an intersection is detected
   - `turn_right()` — turns right until detecting the line again
   - `turn_left()` — turns left until detecting the line again
+- *Optional Extension:* Refactor into a `LineTrack` class that composes a `LineSensor` object
 
 **Lesson 10: Module 2 Final Project**
-- Combining both classes in a main program
-- *Exercise:* Write a program that uses `LineSensor` and `LineTrack` to:
+- Combining both toolkits in a main program
+- *Exercise:* Write a program that uses the sensor and driving toolkits to:
   1. Follow the circle until hitting the cross
   2. Turn around
   3. Continue following
   4. Repeat for 4 reversals, then stop
 
 ### Python Concepts Introduced
-`while` loops, `if`/`elif`/`else`, comparison operators (`<`, `>`, `<=`, `>=`, `==`), logical operators (`and`, `or`, `not`), `import`, `random` module, classes (`class`, `__init__`, `self`), methods, object composition, `True`/`False`/booleans
+`while` loops, `if`/`elif`/`else`, comparison operators (`<`, `>`, `<=`, `>=`, `==`), logical operators (`and`, `or`, `not`), `import`, `random` module, global variables, function toolkits, `True`/`False`/booleans. *Optional:* classes (`class`, `__init__`, `self`), methods, object composition.
 
 ---
 
 ## Module 3: Relative Driving on the Grid
 
 **Duration:** ~1–2 weeks
-**Theme:** Using your classes on the grid and verifying they work
+**Theme:** Using your toolkit on the grid and verifying it works
 **Final project:** Robot drives a square pattern on the grid (2 intersections per side)
 
 ### Lessons
@@ -202,8 +207,8 @@ Variables, `print()`, `for` loops, `range()`, `def`, parameters, function calls,
 **Lesson 1: Introduction to the Grid**
 - The physical setup: taped lines forming a grid on whiteboard material
 - How intersections relate to the cross detection from Module 2
-- Reviewing the `LineTrack` class methods: `track_until_cross()`, `turn_right()`, `turn_left()`
-- *Exercise:* Place the robot on the grid and use `LineTrack` to drive to the next intersection and stop
+- Reviewing the driving toolkit functions: `track_until_cross()`, `turn_right()`, `turn_left()`
+- *Exercise:* Place the robot on the grid and use the toolkit to drive to the next intersection and stop
 
 **Lesson 2: Driving Multiple Intersections**
 - Driving past an intersection: what happens after detecting a cross?
@@ -224,7 +229,7 @@ Variables, `print()`, `for` loops, `range()`, `def`, parameters, function calls,
 - The robot should end up back where it started
 
 ### Python Concepts Reinforced
-Using existing class instances, method calls, `for` loops, sequential program structure, debugging/testing physical systems
+Reusing existing functions, `for` loops, sequential program structure, debugging/testing physical systems
 
 ---
 
@@ -254,25 +259,25 @@ Using existing class instances, method calls, `for` loops, sequential program st
 - A path is a list of coordinate tuples
 - *Exercise:* Create a list of coordinate tuples representing a path and print each step
 
-### Phase B: The Manhattan Class (Lessons 4–6)
+### Phase B: The Manhattan Function (Lessons 4–6)
 
 **Lesson 4: The Manhattan Algorithm**
 - How Manhattan distance works: move along rows first, then columns
 - Walking through examples on paper: given start (0,0) and destination (2,3), the path is (0,0)→(1,0)→(2,0)→(2,1)→(2,2)→(2,3)
 - *Exercise:* Work out paths by hand for several start/destination pairs (worksheet)
 
-**Lesson 5: Implementing the Manhattan Class**
-- Class design: `__init__()` stores current position, `compute_path()` returns a list of tuples
-- Building the path: loop through rows, then columns
-- Handling direction: row could increase or decrease, column could increase or decrease
-- *Exercise:* Write the `Manhattan` class with `compute_path(destination)` method
+**Lesson 5: A Reusable Manhattan Function**
+- Naming the algorithm for reuse: `compute_manhattan_path(position, destination)` returns a list of tuples
+- Adding a docstring; regression-testing against Lesson 4's output
+- *Optional Extension:* wrap it in a `Manhattan` class
+- *Exercise:* Rename and document `compute_manhattan_path`, test it against 4+ destination pairs
 
 **Lesson 6: Testing Without a Robot**
-- Writing a test program: give the Manhattan class various destinations, print the paths
+- Writing a test program: call `compute_manhattan_path` with various destinations, print the paths
 - Verifying the output matches hand-calculated paths from Lesson 4
 - *Exercise:* Write a test main program that checks at least 4 different destination pairs and prints results
 
-### Phase C: The Navigator Class (Lessons 7–9)
+### Phase C: Driving the Path (Lessons 7–9)
 
 **Lesson 7: The Challenge of Turning**
 - The robot needs to face the right direction before driving to the next intersection
@@ -280,19 +285,19 @@ Using existing class instances, method calls, `for` loops, sequential program st
 - Working through the logic on paper with diagrams
 - *Exercise:* Worksheet — given a current position, current heading, and next coordinate, determine what turn (if any) is needed
 
-**Lesson 8: Implementing the Navigator Class**
-- Class design: `__init__()` stores current position and heading
-- `drive_path(path)` iterates through coordinates, turns as needed, drives forward
-- Tracking heading as the robot turns
-- *Exercise:* Implement the `Navigator` class with `drive_path()` method
+**Lesson 8: Driving the Path**
+- `desired_heading()`, `turn_to()`, and `drive_path(path, position, heading)` -- position/heading threaded through parameters and return values
+- Reusing the Module 2/3 driving toolkit (`turn_right()`, `track_until_cross()`, `clear_intersection()`) directly
+- *Optional Extension:* package it as a `Navigator` class that composes `LineTrack`
+- *Exercise:* Implement `desired_heading()`, `turn_to()`, and `drive_path()`
 
 **Lesson 9: Module 4 Final Project**
-- Integration: main program template that creates `Manhattan` and `Navigator`
-- Loop through a list of destinations, compute path, drive path
-- *Exercise:* Using the provided main program template, integrate your `Manhattan` and `Navigator` classes to drive to a series of at least 4 destinations on the grid
+- Integration: main program that calls `compute_manhattan_path()` and `drive_path()` in a loop
+- A single `position`/`heading` pair carried through the loop -- no separate objects to keep in sync
+- *Exercise:* Integrate your functions to drive to a series of at least 4 destinations on the grid
 
 ### Python Concepts Introduced
-Tuples (creating, indexing), lists (`append()`, iteration, list of tuples), class design with meaningful methods, separation of concerns (algorithm vs. physical driving), testing strategy (test without hardware)
+Tuples (creating, indexing), lists (`append()`, iteration, list of tuples), functions with docstrings, threading state through parameters and return values, separation of concerns (algorithm vs. physical driving), testing strategy (test without hardware). *Optional:* wrapping the same logic in `Manhattan`/`Navigator` classes.
 
 ---
 
@@ -324,22 +329,23 @@ Tuples (creating, indexing), lists (`append()`, iteration, list of tuples), clas
 
 ### Phase B: Implementing Dijkstra (Lessons 4–6)
 
-**Lesson 4: The Dijkstra Class**
-- Class design: `__init__(blocked_intersections)` sets up the graph, excluding blocked nodes
-- `compute_path(destination)` returns a list of adjacent coordinate tuples — same interface as `Manhattan`
-- *Exercise:* Begin implementing the `Dijkstra` class — write `__init__()` to build the graph, excluding blocked intersections
+**Lesson 4: The Dijkstra Functions**
+- `build_dijkstra_graph(rows, cols, blocked)` builds the graph, excluding blocked nodes
+- `compute_dijkstra_path(position, destination, graph)` -- same first-two-parameter shape as `compute_manhattan_path`
+- *Optional Extension:* package both as a `Dijkstra` class
+- *Exercise:* Implement `build_dijkstra_graph()` and the `compute_dijkstra_path()` placeholder
 
-**Lesson 5: Implementing compute_path()**
+**Lesson 5: Implementing compute_dijkstra_path()**
 - Translating the hand-traced algorithm into Python
 - Using a list as a simple priority queue (or sorted list)
 - Reconstructing the path from the previous-node dictionary
-- *Exercise:* Complete the `compute_path()` method. Test with known blocked intersections and verify output matches hand-traced results.
+- *Exercise:* Complete `compute_dijkstra_path()`. Test with known blocked intersections and verify output matches hand-traced results.
 
 **Lesson 6: Testing and Swapping**
-- Testing Dijkstra independently: give it blocked intersections, request paths, print results
-- The power of a shared interface: replace `Manhattan` with `Dijkstra` in the Module 4 main program
-- Why this works: both classes have `compute_path()` that returns the same data format
-- *Exercise:* Swap `Dijkstra` into the Module 4 main program. Test with no blocked intersections (should give the same results as Manhattan). Then add blocked intersections and verify it routes around them.
+- Testing Dijkstra independently: build a graph, request paths, print results
+- The shape mismatch: `compute_dijkstra_path` needs an extra `graph` argument and includes the start in its output; a `compute_path(algorithm, ...)` dispatch function normalizes both
+- *Optional Extension:* true polymorphism via matching `compute_path(destination)` methods on `Manhattan`/`Dijkstra` classes, no dispatch function needed
+- *Exercise:* Build the dispatch function. Swap the algorithm argument to route around obstacles.
 
 ### Phase C: Capstone Project (Lessons 7–9)
 
@@ -350,20 +356,20 @@ Tuples (creating, indexing), lists (`append()`, iteration, list of tuples), clas
 
 **Lesson 8: Building Experience**
 - Maintaining a list of known blocked intersections that grows over time
-- On each run: attempt to navigate, detect new obstacles, add to blocked list, recompute path
-- *Exercise:* Write a program that attempts to drive to a destination, and if it encounters a blocked intersection, adds it to the blocked list, recalculates the path using Dijkstra, and tries again.
+- On each run: attempt to navigate, detect new obstacles, add to blocked list, rebuild the graph and recompute the path
+- *Exercise:* Write a program that attempts to drive to a destination, and if it encounters a blocked intersection, adds it to the blocked list, recalculates the path using `compute_dijkstra_path()`, and tries again.
 
 **Lesson 9: Module 5 Capstone Project**
 - The teacher sets up the grid with physical obstacles at several intersections
 - Students program the robot to:
   1. Navigate to a series of destinations
   2. Detect blocked intersections using the rangefinder
-  3. Add blocked intersections to the Dijkstra class
-  4. Recompute paths on subsequent runs
+  3. Add blocked intersections to the blocked list
+  4. Rebuild the graph and recompute paths on subsequent runs
   5. Demonstrate the robot getting better with "experience" — each run is more efficient as the map of blocked nodes grows
 
 ### Python Concepts Introduced
-Dictionaries (creation, access, `in` keyword, nested structures), graph representation, algorithm implementation, shared interfaces / polymorphism (via matching method signatures), dynamic data (growing blocked list across runs)
+Dictionaries (creation, access, `in` keyword, nested structures), graph representation, algorithm implementation, dispatch functions for swappable behavior, dynamic data (growing blocked list across runs). *Optional:* true polymorphism via matching class method signatures.
 
 ---
 
@@ -460,9 +466,9 @@ xrp-python-course/
 | Weeks | Module | Notes |
 |---|---|---|
 | 1–4 | Module 1: Driving | Blockly first, Python transition in weeks 3–4 |
-| 5–9 | Module 2: Line Tracking | Heaviest module — sensors, control, and first classes |
+| 5–9 | Module 2: Line Tracking | Heaviest module — sensors, control, and first reusable toolkits |
 | 10–11 | Module 3: Grid Driving | Short module, mostly applying existing code to the grid |
-| 12–15 | Module 4: Manhattan | Data structures + two new classes |
+| 12–15 | Module 4: Manhattan | Data structures + two new functions/toolkits |
 | 16–18 | Module 5: Dijkstra (Capstone) | Algorithm + obstacle detection + capstone demo |
 
 ---
@@ -470,6 +476,6 @@ xrp-python-course/
 ## Notes for Content Development
 
 - **Templates first:** Before writing any module content, establish consistent templates for lessons, exercises, and worksheets. This ensures uniform quality and makes bulk creation faster.
-- **Code builds across modules:** The `LineSensor` → `LineTrack` → `Navigator` → `Manhattan`/`Dijkstra` chain means earlier code must be solid. Include solution code at each stage so students who fall behind have working classes to build on.
+- **Code builds across modules:** The sensor toolkit → driving toolkit → `drive_path` → `compute_manhattan_path`/`compute_dijkstra_path` chain means earlier code must be solid. Include solution code at each stage so students who fall behind have working functions to build on.
 - **Test without robots:** Modules 4 and 5 emphasize testing path computation without hardware. This is both a practical concern (limited robots, debugging time) and a teaching opportunity (separation of concerns).
 - **Worksheets for algorithms:** Modules 4 and 5 benefit from paper-based algorithm tracing before writing code. These worksheets are important scaffolding.

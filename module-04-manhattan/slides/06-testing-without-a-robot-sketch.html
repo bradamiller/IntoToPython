@@ -837,9 +837,8 @@
                 </div>
 
                 <div class="answer-box">
-                    <p class="body-text" style="margin-top:6px;"><span class="bold">The Manhattan class computes paths -- no motors needed!</span></p>
-                    <pre class="code-block compact" style="margin:10px 0 4px 0; padding:12px 16px; font-size:15px; transform:none;">manhattan = Manhattan((0, 0))
-path = manhattan.compute_path((2, 3))
+                    <p class="body-text" style="margin-top:6px;"><span class="bold">compute_manhattan_path() computes paths -- no motors needed!</span></p>
+                    <pre class="code-block compact" style="margin:10px 0 4px 0; padding:12px 16px; font-size:15px; transform:none;">path = compute_manhattan_path((0, 0), (2, 3))
 print(path)   # Just prints -- no robot required!</pre>
                 </div>
 
@@ -860,10 +859,8 @@ print(path)   # Just prints -- no robot required!</pre>
             <div class="content">
                 <div class="header-text">Basic test structure:</div>
 
-                <pre class="code-block">manhattan = Manhattan((0, 0))
-
-# Test 1: Basic forward path
-path = manhattan.compute_path((2, 3))
+                <pre class="code-block"># Test 1: Basic forward path
+path = compute_manhattan_path((0, 0), (2, 3))
 print("Test 1 - (0,0) to (2,3):")
 print("  Path:", path)
 print("  Steps:", len(path))
@@ -919,9 +916,8 @@ print()</pre>
                 <pre class="code-block"># Expected path (from hand trace)
 expected = [(1,0), (2,0), (2,1), (2,2), (2,3)]
 
-# Actual path (from your class)
-manhattan = Manhattan((0, 0))
-actual = manhattan.compute_path((2, 3))
+# Actual path (from your function)
+actual = compute_manhattan_path((0, 0), (2, 3))
 
 # Compare
 if actual == expected:
@@ -972,9 +968,8 @@ else:
             <div class="content">
                 <div class="header-text">A reusable test function:</div>
 
-                <pre class="code-block">def run_test(test_name, start, dest, expected):
-    manhattan = Manhattan(start)
-    actual = manhattan.compute_path(dest)
+                <pre class="code-block">def run_test(test_name, position, dest, expected):
+    actual = compute_manhattan_path(position, dest)
     if actual == expected:
         print(test_name, "- PASS")
     else:
@@ -1045,10 +1040,10 @@ else:
             <div class="content">
                 <div class="header-text">If a test fails, add prints inside compute_path:</div>
 
-                <pre class="code-block">def compute_path(self, destination):
-    print("Computing path from", self.position, "to", destination)
+                <pre class="code-block">def compute_manhattan_path(position, destination):
+    print("Computing path from", position, "to", destination)
     path = []
-    current_row, current_col = self.position
+    current_row, current_col = position
     dest_row, dest_col = destination
 
     while current_row != dest_row:
@@ -1203,8 +1198,7 @@ else:
                 <div class="sketch-box">
                     <div class="header-text" style="margin-top:0;">Test template:</div>
                     <pre class="code-block compact" style="margin:8px 0 4px 0; padding:12px 16px; font-size:15px; transform:none;"># Test 1: Basic forward path
-manhattan = Manhattan((0, 0))
-path = manhattan.compute_path((2, 3))
+path = compute_manhattan_path((0, 0), (2, 3))
 expected = [(1,0), (2,0), (2,1), (2,2), (2,3)]
 print("Test 1:", "PASS" if path == expected else "FAIL")</pre>
                 </div>

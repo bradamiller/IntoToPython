@@ -1,7 +1,7 @@
 # Lesson 6: Testing Without a Robot
 
 ## Overview
-Students learn why and how to test their Manhattan algorithm without a physical robot. The core idea is separation of concerns: the Manhattan class computes a path using pure math — no motors, no sensors, no hardware. That means students can verify their algorithm is correct by running it on any computer and comparing the output against hand-calculated expected paths. This lesson introduces a systematic testing approach using print statements, expected-vs-actual comparison, and a reusable `run_test()` helper function.
+Students learn why and how to test their Manhattan algorithm without a physical robot. The core idea is separation of concerns: `compute_manhattan_path()` computes a path using pure math — no motors, no sensors, no hardware. That means students can verify their algorithm is correct by running it on any computer and comparing the output against hand-calculated expected paths. This lesson introduces a systematic testing approach using print statements, expected-vs-actual comparison, and a reusable `run_test()` helper function.
 
 Testing without hardware is a professional software engineering practice. By catching bugs on screen before deploying to the robot, students save enormous time and frustration. A robot driving into a wall tells you something is wrong but not what or where. A failing test case on screen tells you exactly which input produced the wrong output and lets you add print statements to trace the logic step by step.
 
@@ -9,7 +9,7 @@ Testing without hardware is a professional software engineering practice. By cat
 By the end of this lesson, students will be able to:
 - Explain why testing without hardware is faster and more effective than debugging on the robot
 - Describe separation of concerns: algorithm logic vs. physical driving
-- Write test programs that create a Manhattan object and print computed paths
+- Write test programs that call `compute_manhattan_path()` and print computed paths
 - Compare expected output (hand-calculated) against actual output (from code)
 - Design systematic test cases that cover all directions and edge cases
 - Use a `run_test()` helper function to organize multiple tests
@@ -17,7 +17,7 @@ By the end of this lesson, students will be able to:
 
 ## Key Concepts
 - **Testing without hardware**: Running and verifying algorithm code on a computer without connecting to or using the physical robot
-- **Separation of concerns**: The Manhattan class computes paths (pure math); the Navigator class drives the robot (hardware). Each can be tested independently.
+- **Separation of concerns**: `compute_manhattan_path()` computes paths (pure math); the driving functions from Lesson 8 drive the robot (hardware). Each can be tested independently.
 - **Expected vs. actual**: Writing down what the output should be before running the code, then comparing it to what the code actually produces
 - **Test case**: A specific input paired with its known correct output, used to verify that code works correctly
 - **Edge case**: An unusual or boundary input that might break the code — such as start equals destination, or movement in only one direction
@@ -25,7 +25,7 @@ By the end of this lesson, students will be able to:
 
 ## Materials Required
 - Computers with Python/Thonny installed
-- Students' completed Manhattan class from Lesson 5
+- Students' completed `compute_manhattan_path()` function from Lesson 5
 - Students' completed grid worksheets from Lesson 1 (for hand-tracing expected paths)
 - Projector or shared screen for live coding
 - Slide deck: `slides/06-testing-without-a-robot-outline.md`
@@ -48,10 +48,9 @@ By the end of this lesson, students will be able to:
      | Computing the path | Any computer | Does the path make sense? |
      | Driving the path | On the robot | Does the robot follow correctly? |
 
-   - The Manhattan class computes paths — no motors needed:
+   - `compute_manhattan_path()` computes paths — no motors needed:
      ```python
-     manhattan = Manhattan((0, 0))
-     path = manhattan.compute_path((2, 3))
+     path = compute_manhattan_path((0, 0), (2, 3))
      print(path)   # Just prints — no robot required!
      ```
    - Benefit: Fix algorithm bugs BEFORE the robot drives into a wall
@@ -61,10 +60,8 @@ By the end of this lesson, students will be able to:
 1. **Writing a Basic Test** (5 minutes)
    - Live code together:
      ```python
-     manhattan = Manhattan((0, 0))
-
      # Test 1: Basic forward path
-     path = manhattan.compute_path((2, 3))
+     path = compute_manhattan_path((0, 0), (2, 3))
      print("Test 1 - (0,0) to (2,3):")
      print("  Path:", path)
      print("  Steps:", len(path))
@@ -82,8 +79,7 @@ By the end of this lesson, students will be able to:
      ```python
      expected = [(1,0), (2,0), (2,1), (2,2), (2,3)]
 
-     manhattan = Manhattan((0, 0))
-     actual = manhattan.compute_path((2, 3))
+     actual = compute_manhattan_path((0, 0), (2, 3))
 
      if actual == expected:
          print("Test 1: PASS")
@@ -97,9 +93,8 @@ By the end of this lesson, students will be able to:
 3. **The run_test() Helper Function** (5 minutes)
    - The comparison pattern repeats for every test, so wrap it in a function:
      ```python
-     def run_test(test_name, start, dest, expected):
-         manhattan = Manhattan(start)
-         actual = manhattan.compute_path(dest)
+     def run_test(test_name, position, dest, expected):
+         actual = compute_manhattan_path(position, dest)
          if actual == expected:
              print(test_name, "- PASS")
          else:
@@ -132,10 +127,10 @@ By the end of this lesson, students will be able to:
 ### Independent Practice (20 minutes)
 
 **Exercise 1: Write the Test Suite**
-- Goal: Create a test file with at least 6 test cases for the Manhattan class
+- Goal: Create a test file with at least 6 test cases for `compute_manhattan_path()`
 - Steps:
   1. Create a new file called `test_manhattan.py`
-  2. Copy the Manhattan class into it (or import it)
+  2. Copy `compute_manhattan_path()` into it (or import it)
   3. Write the `run_test()` helper function
   4. Write at least 6 test cases using the table from Guided Practice
   5. Hand-calculate the expected path for each test before writing the code
@@ -145,9 +140,9 @@ By the end of this lesson, students will be able to:
 **Exercise 2: Debug a Failing Test**
 - Goal: Practice using print statements to find and fix a bug
 - Steps:
-  1. If any tests fail, add print statements inside `compute_path()` to trace the logic:
+  1. If any tests fail, add print statements inside `compute_manhattan_path()` to trace the logic:
      ```python
-     print("Computing path from", self.position, "to", destination)
+     print("Computing path from", position, "to", destination)
      print("dest_row:", dest_row, "dest_col:", dest_col)
      ```
   2. Run the failing test again and read the trace output
@@ -175,7 +170,7 @@ By the end of this lesson, students will be able to:
 **Summative (exit ticket)**:
 1. Why is it better to test the Manhattan algorithm on screen before putting it on the robot?
 2. What does "separation of concerns" mean in the context of this project?
-3. Write a test case for Manhattan starting at (1, 1) going to (3, 2). What is the expected path?
+3. Write a test case for `compute_manhattan_path()` starting at (1, 1) going to (3, 2). What is the expected path?
 4. Your test shows the actual path is `[(1,0), (2,0), (2,1)]` but the expected path is `[(1,0), (2,0), (2,1), (2,2), (2,3)]`. What might be wrong?
 5. Why is it important to test edge cases like "same position" or "one step"?
 
@@ -195,7 +190,7 @@ By the end of this lesson, students will be able to:
 - Provide the `run_test()` function pre-written so students only need to fill in test cases
 - Give students a worksheet with the test table and blank "Expected Path" columns to fill in by hand before coding
 - Start with just 3 test cases (basic forward, same row, same spot) and add more once those pass
-- Pair with a partner who has a working Manhattan class if the student's own class has bugs
+- Pair with a partner who has a working `compute_manhattan_path()` if the student's own function has bugs
 
 **For advanced students**:
 - Challenge: Write a `run_all_tests()` function that counts total passes and failures and prints a summary at the end
@@ -207,10 +202,8 @@ By the end of this lesson, students will be able to:
 
 ### Basic Test Structure
 ```python
-manhattan = Manhattan((0, 0))
-
 # Test 1: Basic forward path
-path = manhattan.compute_path((2, 3))
+path = compute_manhattan_path((0, 0), (2, 3))
 print("Test 1 - (0,0) to (2,3):")
 print("  Path:", path)
 print("  Steps:", len(path))
@@ -223,8 +216,7 @@ print()
 expected = [(1,0), (2,0), (2,1), (2,2), (2,3)]
 
 # Actual path (from code)
-manhattan = Manhattan((0, 0))
-actual = manhattan.compute_path((2, 3))
+actual = compute_manhattan_path((0, 0), (2, 3))
 
 # Compare
 if actual == expected:
@@ -237,9 +229,8 @@ else:
 
 ### Reusable run_test() Helper
 ```python
-def run_test(test_name, start, dest, expected):
-    manhattan = Manhattan(start)
-    actual = manhattan.compute_path(dest)
+def run_test(test_name, position, dest, expected):
+    actual = compute_manhattan_path(position, dest)
     if actual == expected:
         print(test_name, "- PASS")
     else:
@@ -283,10 +274,10 @@ run_test("Test 6: One step",
 
 ### Debugging with Print Statements
 ```python
-def compute_path(self, destination):
-    print("Computing path from", self.position, "to", destination)
+def compute_manhattan_path(position, destination):
+    print("Computing path from", position, "to", destination)
     path = []
-    current_row, current_col = self.position
+    current_row, current_col = position
     dest_row, dest_col = destination
 
     while current_row < dest_row:
@@ -315,9 +306,10 @@ def compute_path(self, destination):
 - **Celebrate failing tests**: When a test says "FAIL", that is the test doing its job. A test that catches a bug before the robot runs is a success, not a failure. Reframe the language: "The test found a bug for you."
 - **Remove debug prints after fixing**: Remind students that print statements added for debugging should be removed (or commented out) once the bug is fixed, so the output stays clean for future test runs.
 - **Common bugs to watch for**: Path going in the wrong direction, path including the start position when it should not, infinite loop when start equals destination, off-by-one errors. The slide outline (Slide 8) lists these — walk through them if students encounter issues.
+- **If your course covers the Lesson 5 Optional Extension (classes)**, everything above works identically through `manhattan.compute_path(dest)` (with `manhattan = Manhattan(position)` created once per test) instead of `compute_manhattan_path(position, dest)` -- only the call syntax changes.
 
 ## Connections to Next Lessons
 - **Lesson 7** will introduce the turning challenge — now that the algorithm is tested and correct, students need to figure out how the robot should turn at each step
-- **Lesson 8** will implement the Navigator class that drives the tested paths on the physical robot
+- **Lesson 8** will implement the driving functions that drive the tested paths on the physical robot
 - **Lesson 9** (final project) will require students to test Manhattan output for all legs of a multi-destination route before running on the robot — the testing skills from this lesson are directly applied
 - The testing mindset introduced here carries forward to Module 5, where students will test Dijkstra's algorithm the same way

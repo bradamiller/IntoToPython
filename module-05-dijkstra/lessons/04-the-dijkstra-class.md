@@ -1,34 +1,31 @@
-# Lesson 4: The Dijkstra Class
+# Lesson 4: The Dijkstra Functions
 
 ## Overview
-Students design and build the **Dijkstra class** -- a Python class that encapsulates the graph representation and shortest-path computation. This lesson focuses on the class structure: the `__init__` constructor (which accepts a start position and a list of blocked nodes), instance variables (`self.position`, `self.blocked`, `self.graph`), the `build_graph` method (which creates the grid graph dictionary and removes blocked nodes), and the `compute_path` method signature. Students implement everything except the body of `compute_path`, which is saved for Lesson 5. By the end of this lesson, students have a Dijkstra class that can build a correct graph with blocked nodes removed, and a `compute_path` method that is ready to be filled in.
+Students design and build the **Dijkstra pathfinding functions** -- `build_dijkstra_graph()` and `compute_dijkstra_path()` -- that encapsulate the graph representation and shortest-path computation. This lesson focuses on `build_dijkstra_graph(rows, cols, blocked)`, which creates the grid graph dictionary while excluding blocked nodes, and the `compute_dijkstra_path(position, destination, graph)` function signature. Students implement the graph-building function fully and leave `compute_dijkstra_path`'s body as a placeholder, saved for Lesson 5. By the end of this lesson, students have a working graph builder and a `compute_dijkstra_path` function that is ready to be filled in.
 
-This lesson is where the conceptual work of Lessons 1-3 becomes real Python code. Students translate their understanding of graphs (Lesson 1), dictionaries (Lesson 2), and the algorithm concept (Lesson 3) into a class design. The class mirrors the Manhattan class from Module 4 -- same `compute_path` method name, same return type (list of tuples) -- so that the Navigator class can use either pathfinder interchangeably. This shared interface is a key design principle that students explore more in Lesson 6. Building the class in stages (structure now, algorithm next lesson) prevents students from being overwhelmed by implementing everything at once.
+This lesson is where the conceptual work of Lessons 1-3 becomes real Python code. Students translate their understanding of graphs (Lesson 1), dictionaries (Lesson 2), and the algorithm concept (Lesson 3) into working functions. `compute_dijkstra_path` mirrors `compute_manhattan_path` from Module 4 -- same first two parameters (`position`, `destination`), same return type (list of tuples) -- so that `drive_path()` can drive the output of either one. This shared shape is a key design principle that students explore more in Lesson 6. Building the functions in stages (graph builder now, algorithm next lesson) prevents students from being overwhelmed by implementing everything at once.
+
+This lesson stands on its own -- classes are never required. An **optional extension** at the end of this file shows the same functions packaged into a `Dijkstra` class, for courses that also cover OOP.
 
 ## Learning Objectives
 By the end of this lesson, students will be able to:
-- Design a Python class with `__init__`, instance variables, and methods
-- Write the `__init__` method for the Dijkstra class with `start` and `blocked` parameters
-- Store instance variables using `self.position`, `self.blocked`, and `self.graph`
-- Implement `build_graph` using the `build_grid_graph` logic from Lesson 2
-- Remove blocked nodes from the graph inside `build_graph`
-- Write the `compute_path` method signature with a placeholder body
-- Test the class by creating instances and verifying the graph is correct
-- Explain how Dijkstra's interface matches Manhattan's interface
+- Design a pair of functions that work together: one to build a graph, one to search it
+- Write `build_dijkstra_graph(rows, cols, blocked)` that creates the grid graph, excluding blocked nodes
+- Write the `compute_dijkstra_path(position, destination, graph)` function signature with a placeholder body
+- Test the functions by building graphs and verifying they are correct
+- Explain how `compute_dijkstra_path`'s shape matches `compute_manhattan_path`'s shape
 
 ## Key Concepts
-- **Class**: A blueprint for creating objects that bundles data (instance variables) and behavior (methods) together. The Dijkstra class bundles the graph, start position, and blocked list (data) with the `build_graph` and `compute_path` methods (behavior).
-- **Constructor (`__init__`)**: The special method that runs when a new object is created. It sets up the initial state of the object. For Dijkstra, the constructor takes `start` and `blocked` as parameters, stores them as instance variables, and calls `build_graph` to create the graph.
-- **Instance variable (`self.___`)**: A variable that belongs to a specific object and is accessed using `self`. Instance variables persist for the lifetime of the object. Example: `self.graph` stores the graph dictionary so that `compute_path` can use it later.
-- **Method**: A function defined inside a class that operates on the object's data. Methods always take `self` as the first parameter. Example: `build_graph(self)` creates the graph using `self.blocked` to know which nodes to remove.
-- **Shared interface**: When two different classes have a method with the same name and return type, they can be used interchangeably. Manhattan and Dijkstra both have `compute_path(destination)` returning a list of tuples, so Navigator works with either one.
+- **Two functions, one job each**: `build_dijkstra_graph` builds the map once; `compute_dijkstra_path` searches it. Keeping them separate means the (potentially expensive) graph-building step only has to happen when the blocked list actually changes.
+- **Parameters instead of stored state**: Where a class would store `self.blocked` and `self.graph` once and reuse them, the functions version passes `graph` in explicitly every time it's needed. Nothing is remembered between calls -- every call gets everything it needs as an argument.
+- **Matching shapes**: When two functions share a first-two-parameters shape (`position`, `destination`) and the same return type (list of tuples), code that calls one can be adapted to call the other with minimal changes. `compute_manhattan_path(position, destination)` and `compute_dijkstra_path(position, destination, graph)` are almost, but not quite, interchangeable -- Lesson 6 explores this gap directly.
 
 ## Materials Required
 - Computers with Python installed (or XRP MicroPython environment)
 - Completed graph dictionary code from Lesson 2 (`build_grid_graph` function)
 - Hand-traced examples from Lesson 3 (for testing graph correctness)
-- Manhattan class code from Module 4 (for interface comparison)
-- Whiteboard or projector for class design diagram
+- `compute_manhattan_path` code from Module 4 (for shape comparison)
+- Whiteboard or projector for function design diagram
 
 ## Lesson Flow
 
@@ -37,139 +34,111 @@ By the end of this lesson, students will be able to:
 **For 3-hour sessions:** 10-12 min
 
 1. **Hook: Building a Toolbox**
-   - "In Module 4, you built a Manhattan class -- a toolbox that could compute paths on a clear grid. Now you're building a better toolbox: the Dijkstra class."
-   - "The Dijkstra class will be a drop-in replacement for Manhattan. Same method name, same return type. But it can handle obstacles."
-   - Show the Manhattan class structure for reference:
+   - "In Module 4, you built `compute_manhattan_path` -- a tool that could compute paths on a clear grid. Now you're building a better tool: Dijkstra pathfinding."
+   - "It'll be a drop-in-ish replacement for Manhattan. Same first two parameters, same return type. But it can handle obstacles."
+   - Show `compute_manhattan_path` for reference:
      ```python
-     class Manhattan:
-         def __init__(self, start):
-             self.position = start
-
-         def compute_path(self, destination):
-             # Returns a list of tuples
-             ...
+     def compute_manhattan_path(position, destination):
+         # Returns a list of tuples
+         ...
      ```
-   - "Our Dijkstra class will have the same shape, with two additions: a blocked list and a graph."
+   - "Our Dijkstra functions will have a similar shape, with one addition: they need a graph to search, and that graph has to account for blocked nodes."
 
-2. **Class Design Overview**
-   - Draw the class structure on the board:
+2. **Function Design Overview**
+   - Draw the two-function structure on the board:
      ```
-     Dijkstra
-     --------
-     Data:
-       self.position   -- current start position (tuple)
-       self.blocked    -- list of blocked nodes (list of tuples)
-       self.graph      -- graph dictionary (built by build_graph)
+     build_dijkstra_graph(rows, cols, blocked)
+       -- builds the graph dictionary, excluding blocked nodes
+       -- returns: graph
 
-     Methods:
-       __init__(start, blocked)  -- constructor
-       build_graph()             -- creates the graph, removes blocked nodes
-       compute_path(destination) -- finds shortest path (Lesson 5)
+     compute_dijkstra_path(position, destination, graph)
+       -- finds shortest path (Lesson 5)
+       -- returns: list of tuples
      ```
-   - "Today we'll implement `__init__` and `build_graph`. Next lesson, we'll implement `compute_path`."
+   - "Today we'll implement `build_dijkstra_graph`. Next lesson, we'll implement `compute_dijkstra_path`."
 
-3. **Why a Class?**
-   - "Why not just write functions? Because the graph, start position, and blocked list are all related. A class keeps them together."
-   - "When Navigator calls `pathfinder.compute_path(dest)`, it doesn't need to pass the graph or the blocked list. The Dijkstra object already has them stored as instance variables."
+3. **Why Split Them?**
+   - "Why not build the graph fresh inside `compute_dijkstra_path` every single call? Because the graph only changes when the blocked list changes -- which might be much less often than we compute paths. Building it once and passing it in avoids repeating that work."
+   - "When the main program calls `compute_dijkstra_path(position, dest, graph)`, it just hands over the graph it already has. No rebuilding needed unless a new obstacle shows up."
 
 ### Guided Practice (15 minutes)
 **For 50-min classes:** 15 min
 **For 3-hour sessions:** 20-25 min
 
-1. **Writing the Constructor**
-   - Walk through each line:
+1. **Writing `build_dijkstra_graph`**
+   - "This is the `build_grid_graph` function from Lesson 2, extended to skip blocked nodes."
      ```python
-     class Dijkstra:
-         def __init__(self, start, blocked):
-             self.position = start
-             self.blocked = blocked
-             self.graph = self.build_graph()
-     ```
-   - Explain each instance variable:
-     - `self.position = start` -- stores where the robot is (a tuple like (0, 0))
-     - `self.blocked = blocked` -- stores the list of blocked nodes (a list of tuples)
-     - `self.graph = self.build_graph()` -- builds the graph immediately when the object is created
-   - "Notice that the constructor CALLS `build_graph()`. This means the graph is ready to use as soon as you create a Dijkstra object."
-   - Compare to Manhattan's constructor: Manhattan only takes `start`. Dijkstra also takes `blocked`.
-
-2. **Writing the `build_graph` Method**
-   - "This is the `build_grid_graph` function from Lesson 2, adapted as a class method that also removes blocked nodes."
-     ```python
-     def build_graph(self):
-         rows = 4
-         cols = 4
+     def build_dijkstra_graph(rows, cols, blocked):
          graph = {}
 
          for row in range(rows):
              for col in range(cols):
-                 if (row, col) in self.blocked:
+                 if (row, col) in blocked:
                      continue
                  neighbors = []
-                 if row > 0 and (row - 1, col) not in self.blocked:
+                 if row > 0 and (row - 1, col) not in blocked:
                      neighbors.append((row - 1, col))
-                 if row < rows - 1 and (row + 1, col) not in self.blocked:
+                 if row < rows - 1 and (row + 1, col) not in blocked:
                      neighbors.append((row + 1, col))
-                 if col > 0 and (row, col - 1) not in self.blocked:
+                 if col > 0 and (row, col - 1) not in blocked:
                      neighbors.append((row, col - 1))
-                 if col < cols - 1 and (row, col + 1) not in self.blocked:
+                 if col < cols - 1 and (row, col + 1) not in blocked:
                      neighbors.append((row, col + 1))
                  graph[(row, col)] = neighbors
 
          return graph
      ```
    - Walk through the key differences from Lesson 2:
-     - `self.blocked` instead of a separate parameter -- the class stores the blocked list
-     - `if (row, col) in self.blocked: continue` -- skip blocked nodes entirely
+     - `blocked` is a parameter now, passed in by whoever calls the function
+     - `if (row, col) in blocked: continue` -- skip blocked nodes entirely
      - Each neighbor check also verifies the neighbor is not blocked
-     - This is a single-pass approach: we build the graph and handle blocked nodes at the same time
+     - This is a single-pass approach: build the graph and handle blocked nodes at the same time
    - "This is more efficient than building the full graph and then removing blocked nodes in a second pass."
 
-3. **Writing the `compute_path` Placeholder**
+2. **Writing the `compute_dijkstra_path` Placeholder**
    - "We'll implement this fully in Lesson 5. For now, let's put in a placeholder:"
      ```python
-     def compute_path(self, destination):
+     def compute_dijkstra_path(position, destination, graph):
          # TODO: Implement Dijkstra's algorithm (Lesson 5)
-         # Should return a list of tuples from self.position to destination
-         print(f"compute_path from {self.position} to {destination}")
-         print(f"Graph has {len(self.graph)} nodes")
+         # Should return a list of tuples from position to destination
+         print(f"compute_dijkstra_path from {position} to {destination}")
+         print(f"Graph has {len(graph)} nodes")
          return []
      ```
-   - "The placeholder prints useful debugging information and returns an empty list. This lets us test the constructor and `build_graph` right now without needing the algorithm yet."
+   - "The placeholder prints useful debugging information and returns an empty list. This lets us test `build_dijkstra_graph` right now without needing the algorithm yet."
 
-4. **Testing the Class**
-   - Walk through creating instances and checking the graph:
+3. **Testing the Functions**
+   - Walk through building graphs and checking them:
      ```python
      # Test 1: No blocked nodes
-     d = Dijkstra((0, 0), [])
-     print(f"Nodes in graph: {len(d.graph)}")       # Should be 16
-     print(f"Neighbors of (1,1): {d.graph[(1,1)]}")  # Should be 4 neighbors
+     graph = build_dijkstra_graph(4, 4, [])
+     print(f"Nodes in graph: {len(graph)}")       # Should be 16
+     print(f"Neighbors of (1,1): {graph[(1,1)]}")  # Should be 4 neighbors
 
      # Test 2: With blocked nodes
-     d = Dijkstra((0, 0), [(1, 1)])
-     print(f"Nodes in graph: {len(d.graph)}")         # Should be 15
-     print(f"(1,1) in graph: {(1, 1) in d.graph}")    # Should be False
-     print(f"Neighbors of (0,1): {d.graph[(0, 1)]}")  # Should NOT include (1,1)
+     graph2 = build_dijkstra_graph(4, 4, [(1, 1)])
+     print(f"Nodes in graph: {len(graph2)}")         # Should be 15
+     print(f"(1,1) in graph: {(1, 1) in graph2}")    # Should be False
+     print(f"Neighbors of (0,1): {graph2[(0, 1)]}")  # Should NOT include (1,1)
      ```
 
 ### Independent Practice (20 minutes)
 **For 50-min classes:** 15 min
 **For 3-hour sessions:** 25-30 min
 
-**Exercise 1: Build the Dijkstra Class**
-- Goal: Create the complete class file with `__init__`, `build_graph`, and `compute_path` placeholder
+**Exercise 1: Build the Dijkstra Functions**
+- Goal: Create the complete functions file with `build_dijkstra_graph` and the `compute_dijkstra_path` placeholder
 - Steps:
   1. Create a new file called `dijkstra.py`
-  2. Write the `class Dijkstra:` declaration
-  3. Implement `__init__` with `start` and `blocked` parameters
-  4. Implement `build_graph` using the code from guided practice
-  5. Add the `compute_path` placeholder
+  2. Implement `build_dijkstra_graph` using the code from guided practice
+  3. Add the `compute_dijkstra_path` placeholder
 - Success criteria: File runs without errors when imported
 
 **Exercise 2: Test with No Blocked Nodes**
 - Goal: Verify the graph is built correctly for a clear grid
 - Steps:
-  1. Create a Dijkstra object: `d = Dijkstra((0, 0), [])`
-  2. Verify `len(d.graph)` equals 16 (4x4 grid)
+  1. Call `graph = build_dijkstra_graph(4, 4, [])`
+  2. Verify `len(graph)` equals 16 (4x4 grid)
   3. Check that corner nodes have 2 neighbors
   4. Check that edge nodes have 3 neighbors
   5. Check that interior nodes have 4 neighbors
@@ -179,86 +148,197 @@ By the end of this lesson, students will be able to:
 **Exercise 3: Test with Blocked Nodes**
 - Goal: Verify blocked node removal works correctly
 - Steps:
-  1. Create a Dijkstra object: `d = Dijkstra((0, 0), [(1, 1), (2, 2)])`
-  2. Verify `len(d.graph)` equals 14 (16 - 2 blocked)
-  3. Verify `(1, 1) not in d.graph` is True
-  4. Verify `(2, 2) not in d.graph` is True
+  1. Call `graph = build_dijkstra_graph(4, 4, [(1, 1), (2, 2)])`
+  2. Verify `len(graph)` equals 14 (16 - 2 blocked)
+  3. Verify `(1, 1) not in graph` is True
+  4. Verify `(2, 2) not in graph` is True
   5. Check neighbors of (0, 1) -- should NOT include (1, 1)
   6. Check neighbors of (1, 2) -- should NOT include (1, 1) or (2, 2)
   7. Compare to your blocked graph drawings from Lesson 1
 - Success criteria: Blocked nodes are completely absent from the graph and from all neighbor lists
 
-**Exercise 4: Test the Interface Match**
-- Goal: Verify that Dijkstra has the same interface as Manhattan
+**Exercise 4: Test the Shape Match**
+- Goal: Verify that `compute_dijkstra_path` and `compute_manhattan_path` share the same first two parameters and return type
 - Steps:
-  1. Create a Manhattan object: `m = Manhattan((0, 0))`
-  2. Create a Dijkstra object: `d = Dijkstra((0, 0), [])`
-  3. Call `m.compute_path((3, 3))` -- note the return type
-  4. Call `d.compute_path((3, 3))` -- note the return type (empty list for now, but same type!)
-  5. Both return lists of tuples. Navigator can use either one.
-- Discussion: What would need to change in Navigator to use Dijkstra instead of Manhattan?
+  1. Call `m_path = compute_manhattan_path((0, 0), (3, 3))` -- note the return type
+  2. Build a graph and call `d_path = compute_dijkstra_path((0, 0), (3, 3), graph)` -- note the return type (empty list for now, but same type!)
+  3. Both return lists of tuples
+- Discussion: What's different about calling these two functions? What would `drive_path()` need to know to call either one?
 
 **Exercise 5: Challenge -- Flexible Grid Size**
-- Goal: Make `build_graph` work with any grid size
-- Modify the class to accept `rows` and `cols` as constructor parameters:
-  ```python
-  def __init__(self, start, blocked, rows=4, cols=4):
-      self.position = start
-      self.blocked = blocked
-      self.rows = rows
-      self.cols = cols
-      self.graph = self.build_graph()
-  ```
-- Update `build_graph` to use `self.rows` and `self.cols` instead of hard-coded 4
+- Goal: Confirm `build_dijkstra_graph` already works for any grid size
 - Test with different grid sizes: 3x3, 4x4, 5x5, 3x5
+  ```python
+  print(len(build_dijkstra_graph(3, 3, [])))  # 9
+  print(len(build_dijkstra_graph(5, 5, [])))  # 25
+  print(len(build_dijkstra_graph(3, 5, [])))  # 15
+  ```
 
 ### Assessment
 
 **Formative (during lesson)**:
-- Can students explain what each instance variable stores?
-- Can students trace through the constructor to explain when `build_graph` is called?
-- Can students explain why `self` is the first parameter of every method?
+- Can students explain why the graph-building step is separated from the path-searching step?
+- Can students explain why `blocked` is a parameter rather than something remembered automatically?
 - Can students predict the number of nodes in the graph given a list of blocked nodes?
 - Can students verify that blocked nodes don't appear in any neighbor lists?
-- Can students explain why Dijkstra and Manhattan having the same method name matters?
+- Can students explain how `compute_dijkstra_path`'s shape compares to `compute_manhattan_path`'s?
 
 **Summative (worksheet/exit ticket)**:
-1. What are the three instance variables of the Dijkstra class? What does each store?
-2. Write the constructor for the Dijkstra class. Include all three instance variables.
-3. If you create `d = Dijkstra((0, 0), [(1, 0), (2, 1)])` on a 4x4 grid, how many nodes will `d.graph` contain? (14)
-4. In `build_graph`, why do we check `if (row, col) in self.blocked: continue`? What would happen if we didn't?
-5. Why is it important that Dijkstra's `compute_path` returns the same type (list of tuples) as Manhattan's `compute_path`?
+1. What are the parameters of `build_dijkstra_graph`? What does each one control?
+2. Write the call that builds a graph for a 4x4 grid with (1, 0) and (2, 1) blocked. How many nodes will it contain? (14)
+3. In `build_dijkstra_graph`, why do we check `if (row, col) in blocked: continue`? What would happen if we didn't?
+4. Why is it useful that `compute_dijkstra_path` returns the same type (list of tuples) as `compute_manhattan_path`?
+5. Why does `compute_dijkstra_path` take a `graph` parameter instead of building the graph itself?
 
 ## Common Misconceptions
 
 | Misconception | Reality |
 |---|---|
-| "self.position and the start parameter are different things" | `self.position = start` copies the start parameter into an instance variable. They hold the same value. The instance variable lets other methods access it later using `self.position`. |
-| "build_graph needs to be called separately after creating the object" | The constructor calls `self.build_graph()` automatically. The graph is ready as soon as the object is created. You don't need to call it yourself. |
-| "The graph is rebuilt every time compute_path is called" | The graph is built ONCE in the constructor and stored in `self.graph`. The `compute_path` method uses the existing graph without rebuilding it. |
+| "The graph needs to be rebuilt every time compute_dijkstra_path is called" | The graph is built once by `build_dijkstra_graph` and passed in as a parameter. `compute_dijkstra_path` only reads from it -- it doesn't rebuild it. |
 | "blocked nodes should be in the graph with empty neighbor lists" | Blocked nodes should NOT be in the graph at all. They are completely excluded -- no key, no presence in any neighbor list. This is cleaner and prevents the algorithm from accidentally visiting them. |
-| "self is a parameter you pass when calling a method" | `self` is automatically passed by Python when you call a method on an object. You write `d.compute_path(dest)`, not `d.compute_path(d, dest)`. Python fills in `self = d` for you. |
-| "The class needs to know the grid size at compile time" | The grid size (rows, cols) can be set in the constructor, either as hard-coded values or as parameters. The `build_graph` method uses whatever size is stored in the object. |
+| "The functions need to know the grid size automatically" | Grid size (`rows`, `cols`) is passed explicitly as parameters to `build_dijkstra_graph` every time -- there's no stored default to remember. |
+| "compute_manhattan_path and compute_dijkstra_path are interchangeable" | They're close, but `compute_dijkstra_path` needs an extra `graph` argument. Lesson 6 addresses exactly this gap when it comes time to "swap" between them. |
 
 ## Differentiation
 
 **For struggling students**:
-- Provide a class template with blanks to fill in (constructor signature, instance variable names, method signatures)
-- Start by having students write `build_graph` as a standalone function first, then move it into the class
-- Use print statements at the end of `__init__` to show the object's state: `print(f"Created Dijkstra at {self.position} with {len(self.blocked)} blocked nodes and {len(self.graph)} graph nodes")`
+- Provide a function template with blanks to fill in (parameter names, the neighbor-check pattern)
+- Use print statements after building a graph to show its state: `print(f"Built graph with {len(graph)} nodes and blocked={blocked}")`
 - Provide a testing script that students can run to check their implementation
-- Review Module 4's class syntax before starting -- ensure students remember `class`, `def`, `self`
+- Review Lesson 2's `build_grid_graph` before starting -- ensure students remember dictionary syntax
 
 **For advanced students**:
-- Add a `__str__` method that prints a visual representation of the graph
-- Add input validation: What if start is in the blocked list? What if start is outside the grid?
-- Make the class accept a custom graph dictionary instead of always building a grid -- this makes Dijkstra work on any graph, not just grids
-- Add a `reset` method that allows changing the start position or blocked list and rebuilds the graph
-- Think about: Why do we store `self.blocked` as an instance variable? When might we need it after `build_graph` finishes?
+- Write a `print_graph(graph, rows, cols)` function that prints a visual representation
+- Add input validation: What if `blocked` contains a node outside the grid?
+- Think about: What would change if `build_dijkstra_graph` needed to support diagonal movement?
+- Work through the Optional Extension below and compare the two versions directly
 
 ## Materials & Code Examples
 
-### Complete Dijkstra Class (Lesson 4 Version)
+### Complete Dijkstra Functions (Lesson 4 Version)
+```python
+def build_dijkstra_graph(rows, cols, blocked):
+    graph = {}
+
+    for row in range(rows):
+        for col in range(cols):
+            # Skip blocked nodes
+            if (row, col) in blocked:
+                continue
+
+            # Build neighbor list, excluding blocked neighbors
+            neighbors = []
+            if row > 0 and (row - 1, col) not in blocked:
+                neighbors.append((row - 1, col))
+            if row < rows - 1 and (row + 1, col) not in blocked:
+                neighbors.append((row + 1, col))
+            if col > 0 and (row, col - 1) not in blocked:
+                neighbors.append((row, col - 1))
+            if col < cols - 1 and (row, col + 1) not in blocked:
+                neighbors.append((row, col + 1))
+
+            graph[(row, col)] = neighbors
+
+    return graph
+
+
+def compute_dijkstra_path(position, destination, graph):
+    # TODO: Implement Dijkstra's algorithm (Lesson 5)
+    # Should return a list of tuples from position to destination
+    print(f"compute_dijkstra_path from {position} to {destination}")
+    print(f"Graph has {len(graph)} nodes")
+    return []
+```
+
+### Testing Script
+```python
+# Test 1: No blocked nodes
+print("=== Test 1: No blocked nodes ===")
+graph = build_dijkstra_graph(4, 4, [])
+print(f"Total nodes: {len(graph)}")                  # 16
+print(f"Neighbors of (0,0): {graph[(0, 0)]}")        # 2 neighbors
+print(f"Neighbors of (1,1): {graph[(1, 1)]}")        # 4 neighbors
+print(f"Neighbors of (0,1): {graph[(0, 1)]}")        # 3 neighbors
+print()
+
+# Test 2: One blocked node
+print("=== Test 2: Block (1,1) ===")
+graph = build_dijkstra_graph(4, 4, [(1, 1)])
+print(f"Total nodes: {len(graph)}")                  # 15
+print(f"(1,1) in graph: {(1, 1) in graph}")          # False
+print(f"Neighbors of (0,1): {graph[(0, 1)]}")        # Should NOT include (1,1)
+print()
+
+# Test 3: Multiple blocked nodes
+print("=== Test 3: Block (1,1) and (2,2) ===")
+graph = build_dijkstra_graph(4, 4, [(1, 1), (2, 2)])
+print(f"Total nodes: {len(graph)}")                  # 14
+print()
+
+# Test 4: compute_dijkstra_path placeholder
+print("=== Test 4: compute_dijkstra_path placeholder ===")
+graph = build_dijkstra_graph(4, 4, [(1, 1)])
+path = compute_dijkstra_path((0, 0), (3, 3), graph)
+print(f"Returned: {path}")                              # []
+```
+
+### Side-by-Side: Manhattan vs. Dijkstra Shapes
+```python
+# Manhattan (from Module 4) -- does NOT include position in the result
+def compute_manhattan_path(position, destination):
+    path = []
+    current_row, current_col = position
+    dest_row, dest_col = destination
+    while current_row < dest_row:
+        current_row = current_row + 1
+        path.append((current_row, current_col))
+    while current_row > dest_row:
+        current_row = current_row - 1
+        path.append((current_row, current_col))
+    while current_col < dest_col:
+        current_col = current_col + 1
+        path.append((current_row, current_col))
+    while current_col > dest_col:
+        current_col = current_col - 1
+        path.append((current_row, current_col))
+    return path
+
+# Dijkstra (from this lesson) -- raw output DOES include position
+def build_dijkstra_graph(rows, cols, blocked):
+    # ... (as shown above)
+    pass
+
+def compute_dijkstra_path(position, destination, graph):
+    # ... (Lesson 5)
+    return []
+
+# Both return lists of tuples, but they don't quite match: Dijkstra's
+# raw path starts with position, Manhattan's doesn't. Lesson 6 builds
+# a dispatch function that irons out this difference so drive_path()
+# never has to care which algorithm computed the path.
+```
+
+## Teaching Notes
+- **Build incrementally.** Don't show both functions at once. Write `build_dijkstra_graph` first, test it. Then add the `compute_dijkstra_path` placeholder. This mirrors how real programmers work.
+- **Test after every addition.** After writing `build_dijkstra_graph`, build a graph and print it. Students should develop the habit of testing incrementally.
+- **The Module 4 connection is crucial.** If students struggled with `compute_manhattan_path` in Module 4, this is a chance to reinforce the concepts. Spend time comparing the two functions' parameter lists side by side.
+- **The placeholder `compute_dijkstra_path` is intentional.** Students often want to implement everything at once. Resist this urge. The placeholder lets them test the graph builder now and focus on the algorithm in Lesson 5. This separation reduces cognitive load.
+- **`build_dijkstra_graph` is doing two jobs.** It both creates the graph AND removes blocked nodes. Walk through an example where you show what would happen if you forgot the blocked-node checks (a node that shouldn't be accessible would appear as a neighbor, leading to wrong paths).
+
+## Connections to Next Lessons
+- **Lesson 5** will fill in the `compute_dijkstra_path` function body with the full Dijkstra algorithm.
+- **Lesson 6** will test the completed functions alongside `compute_manhattan_path` and confront the gap between their parameter shapes directly.
+- **Lessons 7-8** will extend the functions' usage by dynamically updating the blocked list based on rangefinder readings and saving/loading obstacles across runs.
+
+---
+
+## Optional Extension: Package It as a `Dijkstra` Class
+
+*For courses that also cover classes/objects. Skip this section entirely otherwise -- nothing later in the course depends on it.*
+
+### Why Wrap It?
+`build_dijkstra_graph` and `compute_dijkstra_path` both need `graph`/`blocked` passed in every call. A class lets an object hold onto that state so callers don't have to keep re-supplying it:
+
 ```python
 class Dijkstra:
     def __init__(self, start, blocked):
@@ -273,11 +353,8 @@ class Dijkstra:
 
         for row in range(rows):
             for col in range(cols):
-                # Skip blocked nodes
                 if (row, col) in self.blocked:
                     continue
-
-                # Build neighbor list, excluding blocked neighbors
                 neighbors = []
                 if row > 0 and (row - 1, col) not in self.blocked:
                     neighbors.append((row - 1, col))
@@ -287,113 +364,26 @@ class Dijkstra:
                     neighbors.append((row, col - 1))
                 if col < cols - 1 and (row, col + 1) not in self.blocked:
                     neighbors.append((row, col + 1))
-
                 graph[(row, col)] = neighbors
 
         return graph
 
     def compute_path(self, destination):
         # TODO: Implement Dijkstra's algorithm (Lesson 5)
-        # Should return a list of tuples from self.position to destination
         print(f"compute_path from {self.position} to {destination}")
         print(f"Graph has {len(self.graph)} nodes")
         return []
 ```
 
-### Testing Script
+### Testing It
 ```python
-from dijkstra import Dijkstra
-
-# Test 1: No blocked nodes
-print("=== Test 1: No blocked nodes ===")
-d = Dijkstra((0, 0), [])
-print(f"Total nodes: {len(d.graph)}")                  # 16
-print(f"Neighbors of (0,0): {d.graph[(0, 0)]}")        # 2 neighbors
-print(f"Neighbors of (1,1): {d.graph[(1, 1)]}")        # 4 neighbors
-print(f"Neighbors of (0,1): {d.graph[(0, 1)]}")        # 3 neighbors
-print()
-
-# Test 2: One blocked node
-print("=== Test 2: Block (1,1) ===")
 d = Dijkstra((0, 0), [(1, 1)])
-print(f"Total nodes: {len(d.graph)}")                  # 15
-print(f"(1,1) in graph: {(1, 1) in d.graph}")          # False
-print(f"Neighbors of (0,1): {d.graph[(0, 1)]}")        # Should NOT include (1,1)
-print(f"Neighbors of (1,0): {d.graph[(1, 0)]}")        # Should NOT include (1,1)
-print(f"Neighbors of (2,1): {d.graph[(2, 1)]}")        # Should NOT include (1,1)
-print(f"Neighbors of (1,2): {d.graph[(1, 2)]}")        # Should NOT include (1,1)
-print()
-
-# Test 3: Multiple blocked nodes
-print("=== Test 3: Block (1,1) and (2,2) ===")
-d = Dijkstra((0, 0), [(1, 1), (2, 2)])
-print(f"Total nodes: {len(d.graph)}")                  # 14
-print(f"(1,1) in graph: {(1, 1) in d.graph}")          # False
-print(f"(2,2) in graph: {(2, 2) in d.graph}")          # False
-print()
-
-# Test 4: compute_path placeholder
-print("=== Test 4: compute_path placeholder ===")
-d = Dijkstra((0, 0), [(1, 1)])
-path = d.compute_path((3, 3))
-print(f"Returned: {path}")                              # []
+print(f"Total nodes: {len(d.graph)}")
+print(f"(1,1) in graph: {(1, 1) in d.graph}")
 ```
 
-### Side-by-Side: Manhattan vs. Dijkstra
-```python
-# Manhattan class (from Module 4)
-class Manhattan:
-    def __init__(self, start):
-        self.position = start
+### Discussion Prompt
+"The constructor calls `self.build_graph()` automatically. What's the functions-version equivalent of that automatic call?" (There isn't one -- the caller must explicitly call `build_dijkstra_graph(rows, cols, blocked)` and hang onto the result themselves. The class does that bookkeeping for you; the functions version makes it visible.)
 
-    def compute_path(self, destination):
-        path = [self.position]
-        current_row, current_col = self.position
-        dest_row, dest_col = destination
-        while current_row != dest_row:
-            if current_row < dest_row:
-                current_row = current_row + 1
-            else:
-                current_row = current_row - 1
-            path.append((current_row, current_col))
-        while current_col != dest_col:
-            if current_col < dest_col:
-                current_col = current_col + 1
-            else:
-                current_col = current_col - 1
-            path.append((current_row, current_col))
-        return path
-
-# Dijkstra class (from this lesson)
-class Dijkstra:
-    def __init__(self, start, blocked):
-        self.position = start
-        self.blocked = blocked
-        self.graph = self.build_graph()
-
-    def build_graph(self):
-        # ... (as shown above)
-        pass
-
-    def compute_path(self, destination):
-        # ... (Lesson 5)
-        return []
-
-# Both work with Navigator!
-# Navigator only calls: pathfinder.compute_path(destination)
-# It doesn't care which class it's using.
-```
-
-## Teaching Notes
-- **Build incrementally.** Don't show the full class at once. Write `__init__` first, test it. Then add `build_graph`, test it. Then add the `compute_path` placeholder. This mirrors how real programmers work.
-- **Test after every addition.** After writing `__init__`, create an object and print its instance variables. After writing `build_graph`, check the graph. Students should develop the habit of testing incrementally.
-- **The Module 4 connection is crucial.** If students struggled with classes in Module 4, this is a chance to reinforce the concepts. Spend time comparing the Manhattan and Dijkstra class structures side by side.
-- **The placeholder `compute_path` is intentional.** Students often want to implement everything at once. Resist this urge. The placeholder lets them test the class structure now and focus on the algorithm in Lesson 5. This separation reduces cognitive load.
-- **`build_graph` is doing two jobs.** It both creates the graph AND removes blocked nodes. Walk through an example where you show what would happen if you forgot the blocked-node checks (a node that shouldn't be accessible would appear as a neighbor, leading to wrong paths).
-- **The `self` keyword trips up many students.** If students forget `self` in method definitions or when accessing instance variables, they'll get confusing errors. A common mistake is writing `position = start` instead of `self.position = start`. Show what happens when `self` is omitted.
-
-## Connections to Next Lessons
-- **Lesson 5** will fill in the `compute_path` method body with the full Dijkstra algorithm. Students will use `self.graph` to look up neighbors and `self.position` as the start node.
-- **Lesson 6** will test the completed Dijkstra class alongside Manhattan and swap it into the Navigator class. The identical `compute_path` interface makes this a two-line change.
-- **Lessons 7-8** will extend the class's usage by dynamically updating the blocked list based on rangefinder readings and saving/loading obstacles across runs.
-- The class design pattern used here (constructor builds internal state, methods operate on it) is the same pattern used throughout the XRP library.
+### Worksheet
+See the "Optional Extension" section at the end of the Lesson 4 worksheet for matching exercises.
