@@ -5,3 +5,7 @@
 # Python
 __pycache__/
 *.pyc
+
+# Large media files (exceed GitHub's 100MB limit)
+*.key
+*.mov
