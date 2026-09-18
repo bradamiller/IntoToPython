@@ -7,29 +7,26 @@
 
 ## Part A: System Design
 
-**1. How do the Manhattan class and Navigator class work together? Fill in the diagram:**
+**1. How do `compute_manhattan_path()` and `drive_path()` work together? Fill in the diagram:**
 
 ```
-  +-----------------+          +-----------------+
-  |   Manhattan     |          |   Navigator     |
-  |-----------------|          |-----------------|
-  | .position       |          | .position       |
-  |                 |          | .heading (0-3)  |
-  |                 |          | .line_track     |
-  |-----------------|          |-----------------|
-  | .compute_path() | -------> | .drive_path()   |
-  |   returns _____ |  path    |   calls _______ |
-  |                 |          |   calls _______ |
-  +-----------------+          +-----------------+
+  +------------------------------+          +------------------------------+
+  | compute_manhattan_path(      |          | drive_path(                  |
+  |   position, destination)     |  path    |   path, position, heading)   |
+  |-------------------------------| -------> |-------------------------------|
+  | returns _____                |          | calls _______                |
+  |                               |          | calls _______                |
+  |                               |          | returns (_____, _____)       |
+  +------------------------------+          +------------------------------+
 ```
 
-**What does `compute_path()` return?** ____________________________________
+**What does `compute_manhattan_path()` return?** ____________________________________
 
 **What two things does `drive_path()` do at each step?**
 1. ____________________________________
 2. ____________________________________
 
-**2. After the Navigator drives one leg, what must you update in the main program? Why?**
+**2. After `drive_path()` returns, what must you do with its return value in the main program? Why?**
 
 ____________________________________________________________________
 
@@ -38,20 +35,17 @@ ____________________________________________________________________
 **3. Draw the flow of the main program:**
 
 ```
-Create Manhattan at (__, __)
-Create Navigator at (__, __) heading ____
+position = (__, __)
+heading = ____
          |
          v
   +---> Get next destination
   |      |
   |      v
-  |   Compute _________ using Manhattan
+  |   Compute _________ using compute_manhattan_path
   |      |
   |      v
-  |   Drive _________ using Navigator
-  |      |
-  |      v
-  |   Update manhattan._________ = navigator._________
+  |   Drive the path, capturing new _________ and _________
   |      |
   |      v
   +-- More destinations? (loop back)
@@ -138,13 +132,13 @@ Total: _____ steps.
 (Add more rows if needed on the back of this page.)
 
 **After this leg:**
-- Navigator position: (__, __)
-- Navigator heading: ____
-- Manhattan position must be updated to: (__, __)
+- New position: (__, __)
+- New heading: ____
+- What line of code captures these in the main program? `position, heading = _______________________`
 
-**What heading will the Navigator have at the START of leg 2?** ____
+**What heading will the robot have at the START of leg 2?** ____
 
-(This is important -- the heading carries over from the previous leg!)
+(This is important -- the heading carries over from the previous leg, because `heading` is the very same variable used throughout the loop!)
 
 ---
 
@@ -152,12 +146,12 @@ Total: _____ steps.
 
 Check off each test as you complete it. **Do them in order!**
 
-### Level 1: Manhattan Only (No Robot)
-- [ ] Created Manhattan object at (0, 0)
-- [ ] Tested `compute_path()` for destination 1: path looks correct
-- [ ] Tested `compute_path()` for destination 2 (from destination 1): path looks correct
+### Level 1: Path Computation Only (No Robot)
+- [ ] Set `position = (0, 0)`
+- [ ] Tested `compute_manhattan_path()` for destination 1: path looks correct
+- [ ] Tested `compute_manhattan_path()` for destination 2 (from destination 1): path looks correct
 - [ ] Tested all 4 legs with print statements
-- [ ] Updated `manhattan.position` after each leg
+- [ ] Updated `position` after each leg (in the test loop)
 
 **Sample output for Level 1 (paste or write here):**
 
@@ -193,71 +187,64 @@ ____________________________________________________________________
 
 ## Part E: Code Template
 
-Complete the main program below. The Manhattan and Navigator classes are provided for you.
+Complete the main program below. `compute_manhattan_path()` and the driving functions are provided for you.
 
 ```python
 from XRPLib.board import Board
-from line_track import LineTrack
 
 HEADING_NAMES = ["N", "E", "S", "W"]
 
 
-class Manhattan:
-    def __init__(self, start):
-        self.position = start
-
-    def compute_path(self, destination):
-        path = []
-        current_row, current_col = self.position
-        dest_row, dest_col = destination
-        while current_row < dest_row:
-            current_row = current_row + 1
-            path.append((current_row, current_col))
-        while current_row > dest_row:
-            current_row = current_row - 1
-            path.append((current_row, current_col))
-        while current_col < dest_col:
-            current_col = current_col + 1
-            path.append((current_row, current_col))
-        while current_col > dest_col:
-            current_col = current_col - 1
-            path.append((current_row, current_col))
-        return path
+def compute_manhattan_path(position, destination):
+    path = []
+    current_row, current_col = position
+    dest_row, dest_col = destination
+    while current_row < dest_row:
+        current_row = current_row + 1
+        path.append((current_row, current_col))
+    while current_row > dest_row:
+        current_row = current_row - 1
+        path.append((current_row, current_col))
+    while current_col < dest_col:
+        current_col = current_col + 1
+        path.append((current_row, current_col))
+    while current_col > dest_col:
+        current_col = current_col - 1
+        path.append((current_row, current_col))
+    return path
 
 
-class Navigator:
-    def __init__(self, start, heading):
-        self.position = start
-        self.heading = heading
-        self.line_track = LineTrack()
+def desired_heading(position, next_pos):
+    row_diff = next_pos[0] - position[0]
+    col_diff = next_pos[1] - position[1]
+    if row_diff == -1:
+        return 0
+    elif col_diff == 1:
+        return 1
+    elif row_diff == 1:
+        return 2
+    elif col_diff == -1:
+        return 3
 
-    def desired_heading(self, next_pos):
-        row_diff = next_pos[0] - self.position[0]
-        col_diff = next_pos[1] - self.position[1]
-        if row_diff == 1:
-            return 2
-        elif row_diff == -1:
-            return 0
-        elif col_diff == 1:
-            return 1
-        elif col_diff == -1:
-            return 3
 
-    def turn_to(self, desired):
-        while self.heading != desired:
-            self.line_track.turn_right()
-            self.heading = self.heading + 1
-            if self.heading == 4:
-                self.heading = 0
+def turn_to(heading, desired):
+    while heading != desired:
+        turn_right()
+        heading = heading + 1
+        if heading == 4:
+            heading = 0
+    return heading
 
-    def drive_path(self, path):
-        for next_pos in path:
-            needed = self.desired_heading(next_pos)
-            if self.heading == needed:
-                self.line_track.drivetrain.straight(8)
-            self.turn_to(needed)
-            self.line_track.track_until_cross()
-            self.position = next_pos
+
+def drive_path(path, position, heading):
+    for next_pos in path:
+        needed = desired_heading(position, next_pos)
+        if heading == needed:
+            clear_intersection()
+        heading = turn_to(heading, needed)
+        track_until_cross()
+        position = next_pos
+    return position, heading
 
 
 # ===== YOUR MAIN PROGRAM =====
@@ -265,17 +252,15 @@ class Navigator:
 # TODO: Create a Board object for wait_for_button()
 board = _______________________________________________
 
-# TODO: Create a Manhattan object starting at (0, 0)
-manhattan = _______________________________________________
-
-# TODO: Create a Navigator object starting at (0, 0) heading North (0)
-navigator = _______________________________________________
+# TODO: Set up starting position and heading
+position = _______________________________________________
+heading = _______________________________________________
 
 # TODO: Define your list of 4+ destinations
 destinations = _______________________________________________
 
 print("=== XRP Grid Navigation: Final Project ===")
-print("Starting at:", manhattan.position)
+print("Starting at:", position)
 print("Destinations:", destinations)
 print()
 
@@ -286,24 +271,21 @@ _______________________________________________
 for __________ in __________:
     print("--- Navigating to", __________, "---")
 
-    # TODO: Compute the path using manhattan
+    # TODO: Compute the path
     path = _______________________________________________
 
     print("Path:", path)
     print("Steps:", len(path))
 
-    # TODO: Drive the path using navigator
+    # TODO: Drive the path, capturing the new position and heading
     _______________________________________________
 
-    # TODO: Update manhattan's position to match navigator's position
-    _______________________________________________
-
-    print("Arrived at:", navigator.position)
-    print("Heading:", HEADING_NAMES[navigator.heading])
+    print("Arrived at:", position)
+    print("Heading:", HEADING_NAMES[heading])
     print()
 
 print("=== All destinations reached! ===")
-print("Final position:", navigator.position)
+print("Final position:", position)
 ```
 
 ---
@@ -323,3 +305,34 @@ ____________________________________________________________________
 ---
 
 **Congratulations! You have built a complete autonomous grid navigation system from scratch!**
+
+---
+
+## Part F (Optional Extension): The Class Version
+
+*Skip this section if your course doesn't cover classes.*
+
+1. **In the class version, `drive_path()` is a method that updates `self.position` and `self.heading` in place, and doesn't return anything. What line does the main program need after calling `navigator.drive_path(path)` that the functions version does NOT need?**
+
+   _________________________________________________________________
+
+2. **Why is that line ("keep two objects in sync") a common source of bugs, compared to the functions version's single `position` variable?**
+
+   _________________________________________________________________
+
+   _________________________________________________________________
+
+3. **Rewrite this functions-version snippet using the `Manhattan`/`Navigator` classes:**
+
+   Functions version:
+   ```python
+   path = compute_manhattan_path(position, dest)
+   position, heading = drive_path(path, position, heading)
+   ```
+
+   Class version:
+   ```python
+   path = _______________________________________________
+   _______________________________________________
+   _______________________________________________
+   ```

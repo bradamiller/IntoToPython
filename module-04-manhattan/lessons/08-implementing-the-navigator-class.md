@@ -1,34 +1,34 @@
-# Lesson 8: Implementing the Navigator Class
+# Lesson 8: Driving the Path
 
 ## Overview
-Students package the turning logic from Lesson 7 into a **Navigator class** that can drive the XRP robot along any Manhattan path. The Navigator class stores the robot's current position and heading (as a number 0-3), determines the needed heading for each step, executes the required turns using the **LineTrack class from Module 2**, and follows the line to the next intersection. By the end of this lesson, students will have a complete Navigator that accepts a path from the Manhattan class and autonomously drives the robot through it, one intersection at a time. This is the payoff of building reusable classes: the line-following and turning code students wrote in Module 2 now powers grid navigation without any changes.
+Students package the turning logic from Lesson 7 into working functions -- `desired_heading()`, `turn_to()`, and `drive_path()` -- that drive the XRP robot along any Manhattan path. Since a robot only ever has one position and one heading at a time, these functions don't need a class to hold that state: `position` and `heading` are threaded through as parameters and handed back as return values, the same "return the updated value" pattern used for `THRESHOLD` and `heading` throughout this course. `drive_path()` executes the required turns and line-following by calling directly into the **driving toolkit from Module 2/3** -- `turn_right()`, `track_until_cross()`, `clear_intersection()`. By the end of this lesson, students will have working functions that accept a path from `compute_manhattan_path()` and autonomously drive the robot through it, one intersection at a time. This is the payoff of building a reusable toolkit: the line-following and turning code students wrote in Module 2 now powers grid navigation without any changes.
+
+This lesson stands on its own -- classes are never required. An **optional extension** at the end of this file shows the same functions packaged into a `Navigator` class that composes a `LineTrack` object, for courses that also cover OOP.
 
 ## Learning Objectives
 By the end of this lesson, students will be able to:
-- Design a Navigator class with appropriate attributes (`position`, `heading`, `line_track`) and methods
-- Implement `desired_heading()` to convert a coordinate delta into a numeric heading (0-3)
-- Implement `turn_to()` using a while loop that turns right until facing the correct direction
-- Implement `drive_path()` to loop through a list of coordinates, turning and line-following at each step
-- Integrate the Navigator class with the Manhattan class to drive a computed path on the robot
+- Implement `desired_heading(position, next_pos)` to convert a coordinate delta into a numeric heading (0-3)
+- Implement `turn_to(heading, desired)` using a while loop that turns right until facing the correct direction, returning the updated heading
+- Implement `drive_path(path, position, heading)` to loop through a list of coordinates, turning and line-following at each step, returning the final position and heading
+- Explain why threading `position`/`heading` through parameters and return values works without a class
+- Integrate `drive_path()` with `compute_manhattan_path()` to drive a computed path on the robot
 
 ## Key Concepts
-- **Navigator class**: A class that controls the robot's movement along a path, tracking position and heading
-- **`__init__(self, start, heading)`**: Constructor that sets the starting position, initial heading (0-3), and creates a LineTrack object
+- **Threading state through return values**: `turn_to()` and `drive_path()` don't store `position`/`heading` anywhere persistent -- they receive the current values as parameters and return the updated ones. The caller keeps track by reassigning: `position, heading = drive_path(path, position, heading)`.
 - **Numeric headings**: 0=North, 1=East, 2=South, 3=West -- the same clockwise numbering from Lesson 7
-- **`desired_heading(self, next_pos)`**: Method that computes the numeric heading (0-3) needed to move from the current position to the next position
-- **`turn_to(self, desired)`**: Method that uses a while loop to keep turning right until the robot faces the needed heading, wrapping from 3 back to 0
-- **`drive_path(self, path)`**: Method that loops through each coordinate in a path, clearing the intersection when going straight, turning as needed, and line-following to the next intersection
-- **Reusing LineTrack**: The Navigator does not control motors directly. It delegates all movement to the LineTrack class students built in Module 2, demonstrating the power of reusable code.
-- **Integration**: Connecting two classes (Manhattan for path planning, Navigator for path execution) so they work together as a system
+- **`desired_heading(position, next_pos)`**: A function that computes the numeric heading (0-3) needed to move from the current position to the next position
+- **`turn_to(heading, desired)`**: A function that uses a while loop to keep turning right until the robot faces the needed heading, wrapping from 3 back to 0, then returns the new heading
+- **`drive_path(path, position, heading)`**: A function that loops through each coordinate in a path, clearing the intersection when going straight, turning as needed, and line-following to the next intersection -- returns the final `(position, heading)`
+- **Reusing the Module 2/3 toolkit**: These functions don't control motors directly. They call `turn_right()`, `track_until_cross()`, and `clear_intersection()` -- the exact same functions built in Module 2 and reused all through Module 3 -- demonstrating the payoff of a reusable toolkit
 
 ## Materials Required
 - XRP Robot with charged battery
 - Grid mat or taped grid (at least 4x4)
 - VS Code with Python installed and XRPLib configured
-- Printed Navigator class design worksheet (see Materials & Code Examples)
-- Whiteboard or projector for class design diagrams
+- Printed function design worksheet (see Materials & Code Examples)
+- Whiteboard or projector for design diagrams
 - Completed turn-logic work from Lesson 7
-- Working LineTrack and LineSensor classes from Module 2
+- Working driving toolkit (`turn_right()`, `track_until_cross()`, `clear_intersection()`) from Module 2/3
 
 ## Lesson Flow
 
@@ -38,28 +38,21 @@ By the end of this lesson, students will be able to:
 
 1. **Review: Where We Left Off**:
    - Quick recap of Lesson 7: headings are numbers (0=N, 1=E, 2=S, 3=W), and we can turn right until we face the direction we need.
-   - "We figured out the logic for turning. Today we are packaging that into a class that actually drives the robot."
+   - "We figured out the logic for turning. Today we are turning that into functions that actually drive the robot."
 
-2. **Why a Class?**:
-   - We already have a Manhattan class that plans the path. Now we need a Navigator class that executes the path.
-   - A class bundles the robot's state (position, heading) with the logic (turn, drive) into one reusable object.
-   - Draw on the board:
+2. **Why Return Values Instead of a Class?**:
+   - There's only ever one robot, one position, one heading -- there's no need for multiple independent copies of this state, unlike, say, wanting several `LineSensor`s at once.
+   - So instead of storing `position` and `heading` on an object, functions just receive them as parameters and hand back the updated versions:
      ```
-     Manhattan class           Navigator class
-     ----------------          -----------------
-     .position                 .position
-     .compute_path()           .heading (number 0-3)
-                               .line_track (LineTrack object)
-                               .desired_heading()
-                               .turn_to()
-                               .drive_path()
+     position, heading = drive_path(path, position, heading)
      ```
+   - "This should look familiar -- it's the same tuple-unpacking pattern from Module 4 Lesson 2, just returning two values instead of one."
 
 3. **The Big Picture -- Reusing What We Built**:
-   - Manhattan computes the path: `[(1,0), (2,0), (2,1)]`
-   - Navigator drives the path by reusing LineTrack from Module 2
-   - The Navigator does not touch motors directly. It calls `line_track.turn_right()` to turn and `line_track.track_until_cross()` to follow the line to the next intersection.
-   - "Remember building LineTrack? That was not just a Module 2 exercise. We are using it right now. This is why we build reusable classes."
+   - `compute_manhattan_path()` computes the path: `[(1,0), (2,0), (2,1)]`
+   - `drive_path()` drives the path by reusing the Module 2/3 toolkit
+   - These functions don't touch motors directly. They call `turn_right()` to turn and `track_until_cross()` to follow the line to the next intersection.
+   - "Remember building those functions? That was not just a Module 2 exercise. We are using them right now. This is why we build reusable toolkits."
 
 4. **Preview the Goal**:
    - By the end of this lesson, you will run a program that computes a path and the robot physically drives it on the grid, following the lines from intersection to intersection.
@@ -68,30 +61,12 @@ By the end of this lesson, students will be able to:
 **For 50-min classes:** 18 min
 **For 3-hour sessions:** 30 min
 
-1. **Step 1: Design the `__init__` Method**:
-   - Ask: "What does the Navigator need to know when it is created?"
-   - Starting position (a tuple like `(0, 0)`)
-   - Starting heading (a number: 0=N, 1=E, 2=S, 3=W)
-   - A LineTrack object to control line-following and turning
-   - Write on the board:
+1. **Step 1: Implement `desired_heading()`**:
+   - This is the same logic from Lesson 7:
      ```python
-     HEADING_NAMES = ["N", "E", "S", "W"]
-
-     class Navigator:
-         def __init__(self, start, heading):
-             self.position = start
-             self.heading = heading  # 0=N, 1=E, 2=S, 3=W
-             self.line_track = LineTrack()
-     ```
-   - Explain: "We do not create a DifferentialDrive here. LineTrack already has one inside it. The Navigator talks to LineTrack, and LineTrack talks to the motors. Each class has its own job."
-   - Point out `HEADING_NAMES`: this list lets us print a friendly name when we want to display the heading. `HEADING_NAMES[self.heading]` converts 0 to "N", 1 to "E", etc.
-
-2. **Step 2: Implement `desired_heading()`**:
-   - This is the same logic from Lesson 7, now as a method that returns a number:
-     ```python
-     def desired_heading(self, next_pos):
-         row_diff = next_pos[0] - self.position[0]
-         col_diff = next_pos[1] - self.position[1]
+     def desired_heading(position, next_pos):
+         row_diff = next_pos[0] - position[0]
+         col_diff = next_pos[1] - position[1]
          if row_diff == -1:
              return 0  # North
          elif col_diff == 1:
@@ -101,50 +76,54 @@ By the end of this lesson, students will be able to:
          elif col_diff == -1:
              return 3  # West
      ```
-   - Ask: "Why does this use `self.position` instead of a `current` parameter?" Answer: The Navigator already knows its own position. That is the advantage of a class -- methods can access the object's own data.
+   - Ask: "Why does this take `position` as a parameter instead of reading it from somewhere else?" Answer: There's no object remembering the robot's position for us, so the caller has to pass in whatever position it currently has.
    - Ask: "Why numbers instead of strings?" Answer: Numbers let us compare and count. We can keep turning right, adding 1 to the heading each time, until we reach the heading we need. The numbers wrap around from 3 back to 0, just like a compass.
 
-3. **Step 3: Implement `turn_to()`**:
-   - This is the core of the Navigator. It uses a while loop to keep turning right until the robot faces the correct direction:
+2. **Step 2: Implement `turn_to()`**:
+   - This is the core of the driving toolkit. It uses a while loop to keep turning right until the robot faces the correct direction:
      ```python
-     def turn_to(self, desired):
-         while self.heading != desired:
-             self.line_track.turn_right()
-             self.heading = self.heading + 1
-             if self.heading == 4:
-                 self.heading = 0
+     def turn_to(heading, desired):
+         while heading != desired:
+             turn_right()
+             heading = heading + 1
+             if heading == 4:
+                 heading = 0
+         return heading
      ```
    - Walk through the logic:
-     - Keep turning right until facing the needed heading. Each `turn_right()` physically turns the robot.
+     - Keep turning right until facing the needed heading. Each `turn_right()` physically turns the robot -- this is the exact function built in Module 2, reused as-is.
      - The heading increments by 1 each time, wrapping from 3 back to 0. If the heading reaches 4, we reset it to 0 because there are only four directions (0, 1, 2, 3).
      - If the robot is already facing the right direction, the while loop does not execute at all -- zero turns.
-     - `turn_right()` is sensor-based -- it drives forward off the intersection, spins right, and stops when it finds the next line. This is the same method that worked on circles in Module 3, and it works here on the grid too.
+     - `turn_right()` is sensor-based -- it drives forward off the intersection, spins right, and stops when it finds the next line. This is the same function that worked on the circle in Module 2 and the grid in Module 3, and it works here too.
+     - **`return heading`**: Since `heading` is a local variable inside this function, the caller needs the updated value handed back explicitly. Forgetting this `return` is the single most common bug in this lesson.
    - Ask: "Why not use `turn_left()` for 3 turns?" Answer: Three right turns and one left turn reach the same heading. Using only right turns keeps the code simple -- one while loop handles every case. (Advanced students can optimize later.)
 
-4. **Step 4: Implement `drive_path()`**:
-   - This method ties everything together:
+3. **Step 3: Implement `drive_path()`**:
+   - This function ties everything together:
      ```python
-     def drive_path(self, path):
+     def drive_path(path, position, heading):
          for next_pos in path:
-             needed = self.desired_heading(next_pos)
-             if self.heading == needed:
-                 self.line_track.drivetrain.straight(8)
-             self.turn_to(needed)
-             self.line_track.track_until_cross()
-             self.position = next_pos
+             needed = desired_heading(position, next_pos)
+             if heading == needed:
+                 clear_intersection()
+             heading = turn_to(heading, needed)
+             track_until_cross()
+             position = next_pos
+         return position, heading
      ```
    - Key points to discuss:
      - `for next_pos in path:` iterates directly over the path. The path does not include the starting position, so every element is a new cell to drive to.
-     - **Clearing the intersection**: When going straight (0 turns needed), the robot is sitting on the intersection it just arrived at. If it starts line-following immediately, the cross sensor will trigger right away. So we drive forward 8 cm to clear the intersection before calling `track_until_cross()`.
-     - When turning, `turn_right()` already drives the robot off the intersection as part of its turn sequence, so no extra clearing is needed.
+     - **Clearing the intersection**: When going straight (0 turns needed), the robot is sitting on the intersection it just arrived at. If it starts line-following immediately, the cross sensor will trigger right away. So we call `clear_intersection()` -- the same function from Module 2/3 -- to drive forward 8 cm before calling `track_until_cross()`.
+     - When turning, `turn_to()` (via `turn_right()`) already drives the robot off the intersection as part of its turn sequence, so no extra clearing is needed there.
      - `track_until_cross()` follows the line until the robot detects the next intersection. No distance measurement needed -- the sensors tell the robot when it has arrived.
-     - After arriving, we update `self.position` to the new cell.
+     - After arriving, we update the local `position` variable to the new cell.
+     - **`return position, heading`**: At the very end, hand back both updated values as a tuple, so the caller can keep using them for the next call.
 
-5. **Step 5: Integration Test on Paper**:
+4. **Step 4: Integration Test on Paper**:
    - Before running on the robot, trace through a short path on the board:
      ```
      Manhattan path: [(1,0), (1,1)]
-     Navigator starts at (0,0) heading 0 (North)
+     Starting position (0,0), starting heading 0 (North)
 
      Step 1: next_pos = (1,0)
              needed = 2 (South)
@@ -152,7 +131,7 @@ By the end of this lesson, students will be able to:
                turn_right, heading becomes 1
                heading is 1, not 2 --> keep looping
                turn_right, heading becomes 2
-               heading is 2 == 2 --> exit while loop
+               heading is 2 == 2 --> exit while loop, return 2
              track_until_cross --> arrive at (1,0)
 
      Step 2: next_pos = (1,1)
@@ -161,33 +140,34 @@ By the end of this lesson, students will be able to:
                turn_right, heading becomes 3
                turn_right, heading becomes 0 (wrapped from 4)
                turn_right, heading becomes 1
-               heading is 1 == 1 --> exit while loop
+               heading is 1 == 1 --> exit while loop, return 1
              track_until_cross --> arrive at (1,1)
+
+     drive_path returns ((1,1), 1)
      ```
    - Confirm students can trace through before moving to the robot.
-   - Ask: "What if step 2 needed heading 2 (South) again? Then heading already equals needed, so the while loop does not run. We clear the intersection with `straight(8)` and then follow the line straight ahead."
+   - Ask: "What if step 2 needed heading 2 (South) again? Then heading already equals needed, so the while loop does not run. We call `clear_intersection()` and then follow the line straight ahead."
 
 ### Independent Practice (20 minutes)
 **For 50-min classes:** 15 min
 **For 3-hour sessions:** 30-40 min
 
-**Exercise 1: Complete the Navigator Class**
+**Exercise 1: Complete the Functions**
 - Students open the starter file `lesson-08-navigator.py` and fill in the TODO sections.
-- The Manhattan class and LineTrack/LineSensor classes are provided complete. Students focus on Navigator methods.
+- `compute_manhattan_path()` and the Module 2/3 driving toolkit are provided complete. Students focus on `desired_heading()`, `turn_to()`, and `drive_path()`.
 
 **Exercise 2: Desktop Testing**
 - Before deploying to the robot, students test with print statements:
   ```python
   HEADING_NAMES = ["N", "E", "S", "W"]
 
-  manhattan = Manhattan((0, 0))
-  path = manhattan.compute_path((2, 2))
+  path = compute_manhattan_path((0, 0), (2, 2))
   print("Path:", path)
 
-  nav = Navigator((0, 0), 0)
-  nav.drive_path(path)
-  print("Final position:", nav.position)
-  print("Final heading:", HEADING_NAMES[nav.heading])
+  position, heading = (0, 0), 0
+  position, heading = drive_path(path, position, heading)
+  print("Final position:", position)
+  print("Final heading:", HEADING_NAMES[heading])
   ```
 - Expected output should show the path and confirm the final position is (2, 2).
 
@@ -205,181 +185,181 @@ By the end of this lesson, students will be able to:
 ### Assessment
 
 **Formative (during lesson)**:
-- Can students explain what attributes the Navigator class needs and why?
+- Can students explain why `position` and `heading` are passed as parameters instead of stored somewhere persistent?
 - Can they trace through `drive_path()` on paper, predicting which turns happen and each position update?
-- Can they distinguish between the roles of Manhattan (path planning) and Navigator (path execution)?
-- Can they explain why the Navigator uses LineTrack instead of controlling motors directly?
+- Can they distinguish between the roles of `compute_manhattan_path()` (path planning) and `drive_path()` (path execution)?
+- Can they explain why `drive_path()` calls `turn_right()` and `track_until_cross()` directly instead of controlling motors itself?
 - Do they understand when and why the intersection needs to be cleared?
 
 **Summative (worksheet/exit ticket)**:
-1. What three attributes does the Navigator class store? Explain the purpose of each.
-2. If the Navigator is at (1, 2) heading 1 (East) and the next position is (1, 1), what heading is needed? Trace through the while loop in `turn_to()` and count how many right turns the robot makes.
+1. What two pieces of state does `drive_path()` need to track, and why does it return them instead of storing them?
+2. If the robot is at (1, 2) heading 1 (East) and the next position is (1, 1), what heading is needed? Trace through the while loop in `turn_to()` and count how many right turns the robot makes.
 3. Why does `drive_path()` iterate directly over the path with `for next_pos in path:` instead of skipping any elements?
-4. Why does the robot need to drive forward 8 cm when going straight, but not when turning?
-5. The Navigator does not create a DifferentialDrive. How does it control the robot's motors? Why is this a good design?
+4. Why does the robot need to clear the intersection when going straight, but not when turning?
+5. `drive_path()` never calls `DifferentialDrive` directly. How does it control the robot's motors? Why is this a good design?
 
 ## Common Misconceptions
 
 | Misconception | Reality |
 |---|---|
-| "The Navigator should also compute the path" | The Navigator only drives the path. The Manhattan class computes the path. Separating concerns makes the code easier to understand and debug. |
-| "I need to pass the current position to `desired_heading`" | The Navigator already knows its position through `self.position`. That is the advantage of a class -- methods can access the object's own data. |
-| "The Navigator needs a DifferentialDrive" | The Navigator uses a LineTrack object, which already contains a DifferentialDrive inside it. The Navigator does not need to know about motors -- it just asks LineTrack to turn or follow a line. This is called delegation. |
-| "After turning, I need to separately set the heading" | The while loop in `turn_to()` updates `self.heading` with each turn. When the loop exits, the heading already equals the needed heading -- no extra assignment needed. |
-| "The path should include the starting position" | The path only contains positions the robot needs to move to. The starting position is already known through `self.position`. Iterating directly with `for next_pos in path:` processes every element. |
+| "`drive_path()` should also compute the path" | `drive_path()` only drives the path. `compute_manhattan_path()` computes the path. Separating concerns makes the code easier to understand and debug. |
+| "I need some object to remember the current position" | The caller just keeps `position` and `heading` in two plain variables and reassigns them from the return value: `position, heading = drive_path(path, position, heading)`. No object needed. |
+| "`turn_to()` should update a global heading variable" | It could, but returning the new value and having the caller reassign it is more explicit and easier to trace -- you can see exactly where `heading` changes by reading the code, not by hunting for a `global` statement. |
+| "Forgetting `return heading` at the end of `turn_to()` is a minor issue" | It's the most common bug in this lesson. Without it, `turn_to()` computes the right value internally but throws it away -- the caller's `heading` variable never updates, and every subsequent turn calculation is wrong. |
+| "I don't need `clear_intersection()` when going straight" | Without it, `track_until_cross()` will detect the current intersection immediately and stop. The robot needs to drive past the cross before it can follow the line to the next one. |
 | "Three right turns is wasteful -- just turn left" | Three right turns and one left turn reach the same heading. Using only right turns keeps the code simple: one while loop handles all cases. Advanced students can optimize this later. |
-| "I don't need the `straight(8)` when going straight" | Without clearing the intersection, `track_until_cross()` will detect the current intersection immediately and stop. The robot needs to drive past the cross before it can follow the line to the next one. |
 
 ## Differentiation
 
 **For struggling students**:
-- Provide the `__init__` and `desired_heading()` methods complete; have students focus only on `turn_to()` and `drive_path()`
-- Use print statements instead of LineTrack calls for initial testing (desktop mode)
+- Provide `desired_heading()` complete; have students focus only on `turn_to()` and `drive_path()`
+- Use print statements instead of toolkit calls for initial testing (desktop mode)
 - Walk through the loop in `drive_path()` one iteration at a time with the student
 - Pair with a partner who completed Lesson 7 exercises successfully
-- Provide a reference card showing the while loop pattern: "keep turning right until heading equals needed, wrapping from 3 back to 0"
+- Provide a reference card showing the while loop pattern: "keep turning right until heading equals needed, wrapping from 3 back to 0, then return heading"
 
 **For advanced students**:
-- Add a `log` attribute that records every action (turn and drive) as a list of strings
-- Implement a `return_home()` method that drives the robot back to its starting position
+- Add a function `log_action(action)` that appends every action (turn and drive) to a growing list of strings
+- Implement a `return_home(position, heading)` function that computes and drives the path back to (0, 0)
 - Add error handling: what if `desired_heading()` receives a diagonal move?
 - Optimize `turn_to()` to choose between turning right and turning left based on which direction is fewer turns
-- Add a `print_status()` method that displays current position and heading name after each step
+- Work through the Optional Extension below and compare the two versions directly
 
 ## Materials & Code Examples
 
-### Navigator Class Design Template
+### Function Design Template
 ```
-Navigator Class
-===============
-Attributes:
-  - position:    (row, col) tuple -- where the robot is now
-  - heading:     number 0-3 (0=N, 1=E, 2=S, 3=W) -- which way the robot faces
-  - line_track:  LineTrack object -- handles line-following and turning
-
-Methods:
-  - __init__(start, heading):        Set up position, heading, and line_track
-  - desired_heading(next_pos):    Return 0/1/2/3 based on coordinate delta
-  - turn_to(desired):         Turn the robot to face the given heading
-  - drive_path(path):                Drive along the entire path
+desired_heading(position, next_pos)  -->  returns 0/1/2/3 based on coordinate delta
+turn_to(heading, desired)            -->  turns the robot, returns the new heading
+drive_path(path, position, heading)  -->  drives the entire path, returns (position, heading)
 ```
 
-### LineTrack and LineSensor Classes (from Module 2)
+### Driving Toolkit (from Module 2/3)
 ```python
 from XRPLib.reflectance import Reflectance
 from XRPLib.differential_drive import DifferentialDrive
 
-class LineSensor:
-    def __init__(self):
-        self.reflectance = Reflectance.get_default_reflectance()
-        self.threshold = 0.5
+reflectance = Reflectance.get_default_reflectance()
+THRESHOLD = 0.5
 
-    def get_left(self):
-        return self.reflectance.get_left()
+def get_left():
+    return reflectance.get_left()
 
-    def get_right(self):
-        return self.reflectance.get_right()
+def get_right():
+    return reflectance.get_right()
 
-    def get_error(self):
-        return self.get_left() - self.get_right()
+def get_error():
+    return get_left() - get_right()
 
-    def is_at_cross(self):
-        return self.get_left() > self.threshold and self.get_right() > self.threshold
+def is_at_cross():
+    return get_left() > THRESHOLD and get_right() > THRESHOLD
 
-    def is_off_line(self):
-        return self.get_left() < self.threshold and self.get_right() < self.threshold
+def is_off_line():
+    return get_left() < THRESHOLD and get_right() < THRESHOLD
 
-class LineTrack:
-    def __init__(self):
-        self.sensor = LineSensor()
-        self.drivetrain = DifferentialDrive.get_default_differential_drive()
-        self.base_effort = 0.4
-        self.Kp = 0.5
+drivetrain = DifferentialDrive.get_default_differential_drive()
+BASE_EFFORT = 0.4
+KP = 0.5
 
-    def track_until_cross(self):
-        """Line-follow until a cross intersection is detected."""
-        ...  # Implementation from Module 2
+def clear_intersection():
+    drivetrain.straight(8, 0.5)
 
-    def turn_right(self):
-        """Drive forward off the intersection, spin right until finding the next line."""
-        ...  # Implementation from Module 2
+def track_until_cross():
+    """Line-follow until a cross intersection is detected."""
+    ...  # Implementation from Module 2
 
-    def turn_left(self):
-        """Drive forward off the intersection, spin left until finding the next line."""
-        ...  # Implementation from Module 2
+def turn_right():
+    """Clear the intersection, spin right until finding the next line."""
+    ...  # Implementation from Module 2
 ```
 
-### Complete Navigator Class
+### Complete Driving Functions
 ```python
 HEADING_NAMES = ["N", "E", "S", "W"]
 
-class Navigator:
+def desired_heading(position, next_pos):
+    """Determine heading (0-3) to move from position to next_pos."""
+    row_diff = next_pos[0] - position[0]
+    col_diff = next_pos[1] - position[1]
+    if row_diff == -1:
+        return 0  # North
+    elif col_diff == 1:
+        return 1  # East
+    elif row_diff == 1:
+        return 2  # South
+    elif col_diff == -1:
+        return 3  # West
 
-    def __init__(self, start, heading):
-        """Create a Navigator at the given start position and heading."""
-        self.position = start
-        self.heading = heading  # 0=N, 1=E, 2=S, 3=W
-        self.line_track = LineTrack()
+def turn_to(heading, desired):
+    """Turn the robot to face the given heading. Returns the new heading."""
+    while heading != desired:
+        turn_right()
+        heading = heading + 1
+        if heading == 4:
+            heading = 0
+    return heading
 
-    def desired_heading(self, next_pos):
-        """Determine heading (0-3) to move from current position to next_pos."""
-        row_diff = next_pos[0] - self.position[0]
-        col_diff = next_pos[1] - self.position[1]
-        if row_diff == -1:
-            return 0  # North
-        elif col_diff == 1:
-            return 1  # East
-        elif row_diff == 1:
-            return 2  # South
-        elif col_diff == -1:
-            return 3  # West
-
-    def turn_to(self, desired):
-        """Turn the robot to face the given heading."""
-        while self.heading != desired:
-            self.line_track.turn_right()
-            self.heading = self.heading + 1
-            if self.heading == 4:
-                self.heading = 0
-
-    def drive_path(self, path):
-        """Drive the robot along the given path."""
-        for next_pos in path:
-            needed = self.desired_heading(next_pos)
-            if self.heading == needed:
-                self.line_track.drivetrain.straight(8)
-            self.turn_to(needed)
-            self.line_track.track_until_cross()
-            self.position = next_pos
+def drive_path(path, position, heading):
+    """Drive the robot along the given path. Returns (position, heading)."""
+    for next_pos in path:
+        needed = desired_heading(position, next_pos)
+        if heading == needed:
+            clear_intersection()
+        heading = turn_to(heading, needed)
+        track_until_cross()
+        position = next_pos
+    return position, heading
 ```
 
 ### Integration Example
 ```python
 HEADING_NAMES = ["N", "E", "S", "W"]
 
-class Manhattan:
-    def __init__(self, start):
-        self.position = start
+# ===== Main Program =====
+position = (0, 0)
+heading = 0
 
-    def compute_path(self, destination):
-        path = []
-        current_row, current_col = self.position
-        dest_row, dest_col = destination
-        while current_row < dest_row:
-            current_row = current_row + 1
-            path.append((current_row, current_col))
-        while current_row > dest_row:
-            current_row = current_row - 1
-            path.append((current_row, current_col))
-        while current_col < dest_col:
-            current_col = current_col + 1
-            path.append((current_row, current_col))
-        while current_col > dest_col:
-            current_col = current_col - 1
-            path.append((current_row, current_col))
-        return path
+destination = (2, 3)
+path = compute_manhattan_path(position, destination)
+print("Path to", destination, ":", path)
+position, heading = drive_path(path, position, heading)
+print("Arrived at:", position)
+print("Final heading:", HEADING_NAMES[heading])
+```
+
+## Teaching Notes
+- **Build the functions incrementally.** Write `desired_heading()` first, test it. Add `turn_to()`, test it standalone with a fake starting heading. Then `drive_path()`. Do not write everything at once.
+- **Emphasize reuse.** This is a key pedagogical moment. Students built the sensor/driving toolkit in Module 2, used it for the grid in Module 3, and now it powers Manhattan navigation in Module 4. `drive_path()` is only about 10 lines because it delegates all the hard work to the existing toolkit.
+- **Test on desktop first.** Before running on the robot, temporarily replace `turn_right()` with `print("Turning right")` and `track_until_cross()` with `print("Following line to next intersection")` so students can see the logic executing without hardware.
+- **The clearing maneuver matters.** When the robot goes straight through an intersection, it must call `clear_intersection()` before calling `track_until_cross()`. Without this, the sensors immediately detect the current intersection and stop. Walk through this scenario carefully on the board so students understand why.
+- **`turn_right()` is sensor-based, not angle-based.** The robot does not turn exactly 90 degrees. It drives forward, spins, and stops when it finds the next line. This means it self-corrects on every turn, which is more reliable than angle-based turning.
+- **Common coding errors to watch for:**
+  - Forgetting the `return heading` at the end of `turn_to()`, or the `return position, heading` at the end of `drive_path()`
+  - Including the start position in the path (it should not be there)
+  - Forgetting to reassign `position, heading = drive_path(...)` in the calling code (the values are computed but never captured)
+  - Forgetting the `clear_intersection()` call for the straight-ahead case
+  - Using string headings instead of numbers
+- **`compute_manhattan_path()` should be provided complete.** Students should not need to rewrite it. Copy it from Lesson 5 or import it.
+
+## Connections to Next Lessons
+- **Lesson 9** (Final Project) will combine `compute_manhattan_path()` and `drive_path()` into a multi-destination delivery program where the robot visits a sequence of locations.
+- `drive_path()` becomes the execution engine that students build upon in the final project.
+- Students will pass the updated `position` from each leg's `drive_path()` call directly into the next leg's `compute_manhattan_path()` call -- no separate synchronization step needed, since there's only one `position` variable, not two objects that could drift out of sync.
+
+---
+
+## Optional Extension: Package It as a `Navigator` Class
+
+*For courses that also cover classes/objects -- builds on the Lesson 5 Optional Extension (`Manhattan` as a class). Skip this section entirely otherwise; nothing later in the course depends on it.*
+
+### The Idea
+A `Navigator` class bundles `position`, `heading`, and a `LineTrack` object together, so instead of threading state through return values, the object remembers its own state between method calls.
+
+```python
+HEADING_NAMES = ["N", "E", "S", "W"]
 
 class Navigator:
+
     def __init__(self, start, heading):
         self.position = start
         self.heading = heading  # 0=N, 1=E, 2=S, 3=W
@@ -408,12 +388,24 @@ class Navigator:
         for next_pos in path:
             needed = self.desired_heading(next_pos)
             if self.heading == needed:
-                self.line_track.drivetrain.straight(8)
+                self.line_track.clear_intersection()
             self.turn_to(needed)
             self.line_track.track_until_cross()
             self.position = next_pos
+```
 
-# ===== Main Program =====
+### Comparing the Two Versions
+| Functions version | Class version |
+|---|---|
+| `desired_heading(position, next_pos)` | `nav.desired_heading(next_pos)` |
+| `heading = turn_to(heading, desired)` | `nav.turn_to(desired)` (updates `self.heading` in place) |
+| `position, heading = drive_path(path, position, heading)` | `nav.drive_path(path)` (updates `self.position`/`self.heading` in place) |
+| Caller must reassign `position, heading` after every call | `nav` remembers its own state -- no reassignment needed |
+
+Notice the trade-off: the class version's method calls are slightly shorter (no need to pass or reassign `position`/`heading`), because that bookkeeping now happens inside the object instead of at the call site.
+
+### Using It
+```python
 manhattan = Manhattan((0, 0))
 navigator = Navigator((0, 0), 0)
 
@@ -425,21 +417,8 @@ print("Arrived at:", navigator.position)
 print("Final heading:", HEADING_NAMES[navigator.heading])
 ```
 
-## Teaching Notes
-- **Build the class incrementally.** Write `__init__` first, test it. Add `desired_heading()`, test it. Then `turn_to()`, then `drive_path()`. Do not write the entire class at once.
-- **Emphasize reuse.** This is a key pedagogical moment. Students built LineTrack in Module 2, used it for circles in Module 3, and now it powers grid navigation in Module 4. The Navigator class is only about 25 lines because it delegates all the hard work to LineTrack.
-- **Test on desktop first.** Before running on the robot, add print statements inside each method so students can see the logic executing. Replace `self.line_track.turn_right()` with `print("Turning right")` and `self.line_track.track_until_cross()` with `print("Following line to next intersection")` for desktop testing.
-- **The clearing maneuver matters.** When the robot goes straight through an intersection, it must drive forward 8 cm before calling `track_until_cross()`. Without this, the sensors immediately detect the current intersection and stop. Walk through this scenario carefully on the board so students understand why.
-- **`turn_right()` is sensor-based, not angle-based.** The robot does not turn exactly 90 degrees. It drives forward, spins, and stops when it finds the next line. This means it self-corrects on every turn, which is more reliable than angle-based turning.
-- **Common coding errors to watch for:**
-  - Forgetting `self` in method definitions or when accessing attributes
-  - Including the start position in the path (it should not be there)
-  - Forgetting to update `self.position` after line-following
-  - Forgetting the intersection clearing `straight(8)` for the straight-ahead case
-  - Using string headings instead of numbers
-- **The Manhattan class should be provided complete.** Students should not need to rewrite it. Copy it from Lesson 5 or import it.
+### Discussion Prompt
+"The class version's `drive_path()` doesn't `return` anything -- but the functions version does. Why?" (The class version updates `self.position` and `self.heading` directly, so the object itself already reflects the new state. The functions version has no object to update, so it must hand the new values back explicitly.)
 
-## Connections to Next Lessons
-- **Lesson 9** (Final Project) will combine Manhattan and Navigator into a multi-destination delivery program where the robot visits a sequence of locations.
-- The Navigator class becomes the execution engine that students build upon in the final project.
-- Students will need to update `manhattan.position` after each leg so that the next path starts from the correct location.
+### Worksheet
+See the "Optional Extension" section at the end of the Lesson 8 worksheet for matching exercises.

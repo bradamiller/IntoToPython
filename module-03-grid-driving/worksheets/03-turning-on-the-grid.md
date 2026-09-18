@@ -7,7 +7,7 @@
 
 ## Part 1: Sequencing Drives and Turns
 
-For each path description, write the sequence of method calls:
+For each path description, write the sequence of function calls:
 
 **Path A: Drive 2 forward, turn right, drive 1 forward**
 
@@ -56,17 +56,17 @@ On this grid, draw the path for each sequence of commands. Mark the start with "
 
 **Sequence 1:** (starting at top-left, facing right)
 ```python
-drive_intersections(tracker, 3)
-tracker.turn_right()
-drive_intersections(tracker, 2)
+drive_intersections(3)
+turn_right()
+drive_intersections(2)
 ```
 Where does the robot end up? Row ____ Col ____
 
 **Sequence 2:** (starting at top-left, facing down)
 ```python
-drive_intersections(tracker, 2)
-tracker.turn_left()
-drive_intersections(tracker, 1)
+drive_intersections(2)
+turn_left()
+drive_intersections(1)
 ```
 Where does the robot end up? Row ____ Col ____
 
@@ -78,7 +78,7 @@ Where does the robot end up? Row ____ Col ____
 |---|---|---|
 | After turn_right(), you need to clear the intersection | ____ | __________ |
 | The robot must be at an intersection to turn | ____ | __________ |
-| turn_right() and turn_left() both drive forward briefly first | ____ | __________ |
+| turn_right() and turn_left() both call clear_intersection() first | ____ | __________ |
 | You can turn in the middle of a line (not at an intersection) | ____ | __________ |
 | After turning, the robot is on the perpendicular line | ____ | __________ |
 

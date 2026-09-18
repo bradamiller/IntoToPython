@@ -79,7 +79,7 @@ save_obstacles(blocked_nodes)  # Write to file
 
 # Start of Run 2:
 blocked_nodes = load_obstacles()  # Read from file
-pathfinder = Dijkstra((0, 0), blocked_nodes)  # Start smart!
+graph = build_dijkstra_graph(rows, cols, blocked_nodes)  # Start smart!
 ```
 
 ---
@@ -149,7 +149,7 @@ def load_obstacles():
 ## Slide 7: The Complete Two-Run Pattern
 **Run 1 — Discover and Save:**
 ```python
-from dijkstra import Dijkstra
+from dijkstra import build_dijkstra_graph, compute_dijkstra_path
 from XRPLib.rangefinder import Rangefinder
 
 blocked_nodes = load_obstacles()  # Empty on first run
@@ -160,8 +160,8 @@ current = (0, 0)
 destinations = [(2, 3), (3, 1)]
 
 for dest in destinations:
-    pathfinder = Dijkstra(current, blocked_nodes)
-    path = pathfinder.compute_path(dest)
+    graph = build_dijkstra_graph(rows, cols, blocked_nodes)
+    path = compute_dijkstra_path(current, dest, graph)
     # Navigate with obstacle checking...
     # (add newly discovered obstacles to blocked_nodes)
     current = dest

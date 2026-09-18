@@ -89,9 +89,8 @@ Match each test case to the edge case or scenario it is designed to check:
 Here is a test function. Read it carefully and answer the questions below.
 
 ```python
-def run_test(test_name, start, dest, expected):
-    manhattan = Manhattan(start)
-    actual = manhattan.compute_path(dest)
+def run_test(test_name, position, dest, expected):
+    actual = compute_manhattan_path(position, dest)
     if actual == expected:
         print(test_name, "- PASS")
     else:

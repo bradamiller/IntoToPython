@@ -3,7 +3,7 @@
 ## Overview
 Students learn about Python **dictionaries** -- the key-value data structure that will represent the grid graph in code. In Lesson 1, students drew graphs on paper with nodes and edges. Now they translate that paper representation into Python using dictionaries where each key is a (row, col) tuple representing a node, and each value is a list of neighbor tuples representing that node's edges. Students start with the basics of dictionary syntax -- creating dictionaries with curly braces, adding key-value pairs, and accessing values by key. They then learn to check if a key exists using the `in` keyword. The lesson culminates in building a `build_grid_graph(rows, cols)` function that programmatically generates the full graph dictionary for any grid size, and then removing blocked nodes from the graph. By the end of the lesson, students can represent any grid (with or without blocked nodes) as a Python dictionary ready for Dijkstra's algorithm.
 
-This lesson is the bridge between the conceptual graph understanding from Lesson 1 and the algorithmic work in Lessons 3-5. Students need dictionaries to store the graph that Dijkstra's algorithm will traverse. The dictionary structure also reinforces the tuple and list concepts from Module 4, since keys are tuples and values are lists of tuples. Understanding how to build and modify the graph dictionary is essential -- the Dijkstra class in Lessons 4-5 will use `build_grid_graph` as a core method, and obstacle handling depends on being able to remove nodes and their edges from the dictionary.
+This lesson is the bridge between the conceptual graph understanding from Lesson 1 and the algorithmic work in Lessons 3-5. Students need dictionaries to store the graph that Dijkstra's algorithm will traverse. The dictionary structure also reinforces the tuple and list concepts from Module 4, since keys are tuples and values are lists of tuples. Understanding how to build and modify the graph dictionary is essential -- `build_dijkstra_graph()` in Lessons 4-5 calls `build_grid_graph` as a core building block, and obstacle handling depends on being able to remove nodes and their edges from the dictionary.
 
 ## Learning Objectives
 By the end of this lesson, students will be able to:
@@ -350,13 +350,13 @@ print(f"(1,0) in graph: {(1, 0) in graph}")    # False
 ## Teaching Notes
 - **Start with simple dictionaries.** Before jumping to graph dictionaries with tuple keys and list values, show students a plain dictionary like `{"name": "Alice", "age": 15}`. Let them get comfortable with the syntax before adding complexity.
 - **Connect explicitly to Lesson 1.** Have students open their graph drawings from Lesson 1. For each node they drew, ask: "What would the key be? What would the value be?" This makes the translation from paper to code concrete.
-- **The `build_grid_graph` function is the core deliverable.** Students will copy this function into their Dijkstra class in Lesson 4. Make sure every student has a working version by the end of the lesson.
+- **The `build_grid_graph` function is the core deliverable.** Students will call this function from `build_dijkstra_graph()` in Lesson 4. Make sure every student has a working version by the end of the lesson.
 - **Emphasize the two-step removal process.** The most common bug in later lessons will be removing a blocked node's key but forgetting to remove it from neighbor lists. Spend extra time on this. Draw it on the board: "Delete the key -- but now (0, 1) still thinks (1, 1) is its neighbor. We need to clean that up."
 - **Use print statements liberally.** After every dictionary operation, print the dictionary or specific entries so students can see what changed. This is especially important when removing blocked nodes.
 - **The `in` keyword is new but essential.** Students will use `in` constantly in Lessons 3-5 (checking visited lists, checking if nodes exist in the graph). Make sure they understand it well here.
 
 ## Connections to Next Lessons
 - **Lesson 3** will use the graph dictionary to hand-trace Dijkstra's algorithm. Students will look up neighbors in the dictionary as they step through the algorithm on paper.
-- **Lesson 4** will incorporate `build_grid_graph` as a method of the Dijkstra class. The class constructor will call this method and then remove blocked nodes.
-- **Lesson 5** will implement `compute_path`, which iterates over the graph dictionary to find shortest paths. Every line of that method depends on understanding how to access and check dictionary keys.
+- **Lesson 4** will call `build_grid_graph` from inside `build_dijkstra_graph()`, which then removes blocked nodes.
+- **Lesson 5** will implement `compute_dijkstra_path()`, which iterates over the graph dictionary to find shortest paths. Every line of that function depends on understanding how to access and check dictionary keys.
 - The `remove_blocked` pattern introduced here is the foundation for obstacle handling throughout the rest of Module 5.

@@ -6,12 +6,12 @@
 **Learning Objectives:**
 - Describe the physical grid layout and how intersections are formed
 - Explain how cross detection from Module 2 maps to grid intersections
-- Use the LineTrack class to drive to the first intersection
+- Use the driving toolkit to drive to the first intersection
 - Reuse existing code on a new surface
 
 **Agenda:**
 - From circle to grid (10 min)
-- Review: LineTrack methods (5 min)
+- Review: driving toolkit functions (5 min)
 - Guided: Drive to first intersection (15 min)
 - Practice (15 min)
 
@@ -19,7 +19,7 @@
 
 ## Slide 2: Hook — From Circle to Grid
 **Remember Module 2?**
-- You built a `LineTrack` class that follows lines and detects crosses
+- You built a driving toolkit that follows lines and detects crosses
 
 **Now look at this grid:**
 - Lines running horizontally and vertically
@@ -60,20 +60,19 @@
 
 ---
 
-## Slide 5: Review — LineTrack Methods
-**Your LineTrack class from Module 2 has three key methods:**
+## Slide 5: Review — Driving Toolkit Functions
+**Your driving toolkit from Module 2 has three key functions:**
 
 ```python
-tracker = LineTrack()
 
 # Follow the line until an intersection
-tracker.track_until_cross()
+track_until_cross()
 
 # Turn right onto perpendicular line
-tracker.turn_right()
+turn_right()
 
 # Turn left onto perpendicular line
-tracker.turn_left()
+turn_left()
 ```
 
 **These three methods are ALL you need for grid navigation!**
@@ -86,11 +85,10 @@ tracker.turn_left()
 **Program:**
 ```python
 board = Board.get_default_board()
-tracker = LineTrack()
 
 board.wait_for_button()
 print("Driving to first intersection...")
-tracker.track_until_cross()
+track_until_cross()
 print("Intersection reached!")
 ```
 
@@ -107,13 +105,13 @@ print("Intersection reached!")
 ```python
 board.wait_for_button()
 
-tracker.track_until_cross()
+track_until_cross()
 print("At intersection!")
 
-tracker.turn_right()
+turn_right()
 print("Turned right - now on perpendicular line!")
 
-tracker.track_until_cross()
+track_until_cross()
 print("At next intersection!")
 ```
 
@@ -141,7 +139,7 @@ print("At next intersection!")
 
 ## Slide 9: Your Turn!
 **Activity:**
-1. Copy your LineSensor and LineTrack classes from Module 2
+1. Copy your sensor and driving toolkits from Module 2
 2. Write a program that drives to the first intersection and stops
 3. Verify the robot stops at the right place
 4. Add a turn_right() after reaching the intersection
@@ -157,7 +155,7 @@ print("At next intersection!")
 ## Slide 10: Connection to Next Lesson
 **What you did today:**
 - Saw how the grid relates to Module 2's cross detection
-- Drove to the first intersection using LineTrack
+- Drove to the first intersection using the driving toolkit
 - Added a turn at the intersection
 
 **Next lesson (Lesson 2):**

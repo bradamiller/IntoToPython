@@ -9,8 +9,8 @@
 
 **Why doesn't this work?**
 ```python
-tracker.track_until_cross()   # Drives to intersection 1
-tracker.track_until_cross()   # Should drive to intersection 2...
+track_until_cross()   # Drives to intersection 1
+track_until_cross()   # Should drive to intersection 2...
 ```
 
 Explain in your own words why the second `track_until_cross()` doesn't work:
@@ -30,18 +30,16 @@ ______________________________________________________________
 Trace through this code and fill in what happens at each step:
 
 ```python
-tracker.track_until_cross()
-tracker.drivetrain.set_effort(0.3, 0.3)
-time.sleep(0.3)
-tracker.track_until_cross()
+track_until_cross()
+clear_intersection()
+track_until_cross()
 ```
 
 | Step | Code | What the robot does |
 |---|---|---|
 | 1 | `track_until_cross()` | __________ |
-| 2 | `set_effort(0.3, 0.3)` | __________ |
-| 3 | `time.sleep(0.3)` | __________ |
-| 4 | `track_until_cross()` | __________ |
+| 2 | `clear_intersection()` | __________ |
+| 3 | `track_until_cross()` | __________ |
 
 **How many intersections did the robot pass through?** __________
 
@@ -56,10 +54,9 @@ Trace through this loop with `intersections = 3`:
 ```python
 intersections = 3
 for i in range(intersections):
-    tracker.track_until_cross()
+    track_until_cross()
     if i < intersections - 1:
-        tracker.drivetrain.set_effort(0.3, 0.3)
-        time.sleep(0.3)
+        clear_intersection()
 ```
 
 | i | track_until_cross() | Is i < 2? | Clears? | Intersection # reached |
@@ -81,9 +78,8 @@ Each program has a bug. Find and describe the fix:
 **Bug 1:**
 ```python
 for i in range(3):
-    tracker.track_until_cross()
-    tracker.drivetrain.set_effort(0.3, 0.3)
-    time.sleep(0.3)
+    track_until_cross()
+    clear_intersection()
 ```
 **What's wrong?** ______________________________________________________________
 
@@ -92,9 +88,8 @@ for i in range(3):
 **Bug 2:**
 ```python
 for i in range(3):
-    tracker.drivetrain.set_effort(0.3, 0.3)
-    time.sleep(0.3)
-    tracker.track_until_cross()
+    clear_intersection()
+    track_until_cross()
 ```
 **What's wrong?** ______________________________________________________________
 
@@ -112,7 +107,6 @@ intersections = ____
 for i in range(________):
     ___________________________________
     if _______________:
-        ___________________________________
         ___________________________________
 ```
 

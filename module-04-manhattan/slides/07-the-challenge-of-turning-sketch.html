@@ -243,12 +243,13 @@ desired_heading((2, 1), (2, 2))  # col_diff=1 &rarr; 1 (East)</pre></div>
             <div class="content">
                 <p class="body-text">Keep turning right, adding 1 to the heading each time. If heading reaches 4, reset to 0. Stop when it equals the desired heading.</p>
 
-                <div class="code-block"><pre>def turn_to(self, desired):
-    while self.heading != desired:
-        self.robot.turn_right()
-        self.heading = self.heading + 1
-        if self.heading == 4:
-            self.heading = 0</pre></div>
+                <div class="code-block"><pre>def turn_to(heading, desired):
+    while heading != desired:
+        turn_right()
+        heading = heading + 1
+        if heading == 4:
+            heading = 0
+    return heading</pre></div>
 
                 <div class="insight-box">No counting ahead. No math tricks. Just turn right until you're pointing the right way.</div>
 
@@ -268,12 +269,13 @@ desired_heading((2, 1), (2, 2))  # col_diff=1 &rarr; 1 (East)</pre></div>
             <div class="content">
                 <p class="body-text">Walk through the list of intersections. For each one: <strong>turn to face it</strong>, then <strong>drive forward one intersection</strong>.</p>
 
-                <div class="code-block"><pre>def drive_path(self, path):
+                <div class="code-block"><pre>def drive_path(path, position, heading):
     for next_pos in path:
-        desired = desired_heading(self.position, next_pos)
-        self.turn_to(desired)
-        self.robot.drive_forward_one()
-        self.position = next_pos</pre></div>
+        desired = desired_heading(position, next_pos)
+        heading = turn_to(heading, desired)
+        drive_forward_one()
+        position = next_pos
+    return position, heading</pre></div>
 
                 <p class="header-text">The three methods working together</p>
                 <p class="bullet"><strong>desired_heading</strong> &mdash; which way should I face?</p>
@@ -306,7 +308,7 @@ desired_heading((2, 1), (2, 2))  # col_diff=1 &rarr; 1 (East)</pre></div>
                 </table>
 
                 <div class="answer-box">
-                    <p class="body-text" style="margin-left: 8px;">The wrap from 3 back to 0 in step 3 is exactly the line <code style="font-family: 'Fira Code', monospace;">if self.heading == 4: self.heading = 0</code> doing its job.</p>
+                    <p class="body-text" style="margin-left: 8px;">The wrap from 3 back to 0 in step 3 is exactly the line <code style="font-family: 'Fira Code', monospace;">if heading == 4: heading = 0</code> doing its job.</p>
                 </div>
             </div>
             <div class="slide-navigation">
@@ -334,7 +336,7 @@ desired_heading((2, 1), (2, 2))  # col_diff=1 &rarr; 1 (East)</pre></div>
 
                 <p class="header-text">For each step write</p>
                 <p class="bullet">Did the row or the column change? &rarr; desired heading</p>
-                <p class="bullet">Each value of <code style="font-family: 'Fira Code', monospace;">self.heading</code> as the while loop runs</p>
+                <p class="bullet">Each value of <code style="font-family: 'Fira Code', monospace;">heading</code> as the while loop runs</p>
                 <p class="bullet">Final heading after the step</p>
             </div>
             <div class="slide-navigation">

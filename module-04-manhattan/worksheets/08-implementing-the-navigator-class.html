@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Worksheet: Implementing the Navigator Class</title>
+    <title>Worksheet: Driving the Path</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600;700&family=Patrick+Hand&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
@@ -354,242 +354,213 @@
 <div class="page">
     <div class="worksheet-header">
         <div class="subtitle">Module 4: Manhattan &mdash; Lesson 8</div>
-        <h1>Implementing the Navigator Class</h1>
+        <h1>Driving the Path</h1>
         <div class="student-info">
             <span><label>Name:</label> <span class="blank"></span></span>
             <span><label>Date:</label> <span class="blank"></span></span>
         </div>
     </div>
 
-    <!-- ── Part A: Navigator Class Design ── -->
+    <!-- ── Part A: Driving Function Design ── -->
     <div class="section">
-        <div class="section-header">Part A: Navigator Class Design</div>
+        <div class="section-header">Part A: Driving Function Design</div>
+        <p class="instruction">The driving functions control the robot's movement along a Manhattan path. Answer the following questions about their design.</p>
 
-        <ol class="questions">
-            <li><strong>List the three attributes the Navigator class needs:</strong>
-                <table>
-                    <thead>
-                        <tr><th>Attribute</th><th>Type</th><th>Purpose</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer answer-wide"></span></td></tr>
-                        <tr><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer answer-wide"></span></td></tr>
-                        <tr><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer answer-wide"></span></td></tr>
-                    </tbody>
-                </table>
-            </li>
-
-            <li><strong>List the three main methods (not counting __init__):</strong>
-                <table>
-                    <thead>
-                        <tr><th>Method Name</th><th>Input</th><th>Output / Action</th></tr>
-                    </thead>
-                    <tbody>
-                        <tr><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer answer-wide"></span></td></tr>
-                        <tr><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer answer-wide"></span></td></tr>
-                        <tr><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer answer-wide"></span></td></tr>
-                    </tbody>
-                </table>
-            </li>
-
-            <li><strong>Why does the Navigator store its own position instead of getting it from Manhattan?</strong>
-                <div class="answer-lines-2">
-                    <span class="answer-line"></span>
-                    <span class="answer-line"></span>
-                </div>
-            </li>
-
-            <li><strong>What object does the Navigator use to physically move the robot? Where does that object come from?</strong>
-                <span class="answer-line"></span>
-            </li>
-        </ol>
-    </div>
-
-    <!-- ── Part B: desired_heading() Exercises ── -->
-    <div class="section">
-        <div class="section-header">Part B: desired_heading() Exercises</div>
-
-        <div class="tip-box">
-            <span class="tip-label">Heading numbers:</span> 0 = N, 1 = E, 2 = S, 3 = W<br>
-            Row increases &rarr; South (heading 2), Row decreases &rarr; North (heading 0), Col increases &rarr; East (heading 1), Col decreases &rarr; West (heading 3)
-        </div>
-
+        <p><strong>1. List the two pieces of state that get threaded through the driving functions (as parameters and return values):</strong></p>
         <table>
-            <thead>
-                <tr><th>Navigator Position</th><th>Next Position</th><th>row_diff</th><th>col_diff</th><th>Heading</th></tr>
-            </thead>
+            <thead><tr><th>State</th><th>Type</th><th>Purpose</th></tr></thead>
             <tbody>
-                <tr><td>(0, 0)</td><td>(1, 0)</td><td>1 - 0 = <span class="inline-answer short"></span></td><td>0 - 0 = <span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
-                <tr><td>(2, 1)</td><td>(1, 1)</td><td>1 - 2 = <span class="inline-answer short"></span></td><td>1 - 1 = <span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
-                <tr><td>(1, 2)</td><td>(1, 3)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
-                <tr><td>(3, 3)</td><td>(3, 2)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
-                <tr><td>(0, 1)</td><td>(1, 1)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
-                <tr><td>(2, 0)</td><td>(2, 1)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
-                <tr><td>(3, 2)</td><td>(2, 2)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
-                <tr><td>(1, 3)</td><td>(1, 2)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td><span class="answer answer-wide"></span></td><td><span class="answer answer-wide"></span></td><td><span class="answer answer-wide"></span></td></tr>
+                <tr><td><span class="answer answer-wide"></span></td><td><span class="answer answer-wide"></span></td><td><span class="answer answer-wide"></span></td></tr>
             </tbody>
         </table>
+
+        <p style="margin-top: 10px;"><strong>2. List the three driving functions:</strong></p>
+        <table>
+            <thead><tr><th>Function Name</th><th>Input</th><th>Output</th></tr></thead>
+            <tbody>
+                <tr><td><span class="answer answer-wide"></span></td><td><span class="answer answer-wide"></span></td><td><span class="answer answer-wide"></span></td></tr>
+                <tr><td><span class="answer answer-wide"></span></td><td><span class="answer answer-wide"></span></td><td><span class="answer answer-wide"></span></td></tr>
+                <tr><td><span class="answer answer-wide"></span></td><td><span class="answer answer-wide"></span></td><td><span class="answer answer-wide"></span></td></tr>
+            </tbody>
+        </table>
+
+        <p style="margin-top: 10px;"><strong>3. Why do turn_to() and drive_path() need to return their updated values, instead of just changing a variable inside the function?</strong></p>
+        <div class="answer-lines-3" style="margin-top: 6px;">
+            <span class="answer-line"></span>
+            <span class="answer-line"></span>
+        </div>
+
+        <p style="margin-top: 6px;"><strong>4. What functions does drive_path() call to physically move the robot? Where do they come from?</strong></p>
+        <div class="answer-lines-3" style="margin-top: 6px;">
+            <span class="answer-line"></span>
+        </div>
     </div>
 </div>
 
 <!-- ════════ PAGE 2 ════════ -->
 <div class="page page-break">
-
-    <!-- ── Part C: turn_to() Exercises ── -->
+    <!-- ── Part B: desired_heading() Exercises ── -->
     <div class="section">
-        <div class="section-header">Part C: turn_to() Exercises</div>
-
+        <div class="section-header">Part B: desired_heading() Exercises</div>
+        <p class="instruction">Given the robot's current position and the next position, determine the desired heading number. Heading numbers: 0 = N, 1 = E, 2 = S, 3 = W.</p>
         <div class="tip-box">
-            <span class="tip-label">Method:</span> Count clockwise steps from current to needed: 0 &rarr; 1 &rarr; 2 &rarr; 3 &rarr; 0<br>
-            &bull; 0 steps &rarr; no turn needed<br>
-            &bull; 1 step &rarr; turn right once<br>
-            &bull; 2 steps &rarr; turn around (180)<br>
-            &bull; 3 steps &rarr; turn right three times (same as turning left once)
+            <span class="tip-label">Remember:</span> Row increases &rarr; South (2) &nbsp;|&nbsp; Row decreases &rarr; North (0) &nbsp;|&nbsp; Col increases &rarr; East (1) &nbsp;|&nbsp; Col decreases &rarr; West (3)
         </div>
 
-        <table>
-            <thead>
-                <tr><th>Current Heading</th><th>Needed Heading</th><th>Clockwise Steps</th><th>Right Turns</th><th>New Heading</th></tr>
-            </thead>
+        <table style="font-size: 14px;">
+            <thead><tr><th>Position</th><th>Next Position</th><th>row_diff</th><th>col_diff</th><th>Desired Heading</th></tr></thead>
             <tbody>
-                <tr><td>0 (N)</td><td>1 (E)</td><td>0&rarr;1 = 1 step</td><td>1</td><td>1 (E)</td></tr>
-                <tr><td>0 (N)</td><td>2 (S)</td><td>0&rarr;1&rarr;2 = <span class="inline-answer short"></span> steps</td><td><span class="answer short"></span></td><td><span class="answer short"></span></td></tr>
-                <tr><td>1 (E)</td><td>1 (E)</td><td>already there = <span class="inline-answer short"></span> steps</td><td><span class="answer short"></span></td><td><span class="answer short"></span></td></tr>
-                <tr><td>1 (E)</td><td>0 (N)</td><td>1&rarr;<span class="inline-answer short"></span>&rarr;<span class="inline-answer short"></span>&rarr;<span class="inline-answer short"></span> = <span class="inline-answer short"></span> steps</td><td><span class="answer short"></span></td><td><span class="answer short"></span></td></tr>
-                <tr><td>2 (S)</td><td>3 (W)</td><td>2&rarr;3 = <span class="inline-answer short"></span> step</td><td><span class="answer short"></span></td><td><span class="answer short"></span></td></tr>
-                <tr><td>2 (S)</td><td>0 (N)</td><td>2&rarr;<span class="inline-answer short"></span>&rarr;<span class="inline-answer short"></span> = <span class="inline-answer short"></span> steps</td><td><span class="answer short"></span></td><td><span class="answer short"></span></td></tr>
-                <tr><td>3 (W)</td><td>2 (S)</td><td>3&rarr;<span class="inline-answer short"></span>&rarr;<span class="inline-answer short"></span>&rarr;<span class="inline-answer short"></span> = <span class="inline-answer short"></span> steps</td><td><span class="answer short"></span></td><td><span class="answer short"></span></td></tr>
-                <tr><td>3 (W)</td><td>1 (E)</td><td>3&rarr;<span class="inline-answer short"></span>&rarr;<span class="inline-answer short"></span> = <span class="inline-answer short"></span> steps</td><td><span class="answer short"></span></td><td><span class="answer short"></span></td></tr>
-                <tr><td>0 (N)</td><td>3 (W)</td><td>0&rarr;<span class="inline-answer short"></span>&rarr;<span class="inline-answer short"></span>&rarr;<span class="inline-answer short"></span> = <span class="inline-answer short"></span> steps</td><td><span class="answer short"></span></td><td><span class="answer short"></span></td></tr>
-                <tr><td>1 (E)</td><td>3 (W)</td><td>1&rarr;<span class="inline-answer short"></span>&rarr;<span class="inline-answer short"></span> = <span class="inline-answer short"></span> steps</td><td><span class="answer short"></span></td><td><span class="answer short"></span></td></tr>
+                <tr><td>(0, 0)</td><td>(1, 0)</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
+                <tr><td>(2, 1)</td><td>(1, 1)</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
+                <tr><td>(1, 2)</td><td>(1, 3)</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
+                <tr><td>(3, 3)</td><td>(3, 2)</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
+                <tr><td>(0, 1)</td><td>(1, 1)</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
+                <tr><td>(2, 0)</td><td>(2, 1)</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
+                <tr><td>(3, 2)</td><td>(2, 2)</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
+                <tr><td>(1, 3)</td><td>(1, 2)</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
             </tbody>
         </table>
-
-        <p style="margin-top: 10px;">
-            <strong>How many required 0 right turns?</strong> <span class="inline-answer short"></span> &nbsp;&nbsp;
-            <strong>How many required 2 right turns (a 180)?</strong> <span class="inline-answer short"></span>
-        </p>
     </div>
 
-    <!-- ── Part D: drive_path() Tracing ── -->
+    <!-- ── Part C: Trace turn_to() by Hand ── -->
     <div class="section">
-        <div class="section-header">Part D: drive_path() Tracing</div>
-
-        <p><strong>First path:</strong> [(1, 0), (2, 0), (2, 1), (2, 2)]</p>
-        <p>Starting position: (0, 0) &nbsp;&nbsp; Starting heading: 0 (N)</p>
-
-        <table>
-            <thead>
-                <tr><th style="width:50px;">Step (i)</th><th>next_pos</th><th>Needed Heading</th><th>Current Heading</th><th>Right Turns</th><th>New Heading</th><th>New Position</th></tr>
-            </thead>
-            <tbody>
-                <tr><td>1</td><td>(1, 0)</td><td><span class="answer short"></span></td><td>0 (N)</td><td><span class="answer short"></span></td><td><span class="answer short"></span></td><td>(1, 0)</td></tr>
-                <tr><td>2</td><td>(2, 0)</td><td><span class="answer short"></span></td><td><span class="answer short"></span></td><td><span class="answer short"></span></td><td><span class="answer short"></span></td><td>(2, 0)</td></tr>
-                <tr><td>3</td><td>(2, 1)</td><td><span class="answer short"></span></td><td><span class="answer short"></span></td><td><span class="answer short"></span></td><td><span class="answer short"></span></td><td>(2, 1)</td></tr>
-                <tr><td>4</td><td>(2, 2)</td><td><span class="answer short"></span></td><td><span class="answer short"></span></td><td><span class="answer short"></span></td><td><span class="answer short"></span></td><td>(2, 2)</td></tr>
-            </tbody>
-        </table>
-
-        <p style="margin-top: 8px;">
-            <strong>Final position:</strong> <span class="inline-answer"></span> &nbsp;&nbsp;
-            <strong>Final heading:</strong> <span class="inline-answer short"></span>
-        </p>
+        <div class="section-header">Part C: Trace turn_to() by Hand</div>
+        <div class="code-block">def turn_to(heading, desired):
+    while heading != desired:
+        turn_right()
+        heading = heading + 1
+        if heading == 4:
+            heading = 0
+    return heading</div>
+        <p class="instruction">Each pass: turn right, add 1, wrap 4 &rarr; 0. Stop when heading == desired, then return it. List the heading values the loop produces. Write &ldquo;already there&rdquo; if the loop runs zero times.</p>
     </div>
 </div>
 
 <!-- ════════ PAGE 3 ════════ -->
 <div class="page page-break">
-
     <div class="section">
-        <div class="section-header">Part D: drive_path() Tracing (continued)</div>
-
-        <p><strong>Second path:</strong> [(3, 2), (3, 1), (2, 1), (1, 1), (0, 1)]</p>
-        <p>Starting position: (3, 3) &nbsp;&nbsp; Starting heading: 1 (E)</p>
-
-        <table>
-            <thead>
-                <tr><th style="width:50px;">Step (i)</th><th>next_pos</th><th>Needed Heading</th><th>Current Heading</th><th>Right Turns</th><th>New Heading</th><th>New Position</th></tr>
-            </thead>
+        <table style="font-size: 13px;">
+            <thead><tr><th>Current</th><th>Desired</th><th>heading values during turn_to</th><th>Total Turns</th><th>Returned</th></tr></thead>
             <tbody>
-                <tr><td>1</td><td>(3, 2)</td><td><span class="answer short"></span></td><td>1 (E)</td><td><span class="answer short"></span></td><td><span class="answer short"></span></td><td>(3, 2)</td></tr>
-                <tr><td>2</td><td>(3, 1)</td><td><span class="answer short"></span></td><td><span class="answer short"></span></td><td><span class="answer short"></span></td><td><span class="answer short"></span></td><td>(3, 1)</td></tr>
-                <tr><td>3</td><td>(2, 1)</td><td><span class="answer short"></span></td><td><span class="answer short"></span></td><td><span class="answer short"></span></td><td><span class="answer short"></span></td><td>(2, 1)</td></tr>
-                <tr><td>4</td><td>(1, 1)</td><td><span class="answer short"></span></td><td><span class="answer short"></span></td><td><span class="answer short"></span></td><td><span class="answer short"></span></td><td>(1, 1)</td></tr>
-                <tr><td>5</td><td>(0, 1)</td><td><span class="answer short"></span></td><td><span class="answer short"></span></td><td><span class="answer short"></span></td><td><span class="answer short"></span></td><td>(0, 1)</td></tr>
+                <tr><td>0 (N)</td><td>1 (E)</td><td>0 &rarr; <span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>0 (N)</td><td>2 (S)</td><td>0 &rarr; <span class="inline-answer short"></span> &rarr; <span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>1 (E)</td><td>1 (E)</td><td><span class="answer answer-wide"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>1 (E)</td><td>0 (N)</td><td>1 &rarr; <span class="inline-answer short"></span> &rarr; <span class="inline-answer short"></span> &rarr; <span class="inline-answer short"></span> (wrap)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>2 (S)</td><td>3 (W)</td><td>2 &rarr; <span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>2 (S)</td><td>0 (N)</td><td>2 &rarr; <span class="inline-answer short"></span> &rarr; <span class="inline-answer short"></span> (wrap)</td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>3 (W)</td><td>2 (S)</td><td>3 &rarr; <span class="inline-answer short"></span> (wrap) &rarr; <span class="inline-answer short"></span> &rarr; <span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>3 (W)</td><td>1 (E)</td><td>3 &rarr; <span class="inline-answer short"></span> (wrap) &rarr; <span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>0 (N)</td><td>3 (W)</td><td>0 &rarr; <span class="inline-answer short"></span> &rarr; <span class="inline-answer short"></span> &rarr; <span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
+                <tr><td>1 (E)</td><td>3 (W)</td><td>1 &rarr; <span class="inline-answer short"></span> &rarr; <span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td><td><span class="inline-answer short"></span></td></tr>
             </tbody>
         </table>
 
-        <p style="margin-top: 8px;">
-            <strong>Final position:</strong> <span class="inline-answer"></span> &nbsp;&nbsp;
-            <strong>Final heading:</strong> <span class="inline-answer short"></span>
-        </p>
-    </div>
-
-    <!-- ── Part E: Code Completion ── -->
-    <div class="section">
-        <div class="section-header">Part E: Code Completion</div>
-        <p class="instruction">Complete the Navigator class by filling in the missing parts.</p>
-
-        <div class="code-block">from line_track import LineTrack
-
-HEADING_NAMES = ["N", "E", "S", "W"]
-
-class Navigator:
-
-    def __init__(self, start, heading):
-        self.position = <span class="code-blank" style="min-width: 80px;"></span>
-        self.heading = <span class="code-blank" style="min-width: 80px;"></span>
-        self.line_track = <span class="code-blank" style="min-width: 80px;"></span></div>
+        <p style="margin-top: 8px;"><strong>How many of the 10 scenarios ran the while loop zero times?</strong> <span class="inline-answer"></span></p>
+        <p style="margin-top: 6px;"><strong>Which scenarios triggered the wrap from 4 back to 0?</strong> <span class="inline-answer x-long"></span></p>
+        <p style="margin-top: 6px;"><strong>What would go wrong if turn_to() were missing its return heading line?</strong></p>
+        <div class="answer-lines-3" style="margin-top: 6px;">
+            <span class="answer-line"></span>
+        </div>
     </div>
 </div>
 
 <!-- ════════ PAGE 4 ════════ -->
 <div class="page page-break">
-
+    <!-- ── Part D: drive_path() Tracing ── -->
     <div class="section">
-        <div class="section-header">Part E: Code Completion (continued)</div>
+        <div class="section-header">Part D: drive_path() Tracing</div>
+        <p class="instruction">Trace through the entire drive_path() function for the given path. For each step, list the heading values produced by turn_to (or &ldquo;already there&rdquo; if no turn).</p>
 
-        <div class="code-block">    def desired_heading(self, next_pos):
-        row_diff = next_pos[<span class="code-blank" style="min-width: 30px;"></span>] - self.position[<span class="code-blank" style="min-width: 30px;"></span>]
-        col_diff = next_pos[<span class="code-blank" style="min-width: 30px;"></span>] - self.position[<span class="code-blank" style="min-width: 30px;"></span>]
-        if row_diff == -1:
-            return <span class="code-blank" style="min-width: 30px;"></span>
-        elif col_diff == 1:
-            return <span class="code-blank" style="min-width: 30px;"></span>
-        elif row_diff == 1:
-            return <span class="code-blank" style="min-width: 30px;"></span>
-        elif col_diff == -1:
-            return <span class="code-blank" style="min-width: 30px;"></span></div>
-
-        <div class="code-block">    def turn_to(self, needed_heading):
-        while self.heading != <span class="code-blank" style="min-width: 90px;"></span>:
-            self.line_track.<span class="code-blank" style="min-width: 90px;"></span>()
-            self.heading = self.heading + <span class="code-blank" style="min-width: 30px;"></span>
-            if self.heading == <span class="code-blank" style="min-width: 30px;"></span>:
-                self.heading = <span class="code-blank" style="min-width: 30px;"></span></div>
-
-        <div class="code-block">    def drive_path(self, path):
-        for <span class="code-blank" style="min-width: 80px;"></span> in <span class="code-blank" style="min-width: 60px;"></span>:
-            needed = self.desired_heading(<span class="code-blank" style="min-width: 80px;"></span>)
-            if self.heading == <span class="code-blank" style="min-width: 60px;"></span>:
-                self.line_track.drivetrain.straight(<span class="code-blank" style="min-width: 30px;"></span>)
-            self.turn_to(<span class="code-blank" style="min-width: 80px;"></span>)
-            self.line_track.track_until_cross()
-            self.position = <span class="code-blank" style="min-width: 80px;"></span></div>
-
-        <p style="margin-top: 12px;"><strong>Why does <code style="font-family: 'Fira Code', monospace; font-size: 14px;">drive_path()</code> call <code style="font-family: 'Fira Code', monospace; font-size: 14px;">self.line_track.drivetrain.straight(8)</code> when the heading already matches?</strong></p>
-        <span class="answer-line"></span>
-
-        <p style="margin-top: 12px;"><strong>Why does <code style="font-family: 'Fira Code', monospace; font-size: 14px;">for next_pos in path</code> work without skipping any elements?</strong></p>
-        <span class="answer-line"></span>
+        <p><strong>Path:</strong> [(1, 0), (2, 0), (2, 1), (2, 2)] &nbsp;&nbsp; <strong>Starting position:</strong> (0, 0) &nbsp;&nbsp; <strong>Starting heading:</strong> 0 (N)</p>
+        <table style="font-size: 13px;">
+            <thead><tr><th>Step</th><th>next_pos</th><th>Desired</th><th>Current</th><th>turn_to heading values</th><th>New Heading</th><th>New Position</th></tr></thead>
+            <tbody>
+                <tr><td>1</td><td>(1, 0)</td><td><span class="answer"></span></td><td>0 (N)</td><td><span class="answer answer-wide"></span></td><td><span class="answer"></span></td><td>(1, 0)</td></tr>
+                <tr><td>2</td><td>(2, 0)</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer answer-wide"></span></td><td><span class="answer"></span></td><td>(2, 0)</td></tr>
+                <tr><td>3</td><td>(2, 1)</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer answer-wide"></span></td><td><span class="answer"></span></td><td>(2, 1)</td></tr>
+                <tr><td>4</td><td>(2, 2)</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer answer-wide"></span></td><td><span class="answer"></span></td><td>(2, 2)</td></tr>
+            </tbody>
+        </table>
+        <p style="margin-top: 8px;"><strong>What does drive_path() return after this trace?</strong> (<span class="inline-answer"></span>, <span class="inline-answer"></span>)</p>
     </div>
 
+    <div class="section">
+        <p style="margin-top: 6px;"><strong>Now trace a second path:</strong></p>
+        <p><strong>Path:</strong> [(3, 2), (3, 1), (2, 1), (1, 1), (0, 1)] &nbsp;&nbsp; <strong>Starting position:</strong> (3, 3) &nbsp;&nbsp; <strong>Starting heading:</strong> 1 (E)</p>
+        <table style="font-size: 13px;">
+            <thead><tr><th>Step</th><th>next_pos</th><th>Desired</th><th>Current</th><th>turn_to heading values</th><th>New Heading</th><th>New Position</th></tr></thead>
+            <tbody>
+                <tr><td>1</td><td>(3, 2)</td><td><span class="answer"></span></td><td>1 (E)</td><td><span class="answer answer-wide"></span></td><td><span class="answer"></span></td><td>(3, 2)</td></tr>
+                <tr><td>2</td><td>(3, 1)</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer answer-wide"></span></td><td><span class="answer"></span></td><td>(3, 1)</td></tr>
+                <tr><td>3</td><td>(2, 1)</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer answer-wide"></span></td><td><span class="answer"></span></td><td>(2, 1)</td></tr>
+                <tr><td>4</td><td>(1, 1)</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer answer-wide"></span></td><td><span class="answer"></span></td><td>(1, 1)</td></tr>
+                <tr><td>5</td><td>(0, 1)</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer answer-wide"></span></td><td><span class="answer"></span></td><td>(0, 1)</td></tr>
+            </tbody>
+        </table>
+        <p style="margin-top: 8px;"><strong>What does drive_path() return after this trace?</strong> (<span class="inline-answer"></span>, <span class="inline-answer"></span>)</p>
+    </div>
+</div>
+
+<!-- ════════ PAGE 5 ════════ -->
+<div class="page page-break">
+    <!-- ── Part E: Code Completion ── -->
+    <div class="section">
+        <div class="section-header">Part E: Code Completion</div>
+        <p class="instruction">Fill in the blanks to complete the driving functions.</p>
+
+        <div class="code-block" style="font-size: 13px;">HEADING_NAMES = ["N", "E", "S", "W"]
+
+def desired_heading(position, next_pos):
+    row_diff = next_pos[<span class="code-blank" style="min-width: 24px;"></span>] - position[<span class="code-blank" style="min-width: 24px;"></span>]
+    col_diff = next_pos[<span class="code-blank" style="min-width: 24px;"></span>] - position[<span class="code-blank" style="min-width: 24px;"></span>]
+    if row_diff == -1:
+        return <span class="code-blank" style="min-width: 24px;"></span>
+    elif col_diff == 1:
+        return <span class="code-blank" style="min-width: 24px;"></span>
+    elif row_diff == 1:
+        return <span class="code-blank" style="min-width: 24px;"></span>
+    elif col_diff == -1:
+        return <span class="code-blank" style="min-width: 24px;"></span>
+
+def turn_to(heading, desired):
+    while heading != <span class="code-blank"></span>:
+        <span class="code-blank"></span>()
+        heading = heading + <span class="code-blank" style="min-width: 24px;"></span>
+        if heading == <span class="code-blank" style="min-width: 24px;"></span>:
+            heading = <span class="code-blank" style="min-width: 24px;"></span>
+    return <span class="code-blank"></span>
+
+def drive_path(path, position, heading):
+    for next_pos in <span class="code-blank"></span>:
+        needed = desired_heading(<span class="code-blank"></span>, <span class="code-blank"></span>)
+        if heading == <span class="code-blank"></span>:
+            <span class="code-blank"></span>()
+        heading = turn_to(<span class="code-blank"></span>, <span class="code-blank"></span>)
+        track_until_cross()
+        position = <span class="code-blank"></span>
+    return <span class="code-blank"></span>, <span class="code-blank"></span></div>
+
+        <p style="margin-top: 10px;"><strong>Why does drive_path() call clear_intersection() only when the robot is already facing the right way?</strong></p>
+        <div class="answer-lines-3" style="margin-top: 6px;">
+            <span class="answer-line"></span>
+        </div>
+
+        <p style="margin-top: 6px;"><strong>Why does the loop iterate directly with <code style="font-family: 'Fira Code', monospace; font-size: 14px; background: #f0ede8; padding: 1px 4px; border-radius: 3px;">for next_pos in path:</code> instead of skipping elements?</strong></p>
+        <div class="answer-lines-3" style="margin-top: 6px;">
+            <span class="answer-line"></span>
+        </div>
+    </div>
+</div>
+
+<!-- ════════ PAGE 6 ════════ -->
+<div class="page page-break">
     <!-- ── Reflection ── -->
     <div class="section">
         <div class="reflection-box">
             <div class="reflection-label">Reflection</div>
-            <p><strong>The Navigator class reuses your LineTrack class from Module 2. Why is this a good design choice?</strong></p>
-            <div class="answer-lines-3">
+            <p><strong>drive_path() reuses your Module 2/3 driving toolkit (turn_right(), track_until_cross(), clear_intersection()) instead of controlling motors directly. Why is this a good design choice?</strong></p>
+            <div class="answer-lines-3" style="margin-top: 8px;">
                 <span class="answer-line"></span>
                 <span class="answer-line"></span>
                 <span class="answer-line"></span>
@@ -597,9 +568,182 @@ class Navigator:
         </div>
     </div>
 
-    <!-- ── Next Lesson ── -->
     <div class="next-lesson">
-        <strong>Next Lesson:</strong> We combine Manhattan and Navigator into a complete multi-destination navigation program for the Final Project!
+        <strong>Next Lesson:</strong> We combine compute_manhattan_path() and drive_path() into a complete multi-destination navigation program for the Final Project!
+    </div>
+
+    <!-- ── Answer Key ── -->
+    <div class="section" style="margin-top: 24px;">
+        <div class="section-header">Answer Key</div>
+
+        <p><strong>Part A:</strong></p>
+        <p style="font-size: 15px;">1. <code style="font-family: 'Fira Code', monospace; font-size: 14px;">position</code> (tuple) &mdash; current (row, col) on the grid; <code style="font-family: 'Fira Code', monospace; font-size: 14px;">heading</code> (int) &mdash; direction robot faces (0=N, 1=E, 2=S, 3=W)</p>
+        <p style="font-size: 15px; margin-top: 4px;">2. <code style="font-family: 'Fira Code', monospace; font-size: 14px;">desired_heading(position, next_pos)</code> &mdash; returns heading number 0-3; <code style="font-family: 'Fira Code', monospace; font-size: 14px;">turn_to(heading, desired)</code> &mdash; turns right until heading matches desired, returns the new heading; <code style="font-family: 'Fira Code', monospace; font-size: 14px;">drive_path(path, position, heading)</code> &mdash; drives through the entire path, returns (position, heading)</p>
+        <p style="font-size: 15px; margin-top: 4px;">3. Because <code style="font-family: 'Fira Code', monospace; font-size: 14px;">position</code> and <code style="font-family: 'Fira Code', monospace; font-size: 14px;">heading</code> are local variables inside each function &mdash; changes made to a parameter inside a function do not affect anything outside it. The only way the caller can see the updated values is if the function returns them and the caller reassigns its own variables from that return value.</p>
+        <p style="font-size: 15px; margin-top: 4px;">4. It calls <code style="font-family: 'Fira Code', monospace; font-size: 14px;">turn_right()</code>, <code style="font-family: 'Fira Code', monospace; font-size: 14px;">track_until_cross()</code>, and <code style="font-family: 'Fira Code', monospace; font-size: 14px;">clear_intersection()</code> &mdash; the driving toolkit built in Module 2 and reused in Module 3.</p>
+    </div>
+</div>
+
+<!-- ════════ PAGE 7 ════════ -->
+<div class="page page-break">
+    <div class="section">
+        <p><strong>Part B:</strong></p>
+        <table style="font-size: 13px;">
+            <thead><tr><th>Position</th><th>Next Position</th><th>row_diff</th><th>col_diff</th><th>Desired Heading</th></tr></thead>
+            <tbody>
+                <tr><td>(0, 0)</td><td>(1, 0)</td><td>1</td><td>0</td><td>2 (S)</td></tr>
+                <tr><td>(2, 1)</td><td>(1, 1)</td><td>-1</td><td>0</td><td>0 (N)</td></tr>
+                <tr><td>(1, 2)</td><td>(1, 3)</td><td>0</td><td>1</td><td>1 (E)</td></tr>
+                <tr><td>(3, 3)</td><td>(3, 2)</td><td>0</td><td>-1</td><td>3 (W)</td></tr>
+                <tr><td>(0, 1)</td><td>(1, 1)</td><td>1</td><td>0</td><td>2 (S)</td></tr>
+                <tr><td>(2, 0)</td><td>(2, 1)</td><td>0</td><td>1</td><td>1 (E)</td></tr>
+                <tr><td>(3, 2)</td><td>(2, 2)</td><td>-1</td><td>0</td><td>0 (N)</td></tr>
+                <tr><td>(1, 3)</td><td>(1, 2)</td><td>0</td><td>-1</td><td>3 (W)</td></tr>
+            </tbody>
+        </table>
+
+        <p style="margin-top: 12px;"><strong>Part C:</strong></p>
+        <table style="font-size: 12px;">
+            <thead><tr><th>Current</th><th>Desired</th><th>heading values</th><th>Turns</th><th>Ret.</th></tr></thead>
+            <tbody>
+                <tr><td>0 (N)</td><td>1 (E)</td><td>0 &rarr; <strong>1</strong></td><td><strong>1</strong></td><td><strong>1</strong></td></tr>
+                <tr><td>0 (N)</td><td>2 (S)</td><td>0 &rarr; <strong>1</strong> &rarr; <strong>2</strong></td><td><strong>2</strong></td><td><strong>2</strong></td></tr>
+                <tr><td>1 (E)</td><td>1 (E)</td><td><strong>already there</strong></td><td><strong>0</strong></td><td><strong>1</strong></td></tr>
+                <tr><td>1 (E)</td><td>0 (N)</td><td>1 &rarr; <strong>2</strong> &rarr; <strong>3</strong> &rarr; <strong>0 (wrap)</strong></td><td><strong>3</strong></td><td><strong>0</strong></td></tr>
+                <tr><td>2 (S)</td><td>3 (W)</td><td>2 &rarr; <strong>3</strong></td><td><strong>1</strong></td><td><strong>3</strong></td></tr>
+                <tr><td>2 (S)</td><td>0 (N)</td><td>2 &rarr; <strong>3</strong> &rarr; <strong>0 (wrap)</strong></td><td><strong>2</strong></td><td><strong>0</strong></td></tr>
+                <tr><td>3 (W)</td><td>2 (S)</td><td>3 &rarr; <strong>0 (wrap)</strong> &rarr; <strong>1</strong> &rarr; <strong>2</strong></td><td><strong>3</strong></td><td><strong>2</strong></td></tr>
+                <tr><td>3 (W)</td><td>1 (E)</td><td>3 &rarr; <strong>0 (wrap)</strong> &rarr; <strong>1</strong></td><td><strong>2</strong></td><td><strong>1</strong></td></tr>
+                <tr><td>0 (N)</td><td>3 (W)</td><td>0 &rarr; <strong>1</strong> &rarr; <strong>2</strong> &rarr; <strong>3</strong></td><td><strong>3</strong></td><td><strong>3</strong></td></tr>
+                <tr><td>1 (E)</td><td>3 (W)</td><td>1 &rarr; <strong>2</strong> &rarr; <strong>3</strong></td><td><strong>2</strong></td><td><strong>3</strong></td></tr>
+            </tbody>
+        </table>
+        <p style="font-size: 14px; margin-top: 6px;">Zero-turn scenarios: <strong>1</strong> (the 1(E)&rarr;1(E) row). Wrap-triggering scenarios: the four rows where the loop crosses 3 &rarr; 0. Without <code style="font-family: 'Fira Code', monospace; font-size: 13px;">return heading</code>, the caller's <code style="font-family: 'Fira Code', monospace; font-size: 13px;">heading</code> variable would never update &mdash; the function would compute the correct value internally and then discard it, and every subsequent call to turn_to would start from the wrong heading.</p>
+    </div>
+</div>
+
+<!-- ════════ PAGE 8 ════════ -->
+<div class="page page-break">
+    <div class="section">
+        <p><strong>Part D &mdash; First Path:</strong></p>
+        <table style="font-size: 13px;">
+            <thead><tr><th>Step</th><th>next_pos</th><th>Desired</th><th>Current</th><th>heading values</th><th>New Hdg</th><th>New Pos</th></tr></thead>
+            <tbody>
+                <tr><td>1</td><td>(1, 0)</td><td>2 (S)</td><td>0 (N)</td><td>0 &rarr; 1 &rarr; 2</td><td>2 (S)</td><td>(1, 0)</td></tr>
+                <tr><td>2</td><td>(2, 0)</td><td>2 (S)</td><td>2 (S)</td><td>already there</td><td>2 (S)</td><td>(2, 0)</td></tr>
+                <tr><td>3</td><td>(2, 1)</td><td>1 (E)</td><td>2 (S)</td><td>2 &rarr; 3 &rarr; 0 (wrap) &rarr; 1</td><td>1 (E)</td><td>(2, 1)</td></tr>
+                <tr><td>4</td><td>(2, 2)</td><td>1 (E)</td><td>1 (E)</td><td>already there</td><td>1 (E)</td><td>(2, 2)</td></tr>
+            </tbody>
+        </table>
+        <p style="margin-top: 6px; font-size: 14px;">drive_path() returns <strong>((2, 2), 1)</strong>.</p>
+
+        <p style="margin-top: 14px;"><strong>Part D &mdash; Second Path:</strong></p>
+        <table style="font-size: 13px;">
+            <thead><tr><th>Step</th><th>next_pos</th><th>Desired</th><th>Current</th><th>heading values</th><th>New Hdg</th><th>New Pos</th></tr></thead>
+            <tbody>
+                <tr><td>1</td><td>(3, 2)</td><td>3 (W)</td><td>1 (E)</td><td>1 &rarr; 2 &rarr; 3</td><td>3 (W)</td><td>(3, 2)</td></tr>
+                <tr><td>2</td><td>(3, 1)</td><td>3 (W)</td><td>3 (W)</td><td>already there</td><td>3 (W)</td><td>(3, 1)</td></tr>
+                <tr><td>3</td><td>(2, 1)</td><td>0 (N)</td><td>3 (W)</td><td>3 &rarr; 0 (wrap)</td><td>0 (N)</td><td>(2, 1)</td></tr>
+                <tr><td>4</td><td>(1, 1)</td><td>0 (N)</td><td>0 (N)</td><td>already there</td><td>0 (N)</td><td>(1, 1)</td></tr>
+                <tr><td>5</td><td>(0, 1)</td><td>0 (N)</td><td>0 (N)</td><td>already there</td><td>0 (N)</td><td>(0, 1)</td></tr>
+            </tbody>
+        </table>
+        <p style="margin-top: 6px; font-size: 14px;">drive_path() returns <strong>((0, 1), 0)</strong>.</p>
+    </div>
+
+    <div class="section" style="margin-top: 16px;">
+        <p><strong>Part E:</strong></p>
+        <div class="code-block" style="font-size: 12px;">HEADING_NAMES = ["N", "E", "S", "W"]
+
+def desired_heading(position, next_pos):
+    row_diff = next_pos[0] - position[0]
+    col_diff = next_pos[1] - position[1]
+    if row_diff == -1:
+        return 0
+    elif col_diff == 1:
+        return 1
+    elif row_diff == 1:
+        return 2
+    elif col_diff == -1:
+        return 3
+
+def turn_to(heading, desired):
+    while heading != desired:
+        turn_right()
+        heading = heading + 1
+        if heading == 4:
+            heading = 0
+    return heading
+
+def drive_path(path, position, heading):
+    for next_pos in path:
+        needed = desired_heading(position, next_pos)
+        if heading == needed:
+            clear_intersection()
+        heading = turn_to(heading, needed)
+        track_until_cross()
+        position = next_pos
+    return position, heading</div>
+        <p style="font-size: 13px; margin-top: 6px;"><strong>Blanks (in order):</strong> 0, 0, 1, 1, 0, 1, 2, 3 (desired_heading's row_diff/col_diff indices and return values) &mdash; desired, turn_right, 1, 4, 0, heading (turn_to) &mdash; path, position/next_pos, needed, clear_intersection, heading/needed, next_pos, position/heading (drive_path)</p>
+        <p style="font-size: 14px; margin-top: 8px;">clear_intersection() is called only when the robot is already facing the right direction. In that case no turn happens, so the robot is still sitting on the previous intersection. It drives forward 8 cm to clear the cross before track_until_cross() starts looking for the next crossing line. When a turn does happen, the turning motion itself clears the intersection (via turn_right()'s own call to clear_intersection()).</p>
+        <p style="font-size: 14px; margin-top: 6px;">The loop iterates directly with <code style="font-family: 'Fira Code', monospace; font-size: 13px;">for next_pos in path:</code> because the path does not include the starting position &mdash; every element is a new cell to drive to.</p>
+    </div>
+</div>
+
+<!-- ════════ PAGE 9 ════════ -->
+<div class="page page-break">
+    <!-- ── Part F: Optional Extension ── -->
+    <div class="section">
+        <div class="section-header">Part F (Optional Extension): The Navigator Class</div>
+        <p class="instruction">Skip this section if your course doesn't cover classes.</p>
+
+        <ol class="questions">
+            <li>
+                <strong>Fill in the blanks to turn the driving functions into a Navigator class:</strong>
+                <div class="code-block" style="font-size: 12px;">class Navigator:
+
+    def __init__(self, start, heading):
+        self.position = <span class="code-blank"></span>
+        self.heading = <span class="code-blank"></span>
+        self.line_track = <span class="code-blank"></span>
+
+    def desired_heading(self, next_pos):
+        row_diff = next_pos[0] - self.<span class="code-blank"></span>[0]
+        col_diff = next_pos[1] - self.<span class="code-blank"></span>[1]
+        # ... same four if/elif branches
+
+    def turn_to(self, desired):
+        while self.heading != desired:
+            self.line_track.<span class="code-blank"></span>()
+            self.heading = self.heading + 1
+            if self.heading == 4:
+                self.heading = 0
+        # Note: no return statement needed here. Why not?
+        # <span class="code-blank" style="min-width: 260px;"></span>
+
+    def drive_path(self, path):
+        for next_pos in path:
+            needed = self.desired_heading(next_pos)
+            if self.heading == needed:
+                self.line_track.clear_intersection()
+            self.<span class="code-blank"></span>(needed)
+            self.line_track.track_until_cross()
+            self.position = next_pos</div>
+            </li>
+            <li>
+                <strong>In the functions version, the caller writes:</strong>
+                <div class="code-block" style="font-size: 13px;">position, heading = drive_path(path, position, heading)</div>
+                <p style="margin-top: 6px;"><strong>What does the equivalent class-version call look like?</strong></p>
+                <div class="code-block" style="font-size: 13px; min-height: 30px;"><span class="code-blank" style="min-width: 300px;"></span></div>
+            </li>
+            <li>
+                <strong>Why doesn't the class version's drive_path need a return statement, while the functions version does?</strong>
+                <div class="answer-lines-3" style="margin-top: 6px;">
+                    <span class="answer-line"></span>
+                    <span class="answer-line"></span>
+                </div>
+            </li>
+        </ol>
     </div>
 </div>
 

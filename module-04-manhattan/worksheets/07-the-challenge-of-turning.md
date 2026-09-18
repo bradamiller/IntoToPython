@@ -33,20 +33,21 @@ Between two adjacent intersections, **either the row OR the column changes — n
 
 ## Part 2: The `turn_to` While Loop
 
-Here is the code we will put in the Navigator class in Lesson 8:
+Here is the function we will write in Lesson 8:
 
 ```python
-def turn_to(self, desired):
-    while self.heading != desired:
-        self.robot.turn_right()
-        self.heading = self.heading + 1
-        if self.heading == 4:
-            self.heading = 0
+def turn_to(heading, desired):
+    while heading != desired:
+        turn_right()
+        heading = heading + 1
+        if heading == 4:
+            heading = 0
+    return heading
 ```
 
-**Each pass through the loop:** turn the robot right, add 1 to heading. If heading hits 4, reset to 0. Stop when heading equals desired.
+**Each pass through the loop:** turn the robot right, add 1 to heading. If heading hits 4, reset to 0. Stop when heading equals desired, then return it.
 
-**In your own words, what does the line `if self.heading == 4: self.heading = 0` do, and why is it necessary?**
+**In your own words, what does the line `if heading == 4: heading = 0` do, and why is it necessary?**
 
 ____________________________________________________________________
 
@@ -56,7 +57,7 @@ ____________________________________________________________________
 
 ## Part 3: Trace `turn_to` by Hand
 
-For each scenario, list the value of `self.heading` after each pass through the while loop, ending when the loop stops. Write "already there" if the loop runs zero times.
+For each scenario, list the value of `heading` after each pass through the while loop, ending when the loop stops. Write "already there" if the loop runs zero times.
 
 | Scenario | Current Heading | Desired Heading | heading values during turn_to | Total Turns |
 |---|---|---|---|---|
@@ -218,7 +219,7 @@ def desired_heading(current_pos, next_pos):
 
 **What does `desired_heading((1,1), (0,1))` return?** __________
 
-*In the next lesson, you will type `turn_to` and `desired_heading` into the Navigator class and run them on the robot.*
+*In the next lesson, you will type `turn_to` and `desired_heading` as real functions and run them on the robot.*
 
 ---
 
@@ -234,4 +235,4 @@ _________________________________________________________________
 
 ---
 
-**Next Lesson:** We'll build the **Navigator class** around these three methods and drive the robot along any path!
+**Next Lesson:** We'll turn these three functions into real code and drive the robot along any path!

@@ -57,8 +57,8 @@ print("Starting square pattern!")
 
 for leg in range(4):
     print("Side", leg + 1, "of 4")
-    drive_intersections(tracker, 2)
-    tracker.turn_right()
+    drive_intersections(2)
+    turn_right()
 
 print("Square complete!")
 ```
@@ -75,7 +75,7 @@ print("Square complete!")
 
 | Requirement | Points |
 |---|---|
-| Uses LineTrack class from Module 2 | 10 |
+| Uses the driving toolkit from Module 2 | 10 |
 | Square uses a for loop (not copy-paste) | 10 |
 | Robot completes all 4 sides | 10 |
 | Robot returns to starting position | 10 |
@@ -117,7 +117,7 @@ print("Square complete!")
 
 **Robot veers after turning?**
 - The turn might not be finding the line cleanly
-- Try adding a small delay after turn: `time.sleep(0.2)`
+- If turns aren't lining up, check `clear_intersection()`'s 8 cm against your robot
 
 **General strategy:** Change ONE thing, test, observe.
 
@@ -133,8 +133,8 @@ print("Square complete!")
 ```python
 lengths = [2, 3, 2, 3]
 for leg in range(4):
-    drive_intersections(tracker, lengths[leg])
-    tracker.turn_right()
+    drive_intersections(lengths[leg])
+    turn_right()
 ```
 
 **Challenge C: Left-Turn Square**
@@ -147,7 +147,7 @@ for leg in range(4):
 
 ## Slide 9: Your Turn!
 **Activity:**
-1. Copy your LineSensor and LineTrack classes
+1. Copy your sensor and driving toolkits
 2. Write the drive_intersections helper function
 3. Write the main program with the for loop
 4. Test incrementally (1 side → 2 sides → full square)
@@ -163,7 +163,7 @@ for leg in range(4):
 
 ## Slide 10: Reflection and Looking Ahead
 **Module 3 Summary:**
-- Reused LineTrack class on a grid (code reuse!)
+- Reused the driving toolkit on a grid (code reuse!)
 - Learned to clear intersections for multi-intersection driving
 - Sequenced drives and turns for complex paths
 - Used for loops for repeated patterns
@@ -173,6 +173,6 @@ for leg in range(4):
 - Module 3: YOU decide the path (hardcoded 2 intersections, turn right)
 - Module 4: The COMPUTER calculates the path (Manhattan algorithm)
 - You'll give coordinates like (2, 3) and the robot figures out how to get there
-- The LineTrack class continues to be used!
+- The driving toolkit continues to be used!
 
 **Big picture:** Each module builds on the last. Nothing is wasted.

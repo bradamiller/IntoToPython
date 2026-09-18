@@ -841,13 +841,13 @@
                 <p class="header-text">The fix: Drive forward exactly 8 cm to align the turning center over the intersection</p>
 
                 <pre class="code-block"><code># Detect the intersection
-tracker.track_until_cross()
+track_until_cross()
 
 # Clear: move turning center over the intersection
-tracker.drivetrain.straight(8, 0.5)
+clear_intersection()
 
 # Now we can turn or detect the NEXT intersection
-tracker.track_until_cross()</code></pre>
+track_until_cross()</code></pre>
 
                 <div class="spacer"></div>
 
@@ -893,19 +893,19 @@ tracker.track_until_cross()</code></pre>
 
 # Intersection 1
 print("Driving to intersection 1...")
-tracker.track_until_cross()
+track_until_cross()
 print("Reached intersection 1!")
 
 # Clear: align turning center over intersection
-tracker.drivetrain.straight(8, 0.5)
+clear_intersection()
 
 # Intersection 2
 print("Driving to intersection 2...")
-tracker.track_until_cross()
+track_until_cross()
 print("Reached intersection 2!")
 
 # Clear again
-tracker.drivetrain.straight(8, 0.5)</code></pre>
+clear_intersection()</code></pre>
 
                 <div class="illustration" style="margin-top: 16px;">
                     <svg width="650" height="130" viewBox="0 0 500 100">
@@ -963,11 +963,11 @@ tracker.drivetrain.straight(8, 0.5)</code></pre>
 
 for i in range(intersections):
     print("Driving to intersection", i + 1)
-    tracker.track_until_cross()
+    track_until_cross()
     print("Reached intersection", i + 1)
 
     # Always clear: align turning center over intersection
-    tracker.drivetrain.straight(8, 0.5)</code></pre>
+    clear_intersection()</code></pre>
 
                 <div class="spacer"></div>
 
@@ -1016,17 +1016,17 @@ for i in range(intersections):
             <div class="content">
                 <p class="header-text">Wrap it up in a reusable function:</p>
 
-                <pre class="code-block"><code>def drive_intersections(tracker, count):
+                <pre class="code-block"><code>def drive_intersections(count):
     for i in range(count):
-        tracker.track_until_cross()
-        tracker.drivetrain.straight(8, 0.5)</code></pre>
+        track_until_cross()
+        clear_intersection()</code></pre>
 
                 <div class="spacer"></div>
 
                 <p class="header-text">Usage:</p>
 
-                <pre class="code-block"><code>drive_intersections(tracker, 2)   # Drive 2 intersections
-drive_intersections(tracker, 4)   # Drive 4 intersections</code></pre>
+                <pre class="code-block"><code>drive_intersections(2)   # Drive 2 intersections
+drive_intersections(4)   # Drive 4 intersections</code></pre>
 
                 <div class="insight-box" style="margin-top: 20px;">
                     This function will be very useful in the final project!
@@ -1037,7 +1037,7 @@ drive_intersections(tracker, 4)   # Drive 4 intersections</code></pre>
                         <!-- Function box -->
                         <rect x="10" y="10" width="180" height="60" rx="14" fill="rgba(91, 143, 168, 0.12)" stroke="#5b8fa8" stroke-width="2.5" transform="rotate(-0.5 100 40)"/>
                         <text x="100" y="35" font-family="Fira Code, monospace" font-size="13" fill="#2d3436" text-anchor="middle">drive_intersections</text>
-                        <text x="100" y="55" font-family="Fira Code, monospace" font-size="13" fill="#5b8fa8" text-anchor="middle">(tracker, count)</text>
+                        <text x="100" y="55" font-family="Fira Code, monospace" font-size="13" fill="#5b8fa8" text-anchor="middle">(count)</text>
 
                         <!-- Arrow -->
                         <path d="M200 40 C230 30, 250 30, 270 40" fill="none" stroke="#e8a87c" stroke-width="3" stroke-linecap="round"/>
@@ -1079,7 +1079,7 @@ drive_intersections(tracker, 4)   # Drive 4 intersections</code></pre>
                     </div>
                     <div class="activity-step">
                         <span class="step-number">3</span>
-                        <span class="step-text">Create the <code style="font-family: 'Fira Code', monospace;">drive_intersections(tracker, count)</code> function</span>
+                        <span class="step-text">Create the <code style="font-family: 'Fira Code', monospace;">drive_intersections(count)</code> function</span>
                     </div>
                     <div class="activity-step">
                         <span class="step-number">4</span>
@@ -1110,7 +1110,7 @@ drive_intersections(tracker, 4)   # Drive 4 intersections</code></pre>
                     </div>
                     <div class="checkpoint">
                         <span class="check-icon"></span>
-                        <span class="step-text">Does <code style="font-family: 'Fira Code', monospace;">drive_intersections(tracker, 3)</code> stop at the 3rd intersection?</span>
+                        <span class="step-text">Does <code style="font-family: 'Fira Code', monospace;">drive_intersections(3)</code> stop at the 3rd intersection?</span>
                     </div>
                     <div class="checkpoint">
                         <span class="check-icon"></span>

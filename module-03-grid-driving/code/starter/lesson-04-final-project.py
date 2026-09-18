@@ -7,26 +7,21 @@
 from XRPLib.reflectance import Reflectance
 from XRPLib.differential_drive import DifferentialDrive
 from XRPLib.board import Board
-import time
+
+# ===== SENSOR TOOLKIT =====
+# (Copy your working sensor toolkit from Module 2 Lesson 8 here)
 
 
-# ===== LINESENSOR CLASS =====
-# (Copy your working LineSensor class here)
-
-
-# ===== LINETRACK CLASS =====
-# (Copy your working LineTrack class here)
+# ===== DRIVING TOOLKIT =====
+# (Copy your working driving toolkit from Module 2 Lesson 9 here)
 
 
 # ===== HELPER FUNCTION =====
-# TODO: Write drive_intersections(tracker, count) function
+# TODO: Write drive_intersections(count) function
 
 
 # ===== MAIN PROGRAM =====
 board = Board.get_default_board()
-
-# TODO: Create a LineTrack object
-# tracker = ???
 
 board.wait_for_button()
 print("Module 3 Final Project - Square Pattern!")

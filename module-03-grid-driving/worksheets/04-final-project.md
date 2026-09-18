@@ -39,8 +39,8 @@ Trace through the square loop and fill in what happens on each iteration:
 
 ```python
 for leg in range(4):
-    drive_intersections(tracker, 2)
-    tracker.turn_right()
+    drive_intersections(2)
+    turn_right()
 ```
 
 | leg | drive_intersections(2) does... | turn_right() does... | Robot now facing... |
@@ -66,10 +66,9 @@ This is a student's attempt at the square pattern. Find and circle the errors:
 board.wait_for_button()
 
 for leg in range(3):
-    drive_intersections(tracker, 2)
-    tracker.drivetrain.set_effort(0.3, 0.3)
-    time.sleep(0.3)
-    tracker.turn_right()
+    drive_intersections(2)
+    clear_intersection()
+    turn_right()
 ```
 
 **Error 1:** ______________________________________________________________

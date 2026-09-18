@@ -45,8 +45,7 @@
 **The Manhattan class computes paths — no motors needed!**
 
 ```python
-manhattan = Manhattan((0, 0))
-path = manhattan.compute_path((2, 3))
+path = compute_manhattan_path((0, 0), (2, 3))
 print(path)   # Just prints — no robot required!
 ```
 
@@ -58,10 +57,8 @@ print(path)   # Just prints — no robot required!
 **Basic test structure:**
 
 ```python
-manhattan = Manhattan((0, 0))
-
 # Test 1: Basic forward path
-path = manhattan.compute_path((2, 3))
+path = compute_manhattan_path((0, 0), (2, 3))
 print("Test 1 - (0,0) to (2,3):")
 print("  Path:", path)
 print("  Steps:", len(path))
@@ -83,8 +80,7 @@ print()
 expected = [(1,0), (2,0), (2,1), (2,2), (2,3)]
 
 # Actual path (from your class)
-manhattan = Manhattan((0, 0))
-actual = manhattan.compute_path((2, 3))
+actual = compute_manhattan_path((0, 0), (2, 3))
 
 # Compare
 if actual == expected:
@@ -103,9 +99,8 @@ else:
 **Test different scenarios:**
 
 ```python
-def run_test(test_name, start, dest, expected):
-    manhattan = Manhattan(start)
-    actual = manhattan.compute_path(dest)
+def run_test(test_name, position, dest, expected):
+    actual = compute_manhattan_path(position, dest)
     if actual == expected:
         print(test_name, "- PASS")
     else:
@@ -131,10 +126,10 @@ def run_test(test_name, start, dest, expected):
 **If a test fails, add print statements inside compute_path:**
 
 ```python
-def compute_path(self, destination):
-    print("Computing path from", self.position, "to", destination)
+def compute_manhattan_path(position, destination):
+    print("Computing path from", position, "to", destination)
     path = []
-    current_row, current_col = self.position
+    current_row, current_col = position
     dest_row, dest_col = destination
     # ... rest of code ...
 
@@ -181,8 +176,7 @@ def compute_path(self, destination):
 **Test template:**
 ```python
 # Test 1: Basic forward path
-manhattan = Manhattan((0, 0))
-path = manhattan.compute_path((2, 3))
+path = compute_manhattan_path((0, 0), (2, 3))
 expected = [(1,0), (2,0), (2,1), (2,2), (2,3)]
 print("Test 1:", "PASS" if path == expected else "FAIL")
 ```

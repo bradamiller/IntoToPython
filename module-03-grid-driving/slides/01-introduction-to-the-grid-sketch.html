@@ -639,7 +639,7 @@
             <a href="#slide-2" class="nav-item" onclick="showSlide(1)">From Circle to Grid</a>
             <a href="#slide-3" class="nav-item" onclick="showSlide(2)">The Grid Layout</a>
             <a href="#slide-4" class="nav-item" onclick="showSlide(3)">Why the Grid Matters</a>
-            <a href="#slide-5" class="nav-item" onclick="showSlide(4)">LineTrack Methods</a>
+            <a href="#slide-5" class="nav-item" onclick="showSlide(4)">Driving Toolkit</a>
             <a href="#slide-6" class="nav-item" onclick="showSlide(5)">First Intersection</a>
             <a href="#slide-7" class="nav-item" onclick="showSlide(6)">Drive and Turn</a>
             <a href="#slide-8" class="nav-item" onclick="showSlide(7)">Code Reuse</a>
@@ -670,13 +670,13 @@
                         <h3>Learning Objectives</h3>
                         <p class="bullet">Describe the physical grid layout and how intersections are formed</p>
                         <p class="bullet">Explain how cross detection maps to grid intersections</p>
-                        <p class="bullet">Use LineTrack to drive to the first intersection</p>
+                        <p class="bullet">Use the driving toolkit to drive to the first intersection</p>
                         <p class="bullet">Reuse existing code on a new surface</p>
                     </div>
                     <div class="title-section">
                         <h3>Agenda</h3>
                         <p class="bullet">From circle to grid (10 min)</p>
-                        <p class="bullet">Review: LineTrack methods (5 min)</p>
+                        <p class="bullet">Review: driving toolkit functions (5 min)</p>
                         <p class="bullet">Guided: Drive to first intersection (15 min)</p>
                         <p class="bullet">Practice (15 min)</p>
                     </div>
@@ -696,7 +696,7 @@
             </div>
             <div class="content">
                 <p class="header-text">Remember Module 2?</p>
-                <p class="bullet">You built a <span class="sketch-highlight">LineTrack</span> class that follows lines and detects crosses</p>
+                <p class="bullet">You built a <span class="sketch-highlight">driving toolkit</span> that follows lines and detects crosses</p>
 
                 <div class="spacer"></div>
 
@@ -860,24 +860,23 @@
             </div>
         </div>
 
-        <!-- ═══ SLIDE 5: Review — LineTrack Methods ═══ -->
+        <!-- ═══ SLIDE 5: Review — Driving Toolkit Functions ═══ -->
         <div id="slide-5" class="slide">
             <div class="title-bar">
-                <h1>Review &mdash; LineTrack Methods</h1>
+                <h1>Review &mdash; Driving Toolkit Functions</h1>
             </div>
             <div class="content">
-                <p class="header-text">Your LineTrack class from Module 2 has three key methods:</p>
+                <p class="header-text">Your driving toolkit from Module 2 has three key functions:</p>
 
-                <pre class="code-block"><code>tracker = LineTrack()
-
+                <pre class="code-block"><code>
 # Follow the line until an intersection
-tracker.track_until_cross()
+track_until_cross()
 
 # Turn right onto perpendicular line
-tracker.turn_right()
+turn_right()
 
 # Turn left onto perpendicular line
-tracker.turn_left()</code></pre>
+turn_left()</code></pre>
 
                 <div class="insight-box">
                     These three methods are ALL you need for grid navigation!
@@ -919,11 +918,10 @@ tracker.turn_left()</code></pre>
                 <div class="two-col">
                     <div class="col">
                         <pre class="code-block"><code>board = Board.get_default_board()
-tracker = LineTrack()
 
 board.wait_for_button()
 print("Driving to first intersection...")
-tracker.track_until_cross()
+track_until_cross()
 print("Intersection reached!")</code></pre>
                     </div>
                     <div class="col">
@@ -973,15 +971,15 @@ print("Intersection reached!")</code></pre>
                     <div class="col">
                         <pre class="code-block"><code>board.wait_for_button()
 
-tracker.track_until_cross()
-tracker.drivetrain.straight(8, 0.5)
+track_until_cross()
+clear_intersection()
 print("At intersection!")
 
-tracker.turn_right()
+turn_right()
 print("Turned right!")
 
-tracker.track_until_cross()
-tracker.drivetrain.straight(8, 0.5)
+track_until_cross()
+clear_intersection()
 print("At next intersection!")</code></pre>
                     </div>
                     <div class="col">
@@ -1040,7 +1038,7 @@ print("At next intersection!")</code></pre>
                         <!-- Module 2 box -->
                         <rect x="10" y="10" width="200" height="60" rx="14" fill="rgba(91, 143, 168, 0.12)" stroke="#5b8fa8" stroke-width="2.5" transform="rotate(-0.5 110 40)"/>
                         <text x="110" y="35" font-family="Caveat, cursive" font-size="20" fill="#5b8fa8" text-anchor="middle" font-weight="700">Module 2</text>
-                        <text x="110" y="55" font-family="Caveat, cursive" font-size="16" fill="#636e72" text-anchor="middle">Circle + LineTrack</text>
+                        <text x="110" y="55" font-family="Caveat, cursive" font-size="16" fill="#636e72" text-anchor="middle">Circle + Toolkit</text>
 
                         <!-- Arrow -->
                         <path d="M220 40 C260 30, 300 30, 340 40" fill="none" stroke="#e8a87c" stroke-width="3" stroke-linecap="round"/>
@@ -1107,7 +1105,7 @@ print("At next intersection!")</code></pre>
                 <div class="sketch-box">
                     <div class="activity-step">
                         <span class="step-number">1</span>
-                        <span class="step-text">Copy your LineSensor and LineTrack classes from Module 2</span>
+                        <span class="step-text">Copy your sensor and driving toolkits from Module 2</span>
                     </div>
                     <div class="activity-step">
                         <span class="step-number">2</span>
@@ -1163,7 +1161,7 @@ print("At next intersection!")</code></pre>
                         <p class="header-text">What you did today</p>
                         <div class="sketch-box">
                             <p class="bullet">Saw how the grid relates to Module 2's cross detection</p>
-                            <p class="bullet">Drove to the first intersection using LineTrack</p>
+                            <p class="bullet">Drove to the first intersection using the driving toolkit</p>
                             <p class="bullet">Added a turn at the intersection</p>
                         </div>
                     </div>

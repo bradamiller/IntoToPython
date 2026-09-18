@@ -821,8 +821,8 @@ print("Starting square pattern!")
 
 for leg in range(4):
     print("Side", leg + 1, "of 4")
-    drive_intersections(tracker, 2)
-    tracker.turn_right()
+    drive_intersections(2)
+    turn_right()
 
 print("Square complete!")</code></pre>
                     </div>
@@ -889,7 +889,7 @@ print("Square complete!")</code></pre>
                     </thead>
                     <tbody>
                         <tr>
-                            <td style="text-align: left;">Uses LineTrack class from Module 2</td>
+                            <td style="text-align: left;">Uses the driving toolkit from Module 2</td>
                             <td>10</td>
                         </tr>
                         <tr>
@@ -1084,8 +1084,8 @@ print("Square complete!")</code></pre>
                             <p class="body-text">Different lengths for each side:</p>
                             <pre class="code-block" style="font-size: 14px; transform: none; margin: 8px 0;"><code>lengths = [2, 3, 2, 3]
 for leg in range(4):
-    drive_intersections(tracker, lengths[leg])
-    tracker.turn_right()</code></pre>
+    drive_intersections(lengths[leg])
+    turn_right()</code></pre>
                             <div class="illustration">
                                 <svg width="208" height="130" viewBox="0 0 160 100">
                                     <rect x="10" y="10" width="140" height="80" rx="2" fill="none" stroke="#e8a87c" stroke-width="2.5"/>
@@ -1128,7 +1128,7 @@ for leg in range(4):
                 <div class="sketch-box">
                     <div class="activity-step">
                         <span class="step-number">1</span>
-                        <span class="step-text">Copy your <code style="font-family: 'Fira Code', monospace;">LineSensor</code> and <code style="font-family: 'Fira Code', monospace;">LineTrack</code> classes from Module 2</span>
+                        <span class="step-text">Copy your sensor and driving toolkits from Module 2</span>
                     </div>
                     <div class="activity-step">
                         <span class="step-number">2</span>
@@ -1191,7 +1191,7 @@ for leg in range(4):
                     <div class="col">
                         <p class="header-text">Module 3 Summary</p>
                         <div class="sketch-box">
-                            <p class="bullet">Reused LineTrack from Module 2</p>
+                            <p class="bullet">Reused the driving toolkit from Module 2</p>
                             <p class="bullet">Learned to clear intersections</p>
                             <p class="bullet">Sequenced drives and turns</p>
                             <p class="bullet">Used <code style="font-family: 'Fira Code', monospace;">for</code> loops for repeated patterns</p>

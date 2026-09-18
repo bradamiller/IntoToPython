@@ -193,6 +193,16 @@
 
         .inline-answer.short { min-width: 50px; }
         .inline-answer.long { min-width: 140px; }
+        .inline-answer.x-long { min-width: 260px; }
+
+        /* ── Code block with blanks ── */
+        .code-blank {
+            display: inline-block;
+            min-width: 100px;
+            border-bottom: 2px solid #d4a373;
+            background: rgba(212, 163, 115, 0.1);
+            margin: 0 2px;
+        }
 
         /* ── SVG Grid Container ── */
         .grid-container {
@@ -434,72 +444,40 @@
     <!-- ── Part A: System Design ── -->
     <div class="section">
         <div class="section-header">Part A: System Design</div>
+        <p><strong>1. How do compute_manhattan_path() and drive_path() work together? Fill in the diagram:</strong></p>
 
-        <ol class="questions">
-            <li><strong>How do the Manhattan class and Navigator class work together? Fill in the diagram:</strong>
+        <div class="code-block" style="font-size: 11px; line-height: 1.4;">  +------------------------------+          +------------------------------+
+  | compute_manhattan_path(      |          | drive_path(                  |
+  |   position, destination)     |  path    |   path, position, heading)   |
+  |-------------------------------| -------> |-------------------------------|
+  | returns _____                |          | calls _______                |
+  |                               |          | calls _______                |
+  |                               |          | returns (_____, _____)       |
+  +------------------------------+          +------------------------------+</div>
 
-                <div class="two-col" style="margin-top: 10px;">
-                    <svg width="280" height="140" viewBox="0 0 280 140" font-family="Patrick Hand, cursive">
-                        <!-- Manhattan box -->
-                        <rect x="2" y="2" width="120" height="136" rx="8" fill="#f0ede8" stroke="#5b8fa8" stroke-width="2"/>
-                        <text x="62" y="22" font-family="Caveat, cursive" font-size="17" fill="#5b8fa8" text-anchor="middle" font-weight="600">Manhattan</text>
-                        <line x1="10" y1="28" x2="114" y2="28" stroke="#b8c5d0" stroke-width="1"/>
-                        <text x="14" y="46" font-family="Fira Code, monospace" font-size="11" fill="#2d3436">.position</text>
-                        <line x1="10" y1="54" x2="114" y2="54" stroke="#b8c5d0" stroke-width="1"/>
-                        <text x="14" y="72" font-family="Fira Code, monospace" font-size="11" fill="#2d3436">.compute_path()</text>
-                        <text x="20" y="90" font-family="Patrick Hand, cursive" font-size="13" fill="#636e72">returns</text>
-                        <line x1="60" y1="94" x2="112" y2="94" stroke="#d4a373" stroke-width="1.5" stroke-dasharray="3,2"/>
+        <p style="margin-top: 8px;"><strong>What does compute_manhattan_path() return?</strong> <span class="inline-answer x-long"></span></p>
+        <p style="margin-top: 6px;"><strong>What two things does drive_path() do at each step?</strong></p>
+        <p style="margin-top: 4px;">1. <span class="inline-answer x-long"></span></p>
+        <p style="margin-top: 4px;">2. <span class="inline-answer x-long"></span></p>
 
-                        <!-- Arrow -->
-                        <line x1="126" y1="70" x2="152" y2="70" stroke="#2d3436" stroke-width="2" marker-end="url(#arrowhead)"/>
-                        <text x="139" y="62" font-family="Caveat, cursive" font-size="13" fill="#636e72" text-anchor="middle">path</text>
-                        <defs><marker id="arrowhead" markerWidth="8" markerHeight="6" refX="8" refY="3" orient="auto"><polygon points="0 0, 8 3, 0 6" fill="#2d3436"/></marker></defs>
+        <p style="margin-top: 10px;"><strong>2. After drive_path() returns, what must you do with its return value in the main program? Why?</strong></p>
+        <div class="answer-lines-3" style="margin-top: 6px;">
+            <span class="answer-line"></span>
+            <span class="answer-line"></span>
+        </div>
 
-                        <!-- Navigator box -->
-                        <rect x="156" y="2" width="120" height="136" rx="8" fill="#f0ede8" stroke="#5b8fa8" stroke-width="2"/>
-                        <text x="216" y="22" font-family="Caveat, cursive" font-size="17" fill="#5b8fa8" text-anchor="middle" font-weight="600">Navigator</text>
-                        <line x1="164" y1="28" x2="268" y2="28" stroke="#b8c5d0" stroke-width="1"/>
-                        <text x="168" y="44" font-family="Fira Code, monospace" font-size="11" fill="#2d3436">.position</text>
-                        <text x="168" y="58" font-family="Fira Code, monospace" font-size="11" fill="#2d3436">.heading (0-3)</text>
-                        <text x="168" y="72" font-family="Fira Code, monospace" font-size="11" fill="#2d3436">.line_track</text>
-                        <line x1="164" y1="78" x2="268" y2="78" stroke="#b8c5d0" stroke-width="1"/>
-                        <text x="168" y="94" font-family="Fira Code, monospace" font-size="11" fill="#2d3436">.drive_path()</text>
-                        <text x="174" y="112" font-family="Patrick Hand, cursive" font-size="13" fill="#636e72">calls</text>
-                        <line x1="204" y1="116" x2="268" y2="116" stroke="#d4a373" stroke-width="1.5" stroke-dasharray="3,2"/>
-                        <text x="174" y="130" font-family="Patrick Hand, cursive" font-size="13" fill="#636e72">calls</text>
-                        <line x1="204" y1="134" x2="268" y2="134" stroke="#d4a373" stroke-width="1.5" stroke-dasharray="3,2"/>
-                    </svg>
-                </div>
-
-                <p style="margin-top: 8px;">What does <code>compute_path()</code> return? <span class="inline-answer long"></span></p>
-                <p>What two things does <code>drive_path()</code> do at each step?</p>
-                <p style="padding-left: 20px;">1. <span class="inline-answer long"></span></p>
-                <p style="padding-left: 20px;">2. <span class="inline-answer long"></span></p>
-            </li>
-
-            <li style="margin-top: 14px;"><strong>After the Navigator drives one leg, what must you update in the main program? Why?</strong>
-                <div class="answer-lines-3">
-                    <span class="answer-line"></span>
-                    <span class="answer-line"></span>
-                </div>
-            </li>
-
-            <li style="margin-top: 14px;"><strong>Draw the flow of the main program (fill in the blanks):</strong>
-
-                <div class="diagram-box" style="margin-top: 8px; font-family: 'Fira Code', monospace; font-size: 13px; white-space: pre; line-height: 1.7;">Create Manhattan at (<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)
-Create Navigator at (<span class="inline-answer short"></span>, <span class="inline-answer short"></span>) heading <span class="inline-answer short"></span>
+        <p style="margin-top: 8px;"><strong>3. Draw the flow of the main program:</strong></p>
+        <div class="code-block" style="font-size: 12px; line-height: 1.4;">position = (__, __)
+heading = ____
          |
          v
-  +---&gt; Get next destination
+  +---> Get next destination
   |      |
   |      v
-  |   Compute <span class="inline-answer long"></span> using Manhattan
+  |   Compute _________ using compute_manhattan_path
   |      |
   |      v
-  |   Drive <span class="inline-answer long"></span> using Navigator
-  |      |
-  |      v
-  |   Update manhattan.<span class="inline-answer long"></span> = navigator.<span class="inline-answer long"></span>
+  |   Drive the path, capturing new _________ and _________
   |      |
   |      v
   +-- More destinations? (loop back)
@@ -507,218 +485,112 @@ Create Navigator at (<span class="inline-answer short"></span>, <span class="inl
          No
          v
        Done!</div>
-            </li>
-        </ol>
     </div>
 </div>
 
 <!-- ════════ PAGE 2 ════════ -->
 <div class="page page-break">
-
     <!-- ── Part B: Destination Planning ── -->
     <div class="section">
         <div class="section-header">Part B: Destination Planning</div>
-        <p class="instruction">Your robot starts at (0, 0) facing North on a 4&times;4 grid. Choose 4 or more destinations. Mark them on the grid with numbers 1, 2, 3, 4.</p>
+        <p class="instruction">Your robot starts at (0, 0) facing North on a 4x4 grid. Choose 4 or more destinations.</p>
 
-        <div class="grid-container">
-            <svg width="420" height="410" viewBox="0 0 420 410" font-family="Patrick Hand, cursive">
-                <!-- Column headers -->
-                <text x="120" y="24" font-family="Caveat, cursive" font-size="17" fill="#5b8fa8" text-anchor="middle" font-weight="600">Col 0</text>
-                <text x="200" y="24" font-family="Caveat, cursive" font-size="17" fill="#5b8fa8" text-anchor="middle" font-weight="600">Col 1</text>
-                <text x="280" y="24" font-family="Caveat, cursive" font-size="17" fill="#5b8fa8" text-anchor="middle" font-weight="600">Col 2</text>
-                <text x="360" y="24" font-family="Caveat, cursive" font-size="17" fill="#5b8fa8" text-anchor="middle" font-weight="600">Col 3</text>
-                <!-- Row headers -->
-                <text x="50" y="58" font-family="Caveat, cursive" font-size="17" fill="#5b8fa8" text-anchor="middle" font-weight="600">Row 0</text>
-                <text x="50" y="138" font-family="Caveat, cursive" font-size="17" fill="#5b8fa8" text-anchor="middle" font-weight="600">Row 1</text>
-                <text x="50" y="218" font-family="Caveat, cursive" font-size="17" fill="#5b8fa8" text-anchor="middle" font-weight="600">Row 2</text>
-                <text x="50" y="298" font-family="Caveat, cursive" font-size="17" fill="#5b8fa8" text-anchor="middle" font-weight="600">Row 3</text>
+        <div class="code-block" style="font-size: 11px; line-height: 1.3;">        Col 0     Col 1     Col 2     Col 3
+       +-------- +-------- +-------- +--------+
+Row 0  |         |         |         |        |
+       |  (0,0)  |  (0,1)  |  (0,2)  |  (0,3) |
+       +-------- +-------- +-------- +--------+
+Row 1  |         |         |         |        |
+       |  (1,0)  |  (1,1)  |  (1,2)  |  (1,3) |
+       +-------- +-------- +-------- +--------+
+Row 2  |         |         |         |        |
+       |  (2,0)  |  (2,1)  |  (2,2)  |  (2,3) |
+       +-------- +-------- +-------- +--------+
+Row 3  |         |         |         |        |
+       |  (3,0)  |  (3,1)  |  (3,2)  |  (3,3) |
+       +-------- +-------- +-------- +--------+</div>
 
-                <!-- Vertical grid lines -->
-                <line x1="120" y1="35" x2="120" y2="310" stroke="#2d3436" stroke-width="2"/>
-                <line x1="200" y1="35" x2="200" y2="310" stroke="#2d3436" stroke-width="2"/>
-                <line x1="280" y1="35" x2="280" y2="310" stroke="#2d3436" stroke-width="2"/>
-                <line x1="360" y1="35" x2="360" y2="310" stroke="#2d3436" stroke-width="2"/>
-                <!-- Horizontal grid lines -->
-                <line x1="100" y1="50" x2="375" y2="50" stroke="#2d3436" stroke-width="2"/>
-                <line x1="100" y1="130" x2="375" y2="130" stroke="#2d3436" stroke-width="2"/>
-                <line x1="100" y1="210" x2="375" y2="210" stroke="#2d3436" stroke-width="2"/>
-                <line x1="100" y1="290" x2="375" y2="290" stroke="#2d3436" stroke-width="2"/>
-
-                <!-- Coordinate labels at intersections -->
-                <!-- Row 0 -->
-                <text x="120" y="72" font-family="Fira Code, monospace" font-size="12" fill="#636e72" text-anchor="middle">(0,0)</text>
-                <text x="200" y="72" font-family="Fira Code, monospace" font-size="12" fill="#636e72" text-anchor="middle">(0,1)</text>
-                <text x="280" y="72" font-family="Fira Code, monospace" font-size="12" fill="#636e72" text-anchor="middle">(0,2)</text>
-                <text x="360" y="72" font-family="Fira Code, monospace" font-size="12" fill="#636e72" text-anchor="middle">(0,3)</text>
-                <!-- Row 1 -->
-                <text x="120" y="152" font-family="Fira Code, monospace" font-size="12" fill="#636e72" text-anchor="middle">(1,0)</text>
-                <text x="200" y="152" font-family="Fira Code, monospace" font-size="12" fill="#636e72" text-anchor="middle">(1,1)</text>
-                <text x="280" y="152" font-family="Fira Code, monospace" font-size="12" fill="#636e72" text-anchor="middle">(1,2)</text>
-                <text x="360" y="152" font-family="Fira Code, monospace" font-size="12" fill="#636e72" text-anchor="middle">(1,3)</text>
-                <!-- Row 2 -->
-                <text x="120" y="232" font-family="Fira Code, monospace" font-size="12" fill="#636e72" text-anchor="middle">(2,0)</text>
-                <text x="200" y="232" font-family="Fira Code, monospace" font-size="12" fill="#636e72" text-anchor="middle">(2,1)</text>
-                <text x="280" y="232" font-family="Fira Code, monospace" font-size="12" fill="#636e72" text-anchor="middle">(2,2)</text>
-                <text x="360" y="232" font-family="Fira Code, monospace" font-size="12" fill="#636e72" text-anchor="middle">(2,3)</text>
-                <!-- Row 3 -->
-                <text x="120" y="312" font-family="Fira Code, monospace" font-size="12" fill="#636e72" text-anchor="middle">(3,0)</text>
-                <text x="200" y="312" font-family="Fira Code, monospace" font-size="12" fill="#636e72" text-anchor="middle">(3,1)</text>
-                <text x="280" y="312" font-family="Fira Code, monospace" font-size="12" fill="#636e72" text-anchor="middle">(3,2)</text>
-                <text x="360" y="312" font-family="Fira Code, monospace" font-size="12" fill="#636e72" text-anchor="middle">(3,3)</text>
-            </svg>
-        </div>
-
-        <p><strong>Destination List:</strong></p>
+        <p style="margin-top: 8px;"><strong>Destination List:</strong></p>
         <table>
-            <thead>
-                <tr><th style="width: 90px;">Order</th><th style="width: 140px;">Destination</th><th>Description (optional)</th></tr>
-            </thead>
+            <thead><tr><th>Order</th><th>Destination</th><th>Description (optional)</th></tr></thead>
             <tbody>
                 <tr><td>Start</td><td>(0, 0)</td><td>Home base</td></tr>
-                <tr><td>1</td><td>(<span class="answer short"></span>, <span class="answer short"></span>)</td><td><span class="answer answer-wide"></span></td></tr>
-                <tr><td>2</td><td>(<span class="answer short"></span>, <span class="answer short"></span>)</td><td><span class="answer answer-wide"></span></td></tr>
-                <tr><td>3</td><td>(<span class="answer short"></span>, <span class="answer short"></span>)</td><td><span class="answer answer-wide"></span></td></tr>
-                <tr><td>4</td><td>(<span class="answer short"></span>, <span class="answer short"></span>)</td><td><span class="answer answer-wide"></span></td></tr>
-                <tr><td>5 (optional)</td><td>(<span class="answer short"></span>, <span class="answer short"></span>)</td><td><span class="answer answer-wide"></span></td></tr>
+                <tr><td>1</td><td><span class="answer"></span></td><td><span class="answer answer-wide"></span></td></tr>
+                <tr><td>2</td><td><span class="answer"></span></td><td><span class="answer answer-wide"></span></td></tr>
+                <tr><td>3</td><td><span class="answer"></span></td><td><span class="answer answer-wide"></span></td></tr>
+                <tr><td>4</td><td><span class="answer"></span></td><td><span class="answer answer-wide"></span></td></tr>
+                <tr><td>5 (optional)</td><td><span class="answer"></span></td><td><span class="answer answer-wide"></span></td></tr>
             </tbody>
         </table>
 
-        <p style="margin-top: 10px;"><strong>Write your destinations list as Python code:</strong></p>
-        <div class="code-block">destinations = [<span class="todo-blank">&nbsp;</span>]</div>
+        <p style="margin-top: 8px;"><strong>Write your destinations list as Python code:</strong></p>
+        <div class="code-block" style="font-size: 13px;">destinations = [<span class="code-blank" style="min-width: 300px;"></span>]</div>
 
-        <p style="margin-top: 10px;"><strong>How many total grid cells will your robot travel across all legs?</strong></p>
-        <p>Leg 1: <span class="inline-answer short"></span> steps. &nbsp; Leg 2: <span class="inline-answer short"></span> steps. &nbsp; Leg 3: <span class="inline-answer short"></span> steps. &nbsp; Leg 4: <span class="inline-answer short"></span> steps.</p>
-        <p>Total: <span class="inline-answer short"></span> steps.</p>
+        <p style="margin-top: 8px;"><strong>How many total grid cells will your robot travel across all legs?</strong> (Count the steps, not the path length)</p>
+        <p style="margin-top: 4px;">Leg 1: <span class="inline-answer short"></span> steps. Leg 2: <span class="inline-answer short"></span> steps. Leg 3: <span class="inline-answer short"></span> steps. Leg 4: <span class="inline-answer short"></span> steps.</p>
+        <p style="margin-top: 4px;">Total: <span class="inline-answer"></span> steps.</p>
     </div>
 </div>
 
 <!-- ════════ PAGE 3 ════════ -->
 <div class="page page-break">
-
     <!-- ── Part C: Hand-Trace One Leg ── -->
     <div class="section">
         <div class="section-header">Part C: Hand-Trace One Leg</div>
         <p class="instruction">Choose your first leg (Start to Destination 1) and trace it completely.</p>
 
-        <p style="margin-top: 10px;"><strong>From:</strong> (<span class="inline-answer short"></span>, <span class="inline-answer short"></span>) &nbsp;&nbsp; <strong>To:</strong> (<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</p>
-        <p><strong>Computed path (write the list of tuples):</strong></p>
-        <div class="code-block">[<span class="todo-blank">&nbsp;</span>]</div>
+        <p><strong>From:</strong> (<span class="inline-answer short"></span>, <span class="inline-answer short"></span>) &nbsp;&nbsp; <strong>To:</strong> (<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</p>
+        <p style="margin-top: 6px;"><strong>Computed path (write the list of tuples):</strong></p>
+        <p style="margin-top: 4px;"><span class="answer-full"></span></p>
 
         <p style="margin-top: 10px;"><strong>Trace each step:</strong></p>
-        <table>
-            <thead>
-                <tr>
-                    <th style="width: 50px;">Step</th>
-                    <th>From</th>
-                    <th>To</th>
-                    <th>Needed Heading</th>
-                    <th>Current Heading</th>
-                    <th>Right Turns</th>
-                    <th>New Heading</th>
-                </tr>
-            </thead>
+        <table style="font-size: 12px;">
+            <thead><tr><th>Step</th><th>From</th><th>To</th><th>Desired Hdg</th><th>Current Hdg</th><th>turn_to heading values</th><th>New Hdg</th></tr></thead>
             <tbody>
-                <tr>
-                    <td>1</td>
-                    <td>(<span class="answer short"></span>, <span class="answer short"></span>)</td>
-                    <td>(<span class="answer short"></span>, <span class="answer short"></span>)</td>
-                    <td><span class="answer"></span></td>
-                    <td><span class="answer"></span></td>
-                    <td><span class="answer short"></span></td>
-                    <td><span class="answer"></span></td>
-                </tr>
-                <tr>
-                    <td>2</td>
-                    <td>(<span class="answer short"></span>, <span class="answer short"></span>)</td>
-                    <td>(<span class="answer short"></span>, <span class="answer short"></span>)</td>
-                    <td><span class="answer"></span></td>
-                    <td><span class="answer"></span></td>
-                    <td><span class="answer short"></span></td>
-                    <td><span class="answer"></span></td>
-                </tr>
-                <tr>
-                    <td>3</td>
-                    <td>(<span class="answer short"></span>, <span class="answer short"></span>)</td>
-                    <td>(<span class="answer short"></span>, <span class="answer short"></span>)</td>
-                    <td><span class="answer"></span></td>
-                    <td><span class="answer"></span></td>
-                    <td><span class="answer short"></span></td>
-                    <td><span class="answer"></span></td>
-                </tr>
-                <tr>
-                    <td>4</td>
-                    <td>(<span class="answer short"></span>, <span class="answer short"></span>)</td>
-                    <td>(<span class="answer short"></span>, <span class="answer short"></span>)</td>
-                    <td><span class="answer"></span></td>
-                    <td><span class="answer"></span></td>
-                    <td><span class="answer short"></span></td>
-                    <td><span class="answer"></span></td>
-                </tr>
-                <tr>
-                    <td>5</td>
-                    <td>(<span class="answer short"></span>, <span class="answer short"></span>)</td>
-                    <td>(<span class="answer short"></span>, <span class="answer short"></span>)</td>
-                    <td><span class="answer"></span></td>
-                    <td><span class="answer"></span></td>
-                    <td><span class="answer short"></span></td>
-                    <td><span class="answer"></span></td>
-                </tr>
-                <tr>
-                    <td>6</td>
-                    <td>(<span class="answer short"></span>, <span class="answer short"></span>)</td>
-                    <td>(<span class="answer short"></span>, <span class="answer short"></span>)</td>
-                    <td><span class="answer"></span></td>
-                    <td><span class="answer"></span></td>
-                    <td><span class="answer short"></span></td>
-                    <td><span class="answer"></span></td>
-                </tr>
+                <tr><td>1</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
+                <tr><td>2</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
+                <tr><td>3</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
+                <tr><td>4</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
+                <tr><td>5</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
+                <tr><td>6</td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td><td><span class="answer"></span></td></tr>
             </tbody>
         </table>
-        <p class="instruction" style="margin-top: 4px;"><em>Headings: 0 = North, 1 = East, 2 = South, 3 = West. Count clockwise: 0&rarr;1&rarr;2&rarr;3&rarr;0</em></p>
-        <p class="instruction" style="margin-top: 4px;">(Add more rows if needed on the back of this page.)</p>
+        <p style="margin-top: 4px; font-size: 13px; color: #636e72; font-style: italic;">Headings: 0 = North, 1 = East, 2 = South, 3 = West. turn_to each pass: turn right, add 1 to heading, wrap 4 &rarr; 0. Stop when heading == desired.</p>
+        <p style="margin-top: 4px; font-size: 13px; color: #636e72; font-style: italic;">(Add more rows if needed on the back of this page.)</p>
 
-        <div style="margin-top: 14px;">
-            <p><strong>After this leg:</strong></p>
-            <ul style="list-style: disc; padding-left: 24px; margin-top: 4px;">
-                <li>Navigator position: (<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</li>
-                <li>Navigator heading: <span class="inline-answer short"></span></li>
-                <li>Manhattan position must be updated to: (<span class="inline-answer short"></span>, <span class="inline-answer short"></span>)</li>
-            </ul>
-        </div>
+        <p style="margin-top: 8px;"><strong>After this leg:</strong></p>
+        <p style="margin-top: 4px;">New position: (<span class="inline-answer short"></span>, <span class="inline-answer short"></span>) &nbsp;&nbsp; New heading: <span class="inline-answer short"></span></p>
+        <p style="margin-top: 4px;">What line of code captures these in the main program? <code style="font-family: 'Fira Code', monospace; font-size: 14px; background: #f0ede8; padding: 1px 4px; border-radius: 3px;">position, heading = </code><span class="inline-answer x-long"></span></p>
 
-        <p style="margin-top: 10px;"><strong>What heading will the Navigator have at the START of leg 2?</strong> <span class="inline-answer"></span></p>
-
-        <div class="tip-box" style="margin-top: 10px;">
-            <span class="tip-label">Remember:</span> The heading carries over from the previous leg!
-        </div>
+        <p style="margin-top: 8px;"><strong>What heading will the robot have at the START of leg 2?</strong> <span class="inline-answer short"></span></p>
+        <p style="margin-top: 4px; font-size: 13px; color: #636e72; font-style: italic;">(This is important &mdash; the heading carries over from the previous leg, because heading is the very same variable used throughout the loop!)</p>
     </div>
 </div>
 
 <!-- ════════ PAGE 4 ════════ -->
 <div class="page page-break">
-
     <!-- ── Part D: Testing Checklist ── -->
     <div class="section">
         <div class="section-header">Part D: Testing Checklist</div>
         <p class="instruction">Check off each test as you complete it. Do them in order!</p>
 
-        <div class="subsection-header">Level 1: Manhattan Only (No Robot)</div>
+        <div class="subsection-header">Level 1: Path Computation Only (No Robot)</div>
         <ul class="checklist">
-            <li>Created Manhattan object at (0, 0)</li>
-            <li>Tested <code>compute_path()</code> for destination 1: path looks correct</li>
-            <li>Tested <code>compute_path()</code> for destination 2 (from destination 1): path looks correct</li>
+            <li>Set position = (0, 0)</li>
+            <li>Tested compute_manhattan_path() for destination 1: path looks correct</li>
+            <li>Tested compute_manhattan_path() for destination 2 (from destination 1): path looks correct</li>
             <li>Tested all 4 legs with print statements</li>
-            <li>Updated <code>manhattan.position</code> after each leg</li>
+            <li>Updated position after each leg (in the test loop)</li>
         </ul>
 
-        <p style="margin-top: 10px;"><strong>Sample output for Level 1 (paste or write here):</strong></p>
-        <div class="code-block" style="min-height: 90px;">
-<span class="answer-line" style="border-color: #d4a373; margin: 4px 0;"></span>
-<span class="answer-line" style="border-color: #d4a373; margin: 4px 0;"></span>
-<span class="answer-line" style="border-color: #d4a373; margin: 4px 0;"></span>
-<span class="answer-line" style="border-color: #d4a373; margin: 4px 0;"></span></div>
+        <p style="margin-top: 8px;"><strong>Sample output for Level 1 (paste or write here):</strong></p>
+        <div class="answer-lines-3" style="margin-top: 4px;">
+            <span class="answer-line"></span>
+            <span class="answer-line"></span>
+            <span class="answer-line"></span>
+        </div>
 
-        <div class="subsection-header">Level 2: Single Leg on Robot</div>
+        <div class="subsection-header" style="margin-top: 10px;">Level 2: Single Leg on Robot</div>
         <ul class="checklist">
             <li>Placed robot at (0, 0) facing North on the grid</li>
             <li>Ran program with only destination 1</li>
@@ -727,7 +599,7 @@ Create Navigator at (<span class="inline-answer short"></span>, <span class="inl
             <li>Robot arrived at the correct cell</li>
         </ul>
 
-        <div class="subsection-header">Level 3: Full Sequence</div>
+        <div class="subsection-header" style="margin-top: 10px;">Level 3: Full Sequence</div>
         <ul class="checklist">
             <li>Ran program with all 4+ destinations</li>
             <li>Robot visited all destinations in order</li>
@@ -735,8 +607,8 @@ Create Navigator at (<span class="inline-answer short"></span>, <span class="inl
             <li>Console output matches expected paths</li>
         </ul>
 
-        <p style="margin-top: 10px;"><strong>Issues encountered and how you fixed them:</strong></p>
-        <div class="answer-lines-3">
+        <p style="margin-top: 8px;"><strong>Issues encountered and how you fixed them:</strong></p>
+        <div class="answer-lines-3" style="margin-top: 4px;">
             <span class="answer-line"></span>
             <span class="answer-line"></span>
             <span class="answer-line"></span>
@@ -746,127 +618,111 @@ Create Navigator at (<span class="inline-answer short"></span>, <span class="inl
 
 <!-- ════════ PAGE 5 ════════ -->
 <div class="page page-break">
-
     <!-- ── Part E: Code Template ── -->
     <div class="section">
         <div class="section-header">Part E: Code Template</div>
-        <p class="instruction">Complete the main program below. The Manhattan and Navigator classes are provided for you.</p>
+        <p class="instruction">Complete the main program below. compute_manhattan_path() and the driving functions are provided for you.</p>
 
-        <div class="code-block" style="font-size: 12.5px; line-height: 1.45;">from XRPLib.board import Board
-from line_track import LineTrack
+        <div class="code-block" style="font-size: 11.5px; line-height: 1.4;">from XRPLib.board import Board
 
 HEADING_NAMES = ["N", "E", "S", "W"]
 
 
-class Manhattan:
-    def __init__(self, start):
-        self.position = start
+def compute_manhattan_path(position, destination):
+    path = []
+    current_row, current_col = position
+    dest_row, dest_col = destination
+    while current_row &lt; dest_row:
+        current_row = current_row + 1
+        path.append((current_row, current_col))
+    while current_row &gt; dest_row:
+        current_row = current_row - 1
+        path.append((current_row, current_col))
+    while current_col &lt; dest_col:
+        current_col = current_col + 1
+        path.append((current_row, current_col))
+    while current_col &gt; dest_col:
+        current_col = current_col - 1
+        path.append((current_row, current_col))
+    return path
 
-    def compute_path(self, destination):
-        path = []
-        current_row, current_col = self.position
-        dest_row, dest_col = destination
-        while current_row != dest_row:
-            if dest_row &gt; current_row:
-                current_row = current_row + 1
-            else:
-                current_row = current_row - 1
-            path.append((current_row, current_col))
-        while current_col != dest_col:
-            if dest_col &gt; current_col:
-                current_col = current_col + 1
-            else:
-                current_col = current_col - 1
-            path.append((current_row, current_col))
-        return path</div>
+
+def desired_heading(position, next_pos):
+    row_diff = next_pos[0] - position[0]
+    col_diff = next_pos[1] - position[1]
+    if row_diff == -1:
+        return 0
+    elif col_diff == 1:
+        return 1
+    elif row_diff == 1:
+        return 2
+    elif col_diff == -1:
+        return 3
+
+
+def turn_to(heading, desired):
+    while heading != desired:
+        turn_right()
+        heading = heading + 1
+        if heading == 4:
+            heading = 0
+    return heading
+
+
+def drive_path(path, position, heading):
+    for next_pos in path:
+        needed = desired_heading(position, next_pos)
+        if heading == needed:
+            clear_intersection()
+        heading = turn_to(heading, needed)
+        track_until_cross()
+        position = next_pos
+    return position, heading</div>
     </div>
 </div>
 
 <!-- ════════ PAGE 6 ════════ -->
 <div class="page page-break">
-
     <div class="section">
-        <div class="section-header">Part E: Code Template (continued)</div>
-
-        <div class="code-block" style="font-size: 12.5px; line-height: 1.45;">class Navigator:
-    def __init__(self, start, heading):
-        self.position = start
-        self.heading = heading
-        self.line_track = LineTrack()
-
-    def desired_heading(self, next_pos):
-        row_diff = next_pos[0] - self.position[0]
-        col_diff = next_pos[1] - self.position[1]
-        if row_diff == 1:
-            return 2
-        elif row_diff == -1:
-            return 0
-        elif col_diff == 1:
-            return 1
-        elif col_diff == -1:
-            return 3
-
-    def turn_to(self, needed):
-        while self.heading != needed:
-            self.line_track.turn_right()
-            self.heading = self.heading + 1
-            if self.heading == 4:
-                self.heading = 0
-
-    def drive_path(self, path):
-        for next_pos in path:
-            needed = self.desired_heading(next_pos)
-            if self.heading == needed:
-                self.line_track.drivetrain.straight(8)
-            self.turn_to(needed)
-            self.line_track.track_until_cross()
-            self.position = next_pos
-
-
-# ===== YOUR MAIN PROGRAM =====
+        <div class="code-block" style="font-size: 11.5px; line-height: 1.4;"># ===== YOUR MAIN PROGRAM =====
 
 # TODO: Create a Board object for wait_for_button()
-board = <span class="todo-blank">&nbsp;</span>
+board = <span class="code-blank" style="min-width: 220px;"></span>
 
-# TODO: Create a Manhattan object starting at (0, 0)
-manhattan = <span class="todo-blank">&nbsp;</span>
-
-# TODO: Create a Navigator object starting at (0, 0) heading North (0)
-navigator = <span class="todo-blank">&nbsp;</span>
+# TODO: Set up starting position and heading
+position = <span class="code-blank" style="min-width: 220px;"></span>
+heading = <span class="code-blank" style="min-width: 220px;"></span>
 
 # TODO: Define your list of 4+ destinations
-destinations = <span class="todo-blank">&nbsp;</span>
+destinations = <span class="code-blank" style="min-width: 220px;"></span>
 
 print("=== XRP Grid Navigation: Final Project ===")
-print("Starting at:", manhattan.position)
+print("Starting at:", position)
 print("Destinations:", destinations)
 print()
 
 # TODO: Wait for button press before starting
-<span class="todo-blank">&nbsp;</span>
+<span class="code-blank" style="min-width: 220px;"></span>
 
 # TODO: Write a for loop that goes through each destination
-for <span class="todo-blank" style="min-width: 80px;">&nbsp;</span> in <span class="todo-blank" style="min-width: 80px;">&nbsp;</span>:
-    print("--- Navigating to", <span class="todo-blank" style="min-width: 80px;">&nbsp;</span>, "---")
+for <span class="code-blank"></span> in <span class="code-blank"></span>:
+    print("--- Navigating to", <span class="code-blank"></span>, "---")
 
-    # TODO: Compute the path using manhattan
-    path = <span class="todo-blank">&nbsp;</span>
+    # TODO: Compute the path
+    path = <span class="code-blank" style="min-width: 220px;"></span>
 
     print("Path:", path)
     print("Steps:", len(path))
 
-    # TODO: Drive the path using navigator
-    <span class="todo-blank">&nbsp;</span>
+    # TODO: Drive the path, capturing the new position and heading
+    <span class="code-blank" style="min-width: 260px;"></span>
 
-    # TODO: Update manhattan's position to match navigator's position
-    <span class="todo-blank">&nbsp;</span>
-
-    print("Arrived at:", navigator.position)
-    print("Heading:", HEADING_NAMES[navigator.heading])
+    print("Arrived at:", position)
+    print("Heading:", HEADING_NAMES[heading])
     print()
 
 print("=== All destinations reached! ===")
-print("Final position:", navigator.position)</div>
+print("Final position:", position)</div>
     </div>
 
     <!-- ── Reflection ── -->
@@ -874,7 +730,7 @@ print("Final position:", navigator.position)</div>
         <div class="reflection-box">
             <div class="reflection-label">Reflection</div>
             <p><strong>What was the hardest part of putting the whole system together? What strategies helped you debug it?</strong></p>
-            <div class="answer-lines-4">
+            <div class="answer-lines-3" style="margin-top: 8px;">
                 <span class="answer-line"></span>
                 <span class="answer-line"></span>
                 <span class="answer-line"></span>
@@ -883,9 +739,43 @@ print("Final position:", navigator.position)</div>
         </div>
     </div>
 
-    <!-- ── Congrats ── -->
-    <div class="congrats-box">
-        <p>Congratulations! You have built a complete autonomous grid navigation system from scratch!</p>
+    <div class="next-lesson" style="text-align: center; border-left: none; border-radius: 10px; background-color: rgba(133, 200, 138, 0.1); padding: 14px;">
+        <strong style="font-family: 'Caveat', cursive; font-size: 20px; color: #2d3436;">Congratulations! You have built a complete autonomous grid navigation system from scratch!</strong>
+    </div>
+</div>
+
+<!-- ════════ PAGE 7 ════════ -->
+<div class="page page-break">
+    <!-- ── Part F: Optional Extension ── -->
+    <div class="section">
+        <div class="section-header">Part F (Optional Extension): The Class Version</div>
+        <p class="instruction">Skip this section if your course doesn't cover classes.</p>
+
+        <ol class="questions">
+            <li>
+                <strong>In the class version, drive_path() is a method that updates self.position and self.heading in place, and doesn't return anything. What line does the main program need after calling navigator.drive_path(path) that the functions version does NOT need?</strong>
+                <div class="answer-lines-3" style="margin-top: 6px;">
+                    <span class="answer-line"></span>
+                </div>
+            </li>
+            <li>
+                <strong>Why is that line (&ldquo;keep two objects in sync&rdquo;) a common source of bugs, compared to the functions version's single position variable?</strong>
+                <div class="answer-lines-3" style="margin-top: 6px;">
+                    <span class="answer-line"></span>
+                    <span class="answer-line"></span>
+                </div>
+            </li>
+            <li>
+                <strong>Rewrite this functions-version snippet using the Manhattan/Navigator classes:</strong>
+                <p style="margin-top: 6px;"><strong>Functions version:</strong></p>
+                <div class="code-block" style="font-size: 13px;">path = compute_manhattan_path(position, dest)
+position, heading = drive_path(path, position, heading)</div>
+                <p style="margin-top: 8px;"><strong>Class version:</strong></p>
+                <div class="code-block" style="font-size: 13px; min-height: 80px;">path = <span class="code-blank" style="min-width: 260px;"></span>
+<span class="code-blank" style="min-width: 260px;"></span>
+<span class="code-blank" style="min-width: 260px;"></span></div>
+            </li>
+        </ol>
     </div>
 </div>
 

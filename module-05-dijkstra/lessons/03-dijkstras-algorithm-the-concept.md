@@ -316,18 +316,18 @@ Steps: ____
 ### Preview: What the Code Will Look Like (show but do not implement)
 ```python
 # This is what you'll build in Lessons 4 and 5:
-class Dijkstra:
-    def __init__(self, start, blocked):
-        self.start = start
-        self.blocked = blocked
-        self.graph = self.build_graph()
+def build_dijkstra_graph(rows, cols, blocked):
+    # Build the graph dictionary, excluding blocked nodes
+    pass
 
-    def compute_path(self, destination):
-        # Initialize distances, previous, visited
-        # Main loop: find min, update neighbors, mark visited
-        # Reconstruct and return path
-        pass
+def compute_dijkstra_path(position, destination, graph):
+    # Initialize distances, previous, visited
+    # Main loop: find min, update neighbors, mark visited
+    # Reconstruct and return path
+    pass
 ```
+
+*(Courses that also cover classes will see this same logic wrapped in a `Dijkstra` class in the Lesson 4-5 Optional Extensions.)*
 
 ## Teaching Notes
 - **This is the hardest conceptual lesson in Module 5.** Take it slow. The algorithm has multiple moving parts, and students need to see each step clearly before moving on. If you have a 3-hour session, spend extra time on the guided practice walkthrough.
@@ -340,7 +340,7 @@ class Dijkstra:
 - **The comparison to Manhattan is important for motivation.** Students should see that Dijkstra is not "better" than Manhattan -- it's "more capable." When the grid is clear, both find the same-length path. Dijkstra's advantage is handling obstacles.
 
 ## Connections to Next Lessons
-- **Lesson 4** will design the Dijkstra class with `__init__`, `build_graph`, and a `compute_path` method signature. Students will structure the class but not yet implement the full algorithm.
-- **Lesson 5** will implement `compute_path` -- translating the hand-traced steps from this lesson into Python code. Students will verify their code by comparing output to their hand traces.
-- **Lesson 6** will test Dijkstra alongside Manhattan and swap it into the Navigator class. The shared `compute_path` interface means Navigator works with both pathfinders.
+- **Lesson 4** will design the Dijkstra functions, starting with `build_dijkstra_graph()` and the `compute_dijkstra_path()` signature. Students will structure the functions but not yet implement the full algorithm.
+- **Lesson 5** will implement `compute_dijkstra_path()` -- translating the hand-traced steps from this lesson into Python code. Students will verify their code by comparing output to their hand traces.
+- **Lesson 6** will test Dijkstra alongside Manhattan and wire it into a `compute_path(algorithm, ...)` dispatch function. The shared list-of-tuples return shape means `drive_path()` works with both pathfinders.
 - The three data structures introduced here (distances, previous, visited) map directly to Python variables in the implementation.

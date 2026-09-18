@@ -4,129 +4,133 @@
 # Team: ________________________
 # Date: ________________________
 #
-# Both Manhattan and Dijkstra have compute_path() that returns a list of tuples.
-# This shared interface lets us swap one for the other!
+# compute_manhattan_path(position, destination) and
+# compute_dijkstra_path(position, destination, graph) don't quite match --
+# Dijkstra needs a graph, and its path includes the start position.
+# The compute_path() dispatch function below hides those differences.
 
 
-# ===== Manhattan Class (from Module 4) =====
+# ===== Manhattan (from Module 4) =====
 
-class Manhattan:
+def compute_manhattan_path(position, destination):
+    path = [position]
+    current_row = position[0]
+    current_col = position[1]
+    dest_row = destination[0]
+    dest_col = destination[1]
 
-    def __init__(self, start):
-        self.position = start
+    if dest_row > current_row:
+        row_step = 1
+    else:
+        row_step = -1
 
-    def compute_path(self, destination):
-        path = [self.position]
-        current_row = self.position[0]
-        current_col = self.position[1]
-        dest_row = destination[0]
-        dest_col = destination[1]
+    if dest_col > current_col:
+        col_step = 1
+    else:
+        col_step = -1
 
-        if dest_row > current_row:
-            row_step = 1
-        else:
-            row_step = -1
+    while current_row != dest_row:
+        current_row = current_row + row_step
+        path.append((current_row, current_col))
 
-        if dest_col > current_col:
-            col_step = 1
-        else:
-            col_step = -1
+    while current_col != dest_col:
+        current_col = current_col + col_step
+        path.append((current_row, current_col))
 
-        while current_row != dest_row:
-            current_row = current_row + row_step
-            path.append((current_row, current_col))
-
-        while current_col != dest_col:
-            current_col = current_col + col_step
-            path.append((current_row, current_col))
-
-        return path
+    return path
 
 
-# ===== Dijkstra Class (from Lesson 5) =====
+# ===== Dijkstra (from Lesson 5) =====
 
-class Dijkstra:
+def build_dijkstra_graph(rows, cols, blocked):
+    graph = {}
+    for r in range(rows):
+        for c in range(cols):
+            if (r, c) in blocked:
+                continue
+            neighbors = []
+            for dr, dc in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
+                nr, nc = r + dr, c + dc
+                if 0 <= nr < rows and 0 <= nc < cols and (nr, nc) not in blocked:
+                    neighbors.append((nr, nc))
+            graph[(r, c)] = neighbors
+    return graph
 
-    def __init__(self, start, blocked):
-        self.position = start
-        self.blocked = blocked
-        self.graph = self.build_graph(4, 4)
 
-    def build_graph(self, rows, cols):
-        graph = {}
-        for r in range(rows):
-            for c in range(cols):
-                if (r, c) in self.blocked:
-                    continue
-                neighbors = []
-                for dr, dc in [(-1, 0), (1, 0), (0, -1), (0, 1)]:
-                    nr, nc = r + dr, c + dc
-                    if 0 <= nr < rows and 0 <= nc < cols and (nr, nc) not in self.blocked:
-                        neighbors.append((nr, nc))
-                graph[(r, c)] = neighbors
-        return graph
+def compute_dijkstra_path(position, destination, graph):
+    if destination not in graph:
+        print("Destination is blocked or not in graph!")
+        return []
 
-    def compute_path(self, destination):
-        if destination not in self.graph:
-            print("Destination is blocked or not in graph!")
-            return []
+    distances = {}
+    previous = {}
+    to_visit = []
 
-        distances = {}
-        previous = {}
-        to_visit = []
+    for node in graph:
+        distances[node] = 999999
+        previous[node] = None
+        to_visit.append(node)
 
-        for node in self.graph:
-            distances[node] = 999999
-            previous[node] = None
-            to_visit.append(node)
+    distances[position] = 0
 
-        distances[self.position] = 0
+    while len(to_visit) > 0:
+        current = to_visit[0]
+        for node in to_visit:
+            if distances[node] < distances[current]:
+                current = node
 
-        while len(to_visit) > 0:
-            current = to_visit[0]
-            for node in to_visit:
-                if distances[node] < distances[current]:
-                    current = node
+        if current == destination:
+            break
 
-            if current == destination:
-                break
+        to_visit.remove(current)
 
-            to_visit.remove(current)
+        for neighbor in graph[current]:
+            if neighbor in to_visit:
+                new_dist = distances[current] + 1
+                if new_dist < distances[neighbor]:
+                    distances[neighbor] = new_dist
+                    previous[neighbor] = current
 
-            for neighbor in self.graph[current]:
-                if neighbor in to_visit:
-                    new_dist = distances[current] + 1
-                    if new_dist < distances[neighbor]:
-                        distances[neighbor] = new_dist
-                        previous[neighbor] = current
+    path = []
+    current = destination
+    while current is not None:
+        path.append(current)
+        current = previous[current]
+    path.reverse()
 
-        path = []
-        current = destination
-        while current is not None:
-            path.append(current)
-            current = previous[current]
-        path.reverse()
+    if len(path) == 0 or path[0] != position:
+        print("No path found!")
+        return []
 
-        if len(path) == 0 or path[0] != self.position:
-            print("No path found!")
-            return []
+    return path
 
-        return path
+
+# ===== The Dispatch Function (YOU COMPLETE THIS) =====
+# TODO: Write compute_path(algorithm, position, destination, blocked)
+# - If algorithm == "manhattan": return compute_manhattan_path(position, destination)
+# - Otherwise: build a 4x4 graph, call compute_dijkstra_path,
+#              and return path[1:] to drop the start position
+#              (so both branches return the SAME shape of result)
+
+# def compute_path(algorithm, position, destination, blocked):
+#     if algorithm == "manhattan":
+#         return ???
+#     else:
+#         graph = ???
+#         path = ???
+#         return path[???]
 
 
 # ===== Test Helper =====
 
-def run_comparison(test_name, start, destination, blocked):
-    """Compare Manhattan and Dijkstra for the same start/destination."""
-    m = Manhattan(start)
-    d = Dijkstra(start, blocked)
-
-    m_path = m.compute_path(destination)
-    d_path = d.compute_path(destination)
+def run_comparison(test_name, position, destination, blocked):
+    """Compare Manhattan and Dijkstra for the same position/destination."""
+    m_path = compute_path("manhattan", position, destination, blocked)
+    d_path = compute_path("dijkstra", position, destination, blocked)
 
     print(test_name)
-    print("  Manhattan:", m_path, " Steps:", len(m_path) - 1)
-    print("  Dijkstra: ", d_path, " Steps:", len(d_path) - 1)
+    print("  Manhattan:", m_path, " Steps:", len(m_path))
+    print("  Dijkstra: ", d_path, " Steps:", len(d_path))
     print("  Same length?", len(m_path) == len(d_path))
     print()
 
@@ -147,33 +151,29 @@ def run_comparison(test_name, start, destination, blocked):
 
 # TODO: Test with blocked nodes
 # blocked = [(1, 0), (1, 1)]
-# d = Dijkstra((0, 0), blocked)
-# path = d.compute_path((3, 0))
+# path = compute_path("dijkstra", (0, 0), (3, 0), blocked)
 # print("=== With obstacles [(1,0), (1,1)] ===")
 # print("Dijkstra path to (3,0):", path)
 # print()
 
 
-# ===== PART 3: The Swap =====
-# Both pathfinders have compute_path() returning a list of tuples.
-# This means we can swap one for the other!
+# ===== PART 3: The One-Argument Swap =====
+# Both branches of compute_path() return the same shape of result.
+# This means the caller can swap algorithms just by changing the argument!
 
-# TODO: Write a function that takes ANY pathfinder and uses it
-# def navigate_to(pathfinder, destination):
-#     path = pathfinder.compute_path(destination)
+# TODO: Write a function that uses compute_path() for any algorithm
+# def navigate_to(algorithm, position, destination, blocked):
+#     path = compute_path(algorithm, position, destination, blocked)
 #     print("Path to", destination, ":", path)
-#     print("Steps:", len(path) - 1)
-#     # Update pathfinder position
-#     pathfinder.position = destination
+#     print("Steps:", len(path))
+#     return destination  # new position after "driving" this path
 
 # TODO: Test with Manhattan
 # print("=== Using Manhattan ===")
-# pathfinder = Manhattan((0, 0))
-# navigate_to(pathfinder, (2, 3))
-# navigate_to(pathfinder, (0, 1))
+# position = navigate_to("manhattan", (0, 0), (2, 3), [])
+# position = navigate_to("manhattan", position, (0, 1), [])
 
-# TODO: Test with Dijkstra — same function, different pathfinder!
+# TODO: Test with Dijkstra — same navigate_to function, different argument!
 # print("\n=== Using Dijkstra ===")
-# pathfinder = Dijkstra((0, 0), [])
-# navigate_to(pathfinder, (2, 3))
-# navigate_to(pathfinder, (0, 1))
+# position = navigate_to("dijkstra", (0, 0), (2, 3), [])
+# position = navigate_to("dijkstra", position, (0, 1), [])
