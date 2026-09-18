@@ -9,3 +9,10 @@ __pycache__/
 # Large media files (exceed GitHub's 100MB limit)
 *.key
 *.mov
+
+# Office lock/temp files (created when a .pptx or .docx is open)
+~$*
+
+# Claude Code local settings and scratch output
+.claude/settings.local.json
+Claude outputs/
