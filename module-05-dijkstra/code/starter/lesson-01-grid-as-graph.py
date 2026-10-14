@@ -79,5 +79,5 @@
 # ===== PART 5: Why Graphs Matter =====
 # TODO: Fill in the blanks and uncomment:
 # print("Manhattan distance goes in straight lines and cannot avoid ___.")
-# print("Dijkstra's algorithm uses a ___ to find paths around obstacles.")
+# print("A pathfinding algorithm uses a ___ to find paths around obstacles.")
 # print("A graph tells us which cells ___ to which other cells.")

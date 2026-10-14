@@ -68,7 +68,7 @@ polymorphism as a principle, encapsulation) belongs to a later course and is
 | `LineSensor` | 2-8 | The simplest possible first class: two attributes, five one-line methods. Introduces `class`, `__init__`, `self`. |
 | `LineTrack` | 2-9 | One object holding another (`self.sensor = LineSensor()`), shown by example. "Composition" is not taught as a vocabulary word. |
 | `Navigator` | 4-8 | The one class with a *felt* reason: it owns `position` and `heading`, so the functions track's `position, heading = drive_path(path, position, heading)` threading disappears. |
-| `Manhattan`, `BFS`, `Dijkstra` | 4-5, 5-4/5-5 (ext.) | Exist so the swap demo works (D6): the same test harness and the same main program run against any planner by changing one name. `Manhattan` is a class *only* so it has the same shape as the others; `BFS`/`Dijkstra` are classes because they have setup to hold (the blocked list). Both reasons are stated plainly in the lesson. |
+| `Manhattan`, `BFS`, `Dijkstra` | 4-5, 5-5, 5-6 (ext.) | Exist so the swap demo works (D6): the same test harness and the same main program run against any planner by changing one name. `Manhattan` is a class *only* so it has the same shape as the others; `BFS`/`Dijkstra` are classes because they have setup to hold (the blocked list). Both reasons are stated plainly in the lesson. |
 
 **Removed:** nothing is removed from the earlier extension list, but the
 planner classes change shape (D3), which removes the `manhattan.position =
@@ -102,7 +102,9 @@ Rules:
 2. **The returned path excludes the start.** `[(0,1), (0,2)]`, not
    `[(0,0), (0,1), (0,2)]`. The Navigator is already at the start. *History:*
    M4's Manhattan excluded it and M5's included it; the 5-6 dispatch function
-   hid the mismatch with `[1:]`. Settled once, here.
+   hid the mismatch with `[1:]`. The site settled this the same way on
+   2026-09-19 (Brad's call, so that `steps = len(path)` everywhere); this
+   brings the source into line.
 3. **`add_blocked(intersection)` is the primitive**, one intersection at a
    time, because that is what the robot does: see a wall, add it, re-plan,
    drive on. The paper test calls it several times. A `set_blocked(list)`
@@ -260,7 +262,17 @@ convert it twice.
 While phase 2 is done and phase 3 is not, this repo's code and its lessons will
 disagree in Modules 4-5. Commit messages say so.
 
+**OPEN (phase 3): Module 5's driving layer is not Module 4's.** M5 L7-L9 drive
+by dead reckoning (`drivetrain.turn(90)`, `drivetrain.straight(20)`) with
+string headings `"N"/"E"/"S"/"W"`, where M4 line-tracks between intersections
+with integer headings 0-3 and `drive_path`/`turn_to`. The 2026-09 source called
+this "this module's simplified turn+drive style" on purpose. Phase 2 left it
+alone (only the planner calls changed). Decide in phase 3 whether M5 should
+reuse M4's Navigator, which D4/D5 assume.
+
 **Not testable without a robot:** the Navigator, `LineTrack`, the rangefinder
-loop and the print-then-drive main programs. Phase-2 changes to those are kept
+loop and the print-then-drive main programs. (The M5 L7-L9 programs were run
+here against a fake XRPLib that reports one obstacle, to check the reroute
+loop; that is not a robot test.) Phase-2 changes to those are kept
 minimal and marked; they need a run on an XRP before the lessons that use them
 are rewritten.

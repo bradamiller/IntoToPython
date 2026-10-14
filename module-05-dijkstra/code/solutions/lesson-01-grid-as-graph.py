@@ -42,5 +42,5 @@ print()
 # ===== PART 5: Why Graphs Matter =====
 print("===== Why Graphs Matter =====")
 print("Manhattan distance goes in straight lines and cannot avoid obstacles.")
-print("Dijkstra's algorithm uses a graph to find paths around obstacles.")
+print("A pathfinding algorithm uses a graph to find paths around obstacles.")
 print("A graph tells us which cells connect to which other cells.")

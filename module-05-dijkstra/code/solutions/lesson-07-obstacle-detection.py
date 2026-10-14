@@ -1,14 +1,34 @@
 # Lesson 7: Obstacle Detection with the Rangefinder - SOLUTION
-# Use the ultrasonic sensor to detect blocked intersections.
+# Use the ultrasonic sensor to detect blocked intersections. The planner was
+# already tested on paper in Lesson 6; the only new thing here is DETECTION:
+# read the rangefinder and call add_blocked(), then ask for a new path.
 
 from XRPLib.rangefinder import Rangefinder
 from XRPLib.differential_drive import DifferentialDrive
 from XRPLib.board import Board
 
 
-# ===== Dijkstra Functions (from Lesson 5) =====
+# ===== Pathfinding toolkit (Lessons 4-5) =====
+# compute_bfs_path(position, destination) is TOLD where the robot is and
+# returns the intersections to drive TO. BLOCKED is shared: the rangefinder
+# loop below adds to it with add_blocked(), exactly as the paper tests do.
 
-def build_dijkstra_graph(rows, cols, blocked):
+ROWS = 4
+COLS = 4
+BLOCKED = []
+
+
+def add_blocked(intersection):
+    if intersection not in BLOCKED:
+        BLOCKED.append(intersection)
+
+
+def clear_blocked():
+    while len(BLOCKED) > 0:
+        BLOCKED.pop()
+
+
+def build_graph(rows, cols, blocked):
     graph = {}
     for r in range(rows):
         for c in range(cols):
@@ -23,41 +43,28 @@ def build_dijkstra_graph(rows, cols, blocked):
     return graph
 
 
-def compute_dijkstra_path(position, destination, graph):
-    if destination not in graph:
-        print("Destination is blocked or not in graph!")
+def compute_bfs_path(position, destination):
+    graph = build_graph(ROWS, COLS, BLOCKED)
+    if position not in graph or destination not in graph:
         return []
-    distances = {}
-    previous = {}
-    to_visit = []
-    for node in graph:
-        distances[node] = 999999
-        previous[node] = None
-        to_visit.append(node)
-    distances[position] = 0
+    previous = {position: None}
+    to_visit = [position]
     while len(to_visit) > 0:
-        current = to_visit[0]
-        for node in to_visit:
-            if distances[node] < distances[current]:
-                current = node
+        current = to_visit.pop(0)
         if current == destination:
             break
-        to_visit.remove(current)
         for neighbor in graph[current]:
-            if neighbor in to_visit:
-                new_dist = distances[current] + 1
-                if new_dist < distances[neighbor]:
-                    distances[neighbor] = new_dist
-                    previous[neighbor] = current
+            if neighbor not in previous:
+                previous[neighbor] = current
+                to_visit.append(neighbor)
+    if destination not in previous:
+        return []
     path = []
     current = destination
-    while current is not None:
+    while current != position:
         path.append(current)
         current = previous[current]
     path.reverse()
-    if len(path) == 0 or path[0] != position:
-        print("No path found!")
-        return []
     return path
 
 
@@ -108,12 +115,16 @@ def drive_one_step():
 board = Board.get_default_board()
 rangefinder = Rangefinder.get_default_rangefinder()
 
-THRESHOLD = 15  # cm — closer than this means blocked
+THRESHOLD = 15  # cm -- closer than this means blocked
 
-blocked_nodes = []
 position = (0, 0)
 heading = "N"
 destination = (3, 3)
+
+# Plan and PRINT the path before the robot moves. Read it: is it what you
+# expected? This is the Lesson 6 paper test, built into every run.
+path = compute_bfs_path(position, destination)
+print("Planned path:", path)
 
 board.wait_for_button()
 print("Starting obstacle detection demo!")
@@ -121,12 +132,7 @@ print("Starting obstacle detection demo!")
 
 # ===== Navigate with Obstacle Detection =====
 
-graph = build_dijkstra_graph(4, 4, blocked_nodes)
-path = compute_dijkstra_path(position, destination, graph)
-print("Initial path:", path)
-
-for i in range(1, len(path)):
-    next_pos = path[i]
+for next_pos in path:
 
     # Turn to face the next intersection
     direction = get_needed_direction(position, next_pos)
@@ -137,22 +143,22 @@ for i in range(1, len(path)):
     print("At", position, "checking ahead:", distance, "cm")
 
     if distance < THRESHOLD:
-        # Obstacle detected!
-        blocked_nodes.append(next_pos)
+        # Obstacle detected! Tell the planner, the same way the tests did.
+        add_blocked(next_pos)
         print("Obstacle at", next_pos, "! Rerouting...")
 
-        # Rebuild the graph and recompute the path from current position
-        graph = build_dijkstra_graph(4, 4, blocked_nodes)
-        path = compute_dijkstra_path(position, destination, graph)
+        # Ask for a new path from where we are. The planner rebuilds its
+        # graph from BLOCKED, so the wall is already missing from it.
+        path = compute_bfs_path(position, destination)
         print("New path:", path)
         break  # Restart the path-following loop (in a full program, this
                # would be an outer while loop -- see Lesson 8)
     else:
-        # No obstacle — drive forward
+        # No obstacle -- drive forward
         drive_one_step()
         position = next_pos
         print("Drove to", position)
 
 print("Navigation complete!")
 print("Final position:", position)
-print("Obstacles found:", blocked_nodes)
+print("Obstacles found:", BLOCKED)

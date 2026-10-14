@@ -12,9 +12,27 @@ from XRPLib.differential_drive import DifferentialDrive
 from XRPLib.board import Board
 
 
-# ===== Dijkstra Functions =====
+# ===== Pathfinding toolkit (Lessons 4-5) =====
+# compute_bfs_path(position, destination) is TOLD where the robot is and
+# returns the intersections to drive TO. BLOCKED is shared: the rangefinder
+# loop below adds to it with add_blocked(), exactly as the paper tests do.
 
-def build_dijkstra_graph(rows, cols, blocked):
+ROWS = 4
+COLS = 4
+BLOCKED = []
+
+
+def add_blocked(intersection):
+    if intersection not in BLOCKED:
+        BLOCKED.append(intersection)
+
+
+def clear_blocked():
+    while len(BLOCKED) > 0:
+        BLOCKED.pop()
+
+
+def build_graph(rows, cols, blocked):
     graph = {}
     for r in range(rows):
         for c in range(cols):
@@ -29,39 +47,28 @@ def build_dijkstra_graph(rows, cols, blocked):
     return graph
 
 
-def compute_dijkstra_path(position, destination, graph):
-    if destination not in graph:
+def compute_bfs_path(position, destination):
+    graph = build_graph(ROWS, COLS, BLOCKED)
+    if position not in graph or destination not in graph:
         return []
-    distances = {}
-    previous = {}
-    to_visit = []
-    for node in graph:
-        distances[node] = 999999
-        previous[node] = None
-        to_visit.append(node)
-    distances[position] = 0
+    previous = {position: None}
+    to_visit = [position]
     while len(to_visit) > 0:
-        current = to_visit[0]
-        for node in to_visit:
-            if distances[node] < distances[current]:
-                current = node
+        current = to_visit.pop(0)
         if current == destination:
             break
-        to_visit.remove(current)
         for neighbor in graph[current]:
-            if neighbor in to_visit:
-                new_dist = distances[current] + 1
-                if new_dist < distances[neighbor]:
-                    distances[neighbor] = new_dist
-                    previous[neighbor] = current
+            if neighbor not in previous:
+                previous[neighbor] = current
+                to_visit.append(neighbor)
+    if destination not in previous:
+        return []
     path = []
     current = destination
-    while current is not None:
+    while current != position:
         path.append(current)
         current = previous[current]
     path.reverse()
-    if len(path) == 0 or path[0] != position:
-        return []
     return path
 
 
@@ -106,7 +113,7 @@ def drive_one_step():
 
 # ===== File I/O for Obstacle Persistence =====
 
-def save_obstacles(blocked, filename="obstacles.txt"):
+def save_obstacles(filename="obstacles.txt"):
     """Save the blocked list to a file."""
     # TODO: Open the file for writing
     # TODO: Write each blocked node as "row,col" on its own line
@@ -123,7 +130,7 @@ def load_obstacles(filename="obstacles.txt"):
     """Load the blocked list from a file. Returns empty list if file doesn't exist."""
     blocked = []
     # TODO: Try to open and read the file
-    # TODO: For each line, parse "row,col" into a tuple
+    # TODO: For each line, parse "row,col" into a tuple and call add_blocked() with it
     # TODO: Handle the case where the file doesn't exist
     # try:
     #     f = open(filename, "r")
@@ -139,7 +146,7 @@ def load_obstacles(filename="obstacles.txt"):
 
 # ===== Navigation Function (from Lesson 7, generalized into a loop) =====
 
-def navigate_with_detection(position, heading, destination, blocked_nodes, rangefinder, threshold):
+def navigate_with_detection(position, heading, destination, rangefinder, threshold):
     """Navigate to destination, detecting obstacles along the way.
 
     Returns (position, heading, step_count, reroute_count).
@@ -149,22 +156,20 @@ def navigate_with_detection(position, heading, destination, blocked_nodes, range
 
     arrived = False
     while not arrived:
-        graph = build_dijkstra_graph(4, 4, blocked_nodes)
-        path = compute_dijkstra_path(position, destination, graph)
+        path = compute_bfs_path(position, destination)
 
         if len(path) == 0:
             print("No path to", destination, "!")
             return position, heading, step_count, reroute_count
 
         rerouted = False
-        for i in range(1, len(path)):
-            next_pos = path[i]
+        for next_pos in path:
             direction = get_needed_direction(position, next_pos)
             heading = turn_to_direction(heading, direction)
 
             distance = rangefinder.distance()
             if distance < threshold:
-                blocked_nodes.append(next_pos)
+                add_blocked(next_pos)
                 print("  OBSTACLE at", next_pos, "! Rerouting...")
                 reroute_count = reroute_count + 1
                 rerouted = True
@@ -187,8 +192,7 @@ rangefinder = Rangefinder.get_default_rangefinder()
 THRESHOLD = 15
 
 # TODO: Load obstacles from file (will be empty on first run)
-# blocked_nodes = load_obstacles()
-blocked_nodes = []
+# load_obstacles()
 
 position = (0, 0)
 heading = "N"
@@ -198,19 +202,19 @@ board.wait_for_button()
 
 # TODO: Navigate to destination
 # print("=== Starting Navigation ===")
-# print("Known obstacles:", blocked_nodes)
+# print("Known obstacles:", BLOCKED)
 # position, heading, steps, reroutes = navigate_with_detection(
-#     position, heading, destination, blocked_nodes, rangefinder, THRESHOLD
+#     position, heading, destination, rangefinder, THRESHOLD
 # )
 
 # TODO: Save obstacles for next run
-# save_obstacles(blocked_nodes)
+# save_obstacles()
 
 # TODO: Print results
 # print("\n=== Run Results ===")
 # print("Total steps:", steps)
 # print("Reroutes:", reroutes)
-# print("All known obstacles:", blocked_nodes)
+# print("All known obstacles:", BLOCKED)
 
 # TODO: Compare Run 1 vs Run 2
 # Think about: How many fewer reroutes on Run 2?
