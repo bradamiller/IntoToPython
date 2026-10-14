@@ -128,6 +128,9 @@ print("=== XRP Grid Navigation: Final Project ===")
 print("Starting at:", position)
 print("Heading:", HEADING_NAMES[heading])
 print("Destinations:", destinations)
+# Print the first leg's plan BEFORE the button press -- read it before the
+# robot moves. This is the Lesson 6 paper test, built into every run.
+print("Planned path for leg 1:", compute_manhattan_path(position, destinations[0]))
 print()
 
 # Wait for button press to start

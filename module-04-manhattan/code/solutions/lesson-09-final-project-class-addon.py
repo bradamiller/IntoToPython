@@ -57,13 +57,21 @@ class LineTrack:
 
 
 class Manhattan:
+    """The Lesson 5 planner as a class.
 
-    def __init__(self, start):
-        self.position = start
+    It holds NO state: compute_path() is told the robot's position every
+    time, and the Navigator is the only thing that tracks where the robot
+    is. Manhattan is a class only so that it has the same shape as the
+    Module 5 planners (BFS, Dijkstra) -- then one main program and one test
+    harness work with any of them by changing one name.
+    """
 
-    def compute_path(self, destination):
+    def __init__(self):
+        pass        # nothing to set up
+
+    def compute_path(self, position, destination):
         path = []
-        current_row, current_col = self.position
+        current_row, current_col = position
         dest_row, dest_col = destination
 
         while current_row < dest_row:
@@ -125,16 +133,19 @@ class Navigator:
 
 board = Board.get_default_board()
 
-manhattan = Manhattan((0, 0))
-navigator = Navigator((0, 0), 0)  # Start heading North
+manhattan = Manhattan()
+navigator = Navigator((0, 0), 0)  # Start at (0,0) heading North
 
 # Four destinations that form a tour of the grid
 destinations = [(3, 0), (3, 3), (0, 3), (0, 0)]
 
 print("=== XRP Grid Navigation: Final Project ===")
-print("Starting at:", manhattan.position)
+print("Starting at:", navigator.position)
 print("Heading:", HEADING_NAMES[navigator.heading])
 print("Destinations:", destinations)
+# Print the first leg's plan BEFORE the button press -- read it before the
+# robot moves. This is the Lesson 6 paper test, built into every run.
+print("Planned path for leg 1:", manhattan.compute_path(navigator.position, destinations[0]))
 print()
 
 print("Press the button to begin navigation...")
@@ -144,14 +155,13 @@ print()
 for dest in destinations:
     print("--- Navigating to", dest, "---")
 
-    path = manhattan.compute_path(dest)
+    # The planner is told where the robot is; the Navigator is the only
+    # thing that tracks it, so there is nothing to keep "in sync".
+    path = manhattan.compute_path(navigator.position, dest)
     print("Path:", path)
     print("Steps:", len(path))
 
     navigator.drive_path(path)
-
-    # Keep Manhattan's position in sync with Navigator's
-    manhattan.position = navigator.position
 
     print("Arrived at:", navigator.position)
     print("Heading:", HEADING_NAMES[navigator.heading])

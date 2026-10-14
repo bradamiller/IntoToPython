@@ -56,13 +56,21 @@ class LineTrack:
 
 
 class Manhattan:
+    """The Lesson 5 planner as a class.
 
-    def __init__(self, start):
-        self.position = start
+    It holds NO state: compute_path() is told the robot's position every
+    time, and the Navigator is the only thing that tracks where the robot
+    is. Manhattan is a class only so that it has the same shape as the
+    Module 5 planners (BFS, Dijkstra) -- then one main program and one test
+    harness work with any of them by changing one name.
+    """
 
-    def compute_path(self, destination):
+    def __init__(self):
+        pass        # nothing to set up
+
+    def compute_path(self, position, destination):
         path = []
-        current_row, current_col = self.position
+        current_row, current_col = position
         dest_row, dest_col = destination
 
         while current_row < dest_row:
@@ -121,10 +129,11 @@ class Navigator:
 
 
 # ===== Test the Integration =====
+# The Navigator owns position and heading. The planner is TOLD the position.
 
 print("=== Test 1: Manhattan Paths ===")
-manhattan = Manhattan((0, 0))
-path = manhattan.compute_path((2, 2))
+manhattan = Manhattan()
+path = manhattan.compute_path((0, 0), (2, 2))
 print("Path from (0,0) to (2,2):", path)
 print()
 
@@ -135,15 +144,17 @@ print("Heading:", HEADING_NAMES[navigator.heading])
 print()
 
 print("=== Test 3: Drive (0,0) to (2,2) ===")
-path = manhattan.compute_path((2, 2))
+path = manhattan.compute_path(navigator.position, (2, 2))
+print("Planned path:", path)
 navigator.drive_path(path)
 print("Final position:", navigator.position)
 print("Final heading:", HEADING_NAMES[navigator.heading])
 print()
 
-print("=== Test 4: Drive (2,2) to (0,3) ===")
-manhattan.position = navigator.position
-path2 = manhattan.compute_path((0, 3))
+print("=== Test 4: Drive on to (0,3) ===")
+# No "sync" step: the planner asks the Navigator where the robot is.
+path2 = manhattan.compute_path(navigator.position, (0, 3))
+print("Planned path:", path2)
 navigator.drive_path(path2)
 print("Final position:", navigator.position)
 print("Final heading:", HEADING_NAMES[navigator.heading])
