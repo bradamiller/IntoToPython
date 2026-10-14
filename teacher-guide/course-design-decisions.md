@@ -255,7 +255,7 @@ convert it twice.
 | Phase | What | Status |
 |---|---|---|
 | 1 | This document; `classes-optional.md` updated; pointer in the site's `CLAUDE.md` | done 2026-10-14 |
-| 2 | **Source code** (`*/code/`). M4: stateless `Manhattan`, no sync step, print-then-drive mains. M5: `compute_bfs_path`, `add_blocked`, property harness, function-passing swap, `BFS`/`Dijkstra` class addons, weighted-edge addon. Paper tests run and passing on plain Python. | in progress |
+| 2 | **Source code** (`*/code/`). M4: stateless `Manhattan`, no sync step, print-then-drive mains. M5: `compute_bfs_path`, `add_blocked`, property harness, function-passing swap, `BFS`/`Dijkstra` class addons, weighted-edge addon. Paper tests run and passing on plain Python. | done 2026-10-14 (commits `baf6928`, `8e78855`); robot files smoke-tested against a fake XRPLib only |
 | 3 | **Source lessons and worksheets.** M2 L8 reframed per D1/D7; M4 L5-L9 and M5 L3-L9 rewritten around the phase-2 code; `pacing-guide.md`, `course-outline.md`, `README.md` updated; slides flagged stale, not regenerated. Brad's evaluation pass may run *as* this rewrite, lesson by lesson. | not started |
 | 4 | **Site.** Optional Extension collapsible + side-by-side figure; name-parity build check (D8); port M2 L8-10, M4, M5 from the updated source in one pass. | not started |
 
