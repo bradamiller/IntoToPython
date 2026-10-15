@@ -69,7 +69,7 @@ def compute_bfs_path(position, destination):
     return path
 
 
-# ===== Driving toolkit (from Modules 2 and 4) =====
+# ===== Sensor functions (from Module 2 Lesson 8) =====
 # Exactly the functions the robot drove with in Module 4. Nothing new here.
 
 reflectance = Reflectance.get_default_reflectance()
@@ -91,7 +91,7 @@ def is_either_on_line():
     return get_left() > THRESHOLD or get_right() > THRESHOLD
 
 
-# ===== Driving toolkit (from Module 2 Lesson 9) =====
+# ===== Line-tracking functions (from Module 2 Lesson 9) =====
 
 drivetrain = DifferentialDrive.get_default_differential_drive()
 BASE_EFFORT = 0.4

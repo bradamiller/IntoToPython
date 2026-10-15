@@ -67,7 +67,7 @@ def compute_bfs_path(position, destination):
     return path
 
 
-# ===== Driving toolkit (from Modules 2 and 4) =====
+# ===== Sensor functions (from Module 2 Lesson 8) =====
 # Exactly the functions the robot drove with in Module 4. Nothing new here.
 
 reflectance = Reflectance.get_default_reflectance()
@@ -89,7 +89,7 @@ def is_either_on_line():
     return get_left() > THRESHOLD or get_right() > THRESHOLD
 
 
-# ===== Driving toolkit (from Module 2 Lesson 9) =====
+# ===== Line-tracking functions (from Module 2 Lesson 9) =====
 
 drivetrain = DifferentialDrive.get_default_differential_drive()
 BASE_EFFORT = 0.4
@@ -157,33 +157,6 @@ def turn_to(heading, desired):
     return desired
 
 
-# ===== File I/O for Obstacle Persistence =====
-
-def save_obstacles(filename="obstacles.txt"):
-    """Save BLOCKED to a file, one intersection per line."""
-    f = open(filename, "w")
-    for node in BLOCKED:
-        f.write(str(node[0]) + "," + str(node[1]) + "\n")
-    f.close()
-    print("Saved", len(BLOCKED), "obstacles to", filename)
-
-
-def load_obstacles(filename="obstacles.txt"):
-    """Feed every intersection in the file to add_blocked(). The planner never
-    knows whether a block came from the rangefinder, a test, or last week's
-    run -- it just reads BLOCKED."""
-    try:
-        f = open(filename, "r")
-        count = 0
-        for line in f:
-            parts = line.strip().split(",")
-            add_blocked((int(parts[0]), int(parts[1])))
-            count = count + 1
-        f.close()
-        print("Loaded", count, "obstacles from", filename)
-    except:
-        print("No obstacle file found. Starting fresh.")
-
 
 # ===== Navigation Function (from Lesson 7, generalized into a loop) =====
 
@@ -235,7 +208,16 @@ board = Board.get_default_board()
 rangefinder = Rangefinder.get_default_rangefinder()
 OBSTACLE_CM = 15     # rangefinder reading closer than this means blocked
 
-load_obstacles()
+# ===== What the last run found out =====
+# A list only lives while the program runs. To carry Run 1's discoveries into
+# Run 2, read the "All known obstacles" line printed at the end of the run and
+# type it here. You are the memory. The planner cannot tell these from
+# rangefinder finds or test data -- they all arrive through add_blocked().
+
+KNOWN_OBSTACLES = []          # e.g. [(1, 2), (2, 2)] after Run 1
+
+for intersection in KNOWN_OBSTACLES:
+    add_blocked(intersection)
 
 position = (0, 0)
 heading = 0          # 0 = N, 1 = E, 2 = S, 3 = W, as in Module 4
@@ -252,7 +234,6 @@ position, heading, steps, reroutes = navigate_with_detection(
     position, heading, destination, rangefinder, OBSTACLE_CM
 )
 
-save_obstacles()
 
 print("\n=== Run Results ===")
 print("Total steps:", steps)
@@ -260,4 +241,4 @@ print("Reroutes:", reroutes)
 print("All known obstacles:", BLOCKED)
 
 # Run this program again to see Run 2 improve on Run 1 --
-# BLOCKED will load from obstacles.txt with prior knowledge already in it.
+# type the printed obstacle list into KNOWN_OBSTACLES first.

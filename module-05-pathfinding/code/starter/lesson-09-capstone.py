@@ -5,11 +5,11 @@
 # Date: ________________________
 #
 # Your robot will:
-#   1. Load known obstacles from a file
+#   1. Start from the obstacles the last run found
 #   2. Visit 4+ destinations using BFS pathfinding
 #   3. Detect new obstacles with the rangefinder
 #   4. Reroute around obstacles
-#   5. Save all obstacles for the next run
+#   5. Print all obstacles so the next run can start from them
 #   6. Demonstrate improvement on Run 2
 
 from XRPLib.rangefinder import Rangefinder
@@ -78,7 +78,7 @@ def compute_bfs_path(position, destination):
     return path
 
 
-# ===== Driving toolkit (from Modules 2 and 4) =====
+# ===== Sensor functions (from Module 2 Lesson 8) =====
 # Exactly the functions the robot drove with in Module 4. Nothing new here.
 
 reflectance = Reflectance.get_default_reflectance()
@@ -100,7 +100,7 @@ def is_either_on_line():
     return get_left() > THRESHOLD or get_right() > THRESHOLD
 
 
-# ===== Driving toolkit (from Module 2 Lesson 9) =====
+# ===== Line-tracking functions (from Module 2 Lesson 9) =====
 
 drivetrain = DifferentialDrive.get_default_differential_drive()
 BASE_EFFORT = 0.4
@@ -168,32 +168,6 @@ def turn_to(heading, desired):
     return desired
 
 
-# ===== File I/O =====
-
-def save_obstacles(filename="obstacles.txt"):
-    """Save obstacles to a file."""
-    f = open(filename, "w")
-    for node in blocked:
-        f.write(str(node[0]) + "," + str(node[1]) + "\n")
-    f.close()
-    print("Saved", len(blocked), "obstacles to", filename)
-
-
-def load_obstacles(filename="obstacles.txt"):
-    """Load obstacles from a file."""
-    blocked = []
-    try:
-        f = open(filename, "r")
-        for line in f:
-            parts = line.strip().split(",")
-            if len(parts) == 2:
-                blocked.append((int(parts[0]), int(parts[1])))
-        f.close()
-        print("Loaded", len(blocked), "obstacles from", filename)
-    except:
-        print("No obstacle file found. Starting fresh.")
-    return blocked
-
 
 # ===== Navigation with Detection =====
 
@@ -243,8 +217,19 @@ board = Board.get_default_board()
 rangefinder = Rangefinder.get_default_rangefinder()
 OBSTACLE_CM = 15     # rangefinder reading closer than this means blocked
 
-# TODO: Load obstacles from previous runs
-# load_obstacles()
+# ===== What the last run found out =====
+# A list only lives while the program runs. To carry Run 1's discoveries into
+# Run 2, read the "All known obstacles" line printed at the end of the run and
+# type it here. You are the memory.
+
+# TODO: After Run 1, type the printed obstacle list here, e.g. [(1, 2), (2, 2)]
+KNOWN_OBSTACLES = []
+
+# TODO: Hand every known obstacle to the planner with add_blocked()
+# for intersection in KNOWN_OBSTACLES:
+#     add_blocked(intersection)
+
+
 
 # TODO: Set up starting position and heading
 # position = (0, 0)
@@ -276,8 +261,6 @@ print()
 #     print("  Arrived at", dest)
 #     print()
 
-# TODO: Save obstacles for next run
-# save_obstacles()
 
 # TODO: Print final report
 # print("=== FINAL REPORT ===")
