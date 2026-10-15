@@ -46,9 +46,8 @@ class LineTrack:
     def track_to_intersection(self):
         while not self.sensor.is_at_cross():
             error = self.sensor.get_error()
-            left = self.base_effort - error * self.kp
-            right = self.base_effort + error * self.kp
-            self.drivetrain.set_effort(left, right)
+            correction = error * self.kp
+            self.drivetrain.arcade(self.base_effort, -correction)
         self.drivetrain.stop()
 
     def turn_clockwise(self):

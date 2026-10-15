@@ -105,9 +105,8 @@ def drive_past_intersection():
 def track_to_intersection():
     while not is_at_cross():
         error = get_error()
-        left = BASE_EFFORT - error * KP
-        right = BASE_EFFORT + error * KP
-        drivetrain.set_effort(left, right)
+        correction = error * KP
+        drivetrain.arcade(BASE_EFFORT, -correction)
     drivetrain.stop()
 
 def turn_clockwise():
