@@ -1,6 +1,8 @@
 # Lesson 7: The Challenge of Turning - SOLUTION
 # Headings are numbers: 0 = North, 1 = East, 2 = South, 3 = West
-# To turn: keep turning right until the current heading matches the needed heading
+# To turn: count quarter turns clockwise from the current heading to the
+# needed one (0, 1, 2 or 3). Three clockwise is the same as one
+# counterclockwise, so Lesson 8 turns the short way round.
 
 HEADING_NAMES = ["N", "E", "S", "W"]
 

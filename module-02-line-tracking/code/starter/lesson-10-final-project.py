@@ -25,9 +25,10 @@ print("Module 2 Final Project - Starting!")
 
 # TODO: Use a for loop to repeat 4 times:
 #   1. Print which leg you're on
-#   2. Follow line until cross (track_until_cross)
-#   3. Print that cross was detected
-#   4. Turn around (how will you reverse direction?)
+#   2. Follow line until cross (track_to_intersection)
+#   3. Drive past the cross so the wheels are over it (drive_past_intersection)
+#   4. Print that cross was detected
+#   5. Turn around (how will you reverse direction with 90-degree turns?)
 
 # TODO: Print completion message
 print("Complete! 4 reversals done.")

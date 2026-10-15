@@ -24,19 +24,23 @@ def get_error():
 def is_at_cross():
     return get_left() > THRESHOLD and get_right() > THRESHOLD
 
-def is_off_line():
-    return get_left() < THRESHOLD and get_right() < THRESHOLD
+def is_either_on_line():
+    return get_left() > THRESHOLD or get_right() > THRESHOLD
 
 
 # ===== DRIVING TOOLKIT (from Module 2 Lesson 9) =====
 drivetrain = DifferentialDrive.get_default_differential_drive()
 BASE_EFFORT = 0.4
 KP = 0.5
+TURN_EFFORT = 0.25
 
-def clear_intersection():
-    drivetrain.straight(8, 0.5)
+def drive_past_intersection():
+    # The sensors stop ON the cross, but the wheels are 8.75 cm behind them.
+    # Drive that far so the axle is over the intersection: a turn then pivots
+    # on it, and the next track_to_intersection() does not see this same cross.
+    drivetrain.straight(8.75, 0.5)
 
-def track_until_cross():
+def track_to_intersection():
     while not is_at_cross():
         error = get_error()
         left = BASE_EFFORT - error * KP
@@ -44,17 +48,20 @@ def track_until_cross():
         drivetrain.set_effort(left, right)
     drivetrain.stop()
 
-def turn_right():
-    clear_intersection()
-    drivetrain.set_effort(0.3, -0.3)
-    while is_off_line():
+def turn_clockwise():
+    # A blind turn first, far enough to get both sensors off the line we were
+    # on. Then keep turning until a sensor finds the cross street. No timing
+    # involved: the sensors say when the turn is done.
+    drivetrain.turn(-60, TURN_EFFORT)
+    drivetrain.arcade(0, -TURN_EFFORT)
+    while not is_either_on_line():
         pass
     drivetrain.stop()
 
-def turn_left():
-    clear_intersection()
-    drivetrain.set_effort(-0.3, 0.3)
-    while is_off_line():
+def turn_counterclockwise():
+    drivetrain.turn(60, TURN_EFFORT)
+    drivetrain.arcade(0, TURN_EFFORT)
+    while not is_either_on_line():
         pass
     drivetrain.stop()
 
@@ -65,20 +72,20 @@ board = Board.get_default_board()
 board.wait_for_button()
 
 # TODO: Drive to the first intersection
-# track_until_cross()
+# track_to_intersection()
 
 # TODO: Clear the intersection
-# clear_intersection()
+# drive_past_intersection()
 
 # TODO: Drive to the second intersection
-# track_until_cross()
+# track_to_intersection()
 
 # TODO: Rewrite the above using a for loop to drive N intersections
 # intersections = 3
 # for i in range(intersections):
-#     track_until_cross()
+#     track_to_intersection()
 #     if i < intersections - 1:
-#         clear_intersection()
+#         drive_past_intersection()
 
 # TODO (bonus): Create a drive_intersections(count) function
 # def drive_intersections(count):

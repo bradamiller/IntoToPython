@@ -25,8 +25,8 @@ class LineSensor:
     def is_at_cross(self):
         return self.get_left() > self.threshold and self.get_right() > self.threshold
 
-    def is_off_line(self):
-        return self.get_left() < self.threshold and self.get_right() < self.threshold
+    def is_either_on_line(self):
+        return self.get_left() > self.threshold or self.get_right() > self.threshold
 
 
 class LineTrack:
@@ -35,11 +35,14 @@ class LineTrack:
         self.drivetrain = DifferentialDrive.get_default_differential_drive()
         self.base_effort = 0.4
         self.kp = 0.5
+        self.turn_effort = 0.25
 
-    def clear_intersection(self):
-        self.drivetrain.straight(8, 0.5)
+    def drive_past_intersection(self):
+        # The sensors stop ON the cross, but the wheels are 8.75 cm behind
+        # them. Drive that far so the axle is over the intersection.
+        self.drivetrain.straight(8.75, 0.5)
 
-    def track_until_cross(self):
+    def track_to_intersection(self):
         while not self.sensor.is_at_cross():
             error = self.sensor.get_error()
             left = self.base_effort - error * self.kp
@@ -47,10 +50,20 @@ class LineTrack:
             self.drivetrain.set_effort(left, right)
         self.drivetrain.stop()
 
-    def turn_right(self):
-        self.clear_intersection()
-        self.drivetrain.set_effort(0.3, -0.3)
-        while self.sensor.is_off_line():
+    def turn_clockwise(self):
+        # A blind turn first, far enough to get both sensors off the line we
+        # were on. Then keep turning until a sensor finds the cross street.
+        # No timing involved: the sensors say when the turn is done.
+        self.drivetrain.turn(-60, self.turn_effort)
+        self.drivetrain.arcade(0, -self.turn_effort)
+        while not self.sensor.is_either_on_line():
+            pass
+        self.drivetrain.stop()
+
+    def turn_counterclockwise(self):
+        self.drivetrain.turn(60, self.turn_effort)
+        self.drivetrain.arcade(0, self.turn_effort)
+        while not self.sensor.is_either_on_line():
             pass
         self.drivetrain.stop()
 
@@ -112,19 +125,23 @@ class Navigator:
             return 3  # West
 
     def turn_to(self, desired):
-        while self.heading != desired:
-            self.line_track.turn_right()
-            self.heading = self.heading + 1
-            if self.heading == 4:
-                self.heading = 0
+        """Turn to face desired the short way round."""
+        # Quarter turns clockwise to get there: 0 = none, 1 = right,
+        # 2 = around, 3 = left (one counterclockwise beats three clockwise).
+        turns = (desired - self.heading) % 4
+        if turns == 3:
+            self.line_track.turn_counterclockwise()
+        else:
+            for i in range(turns):
+                self.line_track.turn_clockwise()
+        self.heading = desired
 
     def drive_path(self, path):
         for next_pos in path:
             needed = self.desired_heading(next_pos)
-            if self.heading == needed:
-                self.line_track.clear_intersection()
             self.turn_to(needed)
-            self.line_track.track_until_cross()
+            self.line_track.track_to_intersection()
+            self.line_track.drive_past_intersection()
             self.position = next_pos
 
 

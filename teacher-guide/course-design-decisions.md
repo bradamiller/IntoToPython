@@ -28,8 +28,8 @@ because the P-controller fought them all period, and reach it again in 4-8.
 Nobody is "the functions kid."
 
 **Why this is safe now:** every function has the same name and (minus `self`)
-the same signature as its class method. `track_until_cross()` and
-`tracker.track_until_cross()` are the same function with a prefix. Assignments
+the same signature as its class method. `track_to_intersection()` and
+`tracker.track_to_intersection()` are the same function with a prefix. Assignments
 are stated in that shared vocabulary, so one assignment serves both versions,
 mixed teams can share the functions file, and a teacher debugging either student
 is debugging the same loop.
@@ -244,6 +244,53 @@ functions track. *History:* the 2026-09 version used a
 `compute_path(algorithm_name, ...)` dispatch function; it works but hides the
 point, and it existed partly to paper over D3.2.
 
+## D10. One driving vocabulary for Modules 2-5, and turns that end on a sensor
+
+Settled 2026-10-14 against Brad's own RBE100X code (`Navigator.py`,
+`linetrack.py`, `linesensors.py`), which is the reference for how the robot
+should drive. Names, everywhere, in both tracks:
+
+| Was | Is now | Note |
+|---|---|---|
+| `track_until_cross()` | `track_to_intersection()` | |
+| `turn_right()` / `turn_left()` | `turn_clockwise()` / `turn_counterclockwise()` | unambiguous whichever way the robot faces |
+| `clear_intersection()` | `drive_past_intersection()` | says what it does |
+| `is_off_line()` | `is_either_on_line()` | the test a turn actually needs; `is_` kept on every boolean |
+| `is_at_cross()`, `get_left()`, `get_right()`, `get_error()` | unchanged | |
+
+**Turns end on a sensor, never on a timer.** `turn_clockwise()` makes a blind
+`drivetrain.turn(-60, TURN_EFFORT)` to get both sensors off the line it was
+following, then rotates in place (`arcade(0, -TURN_EFFORT)`) until
+`is_either_on_line()` finds the cross street, then stops. Counterclockwise is
+the same with the signs flipped. *History:* the course turned with
+`set_effort(0.3, -0.3)` and `while is_off_line()`, and the site's Module 2
+used `time.sleep(0.5)`; a timed turn depends on battery, floor and tape and
+is never right twice.
+
+**`drive_past_intersection()` runs after every `track_to_intersection()`,
+not inside the turn.** The sensors stop *on* the cross, 8.75 cm ahead of the
+axle. Driving that far puts the wheels over the intersection, so a turn
+pivots on it and the next track does not see the same cross and return at
+once. Doing it after the track (rather than before the turn) is what makes
+rerouting safe: when Module 5 finds a wall and re-plans, the robot is
+already parked on the intersection and nothing moves it again.
+
+**`turn_to(heading, desired)` turns the short way round.**
+`turns = (desired - heading) % 4`; 3 means one counterclockwise turn. Headings
+stay the integers 0-3 (N, E, S, W) that Brad's `Pose` uses.
+
+**Module 5 drives with Module 4's functions, verbatim.** L7-L9 carry the
+Module 2/4 toolkit and add exactly one thing, a rangefinder read between
+`turn_to()` and `track_to_intersection()`. The dead-reckoning layer
+(`drivetrain.turn(90)`, `straight(20)`, string headings) is gone; see the
+phase-2 history in the work-plan section for why it existed.
+
+**`print_grid(rows, cols, blocked, numbers)`** draws the grid with `X` for
+blocked intersections and a number on every other one -- ring numbers in the
+BFS lessons, costs in the Dijkstra extension. Lifted from Brad's
+`Dijkstra.print()`. It is the paper-test picture: students compare it with
+the numbers they wrote by hand in 5-3.
+
 ---
 
 ## Work plan and status
@@ -255,20 +302,21 @@ convert it twice.
 | Phase | What | Status |
 |---|---|---|
 | 1 | This document; `classes-optional.md` updated; pointer in the site's `CLAUDE.md` | done 2026-10-14 |
-| 2 | **Source code** (`*/code/`). M4: stateless `Manhattan`, no sync step, print-then-drive mains. M5: `compute_bfs_path`, `add_blocked`, property harness, function-passing swap, `BFS`/`Dijkstra` class addons, weighted-edge addon. Paper tests run and passing on plain Python. | done 2026-10-14 (commits `baf6928`, `8e78855`); robot files smoke-tested against a fake XRPLib only |
+| 2 | **Source code** (`*/code/`). M4: stateless `Manhattan`, no sync step, print-then-drive mains. M5: `compute_bfs_path`, `add_blocked`, property harness, function-passing swap, `BFS`/`Dijkstra` class addons, weighted-edge addon. Then D10: one vocabulary and sensor-ended turns across M2-M5, M5 driving on M4's toolkit, `print_grid`. Paper tests run and passing on plain Python. | done 2026-10-14; robot files smoke-tested against a fake XRPLib only |
 | 3 | **Source lessons and worksheets.** M2 L8 reframed per D1/D7; M4 L5-L9 and M5 L3-L9 rewritten around the phase-2 code; `pacing-guide.md`, `course-outline.md`, `README.md` updated; slides flagged stale, not regenerated. Brad's evaluation pass may run *as* this rewrite, lesson by lesson. | not started |
 | 4 | **Site.** Optional Extension collapsible + side-by-side figure; name-parity build check (D8); port M2 L8-10, M4, M5 from the updated source in one pass. | not started |
 
 While phase 2 is done and phase 3 is not, this repo's code and its lessons will
 disagree in Modules 4-5. Commit messages say so.
 
-**OPEN (phase 3): Module 5's driving layer is not Module 4's.** M5 L7-L9 drive
-by dead reckoning (`drivetrain.turn(90)`, `drivetrain.straight(20)`) with
-string headings `"N"/"E"/"S"/"W"`, where M4 line-tracks between intersections
-with integer headings 0-3 and `drive_path`/`turn_to`. The 2026-09 source called
-this "this module's simplified turn+drive style" on purpose. Phase 2 left it
-alone (only the planner calls changed). Decide in phase 3 whether M5 should
-reuse M4's Navigator, which D4/D5 assume.
+**RESOLVED 2026-10-14: Module 5's driving layer is now Module 4's (D10).**
+*History:* the February Module 5 code had its own `Navigator` that drove by
+dead reckoning (`drivetrain.turn(90)`, `drivetrain.straight(20)`, string
+headings) and never used `LineTrack`; the August reshape unrolled it into
+functions module by module, so the two different Navigators became two
+different toolkits, and a comment called it "this module's simplified
+turn+drive style" after the fact. Module 5's own Lesson 7 plan assumed
+Module 4's `desired_heading()` all along.
 
 **Not testable without a robot:** the Navigator, `LineTrack`, the rangefinder
 loop and the print-then-drive main programs. (The M5 L7-L9 programs were run

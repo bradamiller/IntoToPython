@@ -25,8 +25,8 @@ class LineSensor:
     def is_at_cross(self):
         return self.get_left() > self.threshold and self.get_right() > self.threshold
 
-    def is_off_line(self):
-        return self.get_left() < self.threshold and self.get_right() < self.threshold
+    def is_either_on_line(self):
+        return self.get_left() > self.threshold or self.get_right() > self.threshold
 
 
 class LineTrack:
@@ -35,11 +35,14 @@ class LineTrack:
         self.drivetrain = DifferentialDrive.get_default_differential_drive()
         self.base_effort = 0.4
         self.kp = 0.5
+        self.turn_effort = 0.25
 
-    def clear_intersection(self):
-        self.drivetrain.straight(8, 0.5)
+    def drive_past_intersection(self):
+        # The sensors stop ON the cross, but the wheels are 8.75 cm behind
+        # them. Drive that far so the axle is over the intersection.
+        self.drivetrain.straight(8.75, 0.5)
 
-    def track_until_cross(self):
+    def track_to_intersection(self):
         while not self.sensor.is_at_cross():
             error = self.sensor.get_error()
             left = self.base_effort - error * self.kp
@@ -47,17 +50,20 @@ class LineTrack:
             self.drivetrain.set_effort(left, right)
         self.drivetrain.stop()
 
-    def turn_right(self):
-        self.clear_intersection()
-        self.drivetrain.set_effort(0.3, -0.3)
-        while self.sensor.is_off_line():
+    def turn_clockwise(self):
+        # A blind turn first, far enough to get both sensors off the line we
+        # were on. Then keep turning until a sensor finds the cross street.
+        # No timing involved: the sensors say when the turn is done.
+        self.drivetrain.turn(-60, self.turn_effort)
+        self.drivetrain.arcade(0, -self.turn_effort)
+        while not self.sensor.is_either_on_line():
             pass
         self.drivetrain.stop()
 
-    def turn_left(self):
-        self.clear_intersection()
-        self.drivetrain.set_effort(-0.3, 0.3)
-        while self.sensor.is_off_line():
+    def turn_counterclockwise(self):
+        self.drivetrain.turn(60, self.turn_effort)
+        self.drivetrain.arcade(0, self.turn_effort)
+        while not self.sensor.is_either_on_line():
             pass
         self.drivetrain.stop()
 
@@ -71,9 +77,10 @@ print("Module 2 Final Project - Starting!")
 
 for i in range(4):
     print("Leg", i + 1, "- Following line to cross...")
-    tracker.track_until_cross()
+    tracker.track_to_intersection()
+    tracker.drive_past_intersection()
     print("Cross detected! Reversing direction...")
-    tracker.turn_right()
-    tracker.turn_right()  # Two right turns = 180 degree reversal
+    tracker.turn_clockwise()
+    tracker.turn_clockwise()  # two 90-degree turns = 180-degree reversal
 
 print("Complete! 4 reversals done.")

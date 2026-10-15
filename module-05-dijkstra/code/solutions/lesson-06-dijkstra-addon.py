@@ -74,6 +74,26 @@ def build_graph(rows, cols, blocked):
     return graph
 
 
+def print_grid(rows, cols, blocked, numbers):
+    """Draw the grid: X for a blocked intersection, otherwise the number in
+    the numbers dictionary (a ring number, a distance, ...), or . if none."""
+    print("     ", end="")
+    for c in range(cols):
+        print(str(c).rjust(3), end="")
+    print()
+    print("    " + "-" * (3 * cols + 1))
+    for r in range(rows):
+        print(str(r).rjust(2) + " | ", end="")
+        for c in range(cols):
+            if (r, c) in blocked:
+                print("  X", end="")
+            elif (r, c) in numbers:
+                print(str(numbers[(r, c)]).rjust(3), end="")
+            else:
+                print("  .", end="")
+        print()
+
+
 # ===== Planner 2: BFS, unchanged from Lesson 5 (for comparison) =====
 
 def compute_bfs_path(position, destination):
@@ -151,6 +171,23 @@ def compute_dijkstra_path(position, destination):
     return path
 
 
+def dijkstra_distances(position):
+    """Every intersection's cheapest cost from position (for the picture)."""
+    graph = build_graph(ROWS, COLS, BLOCKED)
+    distance = {position: 0}
+    to_visit = [position]
+    while len(to_visit) > 0:
+        current = closest(to_visit, distance)
+        to_visit.remove(current)
+        for neighbor in graph[current]:
+            new_distance = distance[current] + weight(current, neighbor)
+            if neighbor not in distance or new_distance < distance[neighbor]:
+                distance[neighbor] = new_distance
+                if neighbor not in to_visit:
+                    to_visit.append(neighbor)
+    return distance
+
+
 # ===== One more property for the harness: total cost =====
 
 def path_cost(position, path):
@@ -185,4 +222,10 @@ add_slow_edge((0, 1), (0, 2), 5)
 compare("(0,0) to (0,3)", (0, 0), (0, 3))
 print("BFS takes the fewest STEPS (3) but drives the slow road: cost 7.")
 print("Dijkstra takes more steps (5) but gets there sooner: cost 5.")
+clear_slow_edges()
+
+print()
+print("=== Cost from (0,0) with the slow edge: this is Dijkstra's whole table ===")
+add_slow_edge((0, 1), (0, 2), 5)
+print_grid(ROWS, COLS, BLOCKED, dijkstra_distances((0, 0)))
 clear_slow_edges()

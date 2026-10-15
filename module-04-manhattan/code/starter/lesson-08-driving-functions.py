@@ -8,7 +8,7 @@
 # We need functions that:
 #   1. Know the current position and heading (0=N, 1=E, 2=S, 3=W)
 #   2. Figure out which heading is needed for the next step
-#   3. Turn right the correct number of times
+#   3. Turn to face it, the short way round
 #   4. Follow the line to the next intersection
 #   5. Repeat for every step in the path
 #   6. Return the updated position and heading when done
@@ -35,8 +35,8 @@ def get_error():
 def is_at_cross():
     return get_left() > THRESHOLD and get_right() > THRESHOLD
 
-def is_off_line():
-    return get_left() < THRESHOLD and get_right() < THRESHOLD
+def is_either_on_line():
+    return get_left() > THRESHOLD or get_right() > THRESHOLD
 
 
 # ===== Driving toolkit (from Module 2 Lesson 9) =====
@@ -44,11 +44,15 @@ def is_off_line():
 drivetrain = DifferentialDrive.get_default_differential_drive()
 BASE_EFFORT = 0.4
 KP = 0.5
+TURN_EFFORT = 0.25
 
-def clear_intersection():
-    drivetrain.straight(8, 0.5)
+def drive_past_intersection():
+    # The sensors stop ON the cross, but the wheels are 8.75 cm behind them.
+    # Drive that far so the axle is over the intersection: a turn then pivots
+    # on it, and the next track_to_intersection() does not see this same cross.
+    drivetrain.straight(8.75, 0.5)
 
-def track_until_cross():
+def track_to_intersection():
     while not is_at_cross():
         error = get_error()
         left = BASE_EFFORT - error * KP
@@ -56,10 +60,20 @@ def track_until_cross():
         drivetrain.set_effort(left, right)
     drivetrain.stop()
 
-def turn_right():
-    clear_intersection()
-    drivetrain.set_effort(0.3, -0.3)
-    while is_off_line():
+def turn_clockwise():
+    # A blind turn first, far enough to get both sensors off the line we were
+    # on. Then keep turning until a sensor finds the cross street. No timing
+    # involved: the sensors say when the turn is done.
+    drivetrain.turn(-60, TURN_EFFORT)
+    drivetrain.arcade(0, -TURN_EFFORT)
+    while not is_either_on_line():
+        pass
+    drivetrain.stop()
+
+def turn_counterclockwise():
+    drivetrain.turn(60, TURN_EFFORT)
+    drivetrain.arcade(0, TURN_EFFORT)
+    while not is_either_on_line():
         pass
     drivetrain.stop()
 
@@ -121,22 +135,23 @@ def turn_to(heading, desired):
     desired: the heading it needs to face (0-3)
 
     Logic:
-      - While heading != desired:
-        - Call turn_right() to turn right once
-        - Add 1 to heading
-        - If heading == 4, reset it to 0
-      - Return heading
+      - turns = (desired - heading) % 4   is how many quarter turns clockwise
+        get you there: 0 = none, 1 = one clockwise, 2 = turn around,
+        3 = three clockwise -- which is the same as ONE counterclockwise
+      - If turns == 3: call turn_counterclockwise() once
+      - Otherwise: call turn_clockwise() that many times (a for loop)
+      - Return desired (that is the heading now)
 
     Examples:
-      - heading 0, need 1: one right turn (0 -> 1)
-      - heading 0, need 2: two right turns (0 -> 1 -> 2)
-      - heading 3, need 0: one right turn (3 -> 0, wraps around)
+      - heading 0, need 1: turns = 1, one clockwise
+      - heading 0, need 2: turns = 2, two clockwise
+      - heading 3, need 0: turns = (0 - 3) % 4 = 1, one clockwise
+      - heading 0, need 3: turns = 3, ONE counterclockwise
     """
-    # TODO: Use a while loop that keeps turning right
-    #       until heading equals desired
-    # TODO: Inside the loop: turn right, add 1 to heading,
-    #       reset to 0 if heading reaches 4
-    # TODO: Return heading
+    # TODO: compute turns
+    # TODO: if turns == 3 turn counterclockwise once, else turn clockwise
+    #       `turns` times
+    # TODO: return desired
     pass
 
 
@@ -152,14 +167,16 @@ def drive_path(path, position, heading):
       - Loop through each position in the path
       - For each step:
         1. Determine the needed heading using desired_heading()
-        2. If already facing the right way, clear the intersection
-        3. Turn to face the right direction using turn_to()
-        4. Follow the line to the next intersection: track_until_cross()
+        2. Turn to face it: heading = turn_to(heading, needed)
+        3. Follow the line to the next intersection: track_to_intersection()
+        4. Put the wheels over the intersection: drive_past_intersection()
+           (so the next turn pivots on it, and the next track does not see
+           this same cross and stop at once)
         5. Update position to the new position
       - Return position, heading
     """
     # TODO: Write the for loop (for next_pos in path:)
-    # TODO: For each step, get heading, clear if straight, turn, track, update
+    # TODO: For each step: needed heading, turn, track, drive past, update
     # TODO: Return position, heading
     pass
 

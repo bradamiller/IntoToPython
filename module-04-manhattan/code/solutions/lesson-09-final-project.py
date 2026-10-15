@@ -23,8 +23,8 @@ def get_error():
 def is_at_cross():
     return get_left() > THRESHOLD and get_right() > THRESHOLD
 
-def is_off_line():
-    return get_left() < THRESHOLD and get_right() < THRESHOLD
+def is_either_on_line():
+    return get_left() > THRESHOLD or get_right() > THRESHOLD
 
 
 # ===== Driving toolkit (from Module 2 Lesson 9) =====
@@ -32,11 +32,15 @@ def is_off_line():
 drivetrain = DifferentialDrive.get_default_differential_drive()
 BASE_EFFORT = 0.4
 KP = 0.5
+TURN_EFFORT = 0.25
 
-def clear_intersection():
-    drivetrain.straight(8, 0.5)
+def drive_past_intersection():
+    # The sensors stop ON the cross, but the wheels are 8.75 cm behind them.
+    # Drive that far so the axle is over the intersection: a turn then pivots
+    # on it, and the next track_to_intersection() does not see this same cross.
+    drivetrain.straight(8.75, 0.5)
 
-def track_until_cross():
+def track_to_intersection():
     while not is_at_cross():
         error = get_error()
         left = BASE_EFFORT - error * KP
@@ -44,10 +48,20 @@ def track_until_cross():
         drivetrain.set_effort(left, right)
     drivetrain.stop()
 
-def turn_right():
-    clear_intersection()
-    drivetrain.set_effort(0.3, -0.3)
-    while is_off_line():
+def turn_clockwise():
+    # A blind turn first, far enough to get both sensors off the line we were
+    # on. Then keep turning until a sensor finds the cross street. No timing
+    # involved: the sensors say when the turn is done.
+    drivetrain.turn(-60, TURN_EFFORT)
+    drivetrain.arcade(0, -TURN_EFFORT)
+    while not is_either_on_line():
+        pass
+    drivetrain.stop()
+
+def turn_counterclockwise():
+    drivetrain.turn(60, TURN_EFFORT)
+    drivetrain.arcade(0, TURN_EFFORT)
+    while not is_either_on_line():
         pass
     drivetrain.stop()
 
@@ -95,21 +109,24 @@ def desired_heading(position, next_pos):
 
 
 def turn_to(heading, desired):
-    while heading != desired:
-        turn_right()
-        heading = heading + 1
-        if heading == 4:
-            heading = 0
-    return heading
+    """Turn from heading to desired the short way round. Returns desired."""
+    # Quarter turns clockwise to get there: 0 = none, 1 = right, 2 = around,
+    # 3 = left (one counterclockwise turn beats three clockwise ones).
+    turns = (desired - heading) % 4
+    if turns == 3:
+        turn_counterclockwise()
+    else:
+        for i in range(turns):
+            turn_clockwise()
+    return desired
 
 
 def drive_path(path, position, heading):
     for next_pos in path:
         needed = desired_heading(position, next_pos)
-        if heading == needed:
-            clear_intersection()
         heading = turn_to(heading, needed)
-        track_until_cross()
+        track_to_intersection()
+        drive_past_intersection()
         position = next_pos
     return position, heading
 

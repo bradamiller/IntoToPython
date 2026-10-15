@@ -25,8 +25,8 @@ def is_at_cross():
     return get_left() > THRESHOLD and get_right() > THRESHOLD
 
 
-def is_off_line():
-    return get_left() < THRESHOLD and get_right() < THRESHOLD
+def is_either_on_line():
+    return get_left() > THRESHOLD or get_right() > THRESHOLD
 
 
 # --- Test Program ---
@@ -37,6 +37,6 @@ board.wait_for_button()
 for i in range(30):
     error = get_error()
     at_cross = is_at_cross()
-    off_line = is_off_line()
-    print("Error:", error, "Cross:", at_cross, "Off line:", off_line)
+    on_line = is_either_on_line()
+    print("Error:", error, "Cross:", at_cross, "On line:", on_line)
     time.sleep(0.3)

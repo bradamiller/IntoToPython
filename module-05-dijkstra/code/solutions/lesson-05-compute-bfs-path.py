@@ -51,6 +51,26 @@ def build_graph(rows, cols, blocked):
     return graph
 
 
+def print_grid(rows, cols, blocked, numbers):
+    """Draw the grid: X for a blocked intersection, otherwise the number in
+    the numbers dictionary (a ring number, a distance, ...), or . if none."""
+    print("     ", end="")
+    for c in range(cols):
+        print(str(c).rjust(3), end="")
+    print()
+    print("    " + "-" * (3 * cols + 1))
+    for r in range(rows):
+        print(str(r).rjust(2) + " | ", end="")
+        for c in range(cols):
+            if (r, c) in blocked:
+                print("  X", end="")
+            elif (r, c) in numbers:
+                print(str(numbers[(r, c)]).rjust(3), end="")
+            else:
+                print("  .", end="")
+        print()
+
+
 # ===== The planner =====
 
 def compute_bfs_path(position, destination):
@@ -92,6 +112,22 @@ def compute_bfs_path(position, destination):
     return path
 
 
+def bfs_rings(position):
+    """Run the ripples all the way out (no stopping at a destination) and
+    return a dictionary: intersection -> how many steps it is from position.
+    Used only for the picture; compute_bfs_path() is the planner."""
+    graph = build_graph(ROWS, COLS, BLOCKED)
+    ring = {position: 0}
+    to_visit = [position]
+    while len(to_visit) > 0:
+        current = to_visit.pop(0)
+        for neighbor in graph[current]:
+            if neighbor not in ring:
+                ring[neighbor] = ring[current] + 1
+                to_visit.append(neighbor)
+    return ring
+
+
 # ===== Paper tests (no robot) =====
 
 print("=== Test 1: no obstacles, (0,0) to (3,3) ===")
@@ -128,4 +164,15 @@ print("Blocked:", BLOCKED)
 path = compute_bfs_path((0, 0), (3, 0))
 print("Path:", path)
 print("Steps:", len(path), "(expect 0 -- no way through)")
+clear_blocked()
+
+
+# ===== The picture =====
+# Every intersection labeled with its distance from (0,0), around the wall.
+# The path above is just one route down these numbers, 1, 2, 3 ... to the goal.
+print()
+print("=== Rings from (0,0) with (1,0) and (1,1) blocked ===")
+add_blocked((1, 0))
+add_blocked((1, 1))
+print_grid(ROWS, COLS, BLOCKED, bfs_rings((0, 0)))
 clear_blocked()

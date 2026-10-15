@@ -10,15 +10,16 @@
 #   2 = SOUTH (moving to a larger row)
 #   3 = WEST  (moving to a smaller column)
 #
-# To figure out how many right turns are needed:
-#   Count clockwise from the current heading to the needed heading.
-#   0 right turns = already facing the right way
-#   1 right turn  = turn right once (90 degrees)
-#   2 right turns = turn around (180 degrees)
-#   3 right turns = turn right three times (same as one left turn)
+# To figure out how to turn:
+#   Count quarter turns clockwise from the current heading to the needed one.
+#   0 = already facing the right way
+#   1 = one clockwise turn (90 degrees)
+#   2 = turn around (180 degrees)
+#   3 = three clockwise turns -- or ONE counterclockwise turn, which is what
+#       the robot will actually do
 #
-# In Lesson 8, the Navigator class will do this with a while loop
-# that turns right and increments the heading until it matches.
+# In Lesson 8, turn_to() computes that count with (desired - heading) % 4
+# and makes the turns.
 
 HEADING_NAMES = ["N", "E", "S", "W"]
 
@@ -57,7 +58,7 @@ def desired_heading(current, next_pos):
 # Start position: (0, 0)
 # Starting heading: 0 (North)
 #
-# Step 1: At (0,0), next is (1,0) — need heading ___, right turns: ___
-# Step 2: At (1,0), next is (2,0) — need heading ___, right turns: ___
-# Step 3: At (2,0), next is (2,1) — need heading ___, right turns: ___
-# Step 4: At (2,1), next is (2,2) — need heading ___, right turns: ___
+# Step 1: At (0,0), next is (1,0) — need heading ___, clockwise turns: ___
+# Step 2: At (1,0), next is (2,0) — need heading ___, clockwise turns: ___
+# Step 3: At (2,0), next is (2,1) — need heading ___, clockwise turns: ___
+# Step 4: At (2,1), next is (2,2) — need heading ___, clockwise turns: ___

@@ -29,6 +29,26 @@ def build_graph(rows, cols, blocked):
     return graph
 
 
+def print_grid(rows, cols, blocked, numbers):
+    """Draw the grid: X for a blocked intersection, otherwise the number in
+    the numbers dictionary (a ring number, a distance, ...), or . if none."""
+    print("     ", end="")
+    for c in range(cols):
+        print(str(c).rjust(3), end="")
+    print()
+    print("    " + "-" * (3 * cols + 1))
+    for r in range(rows):
+        print(str(r).rjust(2) + " | ", end="")
+        for c in range(cols):
+            if (r, c) in blocked:
+                print("  X", end="")
+            elif (r, c) in numbers:
+                print(str(numbers[(r, c)]).rjust(3), end="")
+            else:
+                print("  .", end="")
+        print()
+
+
 # ===== PART 1: Explore the Graph =====
 print("===== 3x3 Grid Graph (no obstacles) =====")
 graph = build_graph(3, 3, [])
@@ -106,3 +126,9 @@ print()
 print("Shortest path (the intersections to drive TO):", path)
 print("Steps:", len(path))
 print("Ring number on the destination:", ring[destination], "-- the same thing")
+
+# ===== PART 6: The Picture =====
+# The ring numbers, drawn on the grid. X is the blocked intersection. Compare
+# this with the numbers you wrote on paper.
+print()
+print_grid(3, 3, [(1, 1)], ring)
