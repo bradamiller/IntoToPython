@@ -1,224 +1,109 @@
-# Lesson 9 Worksheet: Capstone Project
+# Lesson 9 Worksheet: Capstone Planning and Demo Record
 
-**Name:** ________________________
+**Team:** ________________________
 **Date:** ________________________
 
 ---
 
-## Part A: System Architecture
+## Part A: Where does each line come from?
 
-The capstone project combines everything from this module. Draw arrows to show how the components connect.
+Next to each line of the skeleton, write the lesson it was built in (4-8, 5-4, 5-5, 5-6, 5-7, 5-8).
 
-**Components:**
-
-1. **`build_dijkstra_graph()` / `compute_dijkstra_path()`** — Find shortest paths on the grid graph
-2. **`drive_path()`** — Drives the robot along a path (turn + drive)
-3. **Rangefinder** — Detects obstacles ahead of the robot
-4. **Obstacle memory** (blocked list) — Remembers discovered obstacles
-5. **Main program** — Coordinates everything
-
-**Fill in the connections:**
-
-```
-Main Program
-    |
-    |--- Calls __________ with position, destination, and blocked list
-    |
-    |--- Calls __________ to drive the robot
-    |
-    |--- Uses __________ to check for obstacles
-    |
-    |--- Maintains __________ across multiple destinations
-```
-
-**Describe the main loop of the capstone program:**
-
-1. Choose next __________ from the list
-2. Use __________ to compute path to destination
-3. For each step in the path:
-   a. Check for __________ using rangefinder
-   b. If obstacle found, update __________ and __________ path
-   c. Use __________ to drive to next intersection
-4. Repeat for next __________
-
-**What happens if an obstacle is detected mid-path?**
-
-____________________________________________________________________
-
-____________________________________________________________________
-
----
-
-## Part B: Destination Planning
-
-On the 4x4 grid below, choose 4 destinations for your robot to visit in order. Mark them with numbers 1-4. The robot starts at (0, 0).
-
-```
-     Col 0   Col 1   Col 2   Col 3
-Row 0:  S  ---  .  ---  .  ---  .
-        |       |       |       |
-Row 1:  .  ---  .  ---  .  ---  .
-        |       |       |       |
-Row 2:  .  ---  .  ---  .  ---  .
-        |       |       |       |
-Row 3:  .  ---  .  ---  .  ---  .
-```
-
-S = Start (0, 0)
-
-**My destinations (in order):**
-
-| Order | Destination (row, col) | Why I chose this |
-|---|---|---|
-| 1 | (______, ______) | __________________________________________ |
-| 2 | (______, ______) | __________________________________________ |
-| 3 | (______, ______) | __________________________________________ |
-| 4 | (______, ______) | __________________________________________ |
-
-**Total Manhattan distance for all 4 trips:** __________
-
-*(Add up the Manhattan distance from start to dest 1, dest 1 to dest 2, dest 2 to dest 3, dest 3 to dest 4)*
-
----
-
-## Part C: Predict Paths
-
-Assume the grid has obstacles at **(1, 1)** and **(2, 3)**.
-
-```
-     Col 0   Col 1   Col 2   Col 3
-Row 0:  S  ---  .  ---  .  ---  .
-        |               |       |
-Row 1:  .     [X X]     .  ---  .
-        |               |       |
-Row 2:  .  ---  .  ---  .     [X X]
-        |       |       |
-Row 3:  .  ---  .  ---  .  ---  .
-```
-
-Using your destinations from Part B, hand-trace the Dijkstra paths:
-
-**Trip 1:** (0, 0) to destination 1 = (______, ______)
-
-Path: ____________________________________________________________________
-
-Length: __________
-
-**Trip 2:** destination 1 to destination 2 = (______, ______) to (______, ______)
-
-Path: ____________________________________________________________________
-
-Length: __________
-
-**Trip 3:** destination 2 to destination 3 = (______, ______) to (______, ______)
-
-Path: ____________________________________________________________________
-
-Length: __________
-
-**Trip 4:** destination 3 to destination 4 = (______, ______) to (______, ______)
-
-Path: ____________________________________________________________________
-
-Length: __________
-
-**Total steps for all 4 trips:** __________
-
-**How does this compare to your Manhattan estimate from Part B?**
-
-____________________________________________________________________
-
----
-
-## Part D: Testing Checklist
-
-Before running your capstone on the actual robot, verify each item:
-
-**Code checks:**
-
-| Check | Done? |
+| Skeleton line | Lesson |
 |---|---|
-| `build_dijkstra_graph()` and `compute_dijkstra_path()` are both defined | ______ |
-| `build_dijkstra_graph()` correctly excludes blocked nodes | ______ |
-| `compute_dijkstra_path()` returns a list of (row, col) tuples | ______ |
-| `compute_dijkstra_path()` handles blocked destinations | ______ |
-| `drive_path()` can follow a path of (row, col) tuples | ______ |
-| Rangefinder setup uses correct import and initialization | ______ |
-| Obstacle detection uses a reasonable threshold | ______ |
-| Blocked list is updated when obstacles are found | ______ |
-| Path is recomputed after discovering an obstacle | ______ |
-| Multiple destinations are visited in order | ______ |
+| `for intersection in KNOWN_OBSTACLES: add_blocked(intersection)` | ____ |
+| `compute_bfs_path(position, destination)` | ____ |
+| `print("Planned path for leg 1:", ...)` before `wait_for_button()` | ____ |
+| `distance = rangefinder.distance()` between `turn_to()` and `track_to_intersection()` | ____ |
+| `while not arrived:` with the `rerouted` flag | ____ |
+| `turn_to()`, `track_to_intersection()`, `drive_past_intersection()` | ____ |
 
-**Test scenarios to run in code (without robot):**
+## Part B: The destination loop
 
-| Test | Expected Result | Actual Result |
+```python
+for i in range(len(destinations)):
+    dest = destinations[i]
+    ______________________________ = navigate_with_detection(
+        position, heading, dest, rangefinder, OBSTACLE_CM
+    )
+    total_steps = total_steps + steps
+    total_reroutes = total_reroutes + reroutes
+```
+
+1. Fill in the left-hand side of the assignment.
+
+2. A team leaves the left-hand side off and just calls `navigate_with_detection(...)`. Leg 1 works. Describe what leg 2 does and why.
+
+_______________________________________________________________
+
+_______________________________________________________________
+
+3. Why does the program print only leg 1's path before the button, not all four?
+
+_______________________________________________________________
+
+4. The blocked list is "the thread" through the program. List the four places it is filled, read, added to, or reported -- and the one function three of them use.
+
+_______________________________________________________________
+
+## Part C: Predict, then simulate
+
+Destinations: `[(1, 3), (3, 3), (3, 0), (0, 0)]`. Pretend obstacles for `simulate_rangefinder`: `[(1, 0), (2, 2), (1, 3)]`.
+
+5. One of those three obstacles is going to cause "No path!" Which one, and why?
+
+_______________________________________________________________
+
+6. Fix it (move the obstacle or the destination), then run the simulation. Record:
+
+   Legs completed: ____  Total steps: ____  Reroutes: ____  Final `BLOCKED`: ______________________
+
+7. Now type that list into `KNOWN_OBSTACLES` and simulate again. Reroutes: ____  Steps: ____
+
+## Part D: Demo record
+
+| | Run 1 | Run 2 |
 |---|---|---|
-| Path with no obstacles | Shortest direct path | ________________ |
-| Path with one obstacle on route | Path goes around | ________________ |
-| Path to a blocked destination | Returns empty list | ________________ |
-| Start = destination | Returns [start] | ________________ |
-| Multiple destinations in sequence | Correct paths for each | ________________ |
+| `KNOWN_OBSTACLES` at start | `[]` | ______________________ |
+| Destinations reached | ____ / 4 | ____ / 4 |
+| Reroutes | ____ | ____ |
+| Total steps | ____ | ____ |
+| Obstacles printed at end | ______________________ | ______________________ |
 
-**Robot tests:**
+8. In one sentence, why is Run 2 better? (Not "the robot is smarter".)
 
-| Test | Pass? |
+_______________________________________________________________
+
+## Part E: Integration bugs we hit
+
+For each bug you ran into, write the symptom and the fix.
+
+| Symptom | Cause / fix |
 |---|---|
-| Robot drives straight between two adjacent intersections | ______ |
-| Robot turns correctly at an intersection | ______ |
-| Rangefinder detects an obstacle placed on the grid | ______ |
-| Robot stops and recomputes when obstacle found | ______ |
-| Robot successfully visits all 4 destinations | ______ |
+| | |
+| | |
+| | |
+
+## Self-assessment against the rubric
+
+| Category | Points | Our estimate |
+|---|---|---|
+| BFS pathfinding (Lesson 6 tests pass) | 10 | ____ |
+| Driving integration | 10 | ____ |
+| Obstacle detection | 10 | ____ |
+| Re-planning | 10 | ____ |
+| Experience (Run 2 starts from Run 1's list) | 10 | ____ |
+| Demonstration | 5 | ____ |
+| Code quality | 5 | ____ |
 
 ---
 
-## Part E: Reflection Questions
+## Answer Key
 
-**1. What was the most challenging part of this module?**
-
-____________________________________________________________________
-
-____________________________________________________________________
-
-**2. How does Dijkstra's algorithm compare to how you would find a path yourself?**
-
-____________________________________________________________________
-
-____________________________________________________________________
-
-**3. What would you need to change to use a larger grid (e.g., 8x8)?**
-
-____________________________________________________________________
-
-____________________________________________________________________
-
-**4. What other information could the robot remember between runs besides obstacles?**
-
-____________________________________________________________________
-
-____________________________________________________________________
-
-**5. If two paths have the same length, how does Dijkstra decide which one to use?**
-
-____________________________________________________________________
-
-____________________________________________________________________
-
-**6. Real-world GPS navigation uses algorithms similar to Dijkstra. What is different about real roads compared to our grid?**
-
-____________________________________________________________________
-
-____________________________________________________________________
-
-____________________________________________________________________
-
-**7. What would you add to this project if you had more time?**
-
-____________________________________________________________________
-
-____________________________________________________________________
-
-____________________________________________________________________
-
----
-
-**Congratulations!** You have completed the Dijkstra's Algorithm module. You built a pathfinding system that can navigate around obstacles and learn from experience.
+**Part A:** 5-8; 5-5 (interface from 5-4); 5-7; 5-7; 5-8; 4-8.
+**1.** `position, heading, steps, reroutes`
+**2.** Leg 2 is planned from (0, 0) facing north, but the robot is at (1, 3) facing some other way, so it turns the wrong way and tracks off the grid (or to the wrong intersection).
+**3.** Later legs are planned from wherever the previous leg actually ends, with whatever obstacles have been found by then -- neither is known before the robot moves.
+**4.** Filled from `KNOWN_OBSTACLES`; read by `compute_bfs_path()` on every call; added to by the rangefinder check; printed at the end. `add_blocked()` for the first and third (and the Lesson 6 tests).
+**5.** (1, 3) -- it is also the first destination. The planner returns `[]` for a blocked destination and the leg is skipped.
+**8.** It started out knowing the obstacles, so its first paths already avoided them: same algorithm, better data.

@@ -56,7 +56,7 @@ By the end of this module, students will be able to:
 
 ### Phase C: Capstone Project (Lessons 7–9)
 - Lesson 7: Obstacle Detection with the Rangefinder
-- Lesson 8: Building Experience (Updating Obstacles Over Time)
+- Lesson 8: Building Experience (drive until you arrive; start Run 2 from Run 1's obstacles)
 - Lesson 9: Module 5 Capstone Project
 
 **After this module:** Module 6 (optional) upgrades BFS to Dijkstra's algorithm for grids with slow segments.

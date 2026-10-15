@@ -5,194 +5,122 @@
 
 ---
 
-## Part A: Rangefinder Basics
+## Part A: Rangefinder basics
 
-The XRP robot has a rangefinder (ultrasonic distance sensor) that measures how far away objects are.
-
-**1. What does `rangefinder.distance()` return?**
-
-____________________________________________________________________
-
-**2. What units does the rangefinder use?**
-
-____________________________________________________________________
-
-**3. If the rangefinder reads `5.0`, what does that mean?**
-
-____________________________________________________________________
-
-**4. If the rangefinder reads `50.0`, what does that mean?**
-
-____________________________________________________________________
-
-**5. Fill in the import and setup code:**
+1. Write the three lines that import the rangefinder, get the default one, and read a distance into a variable called `distance`.
 
 ```python
-from XRPLib.__________ import __________
+_______________________________________________
 
-rangefinder = Rangefinder.__________()
-distance = rangefinder.__________()
-print("Distance:", distance)
+_______________________________________________
+
+_______________________________________________
 ```
 
----
+2. In one sentence, how does an ultrasonic rangefinder measure distance?
 
-## Part B: Threshold Logic
+_______________________________________________________________
 
-We use a **threshold** to decide if a rangefinder reading means "obstacle" or "clear." For example, if our threshold is 15 cm, anything less than 15 cm is an obstacle.
+3. You measured 11.8 cm, 12.4 cm and 11.5 cm with a box on the next intersection, and 46 cm, 51 cm and 48 cm with it clear. Circle a good value for `OBSTACLE_CM`:   5   15   30   45
 
-**Given threshold = 15 cm, fill in the table:**
+   Why not 12?  _______________________________________________
 
-| Rangefinder Reading (cm) | Obstacle? (Yes/No) | Explanation |
-|---|---|---|
-| 5.2 | __________ | __________________________________________ |
-| 14.9 | __________ | __________________________________________ |
-| 15.0 | __________ | __________________________________________ |
-| 15.1 | __________ | __________________________________________ |
-| 30.0 | __________ | __________________________________________ |
-| 2.0 | __________ | __________________________________________ |
+4. Why is the constant called `OBSTACLE_CM` and not `THRESHOLD`?
 
-**Write the Python condition that checks if a distance reading indicates an obstacle:**
+_______________________________________________________________
+
+## Part B: Which intersection is blocked?
+
+Here is Module 4's driving loop with the new line added.
 
 ```python
-threshold = 15
-distance = rangefinder.distance()
-
-if __________________________________________:
-    print("Obstacle detected!")
-else:
-    print("Path is clear")
+for next_pos in path:
+    needed = desired_heading(position, next_pos)
+    heading = turn_to(heading, needed)
+    distance = rangefinder.distance()          # <-- new
+    ...
 ```
 
-**Why do we use a threshold instead of checking for exactly 0?**
+5. The robot is at (2, 1). Its path is `[(1, 1), (0, 1), (0, 2)]`. On the first time through the loop, after `turn_to()`, which intersection is the robot facing? ________
 
-____________________________________________________________________
+6. The rangefinder reads 9 cm. Which intersection is blocked? ________ Which function do you call, with what argument?
 
-____________________________________________________________________
+   `__________________( __________ )`
 
----
+7. Your partner moved the `rangefinder.distance()` line *above* `turn_to()`. Explain what goes wrong.
 
-## Part C: Scenario Walkthrough
+_______________________________________________________________
 
-The robot is navigating a 4x4 grid. It has reached intersection (1, 1) and needs to check for obstacles before moving forward.
+_______________________________________________________________
 
-**Scenario 1:** Robot is at (1, 1), facing right (toward (1, 2)). Rangefinder reads 8.3 cm. Threshold = 15 cm.
+## Part C: Re-planning
 
-- Is (1, 2) blocked? __________
-- Should the robot add (1, 2) to the blocked list? __________
-- What should the robot do next? __________________________________________
-
-**Scenario 2:** Robot is at (1, 1), facing right (toward (1, 2)). Rangefinder reads 42.0 cm. Threshold = 15 cm.
-
-- Is (1, 2) blocked? __________
-- Should the robot add (1, 2) to the blocked list? __________
-- What should the robot do next? __________________________________________
-
-**Scenario 3:** Robot is at (0, 0), facing down (toward (1, 0)). Rangefinder reads 10.5 cm. Threshold = 15 cm.
-
-- Which cell is potentially blocked? __________
-- The robot adds (1, 0) to blocked list. Now blocked = [(1, 0)].
-- The robot needs to reach (3, 0). What should it do?
-
-____________________________________________________________________
-
-____________________________________________________________________
-
-**Scenario 4:** Robot arrives at (2, 1). It checks ahead (toward (2, 2)) and reads 7.1 cm. It already has blocked = [(1, 1)].
-
-- Updated blocked list: __________________________________________
-- Should the robot recompute its path? __________
-- Why? ____________________________________________________________________
-
----
-
-## Part D: Code Completion
-
-Fill in the blanks to complete the obstacle detection function.
+8. After `add_blocked(next_pos)`, write the one line that asks for a new path from where the robot is.
 
 ```python
-from XRPLib.rangefinder import Rangefinder
-
-rangefinder = Rangefinder.get_default_rangefinder()
-
-def check_for_obstacle(current_position, facing_direction, blocked_list, threshold=15):
-    """
-    Check if there is an obstacle in the direction the robot is facing.
-
-    Parameters:
-        current_position: tuple (row, col) where the robot is now
-        facing_direction: tuple (dr, dc) indicating direction faced
-        blocked_list: list of blocked (row, col) tuples
-        threshold: distance in cm below which we call it an obstacle
-
-    Returns:
-        True if obstacle detected and added, False otherwise
-    """
-    # Step 1: Read the rangefinder
-    distance = __________________________________________
-
-    # Step 2: Check if the reading indicates an obstacle
-    if __________ __________ __________:
-        # Step 3: Calculate the position of the obstacle
-        row, col = current_position
-        dr, dc = __________________________________________
-        obstacle_position = (__________, __________)
-
-        # Step 4: Add to blocked list if not already there
-        if obstacle_position __________ __________:
-            __________.append(__________)
-            print("Obstacle detected at", obstacle_position)
-            return __________
-
-    return __________
+path = _________________________________________
 ```
 
-**Test your understanding:** If the robot is at (1, 1) facing right (direction = (0, 1)) and the rangefinder reads 6.0 cm:
+9. Your partner adds `graph = build_graph(ROWS, COLS, BLOCKED)` before that line "so the planner knows about the new wall". Is it needed? Why or why not?
 
-- What is `obstacle_position`? __________
-- Is it added to blocked_list? __________
+_______________________________________________________________
+
+10. Why is the robot sitting exactly over an intersection when it re-plans? (Which Module 4 function guarantees it?)
+
+_______________________________________________________________
+
+## Part D: Trace
+
+Grid 3x3, start (0, 0), destination (2, 2), `BLOCKED` empty. The planner prints `Planned path: [(1, 0), (2, 0), (2, 1), (2, 2)]`. There is a box on (2, 0).
+
+11. Fill in what happens, step by step:
+
+| Loop pass | position | next_pos | reading | action |
+|---|---|---|---|---|
+| 1 | (0, 0) | (1, 0) | 50 cm | track, drive past, position = (1, 0) |
+| 2 | ________ | ________ | 9 cm | ______________________________ |
+
+12. After the reroute, `BLOCKED` is `________________` and the new path is planned from `________`. Write one possible new path: `______________________________`
+
+## Part E: Simulate first
+
+13. Complete the fake sensor:
+
+```python
+simulated_obstacles = [(2, 0)]
+
+def simulate_rangefinder(next_pos):
+    if next_pos in simulated_obstacles:
+        return ________
+    else:
+        return ________
+```
+
+14. What is being simulated -- the sensor, the planner, or both? Why doesn't the planner need simulating?
+
+_______________________________________________________________
+
+## Exit ticket
+
+Why can the planner not tell whether a wall was reported by the Lesson 6 test script or by the rangefinder?
+
+_______________________________________________________________
 
 ---
 
 ## Answer Key
 
-### Part A:
-1. A floating-point number representing the distance to the nearest object
-2. Centimeters (cm)
-3. There is an object 5.0 cm away from the sensor
-4. There is an object 50.0 cm away (or nothing nearby)
-5. `from XRPLib.rangefinder import Rangefinder`, `Rangefinder.get_default_rangefinder()`, `rangefinder.distance()`
-
-### Part B:
-| Reading | Obstacle? | Explanation |
-|---|---|---|
-| 5.2 | Yes | 5.2 < 15 |
-| 14.9 | Yes | 14.9 < 15 |
-| 15.0 | No | 15.0 is not less than 15 |
-| 15.1 | No | 15.1 > 15 |
-| 30.0 | No | 30.0 > 15 |
-| 2.0 | Yes | 2.0 < 15 |
-
-Condition: `if distance < threshold:`
-
-Threshold because sensors are not perfect — objects have varying distances, and we need a cutoff to distinguish "something close" from "nothing there."
-
-### Part C:
-1. Yes blocked, yes add, recompute path using Dijkstra to avoid (1,2)
-2. Not blocked, don't add, continue on current path
-3. (1,0) is potentially blocked. Robot should use Dijkstra to compute a new path from (0,0) to (3,0) with blocked=[(1,0)], which will go around via column 1.
-4. blocked = [(1,1), (2,2)]. Yes recompute — the blocked list changed so the previous path may go through (2,2).
-
-### Part D:
-```python
-distance = rangefinder.distance()
-if distance < threshold:
-    dr, dc = facing_direction
-    obstacle_position = (row + dr, col + dc)
-    if obstacle_position not in blocked_list:
-        blocked_list.append(obstacle_position)
-        return True
-return False
-```
-
-Test: obstacle_position = (1, 2), yes it is added.
+**1.** `from XRPLib.rangefinder import Rangefinder` / `rangefinder = Rangefinder.get_default_rangefinder()` / `distance = rangefinder.distance()`
+**2.** Sends a sound pulse and times the echo; the round-trip time gives the distance.
+**3.** 15. 12 sits inside the blocked readings' noise (11.5-12.4), so a real box would sometimes read as clear.
+**4.** `THRESHOLD` is already the reflectance cutoff (0-1) from Lesson 2-8; two settings with one name is a bug waiting to happen.
+**5.** (1, 1). **6.** (1, 1); `add_blocked((1, 1))`.
+**7.** The reading is taken facing whatever direction the robot happened to be left in, not `next_pos`; a clear (or blocked) reading gets blamed on the wrong intersection.
+**8.** `compute_bfs_path(position, destination)`
+**9.** Not needed. `compute_bfs_path()` calls `build_graph()` from `BLOCKED` on every call (Lesson 4), so the new wall is already gone from the graph it uses.
+**10.** `drive_past_intersection()` runs after every `track_to_intersection()`, parking the wheels over the intersection.
+**11.** Pass 2: position (1, 0), next_pos (2, 0), 9 cm: `add_blocked((2, 0))`, re-plan from (1, 0), break.
+**12.** `[(2, 0)]`; (1, 0); e.g. `[(1, 1), (1, 2), (2, 2)]` or `[(1, 1), (2, 1), (2, 2)]`.
+**13.** 8.0 (anything under `OBSTACLE_CM`) and 50.0.
+**14.** Only the sensor. The planner was tested on paper in Lesson 6 and is unchanged.
+**Exit ticket:** Both call `add_blocked()`; the planner only ever reads `BLOCKED`.

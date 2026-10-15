@@ -178,7 +178,7 @@ Dropping the first step: "first step (2, 0) is not next to the start (0, 0)". Ap
 
 ## Connections to Next Lessons
 - **Lesson 7** puts the planner on the robot. The rangefinder loop calls `add_blocked()` exactly as this harness does; the planner cannot tell the difference, which is why passing the paper tests means the robot will re-plan correctly.
-- **Lesson 8** saves and reloads the blocked list; the harness is how to check the reloaded list without driving.
+- **Lesson 8** starts Run 2 from the obstacles Run 1 found, typed into `KNOWN_OBSTACLES` and fed to `add_blocked()`; the harness is how to check that list without driving.
 - **Module 6 (optional)** adds `compute_dijkstra_path` as a third argument to `run_all_tests`, unchanged, plus one more property: total cost.
 
 ---

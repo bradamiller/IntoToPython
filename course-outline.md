@@ -356,9 +356,9 @@ Tuples (creating, indexing), lists (`append()`, iteration, list of tuples), func
 - *Exercise:* Write code to detect whether an object is blocking the intersection ahead. Print the result.
 
 **Lesson 8: Building Experience**
-- Maintaining a list of known blocked intersections that grows over time
-- On each run: attempt to navigate, detect new obstacles, add to blocked list, rebuild the graph and recompute the path
-- *Exercise:* Write a program that attempts to drive to a destination, and if it encounters a blocked intersection, calls `add_blocked()`, recalculates the path with `compute_bfs_path()`, and tries again.
+- A `while not arrived` loop around Lesson 7's check: plan, follow, and if a wall turns up, plan again from here
+- Starting Run 2 from what Run 1 found: the printed blocked list typed into `KNOWN_OBSTACLES` and fed to `add_blocked()` -- same algorithm, better data
+- *Exercise:* Write `navigate_with_detection()`, run it twice with the same obstacles, and record reroutes and steps for each run.
 
 **Lesson 9: Module 5 Capstone Project**
 - The teacher sets up the grid with physical obstacles at several intersections

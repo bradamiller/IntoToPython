@@ -1,409 +1,174 @@
 # Lesson 7: Obstacle Detection with the Rangefinder
 
 ## Overview
-Students learn to use the XRP ultrasonic rangefinder sensor to detect obstacles on the physical grid, then integrate obstacle detection into the navigation loop so the robot can discover blocked intersections in real time and recompute its path using `compute_dijkstra_path()`. Until now, the blocked list has been hard-coded -- students manually typed in which intersections were blocked before running the program. In this lesson, the robot becomes autonomous: it checks the rangefinder at each intersection, determines whether the next intersection ahead is blocked based on a distance threshold, adds newly discovered obstacles to the blocked list, and recomputes the path. The core loop becomes: **check, detect, update, recompute, drive**. This is the lesson where the robot starts to feel "smart" -- it reacts to its environment rather than blindly following a pre-planned path.
+Students put the planner on the robot. Until now the blocked list has been filled in by a test script (Lesson 6). In this lesson the robot fills it in itself with the ultrasonic rangefinder: it looks before it drives, and if something is in the way it calls `add_blocked()` -- the same call the paper tests made -- and asks `compute_bfs_path(position, destination)` for a new path from where it is.
 
-*If your course covers the Module 5 Lesson 4-5 Optional Extensions (the `Dijkstra` class), everything below works the same way through `pathfinder = Dijkstra(rows, cols, blocked_list)` and `pathfinder.compute_path(destination)` instead of `build_dijkstra_graph()`/`compute_dijkstra_path()` -- only the call syntax changes.*
+The driving is Module 4's, unchanged. The whole lesson is one step added to Module 4's `drive_path()` loop, between `turn_to()` and `track_to_intersection()`: read the rangefinder. Because the robot has just turned to face `next_pos`, whatever the sensor sees is at `next_pos`; there is no heading arithmetic to work out which intersection is blocked. The planner rebuilds its graph from `BLOCKED` on every call (Lesson 4), so re-planning is one line with no "rebuild" step to forget. Students also pick up the habit the rest of the module relies on: plan, *print the path*, wait for the button, then drive -- the Lesson 6 paper test built into every run.
 
-This lesson is the hardware integration point for Module 5. Students already know how to build graphs (Lesson 1), represent them as dictionaries (Lesson 2), run Dijkstra's algorithm (Lesson 3), and implement the Dijkstra functions (Lessons 4-5). They have tested and set up the swap (Lesson 6). Now they connect the last piece: real sensor data flowing into the pathfinding algorithm. The rangefinder is the robot's "eyes," and Dijkstra is its "brain." Together, they enable reactive navigation -- the same principle used by warehouse robots, autonomous vehicles, and Mars rovers.
+Detection is proven in software first with a simulated rangefinder, then on the grid with a box on an intersection of the printed path. Students who did the class extensions run the same loop with `Navigator` and `BFS` objects; nothing in the lesson changes.
 
 ## Learning Objectives
 By the end of this lesson, students will be able to:
-- Import and initialize the XRP rangefinder sensor
-- Read distance values from the rangefinder using `rangefinder.distance()`
-- Explain how ultrasonic rangefinders measure distance (sound pulse, echo, time calculation)
-- Implement threshold logic to determine if an intersection ahead is blocked
-- Add a detected obstacle to the blocked list at runtime
-- Recompute the path using `build_dijkstra_graph()`/`compute_dijkstra_path()` after updating the blocked list
-- Integrate the check-detect-update-recompute-drive loop into the navigation program
-- Test obstacle detection on the physical grid with objects placed at intersections
+- Initialize the XRP rangefinder and read a distance with `rangefinder.distance()`
+- Explain how an ultrasonic rangefinder measures distance (sound pulse, echo, time)
+- Use a threshold constant, `OBSTACLE_CM`, to decide whether the intersection ahead is blocked, and explain why it is not named `THRESHOLD`
+- Explain why the blocked intersection is `next_pos`: the robot just turned to face it
+- Add one rangefinder check to Module 4's `drive_path()` loop, call `add_blocked(next_pos)` and re-plan with `compute_bfs_path(position, destination)` when it fires
+- Explain why no separate "rebuild the graph" step is needed
+- Print the planned path before `wait_for_button()` and use it as the first diagnostic
+- Test the detection loop with a simulated rangefinder before the real one
 
 ## Key Concepts
-- **Ultrasonic rangefinder**: A sensor that measures distance by emitting a sound pulse and timing how long it takes for the echo to return. The XRP rangefinder returns the distance in centimeters as a floating-point number.
-- **Distance threshold**: A cutoff value (e.g., 15 cm) used to decide whether something is "close enough" to be an obstacle. If the rangefinder reads less than the threshold, the robot concludes the next intersection is blocked.
-- **Reactive navigation**: Navigation that responds to sensor data in real time, rather than following a fixed, pre-planned path. The robot adapts its route as it discovers new information about the environment.
-- **Sensor integration**: Connecting hardware sensor data to software algorithms. The rangefinder provides raw distance data; the code converts that into a blocked/not-blocked decision that feeds into `compute_dijkstra_path()`.
-- **Runtime obstacle discovery**: Finding obstacles while the program is running (during navigation), as opposed to hard-coding them before the program starts. This makes the robot autonomous -- it does not need a human to tell it where obstacles are.
-- **Recomputation**: Rebuilding the graph and running `compute_dijkstra_path()` again with an updated blocked list after discovering a new obstacle. The new path avoids all previously known obstacles plus the newly discovered one.
+- **Ultrasonic rangefinder**: Emits a sound pulse and times the echo; returns centimeters as a float. Three lines: import, `Rangefinder.get_default_rangefinder()`, `.distance()`.
+- **`OBSTACLE_CM = 15`**: A threshold absorbs sensor noise; an exact-distance check would fail constantly. Named for what it measures because the file already has a `THRESHOLD` (the reflectance one from Lesson 2-8).
+- **The blocked intersection is `next_pos`**: After `heading = turn_to(heading, needed)` the robot faces the next step on the path. The path already says which intersection that is.
+- **One call tells the planner**: `add_blocked(next_pos)`. The planner cannot tell a sensor from a test script from a typed-in list; all three call the same function. That is why passing the Lesson 6 tests means the robot will re-plan correctly.
+- **Re-plan from here**: `compute_bfs_path(position, destination)` -- Rule 1 from Lesson 4. The graph is rebuilt from `BLOCKED` inside the planner, so the wall it was just told about is already gone.
+- **The robot is parked when it re-plans**: `drive_past_intersection()` runs after every track, so the wheels are over the intersection the robot re-plans from. Nothing moves during a re-plan.
+- **Print-then-button-then-drive**: `print("Planned path:", path)` before `board.wait_for_button()`. If the printed path is right and the robot still goes wrong, the bug is in the driving, not the planner.
+- **Simulated sensor**: `simulate_rangefinder(next_pos)` returns 8.0 for a pretend obstacle and 50.0 otherwise. Only the sensor is simulated; the planner was already tested in Lesson 6.
 
 ## Materials Required
-- XRP robot with ultrasonic rangefinder sensor connected
-- Physical grid (tape on floor) -- at least 3x3, preferably 4x4
-- Objects to serve as obstacles (boxes, books, water bottles, or similar items that the rangefinder can detect)
-- Computers with Thonny (or preferred IDE) connected to XRP
-- Completed `dijkstra.py` (Lessons 4-5)
-- Ruler or measuring tape (for calibrating the threshold distance)
-- Whiteboard for diagramming the check-detect-update-recompute-drive loop
+- XRP robot with the ultrasonic rangefinder mounted facing forward
+- The Module 3/4 grid, at least 3x3, preferably 4x4
+- Obstacles the rangefinder can see: boxes, books, water bottles (hard, flat faces read best)
+- `code/starter/lesson-07-obstacle-detection.py`; `code/solutions/lesson-07-obstacle-detection.py`
+- Ruler or tape measure for calibrating `OBSTACLE_CM`
 
 ## Lesson Flow
 
 ### Introduction (10 minutes)
-**For 50-min classes:** 8 min
-**For 3-hour sessions:** 10-12 min
+Open with the question: "Last lesson a test script told the planner where the walls were. Who tells it today?" Hold up the rangefinder. Three lines read it:
 
-1. **Hook: The Robot Gets Eyes**
-   - Place an object on the grid at an intersection. Ask: "Right now, can our robot see this obstacle?" (No -- we have to tell it where obstacles are by typing them into the blocked list.)
-   - "What if the robot could detect obstacles on its own? Today we give the robot 'eyes' -- the ultrasonic rangefinder."
-   - Demonstrate: Hold the rangefinder up to an object and show the distance reading on screen. Move closer, move farther -- the number changes.
-   - "The rangefinder sends out a sound pulse -- too high-pitched for us to hear -- and listens for the echo. The time it takes for the echo to return tells it how far away the object is."
-   - "If the robot is at an intersection and the rangefinder reads a short distance, something is blocking the next intersection. The robot can add that to its blocked list and recompute a new path."
+```python
+from XRPLib.rangefinder import Rangefinder
 
-2. **The Five-Step Loop**
-   - Write on the board:
-     ```
-     At each intersection:
-     1. CHECK:     Read the rangefinder
-     2. DETECT:    Is the distance below our threshold?
-     3. UPDATE:    If yes, add the next intersection to the blocked list
-     4. RECOMPUTE: Rebuild the graph and run compute_dijkstra_path() with the updated blocked list
-     5. DRIVE:     Follow the new path to the next intersection
-     ```
-   - "This loop repeats at every intersection. The robot gets smarter as it moves -- it builds up knowledge about where obstacles are."
+rangefinder = Rangefinder.get_default_rangefinder()
+print(rangefinder.distance())
+```
 
-3. **Getting Started with the Rangefinder**
-   - Show the import and initialization:
-     ```python
-     from XRPLib.rangefinder import Rangefinder
+Have one team run this while another student walks a box toward the robot; the numbers fall as the box approaches. Ask what number should count as "blocked". Measure with the next intersection blocked (about 12 cm on a typical grid) and clear (40-50 cm), and pick a cutoff between: `OBSTACLE_CM = 15`. Explain the name: the file already has `THRESHOLD` for the reflectance sensors, and two settings called the same thing is a bug waiting to happen.
 
-     rangefinder = Rangefinder.get_default_rangefinder()
-     distance = rangefinder.distance()  # Returns float in cm
-     print(f"Distance: {distance} cm")
-     ```
-   - "That's it -- three lines to read the distance. The sensor does all the complicated math internally."
+Then the question that used to confuse students: *which* intersection is blocked? Stand on an intersection of the taped grid. Put Module 4's loop on the board:
+
+```python
+for next_pos in path:
+    needed = desired_heading(position, next_pos)
+    heading = turn_to(heading, needed)
+    track_to_intersection()
+    drive_past_intersection()
+    position = next_pos
+```
+
+Turn to face the next intersection on a path, and point at it. "After `turn_to()`, I am facing `next_pos`. That is what turning to the needed heading *means*. If the sensor sees something right now, where is it?" The path already told them.
 
 ### Guided Practice (15 minutes)
-**For 50-min classes:** 15 min
-**For 3-hour sessions:** 20 min
+Build the loop together. It is Module 4's `drive_path()` with one step inserted between turning and driving:
 
-1. **Reading the Rangefinder**
-   - Have students upload and run a simple rangefinder test:
-     ```python
-     from XRPLib.rangefinder import Rangefinder
-     import time
+```python
+for next_pos in path:
+    needed = desired_heading(position, next_pos)
+    heading = turn_to(heading, needed)
 
-     rangefinder = Rangefinder.get_default_rangefinder()
+    distance = rangefinder.distance()          # NEW: look before driving
+    if distance < OBSTACLE_CM:
+        add_blocked(next_pos)                   # same call the tests made
+        print("Obstacle at", next_pos, "! Rerouting...")
+        path = compute_bfs_path(position, destination)
+        print("New path:", path)
+        break                                   # Lesson 8 wraps this in a loop
+    else:
+        track_to_intersection()
+        drive_past_intersection()
+        position = next_pos
+```
 
-     for i in range(10):
-         distance = rangefinder.distance()
-         print(f"Reading {i + 1}: {distance:.1f} cm")
-         time.sleep(1)
-     ```
-   - Students place their hand (or an object) at various distances and observe the readings.
-   - Ask: "Are the readings exactly the same every time?" (No -- there is some noise/variation.)
-   - Ask: "What does the sensor read when nothing is in front of it?" (A large number, often 100+ cm.)
+Draw out three points. First, `add_blocked(next_pos)` is the Lesson 6 call; the planner cannot tell where a block came from. Second, re-planning is one call from the current position, and there is no "rebuild the graph" line because `compute_bfs_path()` builds its graph from `BLOCKED` every time (Lesson 4 put `build_graph()` inside the planner for exactly this moment). Third, the robot is parked over an intersection when this happens -- `drive_past_intersection()` ran after the last track -- so when the loop comes back to turn toward the new path's first step, nothing has moved.
 
-2. **Choosing a Threshold**
-   - "We need to decide: at what distance do we say 'that's an obstacle'?"
-   - Have students measure: Place an object at the next intersection ahead (one grid square away). Read the rangefinder. Typical reading: 10-20 cm depending on grid spacing.
-   - Remove the object. Read again. Typical reading: 50+ cm (or whatever the open distance is).
-   - "We need a threshold between these two numbers. If the grid spacing gives us ~12 cm when blocked and ~50 cm when clear, a threshold of 15 cm works well."
-   - Write the threshold logic:
-     ```python
-     OBSTACLE_THRESHOLD = 15  # cm -- adjust based on your grid
+Then add the habit: before the button, plan and print.
 
-     distance = rangefinder.distance()
-     if distance < OBSTACLE_THRESHOLD:
-         print("OBSTACLE DETECTED!")
-     else:
-         print("Path is clear")
-     ```
+```python
+path = compute_bfs_path(position, destination)
+print("Planned path:", path)
+board.wait_for_button()
+```
 
-3. **Determining WHICH Intersection Is Blocked**
-   - "The rangefinder tells us something is ahead, but we need to know which intersection that is."
-   - Key insight: The robot knows its current position and heading. The blocked intersection is the one directly ahead of the robot.
-   - Walk through the logic:
-     ```python
-     # If the robot is at (1, 1) facing NORTH (toward row 0):
-     #   The next intersection ahead is (0, 1)
-     # If facing EAST (toward higher columns):
-     #   The next intersection ahead is (1, 2)
-     # If facing SOUTH (toward higher rows):
-     #   The next intersection ahead is (2, 1)
-     # If facing WEST (toward lower columns):
-     #   The next intersection ahead is (1, 0)
-     ```
-   - "We already have `desired_heading()` from Module 4 Lesson 8 doing the reverse of this calculation. Here we just need the forward version: given position and heading, what's ahead?"
-
-4. **Adding to Blocked List and Recomputing**
-   - Walk through the integration:
-     ```python
-     # At each intersection, before driving to the next one:
-     distance = rangefinder.distance()
-
-     if distance < OBSTACLE_THRESHOLD:
-         blocked_node = get_next_intersection(current_pos, heading)
-         if blocked_node not in blocked_list:
-             blocked_list.append(blocked_node)
-             print(f"Obstacle detected at {blocked_node}!")
-             print(f"Blocked list is now: {blocked_list}")
-
-             # Recompute the path with updated blocked list
-             graph = build_dijkstra_graph(rows, cols, blocked_list)
-             new_path = compute_dijkstra_path(current_pos, destination, graph)
-             print(f"New path: {new_path}")
-     ```
-   - "Every time we find a new obstacle, we rebuild the graph with the updated blocked list and compute a fresh path."
+"Read the path before you press the button. Is it what you expected?" This is the Lesson 6 paper test built into every run and the first diagnostic when something goes wrong.
 
 ### Independent Practice (20 minutes)
-**For 50-min classes:** 15 min
-**For 3-hour sessions:** 25 min
+Students complete the TODOs in the starter: the rangefinder setup, the check inside the loop, and the print before the button.
 
-**Exercise 1: Rangefinder Exploration**
-- Goal: Get comfortable reading the rangefinder and understanding its behavior
-- Steps:
-  1. Write a program that reads the rangefinder every second and prints the distance
-  2. Test with objects at different distances: 5 cm, 10 cm, 20 cm, 50 cm
-  3. Test with different objects: hand, book, water bottle -- do they all register?
-  4. Record your readings in a table and determine a good threshold for your grid
-- Key question: What happens when the object is at an angle to the sensor? Does it still detect it?
+1. **Simulate first.** Replace `rangefinder.distance()` with `simulate_rangefinder(next_pos)`:
+   ```python
+   simulated_obstacles = [(1, 1), (2, 2)]
 
-**Exercise 2: Threshold Detection Program**
-- Goal: Write a program that announces when an obstacle is detected
-- Steps:
-  1. Set a threshold based on your Exercise 1 measurements
-  2. Write a loop that continuously reads the rangefinder
-  3. Print "BLOCKED" when the distance is below the threshold, "CLEAR" when above
-  4. Place and remove objects to test that detection is reliable
-  5. Count how many times out of 10 the detection is correct (accuracy test)
+   def simulate_rangefinder(next_pos):
+       return 8.0 if next_pos in simulated_obstacles else 50.0
+   ```
+   Run with the robot on blocks (wheels off the table). Confirm on screen that `BLOCKED` grows when the robot "sees" a pretend obstacle and that the new path goes around it. Note what is being simulated: only the sensor.
+2. **Then the grid.** Swap the real `rangefinder.distance()` back in. Put a box on one intersection of the *printed* path. Press the button. The robot should stop at the intersection before the box, print "Rerouting...", print the new path, and take it.
+3. **Calibrate.** If the robot reroutes with nothing there, or drives into the box, adjust `OBSTACLE_CM` and record the readings that led to the new value.
 
-**Exercise 3: Obstacle Detection with Path Recomputation**
-- Goal: Integrate rangefinder detection with Dijkstra path recomputation
-- Steps:
-  1. Start with an empty blocked list and build a graph for your grid
-  2. Compute an initial path from (0,0) to (3,3)
-  3. Simulate arriving at each intersection: read the rangefinder
-  4. If an obstacle is detected, add the blocked intersection to the list
-  5. Rebuild the graph and recompute the path; print the updated route
-  6. Test on the physical grid with one object placed at an intersection
-- Success criteria: The program detects the obstacle, updates the blocked list, and prints a new path that avoids it
-
-**Exercise 4: Full Navigation with Detection**
-- Goal: Run the complete check-detect-update-recompute-drive loop on the robot
-- Steps:
-  1. Combine the driving functions, Dijkstra functions, and rangefinder into one program
-  2. Place 1-2 obstacles on the grid that the robot's planned path will encounter
-  3. Run the robot and observe: does it stop, detect, reroute, and continue?
-  4. Print the blocked list at the end -- does it contain the correct intersections?
-- Challenge: Place an obstacle that forces the robot to backtrack to a previous intersection
+Early finishers: put the box on the new path too and watch the second reroute -- then notice the loop stops after the first `break`, which is Lesson 8's problem.
 
 ### Assessment
-
-**Formative (during lesson)**:
-- Can students read distance values from the rangefinder and explain what they mean?
-- Can students choose an appropriate threshold for their grid spacing?
-- Can students explain which intersection is blocked based on the robot's position and heading?
-- Can students trace through the check-detect-update-recompute-drive loop?
-- Can students modify the blocked list at runtime and trigger a path recomputation?
-
-**Summative (worksheet/exit ticket)**:
-1. Write the three lines of code needed to import, initialize, and read the XRP rangefinder.
-2. The robot is at intersection (2, 1) facing NORTH (toward row 0). The rangefinder reads 8 cm, and the threshold is 15 cm. Which intersection is blocked? What should the program do next?
-3. Explain in your own words: What is the difference between hard-coding an obstacle list and detecting obstacles at runtime? Why is runtime detection better?
-4. Write the pseudocode for the check-detect-update-recompute-drive loop.
-5. The rangefinder sometimes gives slightly different readings for the same distance. How does using a threshold help handle this variability?
+- **Formative:** the three rangefinder lines from memory; "which intersection is blocked, and how do you know?"; the one-line reroute.
+- **Exit ticket:** "Why can the planner not tell a sensor from a test script?" (Both call `add_blocked()`.) "Why is there no rebuild-the-graph step?" (The planner rebuilds from `BLOCKED` on every call.)
+- **Worksheet:** `worksheets/07-obstacle-detection.md`.
 
 ## Common Misconceptions
-
-| Misconception | Reality |
-|---|---|
-| "The rangefinder can see obstacles in all directions" | The rangefinder has a narrow cone of detection and only senses what is directly in front of it. The robot must be facing an obstacle to detect it. |
-| "The rangefinder returns exactly the same number every time" | Sensor readings have noise -- small variations between readings. This is why we use a threshold (e.g., < 15 cm) rather than checking for an exact distance. |
-| "If the rangefinder reads 0, nothing is there" | A reading of 0 or very small values may indicate the sensor is malfunctioning, the object is too close to detect, or there is an error. Zero does not mean "no obstacle." |
-| "We only need to check the rangefinder once at the start" | The robot must check at EVERY intersection, because obstacles can be anywhere on the grid. Checking only once would miss obstacles discovered later in the path. |
-| "Detecting an obstacle means the robot should stop" | Detecting an obstacle means the robot should UPDATE its blocked list and RECOMPUTE the path. The robot should continue navigating -- just on a different route. |
-| "The blocked intersection is the one the robot is currently at" | The blocked intersection is the NEXT one ahead -- the one the rangefinder is pointed at. The robot is at a clear intersection; the obstacle is at the adjacent one in front of it. |
+- **"The robot's own intersection is blocked."** The robot is *on* a clear intersection; the sensor looks ahead. The blocked one is `next_pos`, the step it just turned to face.
+- **"After `add_blocked()` I have to rebuild the graph."** No -- `compute_bfs_path()` does it on every call. Students who did Module 4's `build_graph()` work sometimes want to call it again; point them at Lesson 4's reason for putting it inside the planner.
+- **"Re-plan from the start."** Rule 1: tell the planner where the robot *is*. Planning from (0, 0) when the robot is at (2, 1) produces a path for the wrong place.
+- **"I should check the sensor before turning."** Then the reading is for whichever direction the robot happens to face, not for `next_pos`. The order is turn, look, drive.
+- **"Use `THRESHOLD`."** That name is taken by the reflectance cutoff. A sensor threshold in centimeters and a reflectance threshold between 0 and 1 cannot share a name.
 
 ## Differentiation
-
-**For struggling students**:
-- Start with just the rangefinder -- spend extra time on Exercise 1, getting comfortable with readings before moving to threshold logic
-- Provide the threshold detection code and have students modify only the threshold value
-- Use a simplified grid (2x2 or 3x3) with only one obstacle for the integration exercise
-- Walk through the "which intersection is blocked" logic with a physical demonstration: stand at an intersection on the grid, face each direction, and point to the intersection ahead
-- Provide a nearly-complete program with blanks for students to fill in the rangefinder reading and threshold check
-
-**For advanced students**:
-- Implement averaging: read the rangefinder 3-5 times and use the average to reduce noise
-- Add a "confidence" system: only mark an intersection as blocked if the rangefinder reads below threshold on 2 out of 3 readings
-- Handle the edge case where the obstacle blocks the ONLY path to the destination -- detect this and print "No path available"
-- Implement a scan routine: at each intersection, turn the robot to face each direction and check for obstacles in all four directions before deciding which way to go
-- Research: How do real autonomous vehicles combine multiple sensors (cameras, LIDAR, radar) for obstacle detection?
+- **Support:** Give the loop complete and have students only add the two `print()` calls and the simulation swap. Have them narrate the loop aloud with the robot in hand: turn, look, drive.
+- **Extension:** Average three rangefinder readings before deciding. Or: when the sensor fires, also `print_grid()` (Lesson 5) with the new block shown, before the new path.
+- **Class track:** The same loop with `navigator.turn_to(needed)` and `planner.add_blocked(next_pos)` / `planner.compute_path(navigator.position, destination)`. The rangefinder read sits in the same place.
 
 ## Materials & Code Examples
 
-### Basic Rangefinder Test
+### Rangefinder test
 ```python
 from XRPLib.rangefinder import Rangefinder
 import time
 
 rangefinder = Rangefinder.get_default_rangefinder()
-
-print("Rangefinder Test -- hold objects at various distances")
-print("Press Ctrl+C to stop")
-print()
+OBSTACLE_CM = 15
 
 while True:
     distance = rangefinder.distance()
-    print(f"Distance: {distance:.1f} cm")
+    if distance < OBSTACLE_CM:
+        print(distance, "cm  OBSTACLE")
+    else:
+        print(distance, "cm  clear")
     time.sleep(0.5)
 ```
 
-### Determining the Blocked Intersection
-```python
-# Heading constants
-NORTH = 0  # Toward row 0 (up)
-EAST = 1   # Toward higher columns (right)
-SOUTH = 2  # Toward higher rows (down)
-WEST = 3   # Toward lower columns (left)
+### The full program
+See `code/solutions/lesson-07-obstacle-detection.py`. It is the Module 5 planner toolkit (Lessons 4-5), the Module 2 sensor and line-tracking functions, Module 4's `desired_heading()` / `turn_to()`, and the loop above with the print-then-button main. Run against the fake XRPLib it prints the planned path, then one reroute.
 
-def get_next_intersection(current_pos, heading):
-    """Return the intersection directly ahead of the robot."""
-    row, col = current_pos
-    if heading == NORTH:
-        return (row - 1, col)
-    elif heading == EAST:
-        return (row, col + 1)
-    elif heading == SOUTH:
-        return (row + 1, col)
-    elif heading == WEST:
-        return (row, col - 1)
-
-
-# Example usage:
-position = (2, 1)
-heading = NORTH
-next_node = get_next_intersection(position, heading)
-print(f"Robot at {position} facing NORTH")
-print(f"Next intersection ahead: {next_node}")  # (1, 1)
+### Expected output (box at (1, 1), start (0, 0), destination (3, 3))
 ```
-
-### Full Navigation with Obstacle Detection
-```python
-from dijkstra import build_dijkstra_graph, compute_dijkstra_path
-from XRPLib.rangefinder import Rangefinder
-
-# Setup
-rows = 4
-cols = 4
-blocked_list = []
-OBSTACLE_THRESHOLD = 15  # cm -- adjust for your grid
-
-rangefinder = Rangefinder.get_default_rangefinder()
-
-# Initial path
-start = (0, 0)
-destination = (3, 3)
-graph = build_dijkstra_graph(rows, cols, blocked_list)
-path = compute_dijkstra_path(start, destination, graph)
-print(f"Initial path: {path}")
-
-current_pos = start
-
-# Navigate step by step
-step = 0
-while current_pos != destination:
-    step += 1
-    print(f"\n--- Step {step} ---")
-    print(f"Current position: {current_pos}")
-
-    # CHECK: Read the rangefinder
-    distance = rangefinder.distance()
-    print(f"Rangefinder: {distance:.1f} cm")
-
-    # DETECT: Is there an obstacle ahead?
-    next_intersection = path[1] if len(path) > 1 else None
-
-    if next_intersection and distance < OBSTACLE_THRESHOLD:
-        print(f"OBSTACLE DETECTED at {next_intersection}!")
-
-        # UPDATE: Add to blocked list
-        if next_intersection not in blocked_list:
-            blocked_list.append(next_intersection)
-            print(f"Blocked list updated: {blocked_list}")
-
-        # RECOMPUTE: Rebuild the graph and get a new path from current position
-        graph = build_dijkstra_graph(rows, cols, blocked_list)
-        path = compute_dijkstra_path(current_pos, destination, graph)
-        print(f"New path: {path}")
-
-        if len(path) < 2:
-            print("ERROR: No path to destination!")
-            break
-
-    # DRIVE: Move to the next intersection on the path
-    next_pos = path[1]
-    print(f"Driving to {next_pos}")
-    # ... call track_until_cross() / turn_to() / drive_path() as needed ...
-
-    # Update position and remaining path
-    current_pos = next_pos
-    path = path[1:]  # Remove the node we just left
-
-print(f"\nNavigation complete!")
-print(f"Final position: {current_pos}")
-print(f"Obstacles discovered: {blocked_list}")
-print(f"Total steps taken: {step}")
+Planned path: [(1, 0), (2, 0), (3, 0), (3, 1), (3, 2), (3, 3)]
 ```
-
-### Testing Obstacle Detection Without the Robot
-```python
-from dijkstra import build_dijkstra_graph, compute_dijkstra_path
-
-# Simulated obstacles -- pretend the rangefinder detects these
-simulated_obstacles = [(1, 1), (2, 2)]
-
-rows = 4
-cols = 4
-blocked_list = []
-start = (0, 0)
-destination = (3, 3)
-
-# Initial path
-graph = build_dijkstra_graph(rows, cols, blocked_list)
-path = compute_dijkstra_path(start, destination, graph)
-print(f"Initial path: {path}")
-print(f"Initial steps: {len(path) - 1}")
-
-# Simulate navigation
-current_pos = start
-step = 0
-
-while current_pos != destination:
-    step += 1
-    next_pos = path[1]
-
-    # Simulate rangefinder: check if next intersection has an obstacle
-    if next_pos in simulated_obstacles:
-        print(f"\nStep {step}: At {current_pos}, obstacle detected at {next_pos}!")
-        if next_pos not in blocked_list:
-            blocked_list.append(next_pos)
-
-        # Recompute from current position
-        graph = build_dijkstra_graph(rows, cols, blocked_list)
-        path = compute_dijkstra_path(current_pos, destination, graph)
-        print(f"  Rerouted: {path}")
-        next_pos = path[1]
-
-    # Move to next position
-    print(f"Step {step}: {current_pos} -> {next_pos}")
-    current_pos = next_pos
-    path = path[1:]
-
-print(f"\nArrived at {destination} in {step} steps")
-print(f"Obstacles found: {blocked_list}")
+That path does not pass (1, 1), so move the box onto it -- say (2, 0):
 ```
+At (1, 0) facing N - ahead: 9.2 cm
+Obstacle at (2, 0) ! Rerouting...
+New path: [(1, 1), (1, 2), (1, 3), (2, 3), (3, 3)]
+```
+(BFS may pick a different equally short path; that is Lesson 6's point.)
 
 ## Teaching Notes
-- **Calibrate the threshold BEFORE class if possible.** The threshold value depends on the physical grid spacing, the objects used as obstacles, and the rangefinder's characteristics. Test it yourself so you can help students who get unexpected readings. Have a recommended value ready.
-- **Expect sensor variability.** Ultrasonic rangefinders are affected by the angle of the object, its surface material (soft materials absorb sound), and ambient noise. If students get inconsistent readings, this is a teaching opportunity about real-world sensor challenges.
-- **The "which intersection is blocked" logic is tricky.** Students often confuse the robot's current intersection with the one that is blocked. Use physical demonstrations: stand at an intersection, face a direction, and point to the intersection ahead.
-- **Start with the simulation test before hardware.** Have students run the simulation first to verify the obstacle-detection logic works in software. Then move to the physical robot.
-- **The check-detect-update-recompute-drive loop is the heart of reactive robotics.** Draw it as a cycle on the board and refer back to it throughout the lesson.
-- **Let students struggle with integration.** Combining the rangefinder, Dijkstra functions, and driving functions into one program is the most complex task so far. Give them time, and encourage them to print intermediate values to debug.
-- **Place obstacles strategically for demonstrations.** Put the obstacle on the robot's initial planned path so the rerouting is visible and dramatic.
+- Calibrate `OBSTACLE_CM` yourself before class on your grid with your obstacles. Soft or angled surfaces read inconsistently -- a good real-world-sensor talking point, not a bug.
+- Put demo obstacles *on the printed path* so the reroute is visible and dramatic. A box off the path proves nothing.
+- The driving functions are Module 4's, unchanged. If the robot overshoots or misses a turn here, it did in Module 4 too; tune there, not here.
+- Expect the question "why stop after one reroute?" -- that is next lesson, and students who ask it have understood this one.
 
 ## Connections to Next Lessons
-- **Lesson 8** will build on obstacle detection by adding **memory** -- the robot will remember obstacles from previous runs and start with prior knowledge, resulting in fewer surprises and more efficient navigation.
-- **Lesson 9** (Capstone) will combine rangefinder detection with obstacle memory into the final autonomous navigation system.
-- The check-detect-update-recompute-drive loop introduced here is the foundation for the capstone project's core behavior.
-- The sensor integration skills learned here apply to any robotics or IoT project beyond this course.
+- **Lesson 8** turns the `break` into a `while not arrived` loop that re-plans until the robot gets there, and starts Run 2 from the obstacles Run 1 found.
+- **Lesson 9** chains several destinations through that loop.
+- **Module 6 (optional)** swaps in `compute_dijkstra_path`; the rangefinder loop does not change.

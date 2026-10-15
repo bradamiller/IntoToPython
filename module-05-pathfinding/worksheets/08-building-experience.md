@@ -5,236 +5,126 @@
 
 ---
 
-## Part A: Run 1 vs Run 2 Comparison
+## Part A: From `break` to "until you arrive"
 
-The robot navigates from (0, 0) to (3, 3) on a 4x4 grid. There are obstacles at (1, 1) and (2, 2), but the robot does not know about them at the start. It discovers them using its rangefinder.
+```python
+arrived = False
+while not arrived:
+    path = compute_bfs_path(position, destination)
+    if len(path) == 0:
+        print("No path!")
+        return position, heading, step_count, reroute_count
 
-**Run 1: Starting with blocked = []**
+    rerouted = False
+    for next_pos in path:
+        needed = desired_heading(position, next_pos)
+        heading = turn_to(heading, needed)
+        distance = rangefinder.distance()
+        if distance < obstacle_cm:
+            add_blocked(next_pos)
+            reroute_count = reroute_count + 1
+            rerouted = True
+            break
+        else:
+            track_to_intersection()
+            drive_past_intersection()
+            position = next_pos
+            step_count = step_count + 1
 
-The robot computes a path with no obstacles. Trace what happens:
+    if not rerouted:
+        arrived = True
+```
 
-Initial path (no obstacles): (0,0) -> __________ -> __________ -> __________ -> __________ -> __________ -> (3,3)
+1. A `for` loop ends in two different ways in this code. Name both.
 
-The robot starts moving along this path.
+   a) ______________________________   b) ______________________________
 
-At intersection (0, 0), robot checks ahead toward (1, 1). Rangefinder reads 8 cm.
+2. What is the job of the `rerouted` variable? Why can't the `while` loop tell on its own?
 
-- Obstacle detected at: __________
-- Updated blocked list: __________
-- Robot recomputes path. New path: ____________________________________________________
+_______________________________________________________________
 
-Robot follows new path. At (0, 1), checks ahead toward (0, 2). Rangefinder reads 40 cm.
+3. Cross out the `if len(path) == 0:` block in your head. The robot is boxed in and `compute_bfs_path()` returns `[]`. How many times does the `for` loop run? ______ What is `rerouted` afterward? ______ What does the robot report? ______________________
 
-- Obstacle? __________
+4. `position` and `heading` are variables *inside* the function. Why does the function return them?
 
-Robot continues. Eventually reaches (1, 2), checks ahead toward (2, 2). Rangefinder reads 6 cm.
+_______________________________________________________________
 
-- Obstacle detected at: __________
-- Updated blocked list: __________
-- Robot recomputes path. New path from (1, 2): ____________________________________________________
+## Part B: Trace a run
 
-**Total obstacles discovered in Run 1:** __________
+Grid 4x4, start (0, 0), destination (3, 3), `BLOCKED` empty. Boxes on (2, 0) and (1, 2). The first plan is `[(1, 0), (2, 0), (3, 0), (3, 1), (3, 2), (3, 3)]`.
 
-**Run 2: Starting with blocked = [(1, 1), (2, 2)]**
+5. Fill in each pass of the `while` loop. (BFS may choose a different equally short path; use the one given or your own.)
 
-Now the robot remembers obstacles from Run 1.
+| `while` pass | planned from | path | what happens |
+|---|---|---|---|
+| 1 | (0, 0) | `[(1,0),(2,0),(3,0),(3,1),(3,2),(3,3)]` | drive to (1,0); box seen at (2,0); reroute |
+| 2 | ________ | `[(1,1),(1,2),(1,3),(2,3),(3,3)]` | ______________________________________ |
+| 3 | ________ | ______________________________ | ______________________________________ |
 
-Initial path (with known obstacles): ____________________________________________________
+6. Final `BLOCKED`: `____________________`   Reroutes: ____   Steps: ____
 
-Does the robot discover any new obstacles? __________
+## Part C: Carry it across
 
-**How many times did the robot recompute its path in Run 1?** __________
+7. The program prints `All known obstacles: [(2, 0), (1, 2)]`. You close it and run it again with no changes. What does `BLOCKED` contain when the second run starts? ________ Why?
 
-**How many times did the robot recompute its path in Run 2?** __________
+_______________________________________________________________
 
----
+8. Write the lines that go at the top of the program so Run 2 starts knowing both obstacles. Use `add_blocked()`.
 
-## Part B: Performance Analysis
+```python
+KNOWN_OBSTACLES = _______________________________
 
-Count the total steps (edges traveled) for each run.
+_______________________________________________
 
-**Run 1 Performance:**
+    _______________________________________________
+```
 
-| Segment | Path | Steps |
+9. For Run 2 from the same start to the same destination with the same boxes: how many reroutes do you predict? ____ Will the first planned path differ from Run 1's? How?
+
+_______________________________________________________________
+
+10. The planner has now been told about walls in three different ways across Lessons 6, 7 and 8. Name them, and name the one function all three call.
+
+_______________________________________________________________
+
+## Part D: Evidence
+
+11. Fill in from your own two runs:
+
+| Metric | Run 1 | Run 2 |
 |---|---|---|
-| Start to first obstacle discovery | ______________________ | ______ |
-| After recompute to second obstacle | ______________________ | ______ |
-| After second recompute to destination | ______________________ | ______ |
-| **Total steps** | | ______ |
+| Starting obstacles | 0 | ____ |
+| Reroutes | ____ | ____ |
+| Total steps | ____ | ____ |
 
-**Run 2 Performance:**
+12. Your partner says "Run 2 used a smarter algorithm." Correct them in one sentence.
 
-| Segment | Path | Steps |
-|---|---|---|
-| Start to destination (no surprises) | ______________________ | ______ |
-| **Total steps** | | ______ |
+_______________________________________________________________
 
-**How many fewer steps did Run 2 take?** __________
+13. Can Run 2 discover an obstacle Run 1 never found? Explain.
 
-**Why is Run 2 more efficient?**
+_______________________________________________________________
 
-____________________________________________________________________
+## Exit ticket
 
-____________________________________________________________________
+Run 1 took 12 steps with 3 reroutes; Run 2 took 8 steps with 0. Explain why.
 
-**Will Run 3 be even better than Run 2?** __________ Why?
-
-____________________________________________________________________
-
----
-
-## Part C: Code Reading
-
-Trace through this obstacle-updating code:
-
-```python
-blocked = [(1, 1)]
-new_obstacle = (2, 2)
-
-# Check if we already know about this obstacle
-if new_obstacle not in blocked:
-    blocked.append(new_obstacle)
-    print("New obstacle at", new_obstacle)
-    print("Blocked list:", blocked)
-else:
-    print("Already known")
-```
-
-**Output:**
-
-```
-__________________________________________
-__________________________________________
-```
-
-Now trace what happens if we run the same code again with the SAME `new_obstacle`:
-
-```python
-new_obstacle = (2, 2)  # Same obstacle
-
-if new_obstacle not in blocked:
-    blocked.append(new_obstacle)
-    print("New obstacle at", new_obstacle)
-else:
-    print("Already known")
-```
-
-**Output:**
-
-```
-__________________________________________
-```
-
-**Why is the `not in` check important?**
-
-____________________________________________________________________
-
-Now trace this multi-run code:
-
-```python
-blocked = []
-
-# Run 1: discover obstacles
-discovered_run1 = [(1, 1), (2, 2)]
-for obs in discovered_run1:
-    if obs not in blocked:
-        blocked.append(obs)
-
-print("After Run 1:", blocked)
-
-# Run 2: discover one new obstacle, rediscover one old one
-discovered_run2 = [(2, 2), (0, 3)]
-for obs in discovered_run2:
-    if obs not in blocked:
-        blocked.append(obs)
-
-print("After Run 2:", blocked)
-```
-
-**Output:**
-
-```
-After Run 1: __________________________________________
-After Run 2: __________________________________________
-```
-
----
-
-## Part D: Design Question
-
-**How would you save the obstacle list between program runs so the robot remembers obstacles even after being turned off?**
-
-**Option 1: Save to a file**
-
-Write pseudocode for saving the blocked list to a file:
-
-```
-# Saving
-____________________________________________________________________
-____________________________________________________________________
-____________________________________________________________________
-```
-
-Write pseudocode for loading the blocked list from a file:
-
-```
-# Loading
-____________________________________________________________________
-____________________________________________________________________
-____________________________________________________________________
-```
-
-**Option 2: Hard-code known obstacles**
-
-What are the advantages and disadvantages?
-
-Advantages: ____________________________________________________________________
-
-Disadvantages: ____________________________________________________________________
-
-**Which option would you choose and why?**
-
-____________________________________________________________________
-
-____________________________________________________________________
-
-**Bonus: What would happen if the obstacle moves (someone removes it)?**
-
-____________________________________________________________________
-
-____________________________________________________________________
-
-**How could the robot handle obstacles that might move?**
-
-____________________________________________________________________
-
-____________________________________________________________________
+_______________________________________________________________
 
 ---
 
 ## Answer Key
 
-### Part A:
-- Run 1 initial path (no obstacles): (0,0) -> (1,0) -> (1,1) -> (2,1) -> (2,2) -> (3,2) -> (3,3) or similar diagonal path through (1,1)
-- At (0,0) facing (1,1) — but actually the robot would detect (1,0) or (0,1) depending on facing direction. Assuming it detects (1,1) when approaching:
-  - blocked = [(1,1)]
-  - Recompute: path goes around via (0,1), (0,2) etc.
-- At (1,2) facing (2,2): blocked = [(1,1), (2,2)], recompute path from (1,2) going (1,3), (2,3), (3,3) or via (2,1), (3,1), (3,2), (3,3)
-- Total obstacles discovered: 2
-- Run 2 starts with blocked=[(1,1),(2,2)], computes optimal path immediately
-- Run 1 recomputes: 2 times. Run 2 recomputes: 0 times.
-
-### Part B:
-- Run 2 takes fewer steps because it knows about obstacles from the start and plans the optimal route immediately. Run 1 wastes steps going toward obstacles, then backtracking.
-- Run 3 would be the same as Run 2 (unless new obstacles appear) because the robot already knows all the obstacles.
-
-### Part C:
-- First trace: "New obstacle at (2, 2)" then "Blocked list: [(1, 1), (2, 2)]"
-- Second trace: "Already known"
-- The `not in` check prevents duplicate entries in the blocked list.
-- Multi-run trace: After Run 1: [(1, 1), (2, 2)]. After Run 2: [(1, 1), (2, 2), (0, 3)]. (2,2) was already known so it was not added again.
-
-### Part D:
-- File approach: Save each blocked coordinate to a text file, read it back at program start.
-- Hard-code: Advantages — simple, no file handling. Disadvantages — cannot update automatically, requires editing code.
-- If obstacle moves, the robot would still think it is blocked and route around it unnecessarily. The robot could re-check known obstacles periodically, or only remember obstacles for a limited time.
+**1.** Running off the end of `path`; `break` after a detection.
+**2.** It tells the `while` whether the `for` finished or broke out. A `for` finishing looks the same either way; the flag is set only on the `break` path.
+**3.** Zero times; `False`; it sets `arrived = True` and reports arrival without moving.
+**4.** The caller needs the robot's actual end position and heading to plan the next trip (Lesson 9); local variables are not visible outside the function.
+**5.** Pass 2: from (1, 0); drive to (1, 1); box seen at (1, 2); reroute. Pass 3: from (1, 1); e.g. `[(2,1),(3,1),(3,2),(3,3)]` or `[(2,1),(2,2),(2,3),(3,3)]`; drives it, no reroute, arrived.
+**6.** `[(2, 0), (1, 2)]`; 2; 6.
+**7.** Empty -- a list lives only while the program runs.
+**8.** `KNOWN_OBSTACLES = [(2, 0), (1, 2)]` / `for intersection in KNOWN_OBSTACLES:` / `add_blocked(intersection)`
+**9.** 0; yes -- it avoids both boxes from the start, e.g. `[(1,0),(1,1),(2,1),(3,1),(3,2),(3,3)]`.
+**10.** Test script (L6), rangefinder (L7), typed-in `KNOWN_OBSTACLES` (L8); all call `add_blocked()`.
+**12.** Same code; only the starting contents of `BLOCKED` changed.
+**13.** Yes -- a different route can pass intersections Run 1 never drove toward.
+**Exit ticket:** Run 2 started knowing the three obstacles, so its first path already avoided them: no reroutes, and no wasted steps toward walls.
