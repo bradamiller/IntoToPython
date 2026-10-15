@@ -174,16 +174,17 @@ Variables, `print()`, `for` loops, `range()`, `def`, parameters, function calls,
 - *Exercise:* Build a sensor toolkit with:
   - `get_error()` — returns left − right sensor value
   - `is_at_cross()` — returns True when both sensors detect the line
-  - `is_off_line()` — returns True when neither sensor detects the line
+  - `is_either_on_line()` — returns True when at least one sensor detects the line (the test a turn needs)
+- The `global` keyword: needed only to assign to a global inside a function
 - *Optional Extension:* Refactor the toolkit into a `LineSensor` class (`class`, `__init__()`, `self`, methods)
 
 **Lesson 9: Line-Tracking Functions**
 - One toolkit calling into another
 - The driving toolkit calls the Lesson 8 sensor functions
 - *Exercise:* Build a driving toolkit with:
-  - `track_until_cross()` — follows the line until an intersection is detected
-  - `turn_right()` — turns right until detecting the line again
-  - `turn_left()` — turns left until detecting the line again
+  - `track_to_intersection()` — follows the line until both sensors see an intersection
+  - `drive_past_intersection()` — drives 8.75 cm so the wheels are on the intersection and the sensors are past it; after every track
+  - `turn_clockwise()` / `turn_counterclockwise()` — a blind 60°, then spin until a sensor finds the next line; never timed
 - *Optional Extension:* Refactor into a `LineTrack` class that composes a `LineSensor` object
 
 **Lesson 10: Module 2 Final Project**
@@ -210,17 +211,16 @@ Variables, `print()`, `for` loops, `range()`, `def`, parameters, function calls,
 **Lesson 1: Introduction to the Grid**
 - The physical setup: taped lines forming a grid on whiteboard material
 - How intersections relate to the cross detection from Module 2
-- Reviewing the driving toolkit functions: `track_until_cross()`, `turn_right()`, `turn_left()`
+- Reviewing the driving toolkit: `track_to_intersection()`, `drive_past_intersection()`, `turn_clockwise()`, `turn_counterclockwise()`
 - *Exercise:* Place the robot on the grid and use the toolkit to drive to the next intersection and stop
 
 **Lesson 2: Driving Multiple Intersections**
-- Driving past an intersection: what happens after detecting a cross?
-- Sequencing: drive to intersection → drive past it → drive to next intersection
-- `for` loops for repetition
-- *Exercise:* Drive forward exactly 2 intersections (drive to cross, continue past, drive to next cross)
+- Why two tracks with nothing between them do not move the robot; the arrival pair
+- `for` loops for repetition; `drive_intersections(count)`
+- *Exercise:* Drive forward exactly 3 intersections with a loop around the arrival pair; package it as a helper
 
 **Lesson 3: Turning on the Grid**
-- Using `turn_right()` at an intersection to make a 90° turn onto a perpendicular line
+- Using `turn_clockwise()` on an intersection (after the arrival pair) to turn onto the perpendicular line
 - Program structure: sequence of drive-and-turn operations
 - *Exercise:* Drive 2 intersections forward, then turn right. Verify the robot is lined up on the new path.
 
@@ -290,7 +290,7 @@ Reusing existing functions, `for` loops, sequential program structure, debugging
 
 **Lesson 8: Driving the Path**
 - `desired_heading()`, `turn_to()`, and `drive_path(path, position, heading)` -- position/heading threaded through parameters and return values
-- Reusing the Module 2/3 driving toolkit (`turn_right()`, `track_until_cross()`, `clear_intersection()`) directly
+- Reusing the Module 2/3 driving toolkit (`track_to_intersection()`, `drive_past_intersection()`, the two turns) directly; `% 4` turns the short way; the planner is told the position
 - *Optional Extension:* package it as a `Navigator` class that composes `LineTrack`
 - *Exercise:* Implement `desired_heading()`, `turn_to()`, and `drive_path()`
 

@@ -1,7 +1,8 @@
 # Organizing Your Robot Project in a Single File
 
 In this course, your robot programs will grow from simple scripts into projects
-with multiple classes working together. This guide shows you how to keep
+with several toolkits of functions (or, if you did the class extensions, several
+classes) working together. This guide shows you how to keep
 everything organized in **one file** so it is easy to work on, easy to test, and
 easy to turn in.
 
@@ -64,8 +65,8 @@ class LineSensor:
     def is_at_cross(self):
         return self.get_left() > self.threshold and self.get_right() > self.threshold
 
-    def is_off_line(self):
-        return self.get_left() < self.threshold and self.get_right() < self.threshold
+    def is_either_on_line(self):
+        return self.get_left() > self.threshold or self.get_right() > self.threshold
 
 
 # ===== LineTrack Class =====
@@ -77,14 +78,17 @@ class LineTrack:
         self.base_effort = 0.4
         self.Kp = 0.5
 
-    def track_until_cross(self):
+    def track_to_intersection(self):
         while not self.sensor.is_at_cross():
             error = self.sensor.get_error()
             correction = error * self.Kp
             self.drivetrain.arcade(self.base_effort, -correction)
         self.drivetrain.stop()
 
-    # ... turn_right, turn_left, etc.
+    def drive_past_intersection(self):
+        self.drivetrain.straight(8.75, 0.5)
+
+    # ... turn_clockwise, turn_counterclockwise
 ```
 
 **Tip:** Use the `# ===== Class Name =====` comment lines to make it easy to
@@ -118,7 +122,8 @@ def task_2_follow_line():
     tracker = LineTrack()
     board = Board.get_default_board()
     board.wait_for_button()
-    tracker.track_until_cross()
+    tracker.track_to_intersection()
+    tracker.drive_past_intersection()
     print("Cross found!")
 
 
@@ -127,9 +132,10 @@ def task_3_follow_and_turn():
     tracker = LineTrack()
     board = Board.get_default_board()
     board.wait_for_button()
-    tracker.track_until_cross()
-    tracker.turn_right()
-    tracker.track_until_cross()
+    tracker.track_to_intersection()
+    tracker.drive_past_intersection()
+    tracker.turn_clockwise()
+    tracker.track_to_intersection()
     print("Done!")
 ```
 
@@ -191,8 +197,8 @@ class LineSensor:
     def is_at_cross(self):
         return self.get_left() > self.threshold and self.get_right() > self.threshold
 
-    def is_off_line(self):
-        return self.get_left() < self.threshold and self.get_right() < self.threshold
+    def is_either_on_line(self):
+        return self.get_left() > self.threshold or self.get_right() > self.threshold
 
 
 # ===== LineTrack Class =====
@@ -204,25 +210,28 @@ class LineTrack:
         self.base_effort = 0.4
         self.Kp = 0.5
 
-    def track_until_cross(self):
+    def track_to_intersection(self):
         while not self.sensor.is_at_cross():
             error = self.sensor.get_error()
             correction = error * self.Kp
             self.drivetrain.arcade(self.base_effort, -correction)
         self.drivetrain.stop()
 
-    def turn_right(self):
-        self.drivetrain.straight(8)
-        self.drivetrain.turn(90)
-        while self.sensor.is_off_line():
-            self.drivetrain.arcade(0, 0.3)
+    def drive_past_intersection(self):
+        self.drivetrain.straight(8.75, 0.5)
+
+    def turn_clockwise(self):
+        self.drivetrain.turn(-60, 0.25)
+        self.drivetrain.arcade(0, -0.25)
+        while not self.sensor.is_either_on_line():
+            pass
         self.drivetrain.stop()
 
-    def turn_left(self):
-        self.drivetrain.straight(8)
-        self.drivetrain.turn(-90)
-        while self.sensor.is_off_line():
-            self.drivetrain.arcade(0, -0.3)
+    def turn_counterclockwise(self):
+        self.drivetrain.turn(60, 0.25)
+        self.drivetrain.arcade(0, 0.25)
+        while not self.sensor.is_either_on_line():
+            pass
         self.drivetrain.stop()
 
 
@@ -245,7 +254,8 @@ def task_2_follow_line():
     tracker = LineTrack()
     board = Board.get_default_board()
     board.wait_for_button()
-    tracker.track_until_cross()
+    tracker.track_to_intersection()
+    tracker.drive_past_intersection()
     print("Cross found!")
 
 
@@ -254,9 +264,10 @@ def task_3_follow_and_turn():
     tracker = LineTrack()
     board = Board.get_default_board()
     board.wait_for_button()
-    tracker.track_until_cross()
-    tracker.turn_right()
-    tracker.track_until_cross()
+    tracker.track_to_intersection()
+    tracker.drive_past_intersection()
+    tracker.turn_clockwise()
+    tracker.track_to_intersection()
     print("Done!")
 
 
