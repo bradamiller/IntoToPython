@@ -70,23 +70,27 @@ board = Board.get_default_board()
 
 board.wait_for_button()
 
-# TODO: Drive to the first intersection
+# TODO: Arrive at the first intersection -- the pair from Module 2 Lesson 9
 # track_to_intersection()
-
-# TODO: Clear the intersection
 # drive_past_intersection()
 
-# TODO: Drive to the second intersection
+# TODO: Arrive at the second intersection -- the same pair again
 # track_to_intersection()
+# drive_past_intersection()
 
-# TODO: Rewrite the above using a for loop to drive N intersections
+# Think: what would happen if you called track_to_intersection() twice with
+# no drive_past_intersection() between them?
+
+# TODO: Rewrite the above using a for loop to drive N intersections.
+# The loop body is just the pair. No special case for the last one:
+# drive_past_intersection() puts the wheels ON the intersection, not past it.
 # intersections = 3
 # for i in range(intersections):
+#     print("Driving to intersection", i + 1)
 #     track_to_intersection()
-#     if i < intersections - 1:
-#         drive_past_intersection()
+#     drive_past_intersection()
 
-# TODO (bonus): Create a drive_intersections(count) function
+# TODO (bonus): Package the loop as drive_intersections(count)
 # def drive_intersections(count):
 #     ???
 

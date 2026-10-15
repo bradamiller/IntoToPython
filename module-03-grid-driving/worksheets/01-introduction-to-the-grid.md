@@ -55,46 +55,54 @@ Row 3  ___  ---  ___  ---  ___  ---  ___
 
 ## Part 3: Code Matching
 
-Match each toolkit function to what it does on the grid:
+Match each toolkit function to what it does on the grid, and write what ends it:
 
-| Function | What it does on the grid |
-|---|---|
-| `track_until_cross()` | A. Turns left onto the perpendicular line at an intersection |
-| `turn_right()` | B. Follows the line until the robot reaches the next intersection |
-| `turn_left()` | C. Turns right onto the perpendicular line at an intersection |
+| Function | What it does on the grid | Ends when... |
+|---|---|---|
+| `track_to_intersection()` | A. Turns left onto the perpendicular line | |
+| `drive_past_intersection()` | B. Follows the line until the sensors reach the next intersection | |
+| `turn_clockwise()` | C. Drives 8.75 cm so the wheels are on the intersection and the sensors are past it | |
+| `turn_counterclockwise()` | D. Turns right onto the perpendicular line | |
 
-`track_until_cross()` → ____
+`track_to_intersection()` -> ____   `drive_past_intersection()` -> ____   `turn_clockwise()` -> ____   `turn_counterclockwise()` -> ____
 
-`turn_right()` → ____
-
-`turn_left()` → ____
+**Which of these four functions knows the robot is on a grid?** ______________________
 
 ---
 
 ## Part 4: Predict the Behavior
 
-For each program, predict what the robot will do:
+For each program, predict what the robot will do and where its wheels end up:
 
 **Program 1:**
 ```python
-track_until_cross()
+track_to_intersection()
 ```
 What happens? ______________________________________________________________
+Where are the wheels? _______________________________
 
 **Program 2:**
 ```python
-track_until_cross()
-turn_right()
+track_to_intersection()
+drive_past_intersection()
 ```
 What happens? ______________________________________________________________
+Where are the wheels? _______________________________
 
 **Program 3:**
 ```python
-track_until_cross()
-turn_right()
-track_until_cross()
+track_to_intersection()
+drive_past_intersection()
+turn_clockwise()
+track_to_intersection()
 ```
 What happens? ______________________________________________________________
+
+**Program 4 (the robot starts sitting ON an intersection):**
+```python
+track_to_intersection()
+```
+What happens, and why? ______________________________________________________________
 
 ---
 
@@ -102,21 +110,21 @@ What happens? ______________________________________________________________
 
 Place the robot on the grid and run each program. Record what happens:
 
-**Test 1: Drive to first intersection**
+**Test 1: Arrive at the first intersection (Program 2)**
 
 | | Expected | Actual |
 |---|---|---|
 | Robot follows line? | __________ | __________ |
-| Robot stops at intersection? | __________ | __________ |
-| Robot position after stopping? | __________ | __________ |
+| Robot stops after the drive-past? | __________ | __________ |
+| Wheels over the intersection? | __________ | __________ |
 
-**Test 2: Drive to intersection and turn right**
+**Test 2: Arrive and turn clockwise**
 
 | | Expected | Actual |
 |---|---|---|
 | Robot reaches intersection? | __________ | __________ |
-| Robot turns onto perpendicular line? | __________ | __________ |
-| Robot lined up after turn? | __________ | __________ |
+| Robot pivots on the intersection? | __________ | __________ |
+| A sensor on the new line after the turn? | __________ | __________ |
 
 **Any issues? What did you adjust?**
 

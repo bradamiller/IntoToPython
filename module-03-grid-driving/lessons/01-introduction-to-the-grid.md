@@ -1,63 +1,49 @@
 # Lesson 1: Introduction to the Grid
 
 ## Overview
-Students transition from the taped circle (Module 2) to a taped grid. They learn how the grid is organized as intersections connected by lines, and how the sensor/driving toolkit from Module 2 can be used without modification to navigate between intersections. Students practice driving to the first intersection and stopping — the fundamental building block for all grid navigation.
+Students move from the taped circle (Module 2) to a taped grid. A grid is lines running two ways, and wherever two cross is an intersection -- and to the robot's two sensors an intersection looks exactly like the cross on the circle: both sensors high at once. So the Module 2 toolkits drive the grid without a single change. That is the point of the module: no new Python, just *reuse*.
 
-*If your course covers the Module 2 Optional Extension (classes), everything below works identically through `tracker.track_until_cross()`, `tracker.turn_right()`, and `tracker.turn_left()` instead of bare function calls — only the call syntax changes.*
+Arriving at an intersection is the pair from Lesson 2-9, `track_to_intersection()` then `drive_past_intersection()`: the sensors reach the cross first, and the drive-past puts the wheels on it. The pair is what "arrive" means for the rest of the course.
+
+*If students did the Module 2 class extensions, everything below works identically through `tracker.track_to_intersection()` and so on -- only the call syntax changes.*
 
 ## Learning Objectives
 By the end of this lesson, students will be able to:
-- Describe the physical grid layout and how intersections are formed
-- Explain how cross detection from Module 2 maps to grid intersections
-- Use the Module 2 toolkit to drive from one intersection to the next
-- Place the robot on the grid and drive to the first intersection
+- Describe the grid as lines and intersections, and explain why an intersection reads like the Module 2 cross
+- Name the four driving functions and what ends each one
+- Arrive at the first intersection with the pair `track_to_intersection()` + `drive_past_intersection()`
+- Turn onto the crossing line with `turn_clockwise()` or `turn_counterclockwise()`
 
 ## Key Concepts
-- **Grid**: A network of taped lines forming rows and columns on the floor
-- **Intersection**: Where two taped lines cross — detected by both sensors reading high
-- **Toolkit reuse**: The same `track_until_cross()` function that detected the cross on the circle now detects grid intersections
-- **Code reuse**: No new functions needed — Module 2 code works directly on the grid
+- **Grid**: taped lines in two directions; an **intersection** is where two cross -- both sensors high.
+- **Toolkit reuse**: the Module 2 functions know how to follow tape and find crosses. They have no idea what a grid is, and don't need to.
+- **The arrival pair**: `track_to_intersection()` stops with the sensors on the cross; `drive_past_intersection()` (8.75 cm, sensor-to-axle) parks the wheels on it and moves the sensors past the tape.
+- **Turns pivot on the intersection**: the robot spins about its wheels, so the drive-past is what makes a turn land on the crossing line.
 
 ## Materials Required
-- XRP Robot with reflectance sensors
-- White surface with taped grid (at least 3×3 intersections)
-- Working sensor and driving toolkit from Module 2 (Lessons 8-9)
-- VS Code with XRPLib installed
+- XRP robot; a taped grid, at least 3x3, same tape and surface as the Module 2 circle
+- Both Module 2 toolkits (`code/solutions/lesson-01-grid-intro.py` has them at the top)
+- `worksheets/01-introduction-to-the-grid.md`
 
 ## Lesson Flow
 
 ### Introduction (10 minutes)
+1. **From circle to grid.** Show the grid. "Remember the cross on the circle? What if there were crosses everywhere?" A grid is intersections connected by lines. Ask what the sensors see at an intersection -- both high, exactly the Module 2 cross.
+2. **The four functions.** On the board, with what ends each:
+   - `track_to_intersection()` -- both sensors see the cross
+   - `drive_past_intersection()` -- 8.75 cm driven; wheels on the cross
+   - `turn_clockwise()` / `turn_counterclockwise()` -- a sensor finds the next line
+   "Nothing in that list says row, column or grid. That's why it works here unchanged."
 
-1. **Hook: From Circle to Grid**:
-   - Show the new grid setup
-   - Ask: "Remember the cross on the circle? What if there were crosses EVERYWHERE?"
-   - "A grid is just many intersections connected by lines"
-   - The robot already knows how to follow lines and detect crosses!
-
-2. **Grid Layout**:
-   - Lines running in two directions (horizontal and vertical)
-   - Where lines cross = intersection
-   - Each intersection is a potential stopping point
-   - The robot will use line following between intersections and cross detection to know when it arrives
-
-3. **Review: What the Toolkit Already Does**:
-   - `track_until_cross()` — follows line, stops at intersection
-   - `turn_right()` — turns right at an intersection onto the perpendicular line
-   - `turn_left()` — turns left at an intersection onto the perpendicular line
-   - These three functions are ALL you need for grid navigation!
-
-### Guided Practice: Drive to First Intersection (15 minutes)
-
-1. **Setup**:
-   - Place the robot on the grid, centered on a line, behind an intersection
-   - The robot should be facing along the line toward the next intersection
-
-2. **The Program**:
+### Guided Practice (15 minutes)
+1. **Setup.** Robot centered on a line, behind an intersection, facing along the line.
+2. **The program.** Both toolkits, then two lines:
    ```python
    from XRPLib.reflectance import Reflectance
    from XRPLib.differential_drive import DifferentialDrive
    from XRPLib.board import Board
 
+   # ===== Sensor toolkit (Module 2 Lesson 8) =====
    reflectance = Reflectance.get_default_reflectance()
    THRESHOLD = 0.5
 
@@ -73,90 +59,67 @@ By the end of this lesson, students will be able to:
    def is_at_cross():
        return get_left() > THRESHOLD and get_right() > THRESHOLD
 
-   def is_off_line():
-       return get_left() < THRESHOLD and get_right() < THRESHOLD
+   def is_either_on_line():
+       return get_left() > THRESHOLD or get_right() > THRESHOLD
 
+   # ===== Driving toolkit (Module 2 Lesson 9) =====
    drivetrain = DifferentialDrive.get_default_differential_drive()
    BASE_EFFORT = 0.4
    KP = 0.5
+   TURN_EFFORT = 0.25
 
-   def clear_intersection():
-       drivetrain.straight(8, 0.5)
+   def drive_past_intersection():
+       drivetrain.straight(8.75, 0.5)
 
-   def track_until_cross():
+   def track_to_intersection():
        while not is_at_cross():
            error = get_error()
-           left = BASE_EFFORT - error * KP
-           right = BASE_EFFORT + error * KP
-           drivetrain.set_effort(left, right)
+           correction = error * KP
+           drivetrain.arcade(BASE_EFFORT, -correction)
        drivetrain.stop()
 
-   def turn_right():
-       clear_intersection()
-       drivetrain.set_effort(0.3, -0.3)
-       while is_off_line():
+   def turn_clockwise():
+       drivetrain.turn(-60, TURN_EFFORT)
+       drivetrain.arcade(0, -TURN_EFFORT)
+       while not is_either_on_line():
            pass
        drivetrain.stop()
 
-   def turn_left():
-       clear_intersection()
-       drivetrain.set_effort(-0.3, 0.3)
-       while is_off_line():
+   def turn_counterclockwise():
+       drivetrain.turn(60, TURN_EFFORT)
+       drivetrain.arcade(0, TURN_EFFORT)
+       while not is_either_on_line():
            pass
        drivetrain.stop()
 
-   # --- Main Program ---
+   # ===== Main program =====
    board = Board.get_default_board()
 
    board.wait_for_button()
    print("Driving to first intersection...")
-   track_until_cross()
+   track_to_intersection()
+   drive_past_intersection()
    print("Intersection reached!")
    ```
-
-3. **Discussion Points**:
-   - The code is IDENTICAL to Module 2 — we're just running it on a grid instead of a circle
-   - `track_until_cross()` works because grid intersections look the same as the cross on the circle
-   - This is the power of code reuse!
+3. **Discussion.** The toolkits are character-for-character Module 2. Point at where the robot stopped: wheels over the intersection, sensors just past it. "That is what arriving means from now on. Every arrival is those two calls."
 
 ### Independent Practice (15 minutes)
-
-1. **Exercise 1: Drive and confirm**:
-   - Place robot on the grid
-   - Run the program to drive to the first intersection
-   - Verify the robot stops cleanly at the intersection
-
-2. **Exercise 2: Try from different starting positions**:
-   - Start from different lines on the grid
-   - Does it always reach the next intersection?
-   - What happens if you start AT an intersection? (It detects it immediately!)
-
-3. **Exercise 3: Drive and turn**:
-   - After reaching the intersection, add a turn:
-     ```python
-     track_until_cross()
-     print("Turning right...")
-     turn_right()
-     print("Now facing a new direction!")
-     ```
+1. **Reach it, then turn.** Add `turn_clockwise()` after the pair and run it. The robot should end on the intersection facing the crossing line, with a sensor on it. Then try `turn_counterclockwise()`.
+2. **Start on an intersection.** Put the robot *on* an intersection and run the program. It reports "Intersection reached!" at once without moving -- `is_at_cross()` was already `True`. Back it onto a plain line segment. Worksheet Part 4.
+3. **Challenge:** pair, turn, pair -- a two-segment path, previewing Lesson 3.
 
 ### Wrap-Up (5 minutes)
-
-1. **Key Takeaways**:
-   - The grid is built from the same lines and crosses as Module 2
-   - The Module 2 toolkit works on the grid without any changes
-   - `track_until_cross()` drives to the next intersection
-   - Turns reorient the robot onto a perpendicular line
-
-2. **Preview**: Next lesson we'll drive PAST intersections to reach ones further away
+- What is a grid intersection, to the robot? (The same both-sensors-high cross.)
+- What two calls arrive at an intersection? (`track_to_intersection()`, `drive_past_intersection()`.)
+- Why didn't you write any new code? (The toolkit handles tape and crosses; the grid is tape and crosses.)
 
 ## Common Issues
-- **Robot detects intersection immediately**: It's starting ON an intersection. Move it slightly past
-- **Robot veers off the line**: Check sensor calibration. The grid lines must be the same tape as the circle
-- **Robot doesn't stop at intersection**: Check threshold value — may need recalibration for new surface
-- **Turn doesn't line up**: The robot needs to be centered on the intersection before turning
+- **Reports the intersection instantly**: started on one. Back onto a line segment.
+- **Stops short or long of the intersection**: `drive_past_intersection()`'s 8.75 cm is sensor-to-axle on an XRP; measure yours if the mounting differs.
+- **Turn ends off the line**: the turn ran before the drive-past, so it pivoted in front of the intersection. Always the pair first.
+- **Threshold**: same tape, same surface, so it should not need re-tuning; check if the grid was made with different tape.
 
 ## Assessment
-- Can the student explain why the toolkit works on the grid?
-- Can the student drive to the first intersection and stop?
-- Can the student add a turn after reaching the intersection?
+- Can students explain why the Module 2 toolkit works on the grid unchanged?
+- Can they arrive at the first intersection reliably and say where the wheels are?
+- Exit ticket: "Which function turns the robot onto the crossing line, and what has to happen before it?" (`turn_clockwise()` / `turn_counterclockwise()`; the arrival pair.)

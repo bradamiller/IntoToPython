@@ -12,7 +12,7 @@
 
 By the end of this module, students will be able to:
 - Understand the relationship between grid intersections and the line-detection logic from Module 2
-- Use the `LineTrack` class to navigate from one intersection to the next
+- Use the Module 2 driving toolkit (`track_to_intersection()`, `drive_past_intersection()`, the two turns) to navigate from one intersection to the next
 - Sequence multiple drives and turns to create a closed path
 - Test and debug a program on the physical grid
 - Prepare for coordinate-based navigation (coming in Module 4)
@@ -23,7 +23,7 @@ By the end of this module, students will be able to:
 - **Sequencing:** Combining drives and turns in order
 - **Loops:** Using `for` loops to repeat patterns
 - **Testing:** Running on hardware and verifying expected behavior
-- **Code Reuse:** Applying the `LineTrack` class from Module 2 without modification
+- **Code Reuse:** Applying the Module 2 toolkits without modification
 
 ## Module Structure
 
@@ -43,7 +43,7 @@ Module 2 was taught on a single circle. Module 3 shows that the same code works 
 ## Python Concepts
 
 **No new Python concepts in this module.** Students reinforce:
-- Calling methods on class instances (`linetrack.track_until_cross()`)
+- Calling your own functions from a loop (`drive_intersections(count)`)
 - Using loops for repetition
 - Sequential program flow
 - Testing and debugging existing code
@@ -71,11 +71,11 @@ Students demonstrate mastery by:
 **Common issues:**
 - **Robot doesn't detect intersections properly:** Usually a carry-over from Module 2; recalibrate sensors
 - **Robot skips intersections:** May be driving too fast; slow down with reduced speed settings
-- **Robot isn't turning exactly 90°:** Use the `turn_right()` and `turn_left()` methods from Module 2; they handle alignment
+- **Robot isn't turning exactly 90°:** The turns end when a sensor finds the next line; make sure `drive_past_intersection()` ran first so the turn pivots on the intersection, then tune the blind part and `TURN_EFFORT` in Module 2 Lesson 9's terms
 
 ## Resources
 
-- Module 2 `LineTrack` class (use as-is)
+- Module 2 sensor and driving toolkits (use as-is)
 - Grid setup and calibration (see teacher guide)
 - Solution code showing full square pattern
 

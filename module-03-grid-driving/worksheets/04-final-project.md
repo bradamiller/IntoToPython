@@ -40,10 +40,10 @@ Trace through the square loop and fill in what happens on each iteration:
 ```python
 for leg in range(4):
     drive_intersections(2)
-    turn_right()
+    turn_clockwise()
 ```
 
-| leg | drive_intersections(2) does... | turn_right() does... | Robot now facing... |
+| leg | drive_intersections(2) does... | turn_clockwise() does... | Robot now facing... |
 |---|---|---|---|
 | 0 | Drives forward __ intersections | Turns ___° | __________ |
 | 1 | Drives forward __ intersections | Turns ___° | __________ |
@@ -67,8 +67,8 @@ board.wait_for_button()
 
 for leg in range(3):
     drive_intersections(2)
-    clear_intersection()
-    turn_right()
+    drive_past_intersection()
+    turn_clockwise()
 ```
 
 **Error 1:** ______________________________________________________________
@@ -111,7 +111,7 @@ Record each test run:
 
 - [ ] **Bigger square** (3 intersections per side)
 - [ ] **Rectangle** (2 and 3 intersections alternating)
-- [ ] **Left-turn square** (using turn_left)
+- [ ] **Left-turn square** (using turn_counterclockwise)
 - [ ] **Your own shape:** ______________
 
 **Plan your extension:**

@@ -5,111 +5,111 @@
 
 ---
 
-## Part 1: The Clearing Problem
+## Part 1: The thought experiment
 
-**Why doesn't this work?**
+**Why doesn't this reach the second intersection?**
 ```python
-track_until_cross()   # Drives to intersection 1
-track_until_cross()   # Should drive to intersection 2...
+track_to_intersection()   # drives to intersection 1
+track_to_intersection()   # should drive to intersection 2...
 ```
 
-Explain in your own words why the second `track_until_cross()` doesn't work:
+1. When the first call stops, where are the sensors? ______________________
 
-______________________________________________________________
+2. What does `is_at_cross()` return at the moment the second call starts? ______
 
-______________________________________________________________
+3. So what does the second call's `while not is_at_cross():` loop do? ______________________________________________
 
-**What must the robot do between the two calls?**
-
-______________________________________________________________
+4. What one call goes between them, and what does it do to the sensors? ______________________________________________
 
 ---
 
-## Part 2: Code Tracing
-
-Trace through this code and fill in what happens at each step:
+## Part 2: Trace the pattern
 
 ```python
-track_until_cross()
-clear_intersection()
-track_until_cross()
+track_to_intersection()
+drive_past_intersection()
+track_to_intersection()
+drive_past_intersection()
 ```
 
-| Step | Code | What the robot does |
+| After line | Sensors are... | Wheels are... |
 |---|---|---|
-| 1 | `track_until_cross()` | __________ |
-| 2 | `clear_intersection()` | __________ |
-| 3 | `track_until_cross()` | __________ |
+| 1 | on intersection 1 | short of intersection 1 |
+| 2 | ________________ | ________________ |
+| 3 | ________________ | ________________ |
+| 4 | ________________ | ________________ |
 
-**How many intersections did the robot pass through?** __________
-
-**Where did the robot end up?** __________
+**Where is the robot parked at the end?** ______________________
 
 ---
 
-## Part 3: Loop Tracing
-
-Trace through this loop with `intersections = 3`:
+## Part 3: Loop tracing
 
 ```python
 intersections = 3
+
 for i in range(intersections):
-    track_until_cross()
-    if i < intersections - 1:
-        clear_intersection()
+    print("Driving to intersection", i + 1)
+    track_to_intersection()
+    drive_past_intersection()
+
+print("Done! Parked on intersection", intersections)
 ```
 
-| i | track_until_cross() | Is i < 2? | Clears? | Intersection # reached |
-|---|---|---|---|---|
-| 0 | Drives to... | __________ | __________ | __________ |
-| 1 | Drives to... | __________ | __________ | __________ |
-| 2 | Drives to... | __________ | __________ | __________ |
+| Pass | `i` | Prints | Robot ends parked on... |
+|---|---|---|---|
+| 1 | 0 | ________________ | ________________ |
+| 2 | ___ | ________________ | ________________ |
+| 3 | ___ | ________________ | ________________ |
 
-**Why don't we clear after the last intersection?**
+**A classmate says the last `drive_past_intersection()` will carry the robot off intersection 3. Are they right? Why or why not?**
+
+______________________________________________________________
 
 ______________________________________________________________
 
 ---
 
-## Part 4: Fix the Bug
+## Part 4: Fix the bug
 
-Each program has a bug. Find and describe the fix:
-
-**Bug 1:**
+**Program A:**
 ```python
-for i in range(3):
-    track_until_cross()
-    clear_intersection()
+def drive_intersections(count):
+    for i in range(count):
+        track_to_intersection()
 ```
-**What's wrong?** ______________________________________________________________
+With `drive_intersections(3)`, how many intersections does the robot actually reach? ______ Why? ______________________________________________
 
-**Fix:** ______________________________________________________________
-
-**Bug 2:**
+**Program B:**
 ```python
-for i in range(3):
-    clear_intersection()
-    track_until_cross()
+def drive_intersections(count):
+    for i in range(count):
+        track_to_intersection()
+        if i < count - 1:
+            drive_past_intersection()
 ```
-**What's wrong?** ______________________________________________________________
+Where does the robot end after `drive_intersections(3)` -- wheels on intersection 3, or short of it? ______________________ What happens if you call `turn_clockwise()` next? ______________________________________________
 
-**Fix:** ______________________________________________________________
+**Write the correct helper:**
+```python
+def drive_intersections(count):
+    for i in range(count):
+        ________________________________
+        ________________________________
+```
 
 ---
 
-## Part 5: Design Your Own
+## Part 5: Design your own
 
-Write the code to drive exactly 4 intersections forward using a for loop:
+Write a program that drives 2 intersections, prints "Halfway!", then drives 2 more, using the helper:
 
 ```python
-intersections = ____
-
-for i in range(________):
-    ___________________________________
-    if _______________:
-        ___________________________________
+________________________________
+________________________________
+________________________________
 ```
 
-**Test your code on the robot. Does it stop at the 4th intersection?** __________
+**How many times did `drive_past_intersection()` run in total?** ______
 
-**What did you adjust (if anything)?** ______________________________________________________________
+**Where is the robot parked?** ______________________
