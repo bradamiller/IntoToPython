@@ -68,7 +68,7 @@ polymorphism as a principle, encapsulation) belongs to a later course and is
 | `LineSensor` | 2-8 | The simplest possible first class: two attributes, five one-line methods. Introduces `class`, `__init__`, `self`. |
 | `LineTrack` | 2-9 | One object holding another (`self.sensor = LineSensor()`), shown by example. "Composition" is not taught as a vocabulary word. |
 | `Navigator` | 4-8 | The one class with a *felt* reason: it owns `position` and `heading`, so the functions track's `position, heading = drive_path(path, position, heading)` threading disappears. |
-| `Manhattan`, `BFS`, `Dijkstra` | 4-5, 5-5, 5-6 (ext.) | Exist so the swap demo works (D6): the same test harness and the same main program run against any planner by changing one name. `Manhattan` is a class *only* so it has the same shape as the others; `BFS`/`Dijkstra` are classes because they have setup to hold (the blocked list). Both reasons are stated plainly in the lesson. |
+| `Manhattan`, `BFS`, `Dijkstra` | 4-5, 5-5, 6-5 | Exist so the swap demo works (D6): the same test harness and the same main program run against any planner by changing one name. `Manhattan` is a class *only* so it has the same shape as the others; `BFS`/`Dijkstra` are classes because they have setup to hold (the blocked list). Both reasons are stated plainly in the lesson. |
 
 **Removed:** nothing is removed from the earlier extension list, but the
 planner classes change shape (D3), which removes the `manhattan.position =
@@ -165,20 +165,35 @@ real strengths. These decisions make it complete rather than optional:
   exact-match to properties is taught as a lesson in its own right ("when more
   than one answer is right, test what must be true").
 
-## D6. Module 5: BFS is required, Dijkstra is the extension
+## D6. Module 5: BFS is required; Dijkstra is its own optional Module 6
 
 **Required path:** Manhattan (M4), then **breadth-first search**. Two planners,
 same shape, swap demo between them. BFS reroutes around blocked intersections,
 which is the capstone's payoff. The required middle of Module 5 shrinks from
 three implementation lessons to one.
 
-**Extension:** students **duplicate their BFS file, rename it `Dijkstra`, and
-change two things**: take the unvisited node with the smallest distance instead
-of the first in the queue, and add the edge's weight instead of `+1`. Graph
-building, `add_blocked`, the `previous` dictionary and the walk-back are
-untouched. They then have **three planners and one harness**, and the harness
-shows BFS and Dijkstra agreeing on every test until the weighted edge, where
-they split.
+**Module 6 (amended 2026-10-14, same day):** Dijkstra is a **separate,
+optional module**, not an extension at the end of 5-6. Students **duplicate
+their BFS file, rename it `Dijkstra`, and change two things**: take the
+unvisited node with the smallest distance instead of the first in the queue,
+and add the edge's weight instead of `+1`. Graph building, `add_blocked`, the
+`previous` dictionary and the walk-back are untouched. They then have **three
+planners and one harness**, and the harness shows BFS and Dijkstra agreeing on
+every test until the weighted edge, where they split. Five lessons:
+1 *When fewest steps isn't fastest* (time the slow segment); 2 *Weights in the
+graph* (`add_slow_edge`, `weight`, a cost property the harness checks and BFS
+fails); 3 *From BFS to Dijkstra* (the two changes, `print_grid` of costs, three
+planners); 4 *Drive it*; 5 (ext.) the `Dijkstra` class. See
+`module-06-dijkstra/README.md`.
+
+*Why a module and not an extension:* (a) a module is the unit teachers plan
+by, so it can be dropped cleanly, which is the whole point; (b) Dijkstra needs
+the **physical grid to change** (a slow segment the whole class shares), which
+is a class-level decision and never fit the per-student extension model of D1;
+(c) it gives Dijkstra room for the course's usual arc, limitation first and
+construct second, instead of two code edits squeezed into the end of 5-6.
+Module 5 ends complete (BFS, obstacles, experience, capstone) and its swap demo
+is Manhattan vs. BFS, which is enough to make the point.
 
 **Why:** the course's rule everywhere else is that students never write code
 whose purpose they cannot see. The 2026-09 Module 5 had every student write the
@@ -186,15 +201,19 @@ whose purpose they cannot see. The 2026-09 Module 5 had every student write the
 where every edge is 1, so those lines did nothing observable. BFS has no such
 lines; weighted Dijkstra gives them a visible reason.
 
-**Naming:** the module keeps "Dijkstra" in its name (the word means something to
-teachers, parents and transcripts; "BFS" does not). Suggested: "Module 5:
-Pathfinding and Dijkstra's Algorithm", capstone unchanged.
+**Naming:** Module 5 is "Pathfinding Around Obstacles" (folder
+`module-05-pathfinding`); Module 6 is "Dijkstra's Algorithm" (folder
+`module-06-dijkstra`). The word Dijkstra stays on the course outline, in its own
+module, which also answers the name-recognition concern. The old Dijkstra-first
+Module 5 lessons, worksheets and slides (03-05, and the 06 polymorphism slides)
+moved to `module-06-dijkstra/_source-material/` as seed material; Module 5's
+Lessons 3-5 are to be written fresh from the code.
 
-**Weights (extension only):** the graph stays a neighbor-list dictionary; a
+**Weights (Module 6 only):** the graph stays a neighbor-list dictionary; a
 `weight(a, b)` function/method returns 1, or a larger number if the edge is in a
 small `SLOW_EDGES` list. BFS never calls it.
 
-**OPEN: the physical slow edge.** The extension is only honest if the weighted
+**OPEN: the physical slow edge.** Module 6 is only honest if the weighted
 edge is *physically real*, something students can time and give a number to.
 Leading candidate: **one grid segment whose tape takes a winding detour** between
 two adjacent intersections, so the map says one block but the drive takes about
@@ -203,7 +222,7 @@ following, and students measure the weight with a stopwatch. Alternatives
 considered: a rough surface under the tape (may disturb the reflectance sensor);
 "turns cost time" (true, but makes cost depend on heading, which puts heading
 into the graph state and is out of scope). **Brad to try on a real grid before
-the extension lesson is written.**
+Module 6's lessons are written.**
 
 **History:** Brad had considered BFS-first earlier and dropped it. Under the old
 plan ("everyone ends at Dijkstra") BFS-first was pure overhead, an extra
@@ -302,9 +321,9 @@ convert it twice.
 | Phase | What | Status |
 |---|---|---|
 | 1 | This document; `classes-optional.md` updated; pointer in the site's `CLAUDE.md` | done 2026-10-14 |
-| 2 | **Source code** (`*/code/`). M4: stateless `Manhattan`, no sync step, print-then-drive mains. M5: `compute_bfs_path`, `add_blocked`, property harness, function-passing swap, `BFS`/`Dijkstra` class addons, weighted-edge addon. Then D10: one vocabulary and sensor-ended turns across M2-M5, M5 driving on M4's toolkit, `print_grid`. Paper tests run and passing on plain Python. | done 2026-10-14; robot files smoke-tested against a fake XRPLib only |
-| 3 | **Source lessons and worksheets.** M2 L8 reframed per D1/D7; M4 L5-L9 and M5 L3-L9 rewritten around the phase-2 code; `pacing-guide.md`, `course-outline.md`, `README.md` updated; slides flagged stale, not regenerated. Brad's evaluation pass may run *as* this rewrite, lesson by lesson. | not started |
-| 4 | **Site.** Optional Extension collapsible + side-by-side figure; name-parity build check (D8); port M2 L8-10, M4, M5 from the updated source in one pass. | not started |
+| 2 | **Source code** (`*/code/`). M4: stateless `Manhattan`, no sync step, print-then-drive mains. M5: `compute_bfs_path`, `add_blocked`, property harness, function-passing swap, `BFS` class addon. M6: Dijkstra duplicate-and-edit with weights, three-planner class harness. Then D10: one vocabulary and sensor-ended turns across M2-M5, M5 driving on M4's toolkit, `print_grid`. Then the Module 5/6 folder split. Paper tests run and passing on plain Python. | done 2026-10-14; robot files smoke-tested against a fake XRPLib only |
+| 3 | **Source lessons and worksheets.** M2 L8 reframed per D1/D7; M4 L5-L9 and M5 L3-L9 rewritten around the phase-2 code; M6 L1-L5 written (L1-3 seeded from `_source-material/`); `pacing-guide.md`, `course-outline.md`, `README.md` updated; slides flagged stale, not regenerated. Brad's evaluation pass may run *as* this rewrite, lesson by lesson. | not started |
+| 4 | **Site.** Optional Extension collapsible + side-by-side figure; name-parity build check (D8); port M2 L8-10, M4, M5 and the new M6 from the updated source in one pass (site folder `module-05-dijkstra` becomes `module-05-pathfinding`; M6 added to `sidebars.js`). | not started |
 
 While phase 2 is done and phase 3 is not, this repo's code and its lessons will
 disagree in Modules 4-5. Commit messages say so.

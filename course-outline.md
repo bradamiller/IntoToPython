@@ -4,7 +4,7 @@
 
 This course teaches high school students Python programming through hands-on robotics using XRP robots. Students begin with visual block-based programming, transition to Python, and progressively build reusable toolkits of functions that culminate in autonomous grid navigation using pathfinding algorithms. Every Python concept is introduced just-in-time — at the moment students need it to accomplish something concrete with their robot.
 
-**Capstone goal:** The robot navigates a taped grid to a series of destinations using pathfinding algorithms (Manhattan, then Dijkstra), detecting and avoiding obstacles, and building "experience" over multiple runs.
+**Capstone goal:** The robot navigates a taped grid to a series of destinations using pathfinding algorithms (Manhattan, then breadth-first search), detecting and avoiding obstacles, and building "experience" over multiple runs. An optional Module 6 upgrades BFS to Dijkstra's algorithm.
 
 **Prerequisites:** None beyond basic computer literacy. No prior programming experience required.
 
@@ -34,8 +34,11 @@ This course teaches high school students Python programming through hands-on rob
 | Tuples | Module 4 | Module 5 |
 | Lists, `append()`, iteration | Module 4 | Module 5 |
 | Separation of concerns / interfaces | Module 4 | Module 5 |
-| Dictionaries | Module 5 | — |
-| Algorithm design | Module 5 | — |
+| Dictionaries | Module 5 | Module 6 |
+| Algorithm design | Module 5 | Module 6 |
+| Testing by properties | Module 5 | Module 6 |
+| Passing a function as an argument | Module 5 | Module 6 |
+| *(Optional, Module 6)* Edge weights | Module 6 | — |
 
 ---
 
@@ -301,17 +304,16 @@ Tuples (creating, indexing), lists (`append()`, iteration, list of tuples), func
 
 ---
 
-## Module 5: Dijkstra's Algorithm (Capstone)
+## Module 5: Pathfinding Around Obstacles (Capstone)
 
 **Duration:** ~3–4 weeks
 **Theme:** Graph algorithms, obstacle detection, and the power of modular code
-**Final project:** Robot detects blocked intersections and dynamically reroutes using Dijkstra's algorithm
+**Final project:** Robot detects blocked intersections and dynamically reroutes using breadth-first search
 
-### Phase A: Graph Theory and Dictionaries (Lessons 1–3)
+### Phase A: Graphs and Dictionaries (Lessons 1–3)
 
 **Lesson 1: The Grid as a Graph**
 - Nodes = intersections, edges = paths between adjacent intersections
-- Weighted vs. unweighted graphs (our grid is unweighted, all edges cost 1)
 - Why Manhattan distance doesn't help when intersections are blocked
 - *Exercise:* Draw the grid as a graph on paper. Mark some nodes as blocked. Try to find the shortest path by hand.
 
@@ -321,31 +323,30 @@ Tuples (creating, indexing), lists (`append()`, iteration, list of tuples), func
 - Using dictionaries to represent a graph: keys are node coordinates, values are lists of neighbor coordinates
 - *Exercise:* Write code to represent the grid as a dictionary of neighbors. Print all neighbors for a given intersection.
 
-**Lesson 3: Dijkstra's Algorithm — The Concept**
-- Walk-through of the algorithm step by step using the grid graph
-- Visited set, distances, previous-node tracking
-- Tracing the algorithm on paper with blocked nodes
-- *Exercise:* Worksheet — trace Dijkstra's algorithm by hand on a small grid with blocked intersections. Record each step.
+**Lesson 3: Breadth-First Search — The Concept**
+- Ripples out from the start: write 0 on the start, 1 on every intersection one step away, 2 on every new one a step from those, and so on
+- The first number written on the destination is the shortest path length; writing down "where I came from" each time gives the path
+- `print_grid()` draws the ring numbers; students compare it with their paper
+- *Exercise:* Worksheet — trace BFS by hand on a small grid with blocked intersections.
 
-### Phase B: Implementing Dijkstra (Lessons 4–6)
+### Phase B: Implementing BFS (Lessons 4–6)
 
-**Lesson 4: The Dijkstra Functions**
-- `build_dijkstra_graph(rows, cols, blocked)` builds the graph, excluding blocked nodes
-- `compute_dijkstra_path(position, destination, graph)` -- same first-two-parameter shape as `compute_manhattan_path`
-- *Optional Extension:* package both as a `Dijkstra` class
-- *Exercise:* Implement `build_dijkstra_graph()` and the `compute_dijkstra_path()` placeholder
+**Lesson 4: The Pathfinding Functions**
+- The toolkit: `ROWS`, `COLS`, `BLOCKED`; `add_blocked(intersection)`; `build_graph(rows, cols, blocked)`; a placeholder `compute_bfs_path(position, destination)`
+- The two rules every planner follows: it is *told* the position (it never remembers one), and the path it returns excludes the start
+- The graph is rebuilt from `BLOCKED` on every call, so a wall the robot just found is already missing from it
+- *Optional Extension:* a `BFS` class (Lesson 5)
+- *Exercise:* Implement `add_blocked()` and `build_graph()`; block an intersection and watch it vanish from its neighbors' lists
 
-**Lesson 5: Implementing compute_dijkstra_path()**
-- Translating the hand-traced algorithm into Python
-- Using a list as a simple priority queue (or sorted list)
-- Reconstructing the path from the previous-node dictionary
-- *Exercise:* Complete `compute_dijkstra_path()`. Test with known blocked intersections and verify output matches hand-traced results.
+**Lesson 5: Implementing compute_bfs_path()**
+- Translating the hand trace into Python: `to_visit` (oldest first), `previous`, the walk-back from the destination to the start
+- *Exercise:* Complete `compute_bfs_path()`. Paper tests: open grid, straight line, already there, a wall, walled off.
 
 **Lesson 6: Testing and Swapping**
-- Testing Dijkstra independently: build a graph, request paths, print results
-- The shape mismatch: `compute_dijkstra_path` needs an extra `graph` argument and includes the start in its output; a `compute_path(algorithm, ...)` dispatch function normalizes both
-- *Optional Extension:* true polymorphism via matching `compute_path(destination)` methods on `Manhattan`/`Dijkstra` classes, no dispatch function needed
-- *Exercise:* Build the dispatch function. Swap the algorithm argument to route around obstacles.
+- Testing by properties: on an open grid there are many equally short paths, so the harness checks what must be true (first step next to the start, ends at the destination, every step a neighbor, no blocked step, length = Manhattan distance when nothing is blocked) and has a separate no-path test
+- The swap: the harness is handed the planner *function* (`run_all_tests("BFS", compute_bfs_path)`), so the same tests run against Manhattan and BFS; Manhattan fails the blocked tests on paper, which is why this module exists
+- *Optional Extension:* `Manhattan` and `BFS` classes through the same harness
+- *Exercise:* Write the property checks; run both planners; block an intersection and run the same main program with each.
 
 ### Phase C: Capstone Project (Lessons 7–9)
 
@@ -357,7 +358,7 @@ Tuples (creating, indexing), lists (`append()`, iteration, list of tuples), func
 **Lesson 8: Building Experience**
 - Maintaining a list of known blocked intersections that grows over time
 - On each run: attempt to navigate, detect new obstacles, add to blocked list, rebuild the graph and recompute the path
-- *Exercise:* Write a program that attempts to drive to a destination, and if it encounters a blocked intersection, adds it to the blocked list, recalculates the path using `compute_dijkstra_path()`, and tries again.
+- *Exercise:* Write a program that attempts to drive to a destination, and if it encounters a blocked intersection, calls `add_blocked()`, recalculates the path with `compute_bfs_path()`, and tries again.
 
 **Lesson 9: Module 5 Capstone Project**
 - The teacher sets up the grid with physical obstacles at several intersections
@@ -370,6 +371,39 @@ Tuples (creating, indexing), lists (`append()`, iteration, list of tuples), func
 
 ### Python Concepts Introduced
 Dictionaries (creation, access, `in` keyword, nested structures), graph representation, algorithm implementation, dispatch functions for swappable behavior, dynamic data (growing blocked list across runs). *Optional:* true polymorphism via matching class method signatures.
+
+---
+
+## Module 6: Dijkstra's Algorithm (Optional)
+
+**Duration:** ~1–2 weeks, if there is time, or a second semester
+**Theme:** The same algorithm with one upgrade — when the fewest steps is not the fastest route
+**Final activity:** On a grid with one slow segment, the robot takes the route that is longer in steps but shorter in time, next to a BFS run that does not
+**Prerequisite:** Module 5. Nothing later depends on this module; the course is complete without it.
+
+**Lesson 1: When Fewest Steps Isn't Fastest**
+- Time a normal block and the slow segment with a stopwatch; a weight is "how many normal blocks' worth of time"
+- *Exercise:* Hand-compute the cost of two routes across the slow segment.
+
+**Lesson 2: Weights in the Graph**
+- `SLOW_EDGES`, `add_slow_edge(a, b, cost)`, `weight(a, b)`; the graph itself is unchanged
+- `path_cost()` as a new property for the Module 5 harness — and BFS fails it
+- *Exercise:* Add the cost check; show BFS choosing the slow road.
+
+**Lesson 3: From BFS to Dijkstra**
+- Duplicate `compute_bfs_path`, rename it, make two changes: take the *closest* intersection off `to_visit` instead of the oldest, and add the edge's weight (keeping the cheaper total) instead of counting a step
+- `print_grid()` of costs; three planners through one harness, agreeing on every test until the slow edge
+- *Optional Extension:* the `Dijkstra` class (Lesson 5)
+- *Exercise:* Make the two changes; run all three planners.
+
+**Lesson 4: Drive It**
+- Module 5's Lesson 7 driving loop with `compute_dijkstra_path` swapped in
+- *Exercise:* BFS run, then Dijkstra run, on the slow-segment grid.
+
+**Lesson 5 (optional extension): Three Planners, One Harness, as Classes**
+- `Manhattan`, `BFS`, `Dijkstra` through the Module 5 class harness; swap by changing one name
+
+**Python concepts:** edge weights as a lookup function; the same algorithm with a priority instead of a queue. No new syntax.
 
 ---
 
@@ -434,7 +468,7 @@ xrp-python-course/
 │       ├── starter/
 │       └── solutions/
 │
-├── module-05-dijkstra/
+├── module-05-pathfinding/
 │   ├── README.md
 │   ├── lessons/
 │   ├── slides/
@@ -446,10 +480,21 @@ xrp-python-course/
 │   ├── rubric.md
 │   └── project-milestones.md
 │
+├── module-06-dijkstra/            # optional
+│   ├── README.md
+│   ├── lessons/
+│   ├── worksheets/
+│   ├── code/
+│   │   ├── starter/
+│   │   └── solutions/
+│   └── _source-material/          # the old Dijkstra-first Module 5 lessons, for reference
+│
 ├── teacher-guide/
 │   ├── pacing-guide.md
 │   ├── differentiation.md
 │   ├── assessment-strategy.md
+│   ├── classes-optional.md
+│   ├── course-design-decisions.md
 │   └── xrp-setup-guide.md
 │
 └── templates/
@@ -469,7 +514,8 @@ xrp-python-course/
 | 5–9 | Module 2: Line Tracking | Heaviest module — sensors, control, and first reusable toolkits |
 | 10–11 | Module 3: Grid Driving | Short module, mostly applying existing code to the grid |
 | 12–15 | Module 4: Manhattan | Data structures + two new functions/toolkits |
-| 16–18 | Module 5: Dijkstra (Capstone) | Algorithm + obstacle detection + capstone demo |
+| 16–18 | Module 5: Pathfinding (Capstone) | BFS + obstacle detection + capstone demo |
+| (19–20) | Module 6: Dijkstra (optional) | Weights; BFS → Dijkstra; drive the slow-segment grid |
 
 ---
 

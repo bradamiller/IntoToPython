@@ -1,6 +1,6 @@
-# Lesson 6 Optional Extension: Dijkstra's Algorithm - SOLUTION
-# A THIRD planner, made by copying compute_bfs_path() and changing two things.
-# No robot needed to run this file.
+# Module 6, Lesson 3: From BFS to Dijkstra - SOLUTION
+# A THIRD planner, made by copying compute_bfs_path() (Module 5) and changing
+# two things. No robot needed to run this file.
 #
 # BFS counts steps. Every step costs the same, so the path with the fewest
 # steps is the fastest. But what if one segment of the grid is slow -- the
@@ -16,9 +16,9 @@
 # Everything else -- the graph, add_blocked, previous, the walk-back -- is
 # exactly the BFS code.
 #
-# To do this extension: copy your Lesson 5 file, rename the function
+# To do it: copy your Module 5 Lesson 5 file, rename the function
 # compute_dijkstra_path, make the two changes marked NEW/CHANGED below, and
-# add it to the Lesson 6 harness as a third planner.
+# add it to the Module 5 Lesson 6 harness as a third planner.
 
 
 # ===== The grid, the blocked list, and (NEW) the slow edges =====

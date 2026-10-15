@@ -853,7 +853,7 @@ if __name__ == '__main__':
     # Ensure image directories exist
     for d in [
         'module-04-manhattan/slides/images',
-        'module-05-dijkstra/slides/images',
+        'module-05-pathfinding/slides/images',
     ]:
         os.makedirs(d, exist_ok=True)
 
@@ -882,7 +882,7 @@ if __name__ == '__main__':
     # GRAPHIC 3: Module 5, Lesson 1, Slide 3 — Manhattan Fails Side-by-Side
     # =========================================================
     draw_side_by_side_grids(
-        'module-05-dijkstra/slides/images/manhattan-fails-with-obstacles.png',
+        'module-05-pathfinding/slides/images/manhattan-fails-with-obstacles.png',
         rows=3, cols=3,
         path_left=[(0, 0), (1, 0), (2, 0), (2, 1), (2, 2)],
         path_right=[(0, 0)],  # Manhattan can't complete — just show start
@@ -898,7 +898,7 @@ if __name__ == '__main__':
     # GRAPHIC 4: Module 5, Lesson 1, Slide 5 — 3x3 Graph
     # =========================================================
     draw_labeled_grid(
-        'module-05-dijkstra/slides/images/grid-as-graph-3x3.png',
+        'module-05-pathfinding/slides/images/grid-as-graph-3x3.png',
         rows=3, cols=3,
         title='The Grid as a Graph — 3×3',
         figsize=(7, 6)
@@ -911,7 +911,7 @@ if __name__ == '__main__':
 
     # Step 0: Setup
     draw_dijkstra_step(
-        'module-05-dijkstra/slides/images/dijkstra-step0-setup.png',
+        'module-06-dijkstra/_source-material/slides/images/dijkstra-step0-setup.png',
         rows=3, cols=3, blocked=blocked_11,
         distances={(0, 0): 0},
         visited=[],
@@ -922,7 +922,7 @@ if __name__ == '__main__':
 
     # Step 1: Visit (0,0)
     draw_dijkstra_step(
-        'module-05-dijkstra/slides/images/dijkstra-step1.png',
+        'module-06-dijkstra/_source-material/slides/images/dijkstra-step1.png',
         rows=3, cols=3, blocked=blocked_11,
         distances={(0, 0): 0, (0, 1): 1, (1, 0): 1},
         visited=[(0, 0)],
@@ -933,7 +933,7 @@ if __name__ == '__main__':
 
     # Step 2: Visit (0,1)
     draw_dijkstra_step(
-        'module-05-dijkstra/slides/images/dijkstra-step2.png',
+        'module-06-dijkstra/_source-material/slides/images/dijkstra-step2.png',
         rows=3, cols=3, blocked=blocked_11,
         distances={(0, 0): 0, (0, 1): 1, (1, 0): 1, (0, 2): 2},
         visited=[(0, 0), (0, 1)],
@@ -944,7 +944,7 @@ if __name__ == '__main__':
 
     # Step 3: Visit (1,0)
     draw_dijkstra_step(
-        'module-05-dijkstra/slides/images/dijkstra-step3.png',
+        'module-06-dijkstra/_source-material/slides/images/dijkstra-step3.png',
         rows=3, cols=3, blocked=blocked_11,
         distances={(0, 0): 0, (0, 1): 1, (1, 0): 1, (0, 2): 2, (2, 0): 2},
         visited=[(0, 0), (0, 1), (1, 0)],
@@ -955,7 +955,7 @@ if __name__ == '__main__':
 
     # Steps 4-6: Final state
     draw_dijkstra_step(
-        'module-05-dijkstra/slides/images/dijkstra-final.png',
+        'module-06-dijkstra/_source-material/slides/images/dijkstra-final.png',
         rows=3, cols=3, blocked=blocked_11,
         distances={
             (0, 0): 0, (0, 1): 1, (0, 2): 2,
@@ -982,7 +982,7 @@ if __name__ == '__main__':
         (2, 2): (1, 2),
     }
     draw_backpointer_path(
-        'module-05-dijkstra/slides/images/backpointer-path.png',
+        'module-05-pathfinding/slides/images/backpointer-path.png',
         rows=3, cols=3, blocked=blocked_11,
         previous=previous,
         start=(0, 0), end=(2, 2),
@@ -1013,7 +1013,7 @@ if __name__ == '__main__':
     # GRAPHIC 9: Module 5, Lesson 4, Slide 9 — 4x4 Graph with Blocked Node
     # =========================================================
     draw_labeled_grid(
-        'module-05-dijkstra/slides/images/graph-4x4-blocked.png',
+        'module-05-pathfinding/slides/images/graph-4x4-blocked.png',
         rows=4, cols=4,
         blocked=[(1, 1)],
         title='4×4 Graph with (1,1) Blocked',
@@ -1032,7 +1032,7 @@ if __name__ == '__main__':
     run2_path = [(0, 0), (0, 1), (0, 2), (1, 2), (1, 3)]
 
     draw_side_by_side_grids(
-        'module-05-dijkstra/slides/images/run1-vs-run2.png',
+        'module-05-pathfinding/slides/images/run1-vs-run2.png',
         rows=3, cols=4,
         path_left=run1_path,
         path_right=run2_path,
@@ -1054,7 +1054,7 @@ if __name__ == '__main__':
     )
 
     draw_grid_path(
-        'module-05-dijkstra/slides/images/dijkstra-with-obstacles.png',
+        'module-06-dijkstra/_source-material/slides/images/dijkstra-with-obstacles.png',
         rows=4, cols=4,
         path=[(0, 0), (0, 1), (0, 2), (1, 2), (2, 2), (2, 1), (2, 0), (3, 0)],
         blocked=[(1, 0), (1, 1)],

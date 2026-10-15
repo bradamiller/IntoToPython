@@ -1,4 +1,4 @@
-# Module 5: Dijkstra's Algorithm (Capstone)
+# Module 5: Pathfinding Around Obstacles (Capstone)
 
 ## Overview
 
@@ -8,15 +8,24 @@
 
 **Final Project:** Robot navigates to destinations, detects obstacles with a rangefinder, updates its "knowledge" of the grid, and reroutes dynamically. Demonstrate improved performance on subsequent runs.
 
+**Planner:** breadth-first search (BFS) — the "ripples out from the start" algorithm. It finds the path with the fewest steps around any blocked intersections. Dijkstra's algorithm, which handles segments that are slower than others, is the optional **Module 6**: the same code with two changes.
+
+> **Reshaped 2026-10-14.** The code under `code/` is current. Lessons 3–5 were the
+> Dijkstra-first versions and have moved to `module-06-dijkstra/_source-material/`;
+> their BFS replacements are to be written from the code (see
+> `teacher-guide/course-design-decisions.md`, D6 and the phase-3 plan). Lessons 6–9
+> still describe the old shape in places.
+
 ## Learning Objectives
 
 By the end of this module, students will be able to:
 - Understand graphs and how a grid can be represented as a graph
-- Understand Dijkstra's algorithm for finding shortest paths with obstacles
-- Implement Dijkstra's algorithm in Python
 - Use dictionaries to represent graphs
-- Swap Dijkstra for Manhattan without changing the rest of the program (polymorphism through interface matching)
-- Use the rangefinder sensor to detect obstacles
+- Trace breadth-first search by hand and explain why it finds a shortest path
+- Implement `compute_bfs_path(position, destination)` and `add_blocked(intersection)`
+- Test a planner on paper with property checks, with no robot and no grid
+- Swap BFS for Manhattan without changing the rest of the program (pass the planner function)
+- Use the rangefinder sensor to detect obstacles and feed them to the planner with `add_blocked()`
 - Dynamically update the obstacle list and recompute paths
 - Demonstrate "learning" over multiple runs (core of the capstone)
 
@@ -24,33 +33,33 @@ By the end of this module, students will be able to:
 
 - **Graphs:** Nodes (intersections) and edges (paths); representing a grid as a graph
 - **Graph Representation:** Using dictionaries to store neighbors
-- **Dijkstra's Algorithm:** Finding shortest paths when some paths are blocked
+- **Breadth-first search:** Finding a shortest path when some intersections are blocked
 - **Dictionaries:** Key-value pairs; using coordinates as keys
 - **Nested Data Structures:** Lists of tuples as dictionary values
-- **Algorithm Swapping:** Modular design allows replacing Manhattan with Dijkstra
+- **Testing by properties:** When more than one answer is right, test what must be true
+- **Algorithm Swapping:** Modular design allows replacing Manhattan with BFS (and, in Module 6, Dijkstra)
 - **Obstacle Detection:** Reading rangefinder; detecting blocked intersections
 - **Dynamic Updating:** Learning over time; growing a list of blocked nodes
 - **Robotics Integration:** End-to-end system combining sensing, computation, and navigation
 
 ## Module Structure
 
-### Phase A: Graph Theory and Dictionaries (Lessons 1–3)
-Students understand graphs and implement dictionaries.
+### Phase A: Graphs and Dictionaries (Lessons 1–3)
 - Lesson 1: The Grid as a Graph
 - Lesson 2: Dictionaries
-- Lesson 3: Dijkstra's Algorithm — The Concept
+- Lesson 3: Breadth-First Search — The Concept (hand trace; ring numbers on the grid)
 
-### Phase B: Implementing Dijkstra (Lessons 4–6)
-Students code the Dijkstra class and integrate it.
-- Lesson 4: The Dijkstra Class
-- Lesson 5: Implementing compute_path()
-- Lesson 6: Testing and Swapping (Dijkstra for Manhattan)
+### Phase B: Implementing BFS (Lessons 4–6)
+- Lesson 4: The Pathfinding Functions (`build_graph`, `add_blocked`, placeholder planner)
+- Lesson 5: Implementing `compute_bfs_path()`
+- Lesson 6: Testing and Swapping (property checks; BFS for Manhattan)
 
 ### Phase C: Capstone Project (Lessons 7–9)
-Students add obstacle detection and demonstrate the full system.
 - Lesson 7: Obstacle Detection with the Rangefinder
 - Lesson 8: Building Experience (Updating Obstacles Over Time)
 - Lesson 9: Module 5 Capstone Project
+
+**After this module:** Module 6 (optional) upgrades BFS to Dijkstra's algorithm for grids with slow segments.
 
 ## Python Concepts Introduced
 
@@ -59,23 +68,23 @@ Students add obstacle detection and demonstrate the full system.
 | Dictionaries | 2 | Represent graph: `{(0,0): [(0,1), (1,0)], ...}` |
 | Dictionary creation | 2 | `dict()` or `{}` syntax |
 | Dictionary access | 2 | `graph[(0,0)]` to get neighbors |
-| `in` keyword | 3 | Check if key in dictionary |
+| `in` keyword | 3 | Check if an intersection has been reached (`previous`) |
 | Nested structures | 1–2 | Lists of tuples as dictionary values |
-| Algorithm implementation | 5 | Translating algorithm to code |
-| Set operations (optional) | 3 | `visited` set in Dijkstra |
+| Algorithm implementation | 5 | Translating the hand trace to code |
+| Passing a function as an argument | 6 | `run_all_tests("BFS", compute_bfs_path)` |
 
 ## Progression
 
-1. **Week 16:** Graph theory and Dijkstra algorithm concept — hand-tracing, understanding logic
-2. **Week 17:** Implementation and testing — code Dijkstra class; verify it works with and without obstacles
+1. **Week 16:** Graphs, dictionaries and the BFS hand trace
+2. **Week 17:** Implement `compute_bfs_path()`; paper tests with and without obstacles; swap it in for Manhattan
 3. **Week 18:** Capstone demo — add rangefinder, obstacle detection, demonstrate learning over multiple runs
 
 **Emphasis:** Building on Module 4 structure; only the pathfinding logic changes. This demonstrates the power of good software design.
 
 ## Key Milestones
 
-- ✓ **End of Week 16:** Dijkstra algorithm understood via hand-tracing; graph representation understood
-- ✓ **Week 17 mid:** Dijkstra class implemented; tested with various obstacle sets
+- ✓ **End of Week 16:** BFS understood via hand-tracing; graph representation understood
+- ✓ **Week 17 mid:** `compute_bfs_path()` implemented; harness passes with various obstacle sets
 - ✓ **Week 17 end:** Swapped into Module 4 program; works identically to Manhattan with no obstacles
 - ✓ **Week 18 early:** Rangefinder integrated; obstacle detection working
 - ✓ **End of Week 18:** Capstone complete — full system working; learning demonstrated
@@ -83,8 +92,8 @@ Students add obstacle detection and demonstrate the full system.
 ## Assessment
 
 Students demonstrate mastery by:
-1. **Algorithm trace worksheet:** Hand-trace Dijkstra on small graph with obstacles
-2. **Dijkstra class implementation:** Code works correctly; tested with multiple obstacle sets
+1. **Algorithm trace worksheet:** Hand-trace BFS (ring numbers) on a small grid with obstacles
+2. **`compute_bfs_path()` implementation:** passes the Lesson 6 harness with multiple obstacle sets
 3. **Integration test:** Swapped into Module 4 program; still works
 4. **Rangefinder integration:** Detects obstacles at intersections
 5. **Capstone demo:** Full system works; demonstrates learning over runs:
@@ -94,8 +103,8 @@ Students demonstrate mastery by:
 ## Debugging Notes
 
 **Common issues:**
-- **Dijkstra gives same result as Manhattan with no obstacles:** This is correct (should be identical)
-- **Dijkstra hangs (infinite loop):** Check if all nodes are reachable; verify obstacle list doesn't block all paths
+- **BFS gives the same number of steps as Manhattan with no obstacles:** This is correct (the exact route may differ; the harness checks properties, not one expected list)
+- **BFS returns an empty path:** either the robot is already there, or the destination is walled off -- check `print_grid` and the blocked list
 - **Rangefinder always detects obstacle:** Threshold too low; recalibrate sensor distance
 - **Robot doesn't avoid obstacle on 2nd run:** Obstacle list not persisting between runs; check data storage
 - **Program works on simulator, fails on robot:** Timing or sensor calibration; debug one piece at a time
@@ -104,7 +113,7 @@ Students demonstrate mastery by:
 
 - Graph representation worksheet (in worksheets/)
 - Algorithm hand-tracing worksheet (in worksheets/)
-- `Dijkstra` class template (in code/starter/)
+- `compute_bfs_path()` template (in code/starter/)
 - Solution code (in code/solutions/)
 - Rangefinder sensor examples
 - Main program template for capstone
@@ -112,7 +121,8 @@ Students demonstrate mastery by:
 ## Next Steps
 
 After this module, students have completed the graduation course. Optional extensions:
-- **Advanced:** Multi-robot navigation, A* algorithm, dynamic obstacle updates via sensors
+- **Module 6 (optional):** Dijkstra's algorithm for grids with slow segments -- BFS with two changes
+- **Advanced:** Multi-robot navigation, A* algorithm
 - **Different domains:** Apply pathfinding to different graphs (not robots); challenge problems
 - **Optimization:** Minimize time, energy, or path length under constraints
 
@@ -133,7 +143,7 @@ After this module, students have completed the graduation course. Optional exten
 5. **Present:** Explain algorithm, results, and lessons learned
 
 ### Grading Rubric
-- [ ] Dijkstra algorithm correctly implemented
+- [ ] BFS correctly implemented (passes the paper harness)
 - [ ] Rangefinder detects obstacles at intersections
 - [ ] Obstacle list updates and persists across runs
 - [ ] Robot reaches all destinations (eventually)

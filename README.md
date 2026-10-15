@@ -1,10 +1,10 @@
 # XRP Python Programming Course
 
-A comprehensive, project-based robotics course teaching high school students Python programming using XRP robots. Students progress from visual block-based programming through sophisticated algorithm design, culminating in autonomous grid navigation with obstacle avoidance using Dijkstra's algorithm.
+A comprehensive, project-based robotics course teaching high school students Python programming using XRP robots. Students progress from visual block-based programming through sophisticated algorithm design, culminating in autonomous grid navigation with obstacle avoidance using breadth-first search. An optional sixth module upgrades the planner to Dijkstra's algorithm.
 
 ## Course Overview
 
-**Duration:** 18 weeks (5 modules)
+**Duration:** 18 weeks (5 modules), plus an optional Module 6 (1–2 weeks)
 
 **Prerequisites:** None—basic computer literacy only
 
@@ -12,16 +12,16 @@ A comprehensive, project-based robotics course teaching high school students Pyt
 - Transition from visual block-based programming to Python text-based programming
 - Master fundamental programming concepts (loops, conditionals, functions, classes, data structures)
 - Apply programming to solve real-world robotics challenges
-- Understand and implement algorithms (Manhattan distance, Dijkstra's pathfinding)
+- Understand and implement algorithms (Manhattan distance, breadth-first search; optionally Dijkstra's algorithm)
 - Develop problem-solving and debugging skills in a hands-on environment
 
-**Capstone Goal:** Students program their robot to autonomously navigate a taped grid to multiple destinations, detecting obstacles and dynamically rerouting in real-time using Dijkstra's algorithm.
+**Capstone Goal:** Students program their robot to autonomously navigate a taped grid to multiple destinations, detecting obstacles and dynamically rerouting in real-time using breadth-first search.
 
 ### Key Features
 
 - **Just-in-Time Learning:** Python concepts are introduced when students need them to accomplish concrete robot tasks
 - **Progressive Complexity:** Starts with simple driving, builds to sophisticated algorithm implementation
-- **Reusable Code:** Students build classes across modules that they use and extend
+- **Reusable Code:** Students build a toolkit of functions across modules that they use and extend (classes are an optional per-student extension)
 - **Emphasis on Testing:** Especially in later modules, students learn to test code without hardware
 - **Balance of Theory and Practice:** Worksheets and hand-tracing activities ground algorithm understanding before coding
 
@@ -47,14 +47,20 @@ A comprehensive, project-based robotics course teaching high school students Pyt
 - **Concepts:** Tuples, lists, Manhattan distance, separation of concerns
 - **Final Project:** Robot navigates to a series of destinations using Manhattan pathfinding
 
-### Module 5: Dijkstra's Algorithm (3–4 weeks)
+### Module 5: Pathfinding Around Obstacles (3–4 weeks)
 - **Theme:** Graph algorithms, obstacle detection, dynamic rerouting
-- **Concepts:** Dictionaries, graphs, Dijkstra's algorithm, rangefinder sensor
-- **Final Project:** Robot detects obstacles and dynamically reroutes using Dijkstra's algorithm
+- **Concepts:** Dictionaries, graphs, breadth-first search, testing by properties, rangefinder sensor
+- **Final Project:** Robot detects obstacles and dynamically reroutes using BFS
+
+### Module 6: Dijkstra's Algorithm (optional, 1–2 weeks)
+- **Theme:** The same algorithm with one upgrade — when the fewest steps is not the fastest route
+- **Concepts:** Edge weights, cost as a test property, BFS → Dijkstra in two changes
+- **Final Activity:** On a grid with one slow segment, the robot takes the faster route that BFS would not
+- The course is complete without it; it can be dropped cleanly.
 
 ## Folder Structure
 
-- 📁 `module-01-driving/` through `module-05-dijkstra/` — Each module contains:
+- 📁 `module-01-driving/` through `module-06-dijkstra/` — Each module contains:
   - `lessons/` — Detailed lesson plans
   - `slides/` — Presentation outlines
   - `exercises/` — Hands-on activity guides
@@ -115,7 +121,7 @@ Each module builds progressively. Start with Module 1 and work through in order.
 | Classes and objects | Module 2 | 2–5 |
 | Lists and tuples | Module 4 | 4–5 |
 | Dictionaries | Module 5 | 5 |
-| Algorithms (Manhattan, Dijkstra) | Modules 4–5 | 4–5 |
+| Algorithms (Manhattan, BFS; Dijkstra optional) | Modules 4–6 | 4–6 |
 
 ## Support & Resources
 

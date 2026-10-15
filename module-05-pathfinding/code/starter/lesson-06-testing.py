@@ -1,5 +1,9 @@
-# Lesson 6: Testing and Swapping - SOLUTION
-# One test harness, two planners (three if you did the Dijkstra extension).
+# Lesson 6: Testing and Swapping
+#
+# Team: ________________________
+# Date: ________________________
+#
+# One test harness, two planners (Module 6 adds a third).
 # No robot needed to run this file.
 #
 # Both planners have exactly the same shape:
@@ -115,7 +119,9 @@ def manhattan_distance(a, b):
 
 def is_neighbor(a, b):
     """True when a and b are exactly one step apart."""
-    return manhattan_distance(a, b) == 1
+    # TODO: two intersections are neighbors when their Manhattan distance is 1
+    # return manhattan_distance(a, b) == ???
+    return False
 
 
 def check_path(path, position, destination):
@@ -128,16 +134,23 @@ def check_path(path, position, destination):
             problems.append("empty path, but the robot is not at the destination")
         return problems
 
-    if not is_neighbor(position, path[0]):
-        problems.append("first step " + str(path[0]) + " is not next to the start " + str(position))
-    if path[-1] != destination:
-        problems.append("last step " + str(path[-1]) + " is not the destination " + str(destination))
-    for i in range(1, len(path)):
-        if not is_neighbor(path[i - 1], path[i]):
-            problems.append("step " + str(path[i]) + " is not next to " + str(path[i - 1]))
-    for step in path:
-        if step in BLOCKED:
-            problems.append("drives through blocked intersection " + str(step))
+    # TODO 1: the first step must be next to where the robot is
+    # if not is_neighbor(position, path[0]):
+    #     problems.append("first step " + str(path[0]) + " is not next to the start " + str(position))
+
+    # TODO 2: the last step must be the destination
+    # if path[-1] != ???:
+    #     problems.append("last step " + str(path[-1]) + " is not the destination " + str(destination))
+
+    # TODO 3: every step must be next to the one before it
+    # for i in range(1, len(path)):
+    #     if not is_neighbor(path[i - 1], path[???]):
+    #         problems.append("step " + str(path[i]) + " is not next to " + str(path[i - 1]))
+
+    # TODO 4: no step may be a blocked intersection
+    # for step in path:
+    #     if step in ???:
+    #         problems.append("drives through blocked intersection " + str(step))
 
     return problems
 
@@ -145,10 +158,14 @@ def check_path(path, position, destination):
 def run_test(test_name, planner, position, destination, expected_steps):
     """Run one planner on one case and report PASS or FAIL.
     expected_steps is None when more than one length could be right."""
+    # Notice: planner is a FUNCTION handed in as an argument. Calling
+    # planner(position, destination) calls whichever planner we were given.
     path = planner(position, destination)
     problems = check_path(path, position, destination)
-    if expected_steps is not None and len(path) != expected_steps:
-        problems.append("expected " + str(expected_steps) + " steps, got " + str(len(path)))
+    # TODO 5: when nothing is blocked, the number of steps must be the
+    #         Manhattan distance -- the caller passes that in as expected_steps
+    # if expected_steps is not None and len(path) != ???:
+    #     problems.append("expected " + str(expected_steps) + " steps, got " + str(len(path)))
 
     if len(problems) == 0:
         print("  PASS  " + test_name + "  " + str(path))
@@ -175,8 +192,7 @@ def run_no_path_test(test_name, planner, position, destination):
 
 
 def run_all_tests(name, planner):
-    """Run the whole test suite against one planner. The planner is handed in
-    as an argument, so the same suite serves every planner we write."""
+    """Run the whole test suite against one planner."""
     print("========== " + name + " ==========")
     passed = 0
     total = 0
@@ -215,10 +231,12 @@ def run_all_tests(name, planner):
 
 # ===== The swap: same harness, different planner =====
 
-run_all_tests("Manhattan", compute_manhattan_path)
-run_all_tests("BFS", compute_bfs_path)
+# TODO 6: run the suite against Manhattan, then against BFS. Which tests does
+#         Manhattan fail, and why? (Look at the printed path.)
+# run_all_tests("Manhattan", compute_manhattan_path)
+# run_all_tests("BFS", ???)
 
-# Did the Dijkstra extension? Paste compute_dijkstra_path above and add:
+# Module 6 adds a third planner, Dijkstra, to this same harness:
 # run_all_tests("Dijkstra", compute_dijkstra_path)
 
 
@@ -231,16 +249,18 @@ def navigate(planner, position, destination):
     return destination       # where the robot would be after driving it
 
 
-print("========== Same main program, different planner ==========")
-clear_blocked()
-add_blocked((2, 0))
-print("Blocked:", BLOCKED)
-
-print("With Manhattan:")
-position = navigate(compute_manhattan_path, (0, 0), (3, 3))
-position = navigate(compute_manhattan_path, position, (0, 2))
-
-print("With BFS -- only the planner's name changed:")
-position = navigate(compute_bfs_path, (0, 0), (3, 3))
-position = navigate(compute_bfs_path, position, (0, 2))
-clear_blocked()
+# TODO 7: block (2,0), then run the same two trips with each planner. Only the
+#         planner's name should change between the two blocks of code.
+# print("========== Same main program, different planner ==========")
+# clear_blocked()
+# add_blocked((2, 0))
+# print("Blocked:", BLOCKED)
+#
+# print("With Manhattan:")
+# position = navigate(compute_manhattan_path, (0, 0), (3, 3))
+# position = navigate(compute_manhattan_path, position, (0, 2))
+#
+# print("With BFS -- only the planner's name changed:")
+# position = navigate(???, (0, 0), (3, 3))
+# position = navigate(???, position, (0, 2))
+# clear_blocked()

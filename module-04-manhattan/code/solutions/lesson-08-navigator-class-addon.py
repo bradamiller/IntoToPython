@@ -74,7 +74,7 @@ class Manhattan:
     It holds NO state: compute_path() is told the robot's position every
     time, and the Navigator is the only thing that tracks where the robot
     is. Manhattan is a class only so that it has the same shape as the
-    Module 5 planners (BFS, Dijkstra) -- then one main program and one test
+    Module 5 and 6 planners (BFS, Dijkstra) -- then one main program and one test
     harness work with any of them by changing one name.
     """
 

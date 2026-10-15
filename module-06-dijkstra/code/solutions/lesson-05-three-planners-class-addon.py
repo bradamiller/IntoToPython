@@ -1,14 +1,14 @@
-# Lesson 6 Optional Extension: Testing and Swapping with Classes - SOLUTION
-# Classes-track reference: the Lesson 6 harness, run against planner OBJECTS.
-# Three planners, one harness, swap by changing one name. No robot needed.
+# Module 6, Lesson 5 Optional Extension: Three Planners, One Harness - SOLUTION
+# Classes-track reference: the Module 5 Lesson 6 class harness with a third
+# planner, Dijkstra, added. Swap by changing one name. No robot needed.
 #
 # The harness is the same as the functions version except that it calls
 # planner.compute_path(...) and planner.add_blocked(...) instead of
 # compute_xxx_path(...) and add_blocked(...). Because every planner class has
 # those two methods, the harness never needs to know which planner it holds.
 #
-# Dijkstra here is the Lesson 6 extension: a copy of the BFS class with the
-# two changes marked NEW/CHANGED, plus a weight() method for slow edges.
+# Dijkstra is a copy of the BFS class with the two changes marked NEW/CHANGED,
+# plus add_slow_edge() and weight() (Module 6 Lessons 2-3).
 
 
 def build_graph(rows, cols, blocked):

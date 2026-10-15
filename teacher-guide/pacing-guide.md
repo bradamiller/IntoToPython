@@ -8,7 +8,8 @@
 | 5–9 | Module 2: Line Tracking | 4–5 weeks | Heaviest module—sensors, control, first classes |
 | 10–11 | Module 3: Grid Driving | 1–2 weeks | Applies Module 2 code to the grid; short module |
 | 12–15 | Module 4: Manhattan | 3–4 weeks | Data structures + pathfinding; algorithmic thinking |
-| 16–18 | Module 5: Dijkstra (Capstone) | 3–4 weeks | Advanced algorithm + obstacle detection + capstone demo |
+| 16–18 | Module 5: Pathfinding (Capstone) | 3–4 weeks | BFS + obstacle detection + capstone demo |
+| (19–20) | Module 6: Dijkstra (optional) | 1–2 weeks | Only if there is time, or a second semester. Weights; BFS → Dijkstra; the slow-segment grid. The course is complete without it. |
 
 ## Week-by-Week Breakdown
 
@@ -90,20 +91,34 @@
 
 ---
 
-### Module 5: Dijkstra's Algorithm (Weeks 16–18)
+### Module 5: Pathfinding Around Obstacles (Weeks 16–18)
 
-**Goal:** Implement Dijkstra algorithm, detect obstacles with rangefinder, and demonstrate dynamic rerouting.
+**Goal:** Implement breadth-first search, detect obstacles with the rangefinder, and demonstrate dynamic rerouting.
 
 | Week | Phase | Lessons | Key Activities |
 |---|---|---|---|
-| **W16** | Graphs & Dijkstra (L1–3) | Graph theory, dictionaries, algorithm concepts | Hand-trace algorithm with blocked nodes |
-| **W17** | Implementation (L4–6) | Dijkstra class, testing, module swapping | Implement class; swap for Manhattan; test with obstacles |
+| **W16** | Graphs & BFS (L1–3) | Graph theory, dictionaries, the ripples hand trace | Hand-trace BFS with blocked nodes; compare with `print_grid` |
+| **W17** | Implementation (L4–6) | Pathfinding toolkit, `compute_bfs_path`, property tests, swapping | Implement BFS; paper tests; swap for Manhattan |
 | **W18** | Capstone (L7–9) | Rangefinder, experience loop, demo | Full capstone: navigate, detect obstacles, recompute, prove "learning" |
 
 **Milestones:**
-- ✓ By end of W16: Dijkstra algorithm understood via hand-tracing
-- ✓ By end of W17: Dijkstra class implemented and tested; swappable with Manhattan
+- ✓ By end of W16: BFS understood via hand-tracing
+- ✓ By end of W17: `compute_bfs_path()` passes the harness; swappable with Manhattan
 - ✓ By end of W18: Capstone complete—robot navigates with obstacle avoidance
+
+
+### Module 6: Dijkstra's Algorithm (Optional — Weeks 19–20, or a second semester)
+
+**Goal:** Upgrade BFS to Dijkstra's algorithm for a grid with a slow segment.
+
+**Only if there is time.** The course is complete at the end of Module 5 and nothing depends on this module.
+
+| Week | Lessons | Key Activities |
+|---|---|---|
+| **W19** | L1–3 | Time the slow segment; add weights and a cost check to the harness (BFS fails it); copy BFS, make the two changes, run three planners through one harness |
+| **W20** | L4 (+L5) | Drive the slow-segment grid: BFS run, then Dijkstra run. Classes track: the `Dijkstra` class |
+
+**Setup:** one grid segment made deliberately slow (e.g. a winding tape detour between two adjacent intersections) that students can time with a stopwatch. See `module-06-dijkstra/README.md`.
 
 ---
 
@@ -137,7 +152,7 @@
 | **Checkpoint 3** | Classes implemented | W9 | Full line-tracking with 4 reversals |
 | **Checkpoint 4** | Grid navigation working | W11 | Square pattern |
 | **Checkpoint 5** | Manhattan navigation | W15 | Multi-destination navigation |
-| **Capstone Demo** | Dijkstra + obstacles | W18 | Full autonomous navigation with learning |
+| **Capstone Demo** | BFS + obstacles | W18 | Full autonomous navigation with learning |
 
 ---
 
