@@ -117,17 +117,17 @@ Total: _____ steps.
 
 **Trace each step:**
 
-| Step | From | To | Desired Heading | Current Heading | `turn_to` heading values | New Heading |
-|---|---|---|---|---|---|---|
-| 1 | (__, __) | (__, __) | __________ | __________ | __________ | __________ |
-| 2 | (__, __) | (__, __) | __________ | __________ | __________ | __________ |
-| 3 | (__, __) | (__, __) | __________ | __________ | __________ | __________ |
-| 4 | (__, __) | (__, __) | __________ | __________ | __________ | __________ |
-| 5 | (__, __) | (__, __) | __________ | __________ | __________ | __________ |
-| 6 | (__, __) | (__, __) | __________ | __________ | __________ | __________ |
+| Step | From | To | Desired Heading | Current Heading | `(desired - heading) % 4` | Robot does | New Heading |
+|---|---|---|---|---|---|---|---|
+| 1 | (__, __) | (__, __) | ______ | ______ | ______ | ______________ | ______ |
+| 2 | (__, __) | (__, __) | ______ | ______ | ______ | ______________ | ______ |
+| 3 | (__, __) | (__, __) | ______ | ______ | ______ | ______________ | ______ |
+| 4 | (__, __) | (__, __) | ______ | ______ | ______ | ______________ | ______ |
+| 5 | (__, __) | (__, __) | ______ | ______ | ______ | ______________ | ______ |
+| 6 | (__, __) | (__, __) | ______ | ______ | ______ | ______________ | ______ |
 
 *Headings: 0 = North, 1 = East, 2 = South, 3 = West*
-*`turn_to` each pass: turn right, add 1 to heading, wrap 4 → 0. Stop when heading == desired.*
+*`turn_to`: `(desired - heading) % 4` clockwise quarter turns; 3 means one counterclockwise turn. Then track to the intersection and drive past it.*
 
 (Add more rows if needed on the back of this page.)
 
@@ -217,32 +217,33 @@ def compute_manhattan_path(position, destination):
 def desired_heading(position, next_pos):
     row_diff = next_pos[0] - position[0]
     col_diff = next_pos[1] - position[1]
-    if row_diff == -1:
+    if col_diff == 0 and row_diff == -1:
         return 0
-    elif col_diff == 1:
+    if row_diff == 0 and col_diff == 1:
         return 1
-    elif row_diff == 1:
+    if col_diff == 0 and row_diff == 1:
         return 2
-    elif col_diff == -1:
+    if row_diff == 0 and col_diff == -1:
         return 3
+    raise ValueError(str(position) + " and " + str(next_pos) + " are not neighbors")
 
 
 def turn_to(heading, desired):
-    while heading != desired:
-        turn_right()
-        heading = heading + 1
-        if heading == 4:
-            heading = 0
-    return heading
+    turns = (desired - heading) % 4
+    if turns == 3:
+        turn_counterclockwise()
+    else:
+        for i in range(turns):
+            turn_clockwise()
+    return desired
 
 
 def drive_path(path, position, heading):
     for next_pos in path:
         needed = desired_heading(position, next_pos)
-        if heading == needed:
-            clear_intersection()
         heading = turn_to(heading, needed)
-        track_until_cross()
+        track_to_intersection()
+        drive_past_intersection()
         position = next_pos
     return position, heading
 
@@ -310,29 +311,22 @@ ____________________________________________________________________
 
 ## Part F (Optional Extension): The Class Version
 
-*Skip this section if your course doesn't cover classes.*
+*For students who did the Lesson 5 and 8 class extensions.*
 
-1. **In the class version, `drive_path()` is a method that updates `self.position` and `self.heading` in place, and doesn't return anything. What line does the main program need after calling `navigator.drive_path(path)` that the functions version does NOT need?**
-
-   _________________________________________________________________
-
-2. **Why is that line ("keep two objects in sync") a common source of bugs, compared to the functions version's single `position` variable?**
+1. **In the class version, `navigator.drive_path(path)` returns nothing. Why doesn't the main program need `position, heading = ...` any more?**
 
    _________________________________________________________________
 
+2. **The planner is still told where the robot is: `planner.compute_path(navigator.position, dest)`. Why doesn't `Manhattan` keep its own copy of the position?**
+
    _________________________________________________________________
 
-3. **Rewrite this functions-version snippet using the `Manhattan`/`Navigator` classes:**
+   _________________________________________________________________
 
-   Functions version:
-   ```python
-   path = compute_manhattan_path(position, dest)
-   position, heading = drive_path(path, position, heading)
-   ```
+3. **Rewrite the functions-version loop body using the classes:**
 
-   Class version:
    ```python
    path = _______________________________________________
    _______________________________________________
-   _______________________________________________
+   print("Arrived at:", _______________________)
    ```

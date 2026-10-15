@@ -313,9 +313,9 @@ _________________________________________________________________
 
 ---
 
-## Part 6 (Optional Extension): Wrap It in a Class
+## Part 6 (Optional Extension): The `Manhattan` Class
 
-*Skip this section if your course doesn't cover classes.*
+*For students who did the Module 2 class extensions.*
 
 1. **Fill in the blanks to turn `compute_manhattan_path` into a class:**
 
@@ -330,29 +330,32 @@ _________________________________________________________________
    **Class version:**
    ```python
    class Manhattan:
-       def __init__(___________, start):
-           ___________.position = start
+       def __init__(___________):
+           pass
 
-       def compute_path(___________, destination):
+       def compute_path(___________, position, destination):
            path = []
-           current_row, current_col = ___________.position
+           current_row, current_col = ___________
            ...
    ```
 
-2. **In the function version, every call must supply both a position and a destination:**
+2. **Rewrite the two calls using the class version:**
    ```python
    path1 = compute_manhattan_path((0, 0), (2, 3))
-   path2 = compute_manhattan_path((0, 0), (1, 1))
+   path2 = compute_manhattan_path((2, 3), (1, 1))
    ```
-   **Rewrite these two calls using the class version, creating the object once:**
    ```python
-   nav = _______________________________
-   path1 = _______________________________
-   path2 = _______________________________
+   planner = ___________________________
+   path1 = ___________________________
+   path2 = ___________________________
    ```
 
-3. **Does `compute_path` (the method) ever change `self.position`?**
+3. **`__init__` takes no start position and there is no `self.position`. Why not?**
 
-   YES / NO -- **Why or why not?**
+   _________________________________________________________________
+
+   _________________________________________________________________
+
+4. **If the planner holds no state, why make it a class at all?**
 
    _________________________________________________________________

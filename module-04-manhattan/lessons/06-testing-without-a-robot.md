@@ -306,7 +306,7 @@ def compute_manhattan_path(position, destination):
 - **Celebrate failing tests**: When a test says "FAIL", that is the test doing its job. A test that catches a bug before the robot runs is a success, not a failure. Reframe the language: "The test found a bug for you."
 - **Remove debug prints after fixing**: Remind students that print statements added for debugging should be removed (or commented out) once the bug is fixed, so the output stays clean for future test runs.
 - **Common bugs to watch for**: Path going in the wrong direction, path including the start position when it should not, infinite loop when start equals destination, off-by-one errors. The slide outline (Slide 8) lists these — walk through them if students encounter issues.
-- **If your course covers the Lesson 5 Optional Extension (classes)**, everything above works identically through `manhattan.compute_path(dest)` (with `manhattan = Manhattan(position)` created once per test) instead of `compute_manhattan_path(position, dest)` -- only the call syntax changes.
+- **If your course covers the Lesson 5 Optional Extension (classes)**, everything above works identically through `planner.compute_path(position, dest)` (with one `planner = Manhattan()` at the top of the file) instead of `compute_manhattan_path(position, dest)` -- only the call syntax changes. The planner is still told the position.
 
 ## Connections to Next Lessons
 - **Lesson 7** will introduce the turning challenge — now that the algorithm is tested and correct, students need to figure out how the robot should turn at each step

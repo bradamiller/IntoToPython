@@ -6,7 +6,7 @@
 
 In Lesson 4 you wrote a `compute_path` function with 4 while loops. Now you will give it a proper name -- `compute_manhattan_path` -- and a docstring, since Module 5 will introduce a second pathfinding algorithm (Dijkstra) that needs a name of its own. The algorithm does not change -- this is a rename, not a rewrite.
 
-*Skip to the bottom of this file for the Optional Extension (wrapping the function in a class), if your course covers classes.*
+*Skip to the bottom of this file for the Optional Extension (the `Manhattan` class), if you did the Module 2 class extensions.*
 
 ## What You Will Do
 
@@ -67,14 +67,15 @@ Steps: 5
 
 ---
 
-## Optional Extension: Wrap It in a Class
+## Optional Extension: The Manhattan Class
 
 *Skip this section if your course doesn't cover classes.*
 
 **Reference code:** `code/solutions/lesson-05-manhattan-class-addon.py`
 
 Take `compute_manhattan_path(position, destination)` and repackage it as a `Manhattan` class:
-- `__init__(self, start)` stores `self.position = start`
-- `compute_path(self, destination)` uses `self.position` instead of the `position` parameter -- the four while loops are otherwise unchanged
+- `__init__(self)` does nothing -- `pass`. Manhattan has nothing to set up.
+- `compute_path(self, position, destination)` is the function moved inside the class with `self` added; the four while loops are unchanged
+- Why a class at all? So it has the same shape as the Module 5 planners (`BFS`), which *do* have setup to hold. Then one main program works with any planner by changing one name.
 
-Test it with `Manhattan((0, 0)).compute_path((2, 3))` and confirm the output matches the function version exactly.
+Test it with `Manhattan().compute_path((0, 0), (2, 3))` and confirm the output matches the function version exactly. Note that `__init__` takes nothing and there is no `self.position`: the planner is told where the robot is, every call, even as a class.

@@ -226,23 +226,23 @@ A while loop whose condition is already false simply does nothing -- it is skipp
 
    ```python
    class Manhattan:
-       def __init__(self, start):
-           self.position = start
+       def __init__(self):
+           pass
 
-       def compute_path(self, destination):
+       def compute_path(self, position, destination):
            path = []
-           current_row, current_col = self.position
+           current_row, current_col = position
            ...
    ```
 
 2. **Rewrite the two calls using the class version:**
 
    ```python
-   nav = Manhattan((0, 0))
-   path1 = nav.compute_path((2, 3))
-   path2 = nav.compute_path((1, 1))
+   planner = Manhattan()
+   path1 = planner.compute_path((0, 0), (2, 3))
+   path2 = planner.compute_path((2, 3), (1, 1))
    ```
 
-3. **Does `compute_path` (the method) ever change `self.position`?**
+3. **Why no `self.position`?** **Because the driving code is the one thing that knows where the robot is. A planner that stored its own copy would need a line to keep the two in step after every leg, and the first time that line is forgotten the robot plans from a place it isn't. The planner is told the position every call.**
 
-   **NO** -- **Why or why not?** **It only reads `self.position` when unpacking into `current_row`/`current_col` -- it never reassigns `self.position` itself. If it did, the object's stored starting position would drift after every call, and a second `compute_path()` call would start from the wrong place.**
+4. **Why a class at all?** **So it has the same shape as the Module 5 and 6 planners (`BFS`, `Dijkstra`), which do have setup to hold (the blocked list). Then one main program and one test harness work with any planner by changing one name.**

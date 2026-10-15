@@ -112,8 +112,8 @@ Final position: (0, 0)
 **Reference code:** `code/solutions/lesson-09-final-project-class-addon.py`
 
 Rebuild the main program using `Manhattan` and `Navigator` objects instead of bare functions:
-- Create `manhattan = Manhattan((0, 0))` and `navigator = Navigator((0, 0), 0)` once, before the loop.
-- Replace `compute_manhattan_path(position, dest)` with `manhattan.compute_path(dest)`.
-- Replace `position, heading = drive_path(path, position, heading)` with `navigator.drive_path(path)` -- but add one extra line the functions version doesn't need: `manhattan.position = navigator.position`, so the two objects stay in sync.
+- Create `planner = Manhattan()` and `navigator = Navigator((0, 0), 0)` once, before the loop.
+- Replace `compute_manhattan_path(position, dest)` with `planner.compute_path(navigator.position, dest)` -- the planner is still told where the robot is.
+- Replace `position, heading = drive_path(path, position, heading)` with `navigator.drive_path(path)`. There is no return value to capture and no sync line: the navigator is the only thing that knows where the robot is.
 
 Compare the two main programs side by side. Which parts got shorter? Which parts got longer? Where would a bug be easier to spot in each version?

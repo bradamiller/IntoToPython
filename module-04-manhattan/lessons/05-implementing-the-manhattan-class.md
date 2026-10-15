@@ -1,7 +1,7 @@
 # Lesson 5: A Reusable Manhattan Function
 
 ## Overview
-Students take the `compute_path` function they wrote in Lesson 4 and turn it into a properly named, documented, reusable function: `compute_manhattan_path(position, destination)`. The algorithm itself -- four while loops that build a path list -- does not change at all; this lesson is about giving it a name specific enough to survive contact with Module 5, where a second pathfinding algorithm (Dijkstra) will need its own, differently-named function. Students test the renamed function against several start/destination pairs and confirm the output still matches their Lesson 4 hand traces.
+Students take the `compute_path` function they wrote in Lesson 4 and turn it into a properly named, documented, reusable function: `compute_manhattan_path(position, destination)`. The algorithm itself -- four while loops that build a path list -- does not change at all; this lesson is about giving it a name specific enough to survive contact with Module 5, where a second pathfinding algorithm (breadth-first search, `compute_bfs_path`) will need its own, differently-named function. The lesson also fixes the rule the rest of the course rests on: the planner is *told* where the robot is, every call, and never remembers -- only the driving code (Lesson 8) tracks position, so there is never a second copy to fall out of date. Students test the renamed function against several start/destination pairs and confirm the output still matches their Lesson 4 hand traces.
 
 This lesson stands on its own -- classes are never required. An **optional extension** at the end of this file shows the same function wrapped in a `Manhattan` class, for courses that also cover OOP.
 
@@ -14,9 +14,10 @@ By the end of this lesson, students will be able to:
 - Confirm function output matches hand-traced results from Lesson 4
 
 ## Key Concepts
-- **Naming for the future**: `compute_path` is a fine name when there's only one algorithm. Once Module 5 introduces Dijkstra, code that calls "the Manhattan one" needs a name that says so -- `compute_manhattan_path`.
+- **Naming for the future**: `compute_path` is a fine name when there's only one algorithm. Once Module 5 introduces BFS, code that calls "the Manhattan one" needs a name that says so -- `compute_manhattan_path`.
 - **Docstring**: A string literal right after `def` that documents what a function does, its parameters, and its return value. Shows up in editor tooltips and `help()`.
 - **Parameter naming**: `compute_manhattan_path(position, destination)` -- naming the first parameter `position` (not `start`) matches how it will be used later: the robot's *current* position, not just a one-time starting point.
+- **Told, not remembered**: `position` is a parameter because the driving code owns the robot's position. A planner that stored its own copy would need a line to keep the two in sync, and the first time that line is forgotten the robot plans from a place it isn't.
 - **Regression testing**: Confirming that renaming/refactoring a function didn't change its behavior, by re-running the same test cases from before the change.
 
 ## Materials Required
@@ -34,7 +35,7 @@ By the end of this lesson, students will be able to:
 
 1. **Hook: Which Algorithm Is This?**
    - Display (or have students open) their `compute_path` function from Lesson 4
-   - Ask: "In Module 5, you're going to write a second pathfinding function called Dijkstra's algorithm. If both functions are named `compute_path`, what happens when you try to have both in the same file?"
+   - Ask: "In Module 5, you're going to write a second pathfinding function, breadth-first search. If both functions are named `compute_path`, what happens when you try to have both in the same file?"
    - Answer: "The second `def compute_path(...)` would silently replace the first one -- Python doesn't warn you. You'd lose access to the Manhattan version entirely."
    - Reveal: "The fix is simple -- give each algorithm a name that says which one it is: `compute_manhattan_path` and, later, `compute_dijkstra_path`."
 
@@ -284,72 +285,44 @@ def compute_manhattan_path(position, destination):
 
 ---
 
-## Optional Extension: Wrap It in a `Manhattan` Class
+## Optional Extension: The `Manhattan` Class
 
-*For courses that also cover classes/objects. Skip this section entirely otherwise -- nothing later in the course depends on it. The robot behaves identically either way; this only changes how the code is packaged.*
+*Do this after the functions version works. It is not graded; it is for students who did the Module 2 class extensions.*
 
-### Why Wrap It?
-`compute_manhattan_path(position, destination)` requires the caller to pass in `position` every single call. If a program computes several paths from the same starting position, that position gets typed repeatedly:
+### Why a class at all?
+Not to remember the position. The rule from this lesson still holds inside a class: **the planner is told where the robot is.** `Manhattan` is a class *only* so that it has the same shape as the Module 5 and 6 planners (`BFS`, `Dijkstra`) -- then one main program and one test harness work with any of them by changing one name. Say this plainly; students who have just learned that objects hold state will expect `self.position`, and its absence is the point.
+
+### From function to class
+
 ```python
-path1 = compute_manhattan_path((0, 0), (2, 3))
-path2 = compute_manhattan_path((0, 0), (1, 1))
-path3 = compute_manhattan_path((0, 0), (3, 2))
+class Manhattan:
+    """The Lesson 5 planner as a class.
+
+    It holds NO state: compute_path() is told the robot's position every
+    time. Manhattan is a class only so that it has the same shape as the
+    Module 5 and 6 planners -- then one main program and one test harness
+    work with any of them by changing one name.
+    """
+
+    def __init__(self):
+        pass        # nothing to set up
+
+    def compute_path(self, position, destination):
+        path = []
+        current_row, current_col = position
+        dest_row, dest_col = destination
+        # ... the four while loops, unchanged ...
+        return path
 ```
-A class lets an object remember its own position, so the caller only supplies the destination:
-```python
-nav = Manhattan((0, 0))
-path1 = nav.compute_path((2, 3))
-path2 = nav.compute_path((1, 1))
-path3 = nav.compute_path((3, 2))
-```
 
-### From Function to Class, Step by Step
+| Functions (required) | Class (extension) |
+|---|---|
+| `path = compute_manhattan_path((0, 0), (2, 3))` | `planner = Manhattan()` then `path = planner.compute_path((0, 0), (2, 3))` |
 
-1. **The `__init__` method** stores the position:
-   ```python
-   class Manhattan:
-       def __init__(self, start):
-           self.position = start
-   ```
+The function moved inside the class and gained `self`; nothing else changed. `__init__` is empty because Manhattan has nothing to set up. `BFS` in Module 5 uses its `__init__` to hold the list of blocked intersections, and that is the moment the class earns its keep.
 
-2. **`compute_path` becomes a method** that reads `self.position` instead of receiving it as a parameter -- the four while loops are otherwise untouched:
-   ```python
-       def compute_path(self, destination):
-           path = []
-           current_row, current_col = self.position
-           dest_row, dest_col = destination
+### Discussion prompt
+"Why doesn't `__init__` take a start position?" (Because then the class would have a second copy of where the robot is, and the driving code has the real one. The first time one is updated and the other is not, the robot plans from a place it isn't. Lesson 9 shows the bug that used to cause.)
 
-           while current_row < dest_row:
-               current_row = current_row + 1
-               path.append((current_row, current_col))
-           while current_row > dest_row:
-               current_row = current_row - 1
-               path.append((current_row, current_col))
-           while current_col < dest_col:
-               current_col = current_col + 1
-               path.append((current_row, current_col))
-           while current_col > dest_col:
-               current_col = current_col - 1
-               path.append((current_row, current_col))
-
-           return path
-   ```
-
-3. **Test it:**
-   ```python
-   nav = Manhattan((0, 0))
-   path = nav.compute_path((2, 3))
-   print("Path from (0,0) to (2,3):", path)
-   print("Steps:", len(path))
-   ```
-   Expected output matches the function version exactly:
-   ```
-   Path from (0,0) to (2,3): [(1, 0), (2, 0), (2, 1), (2, 2), (2, 3)]
-   Steps: 5
-   ```
-
-### Discussion Prompt
-"`compute_path` never modifies `self.position` -- it only reads it. Why might that matter?" (If it changed `self.position`, calling `compute_path` twice in a row would compute the second path from the wrong starting point. The object's stored position should stay put until the caller explicitly updates it -- which becomes important in Lesson 9's final project.)
-
-### Worksheet
-See the "Optional Extension" section at the end of the Lesson 5 worksheet for matching exercises.
+### Code
+`code/solutions/lesson-05-manhattan-class-addon.py` -- output identical to the function version.

@@ -9,7 +9,7 @@
 - `compute_manhattan_path()` returns: **A list of (row, col) tuples representing each position along the path**
 - What two things does `drive_path()` do at each step?
   1. **Turn the robot to face the needed heading (using turn_to)**
-  2. **Follow the line to the next intersection (using track_until_cross, clearing first if going straight)**
+  2. **Follow the line to the next intersection and park the wheels on it (track_to_intersection, then drive_past_intersection)**
 - `drive_path()` returns: **`(position, heading)`**
 
 ---
@@ -60,12 +60,12 @@
 **Computed path:** [(1, 0), (2, 0)]
 
 *Headings: 0 = North, 1 = East, 2 = South, 3 = West*
-*`turn_to` each pass: turn right, add 1 to heading, wrap 4 → 0. Stop when heading == desired.*
+*`turn_to`: `(desired - heading) % 4` clockwise quarter turns; 3 means one counterclockwise turn.*
 
-| Step | From | To | Desired Heading | Current Heading | `turn_to` heading values | New Heading |
-|---|---|---|---|---|---|---|
-| 1 | (0, 0) | (1, 0) | 2 (S) | 0 (N) | 0 → 1 → 2 | 2 (S) |
-| 2 | (1, 0) | (2, 0) | 2 (S) | 2 (S) | already there | 2 (S) |
+| Step | From | To | Desired Heading | Current Heading | `(desired - heading) % 4` | Robot does | New Heading |
+|---|---|---|---|---|---|---|---|
+| 1 | (0, 0) | (1, 0) | 2 (S) | 0 (N) | 2 | two clockwise turns, track, drive past | 2 (S) |
+| 2 | (1, 0) | (2, 0) | 2 (S) | 2 (S) | 0 | no turn, track, drive past | 2 (S) |
 
 **After this leg:**
 
@@ -184,18 +184,13 @@ Sample answer: The hardest part is usually remembering to reassign `position, he
 
 ## Part F (Optional Extension): The Class Version
 
-1. **What line does the main program need after `navigator.drive_path(path)` that the functions version does NOT need?**
+1. **`position` and `heading` live inside the navigator (`self.position`, `self.heading`) and `drive_path()` updates them there. The main program reads `navigator.position` whenever it wants; there is nothing to hand back.**
 
-   **`manhattan.position = navigator.position`**
+2. **Because then there would be two copies of where the robot is -- the planner's and the navigator's -- and a line to keep them in step after every leg. The first time that line is forgotten, the planner plans from a place the robot isn't. One owner (the navigator); the planner is told.**
 
-2. **Why is that line a common source of bugs?**
-
-   **Because it requires two separate objects (`manhattan` and `navigator`) to agree on where the robot is. If a student forgets this line, `manhattan` keeps thinking the robot is still at its very first starting position, so every path after the first leg is computed from the wrong place -- even though `navigator` itself is tracking correctly. The functions version only has ONE `position` variable, so there's nothing that can get out of sync.**
-
-3. **Rewrite the functions-version snippet using the classes:**
-
+3.
    ```python
-   path = manhattan.compute_path(dest)
+   path = planner.compute_path(navigator.position, dest)
    navigator.drive_path(path)
-   manhattan.position = navigator.position
+   print("Arrived at:", navigator.position)
    ```

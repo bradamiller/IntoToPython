@@ -5,229 +5,148 @@
 
 ---
 
-## Part 1: Desired Heading from Coordinate Change
+## Part 1: Desired heading from the coordinate change
 
-Between two adjacent intersections, **either the row OR the column changes — never both**. That gives 4 cases, each mapping to one direction:
+Between two adjacent intersections, **either the row OR the column changes -- never both**. Four cases, four directions:
 
-| row/col change | Direction | Heading Number |
+| row/col change | Direction | Heading number |
 |---|---|---|
-| row -1 | North | 0 |
-| col +1 | East | 1 |
-| row +1 | South | 2 |
-| col -1 | West | 3 |
+| row -1 (and col unchanged) | North | 0 |
+| col +1 (and row unchanged) | East | 1 |
+| row +1 (and col unchanged) | South | 2 |
+| col -1 (and row unchanged) | West | 3 |
 
-**`HEADING_NAMES = ["N", "E", "S", "W"]`** — index 0 is North, 1 is East, etc.
+`HEADING_NAMES = ["N", "E", "S", "W"]` -- index 0 is North, 1 is East, and so on.
 
-| Current Position | Next Position | row_diff | col_diff | What Changed | Desired Heading |
+| Position | Next | row_diff | col_diff | What changed | Desired heading |
 |---|---|---|---|---|---|
 | (0, 0) | (1, 0) | 1 - 0 = _____ | 0 - 0 = _____ | __________ | __________ |
 | (2, 3) | (1, 3) | 1 - 2 = _____ | 3 - 3 = _____ | __________ | __________ |
 | (1, 1) | (1, 2) | _____ | _____ | __________ | __________ |
 | (3, 2) | (3, 1) | _____ | _____ | __________ | __________ |
-| (0, 3) | (1, 3) | _____ | _____ | __________ | __________ |
-| (2, 0) | (2, 1) | _____ | _____ | __________ | __________ |
 | (3, 1) | (2, 1) | _____ | _____ | __________ | __________ |
 | (0, 2) | (0, 1) | _____ | _____ | __________ | __________ |
+| (1, 1) | (2, 2) | _____ | _____ | __________ | __________ |
+
+**The last row is different. What does `desired_heading((1, 1), (2, 2))` do, and what does the message say?**
+
+____________________________________________________________________
+
+**A classmate's version checks only one difference: `if row_diff == 1: return 2`. What does it return for the last row, and why is that worse than an error?**
+
+____________________________________________________________________
+
+____________________________________________________________________
 
 ---
 
-## Part 2: The `turn_to` While Loop
+## Part 2: Counting quarter turns
 
-Here is the function we will write in Lesson 8:
+Each clockwise turn adds 1 to the heading, and 4 wraps to 0. Written as arithmetic:
+
+```python
+turns = (desired - heading) % 4
+```
+
+Fill in the table. Remember that in Python `-1 % 4` is `3`, not `-1`.
+
+| heading | desired | `desired - heading` | `% 4` | What the robot does |
+|---|---|---|---|---|
+| 0 (N) | 1 (E) | 1 | _____ | ______________________ |
+| 1 (E) | 1 (E) | _____ | _____ | ______________________ |
+| 2 (S) | 0 (N) | _____ | _____ | ______________________ |
+| 3 (W) | 2 (S) | _____ | _____ | ______________________ |
+| 1 (E) | 0 (N) | _____ | _____ | ______________________ |
+| 0 (N) | 3 (W) | _____ | _____ | ______________________ |
+| 2 (S) | 3 (W) | _____ | _____ | ______________________ |
+| 3 (W) | 1 (E) | _____ | _____ | ______________________ |
+
+**Which rows come out to 3, and what does the robot actually do in those cases?**
+
+____________________________________________________________________
+
+**Why is one counterclockwise turn better than three clockwise turns, when both end facing the same way?**
+
+____________________________________________________________________
+
+---
+
+## Part 3: The `turn_to` function
 
 ```python
 def turn_to(heading, desired):
-    while heading != desired:
-        turn_right()
-        heading = heading + 1
-        if heading == 4:
-            heading = 0
-    return heading
+    turns = (desired - heading) % 4
+    if turns == 3:
+        turn_counterclockwise()
+    else:
+        for i in range(turns):
+            turn_clockwise()
+    return desired
 ```
 
-**Each pass through the loop:** turn the robot right, add 1 to heading. If heading hits 4, reset to 0. Stop when heading equals desired, then return it.
-
-**In your own words, what does the line `if heading == 4: heading = 0` do, and why is it necessary?**
+**Why does the function end with `return desired`? What must the caller do with it?**
 
 ____________________________________________________________________
 
-____________________________________________________________________
-
----
-
-## Part 3: Trace `turn_to` by Hand
-
-For each scenario, list the value of `heading` after each pass through the while loop, ending when the loop stops. Write "already there" if the loop runs zero times.
-
-| Scenario | Current Heading | Desired Heading | heading values during turn_to | Total Turns |
-|---|---|---|---|---|
-| 1 | 0 (N) | 1 (E) | 0 → ___ | _____ |
-| 2 | 1 (E) | 1 (E) | __________ | _____ |
-| 3 | 2 (S) | 0 (N) | 2 → ___ → ___ | _____ |
-| 4 | 3 (W) | 2 (S) | 3 → ___ → ___ → ___ | _____ |
-| 5 | 1 (E) | 0 (N) | 1 → ___ → ___ → ___ | _____ |
-| 6 | 0 (N) | 3 (W) | 0 → ___ → ___ → ___ | _____ |
-| 7 | 2 (S) | 3 (W) | 2 → ___ | _____ |
-| 8 | 3 (W) | 1 (E) | 3 → ___ → ___ | _____ |
-
-**Which scenarios above trigger the wrap from 4 back to 0?** ____________________________
-
-**What is the maximum number of turns the loop can ever run?** ____________________________
-
----
-
-## Part 4: Trace a Path with Heading Updates
-
-**Path:** [(1, 0), (2, 0), (2, 1), (2, 2), (2, 3)]
-**Starting position:** (0, 0) &nbsp;&nbsp; **Starting heading:** 0 (N)
-
-For each step, determine the desired heading, trace `turn_to`, and record the final heading.
-
-| Step | Position | Next | Desired | Current Heading | `turn_to` heading values | New Heading |
-|---|---|---|---|---|---|---|
-| 1 | (0, 0) | (1, 0) | __________ | 0 (N) | __________ | __________ |
-| 2 | (1, 0) | (2, 0) | __________ | __________ | __________ | __________ |
-| 3 | (2, 0) | (2, 1) | __________ | __________ | __________ | __________ |
-| 4 | (2, 1) | (2, 2) | __________ | __________ | __________ | __________ |
-| 5 | (2, 2) | (2, 3) | __________ | __________ | __________ | __________ |
-
-**How many steps required turning?** __________
-
-**How many steps ran the while loop zero times (no turn)?** __________
-
-**At which step did the robot change from row movement to column movement?** Step __________
-
----
-
-## Part 5: Trace a Second Path
-
-**Path:** [(1, 3), (0, 3), (0, 2), (0, 1), (0, 0)]
-**Starting position:** (2, 3) &nbsp;&nbsp; **Starting heading:** 2 (S)
-
-| Step | Position | Next | Desired | Current Heading | `turn_to` heading values | New Heading |
-|---|---|---|---|---|---|---|
-| 1 | (2, 3) | (1, 3) | __________ | 2 (S) | __________ | __________ |
-| 2 | (1, 3) | (0, 3) | __________ | __________ | __________ | __________ |
-| 3 | (0, 3) | (0, 2) | __________ | __________ | __________ | __________ |
-| 4 | (0, 2) | (0, 1) | __________ | __________ | __________ | __________ |
-| 5 | (0, 1) | (0, 0) | __________ | __________ | __________ | __________ |
-
-**What is the robot's final heading after completing this path?** __________
-
----
-
-## Part 6: Trace a Third Path
-
-**Path:** [(1, 2), (1, 3), (2, 3), (3, 3)]
-**Starting position:** (1, 1) &nbsp;&nbsp; **Starting heading:** 0 (N)
-
-| Step | Position | Next | Desired | Current Heading | `turn_to` heading values | New Heading |
-|---|---|---|---|---|---|---|
-| 1 | (1, 1) | (1, 2) | __________ | 0 (N) | __________ | __________ |
-| 2 | (1, 2) | (1, 3) | __________ | __________ | __________ | __________ |
-| 3 | (1, 3) | (2, 3) | __________ | __________ | __________ | __________ |
-| 4 | (2, 3) | (3, 3) | __________ | __________ | __________ | __________ |
-
-**What is the robot's final heading?** __________
-
-**Does the first step require turning? Why?**
+**Trace `turn_to(2, 1)`: what is `turns`, which branch runs, and how many times?**
 
 ____________________________________________________________________
 
 ---
 
-## Part 7: Robot Orientation Diagrams
+## Part 4: Trace a path
 
-For each scenario, draw an arrow inside the box showing which way the robot is facing. Then draw a curved arrow showing the turn(s) it needs to make, and draw the final facing direction.
+**Path:** `[(1, 0), (2, 0), (2, 1), (2, 2), (2, 3)]`
+**Start:** position (0, 0), heading 0 (N)
 
-**Scenario A:** Facing 0 (N), desired 1 (E)
+| Step | Position | Next | Desired | Heading before | `% 4` | Robot does | Heading after |
+|---|---|---|---|---|---|---|---|
+| 1 | (0, 0) | (1, 0) | ______ | 0 (N) | ____ | ______________ | ______ |
+| 2 | (1, 0) | (2, 0) | ______ | ______ | ____ | ______________ | ______ |
+| 3 | (2, 0) | (2, 1) | ______ | ______ | ____ | ______________ | ______ |
+| 4 | (2, 1) | (2, 2) | ______ | ______ | ____ | ______________ | ______ |
+| 5 | (2, 2) | (2, 3) | ______ | ______ | ____ | ______________ | ______ |
 
-```
-  Before turn:        After turn:
-  +-------+           +-------+
-  |       |           |       |
-  |  [?]  |           |  [?]  |
-  |       |           |       |
-  +-------+           +-------+
-  turn_to loop runs this many times: __________
-```
-
-**Scenario B:** Facing 1 (E), desired 2 (S)
-
-```
-  Before turn:        After turn:
-  +-------+           +-------+
-  |       |           |       |
-  |  [?]  |           |  [?]  |
-  |       |           |       |
-  +-------+           +-------+
-  turn_to loop runs this many times: __________
-```
-
-**Scenario C:** Facing 3 (W), desired 1 (E)
-
-```
-  Before turn:        After turn:
-  +-------+           +-------+
-  |       |           |       |
-  |  [?]  |           |  [?]  |
-  |       |           |       |
-  +-------+           +-------+
-  turn_to loop runs this many times: __________ (wrap triggered? ___)
-```
-
-**Scenario D:** Facing 2 (S), desired 2 (S)
-
-```
-  Before turn:        After turn:
-  +-------+           +-------+
-  |       |           |       |
-  |  [?]  |           |  [?]  |
-  |       |           |       |
-  +-------+           +-------+
-  turn_to loop runs this many times: __________
-```
+**How many steps needed a turn?** ______  **Which step turned counterclockwise?** ______
 
 ---
 
-## Part 8: Heading Logic in Code
+## Part 5: A second path, starting mid-grid
 
-Fill in the blanks to complete the `desired_heading` function:
+**Path:** `[(1, 3), (0, 3), (0, 2), (0, 1), (0, 0)]`
+**Start:** position (2, 3), heading 2 (S)
 
-```python
-HEADING_NAMES = ["N", "E", "S", "W"]
+| Step | Position | Next | Desired | Heading before | `% 4` | Robot does | Heading after |
+|---|---|---|---|---|---|---|---|
+| 1 | (2, 3) | (1, 3) | ______ | 2 (S) | ____ | ______________ | ______ |
+| 2 | (1, 3) | (0, 3) | ______ | ______ | ____ | ______________ | ______ |
+| 3 | (0, 3) | (0, 2) | ______ | ______ | ____ | ______________ | ______ |
+| 4 | (0, 2) | (0, 1) | ______ | ______ | ____ | ______________ | ______ |
+| 5 | (0, 1) | (0, 0) | ______ | ______ | ____ | ______________ | ______ |
 
-def desired_heading(current_pos, next_pos):
-    row_diff = next_pos[0] - current_pos[0]
-    col_diff = next_pos[1] - current_pos[1]
+**Final position:** ______  **Final heading:** ______
 
-    if row_diff == -1:
-        return _____      # North
-    elif col_diff == _____:
-        return _____      # East
-    elif row_diff == _____:
-        return _____      # South
-    elif col_diff == _____:
-        return _____      # West
-```
+---
 
-**Test your understanding:**
+## Part 6: Where does the program stop?
 
-**What does `desired_heading((0,0), (1,0))` return?** __________
+Suppose the `raise` line were missing from `desired_heading`, and a bug somewhere else handed it `(1, 1)` and `(2, 2)`.
 
-**What does `desired_heading((2,3), (2,2))` return?** __________
+**What does `desired_heading` return?** ______
 
-**What does `desired_heading((1,1), (0,1))` return?** __________
+**That value goes into `turn_to(heading, ...)`. Which line of `turn_to` fails, and what does the error message mention?**
 
-*In the next lesson, you will type `turn_to` and `desired_heading` as real functions and run them on the robot.*
+____________________________________________________________________
+
+**Now put the `raise` back. Which line stops the program, and what does its message tell you that the other one didn't?**
+
+____________________________________________________________________
 
 ---
 
 ## Reflection
 
-**The Manhattan algorithm tells the robot WHERE to go; the `turn_to` while loop handles HOW to face the right direction. In one or two sentences, explain why adding 1 and wrapping 4 → 0 is enough to handle every turning case.**
-
-_________________________________________________________________
+The planner says WHERE to go; `turn_to` handles HOW to face the right way. In one or two sentences, explain why `(desired - heading) % 4` is enough to handle every case, and what the one special case is.
 
 _________________________________________________________________
 
@@ -235,4 +154,4 @@ _________________________________________________________________
 
 ---
 
-**Next Lesson:** We'll turn these three functions into real code and drive the robot along any path!
+**Next lesson:** these three functions become real code on the robot, built on the Module 2 line-tracking functions.

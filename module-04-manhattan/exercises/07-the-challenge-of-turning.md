@@ -19,7 +19,7 @@ Given the robot's current position and the next position (one step away), return
 | 2 | South | +1 | 0 |
 | 3 | West | 0 | -1 |
 
-Fill in the function body using `if`/`elif` statements that check `row_diff` and `col_diff`, returning the appropriate heading number (0, 1, 2, or 3).
+Fill in the function body with four `if` statements that each check **both** `row_diff` and `col_diff` (North is `col_diff == 0 and row_diff == -1`), returning the heading number (0, 1, 2 or 3). If none matches, `raise ValueError(...)` naming both positions -- the two are not neighbors, and the program should stop here, not later.
 
 ### Part 2: Test Your Function
 Uncomment the test code and verify:
@@ -35,9 +35,9 @@ Uncomment the test code and verify:
 - **`HEADING_NAMES = ["N", "E", "S", "W"]`** for display: `HEADING_NAMES[heading]` gives the letter.
 - **One change at a time:** Between two adjacent intersections, either the row OR the column changes — never both. That gives exactly 4 cases, one for each compass direction.
 - **Direction from coordinates:** Check which of `row_diff` or `col_diff` is nonzero, and whether it is +1 or -1, to pick the desired heading.
-- **Turning by adding 1:** Each right turn adds 1 to the heading. When heading reaches 4, wrap back to 0. The `turn_to` while loop in Lesson 8 does exactly this: turn right, add 1, wrap 4 → 0, stop when aligned.
+- **Counting turns:** Each clockwise turn adds 1 to the heading, and `% 4` is the wrap. `(desired - heading) % 4` is the number of clockwise quarter turns; 3 means one counterclockwise turn instead. `turn_to` in Lesson 8 does exactly this.
 - **Updating heading:** After `turn_to` finishes, the new heading equals the desired heading.
-- **Coming in Lesson 8:** The Navigator class will wrap `desired_heading`, `turn_to`, and `drive_path` into a class that drives the real robot.
+- **Coming in Lesson 8:** `desired_heading`, `turn_to` and `drive_path` become real functions that drive the robot, built on the Module 2 line-tracking functions.
 
 ## Expected Output
 
@@ -52,5 +52,5 @@ Uncomment the test code and verify:
 ## When You Are Done
 
 - Do all `desired_heading` tests pass?
-- Can you trace through a full path by hand, showing each value of `heading` as the `turn_to` while loop runs at each step (including the wrap from 4 → 0)?
+- Can you trace through a full path by hand, writing `(desired - heading) % 4` at each step and saying what the robot does -- including a step where the answer is 3?
 - `desired_heading` will become a method in the Navigator class in Lesson 8, along with `turn_to` (the while loop) and `drive_path` (the list walker).

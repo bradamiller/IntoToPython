@@ -1,325 +1,147 @@
 # Lesson 7: The Challenge of Turning
 
 ## Overview
-Students confront the problem that their robot has a **heading** -- a direction it is currently facing -- and that moving to the next grid coordinate may require turning first. This lesson introduces two core insights: (1) between adjacent grid intersections, either the row OR the column changes but never both, giving exactly 4 cases that map to the 4 compass directions; and (2) representing heading as a number 0-3 lets us turn by simply adding 1 and wrapping 4 back to 0. Students design three functions on paper: `desired_heading` (which of the 4 cases is this step?), `turn_to` (a while loop that turns right until heading matches desired), and `drive_path` (for each intersection in the path, turn and drive forward one). Code implementation comes in Lesson 8.
+Students confront the problem that their robot has a **heading** -- a direction it is currently facing -- and that moving to the next grid intersection may require turning first. Two insights carry the lesson: (1) between adjacent intersections either the row OR the column changes, never both, which gives exactly four cases that map to the four compass directions; and (2) storing the heading as a number 0-3 turns "how many quarter turns?" into arithmetic: `(desired - heading) % 4`. Students design three functions on paper: `desired_heading(position, next_pos)` (which of the four cases is this step?), `turn_to(heading, desired)` (count quarter turns and take the short way round), and `drive_path(path, position, heading)` (for each intersection, turn and drive forward one). Code comes in Lesson 8.
+
+The lesson also carries the course's one use of `raise`. `desired_heading()` checks *both* differences in every case, and if none of the four matches -- the positions are diagonal, identical or far apart -- it raises `ValueError` with both positions in the message. Without that, the function hands back `None`, `turn_to()` falls over doing arithmetic on it, and the error appears in a function that is correct. "When a function is asked something it cannot answer, say so immediately and loudly" is the debugging habit this lesson teaches.
 
 ## Learning Objectives
 By the end of this lesson, students will be able to:
-- Explain why only the row OR column changes between adjacent intersections (4 cases, 4 directions)
-- Represent heading as a number: 0=N, 1=E, 2=S, 3=W
-- Write `desired_heading(current, next_pos)` that returns 0, 1, 2, or 3 based on which coordinate changed
-- Trace the `turn_to` while loop on paper, showing each value of `heading` as it updates and wraps 4 back to 0
-- Describe how `drive_path` uses `desired_heading` and `turn_to` to move through a list of intersections
+- Explain why only the row or the column changes between adjacent intersections, giving four cases
+- Represent heading as a number: 0 = N, 1 = E, 2 = S, 3 = W, clockwise
+- Write `desired_heading(position, next_pos)` with both differences checked in each case, ending in `raise`
+- Explain why the `raise` makes a bug easier to find than a silent `None`
+- Compute quarter turns with `(desired - heading) % 4`, including the negative cases, and explain why 3 clockwise becomes 1 counterclockwise
+- Trace `drive_path` through a multi-step path, keeping `position` and `heading` up to date
 
 ## Key Concepts
-- **One change at a time**: Between two adjacent grid intersections, either the row changes by ±1 or the column changes by ±1, never both. Four cases total, each corresponding to one of the 4 compass directions.
-- **Heading as a number**: The robot's current facing direction stored as 0 (North), 1 (East), 2 (South), or 3 (West). `HEADING_NAMES = ["N", "E", "S", "W"]` converts back to letters for display.
-- **Desired heading**: The heading number needed to move from the current intersection to the next one. Derived from whether the row or column changed and in which direction.
-- **Turn by adding 1**: Each right turn adds 1 to the heading. When heading reaches 4, reset to 0. This wrap is the entire mechanism of the `turn_to` while loop.
-- **The three functions**: `desired_heading(current, next_pos)` picks the case. `turn_to(heading, desired)` runs a while loop that turns right and increments heading until it matches, then returns the new heading. `drive_path(path, position, heading)` ties them together, calling both for every intersection in the list, and returns the final `(position, heading)`.
+- **One change at a time**: Adjacent intersections differ by exactly one in the row or the column, never both. Four cases, four directions.
+- **Row 0 is at the top**: Moving down the grid increases the row. Down is South. This is the number-one confusion; draw it.
+- **Heading as a number**: 0 = N, 1 = E, 2 = S, 3 = W. Each clockwise turn adds 1; `% 4` is the odometer wrap written as arithmetic.
+- **`desired_heading(position, next_pos)`**: Each case checks both differences (`col_diff == 0 and row_diff == -1` is North). Anything else raises `ValueError(str(position) + " and " + str(next_pos) + " are not neighbors")`.
+- **Say so when you can't answer**: A missing `raise` returns `None` silently; the failure shows up later in correct code with a message that names no positions. Raising reports the problem where it was found, with the values that caused it.
+- **`(desired - heading) % 4`**: Quarter turns clockwise. Python's `%` takes the sign of the divisor, so `-1 % 4` is 3 and `-3 % 4` is 1 -- exactly what walking round the compass gives.
+- **The short way round**: 3 clockwise is 1 counterclockwise. `turn_to()` has that single special case.
+- **Told, not remembered**: `turn_to()` returns the new heading; `drive_path()` returns `position, heading`. The caller keeps its own record up to date by assigning from the returns -- the same rule as the planner.
 
 ## Materials Required
-- XRP Robot (for demonstration only in this lesson)
+- XRP robot (for demonstration only in this lesson)
 - Grid mat or taped grid from previous lessons
-- Printed turn-logic worksheet (see Materials & Code Examples)
-- Whiteboard or projector for diagrams
-- VS Code with Python installed and XRPLib configured
-- Compass rose diagram handout (N/E/S/W with numbers 0-3)
+- `worksheets/07-the-challenge-of-turning.md`
+- Whiteboard; a compass rose with 0-3 marked clockwise
+- `code/starter/lesson-07-turning.py` (desktop only; no robot code yet)
 
 ## Lesson Flow
 
 ### Introduction (10 minutes)
-**For 50-min classes:** 8 min
-**For 3-hour sessions:** 10-12 min
+1. **Hook: the robot that went sideways.** Place the robot on the grid facing East. "If I want the robot to go to the intersection directly below it, can I just drive forward?" Driving forward goes East. The robot needs to turn first. "The robot knows WHERE to go. Today is HOW to face the right way."
+2. **One change at a time.** Draw two adjacent intersections. "What can change between them?" Either the row or the column, by one -- never both.
+   ```
+   row -1  -->  North     col +1  -->  East
+   row +1  -->  South     col -1  -->  West
+   ```
+3. **Heading as a number.** Compass rose, 0 at the top, 1, 2, 3 clockwise. Rotate the robot and have students call out the number. "Why numbers? Because each clockwise turn adds 1 -- and when you'd reach 4, you wrap back to 0, like an odometer."
 
-1. **Hook: The Robot That Went Sideways**:
-   - Place the robot on the grid facing East.
-   - Ask: "If I want the robot to go to the cell directly below it (South), can I just drive forward?"
-   - Let students observe: driving forward moves East, not South. The robot needs to turn first.
-   - "This is the problem we are solving today. The robot knows WHERE it needs to go, but it also needs to figure out HOW to face the right direction."
+### Guided Practice (25 minutes)
+1. **`desired_heading`.** Write it on the board with both differences in every condition:
+   ```python
+   def desired_heading(position, next_pos):
+       row_diff = next_pos[0] - position[0]
+       col_diff = next_pos[1] - position[1]
+       if col_diff == 0 and row_diff == -1: return 0   # North
+       if row_diff == 0 and col_diff ==  1: return 1   # East
+       if col_diff == 0 and row_diff ==  1: return 2   # South
+       if row_diff == 0 and col_diff == -1: return 3   # West
+       raise ValueError(str(position) + " and " + str(next_pos) + " are not neighbors")
+   ```
+   "Why does row +1 mean South?" Row 0 is at the top; going down increases the row.
 
-2. **The Key Observation — One Change at a Time**:
-   - Draw two adjacent intersections on the board and ask: "What can change between them?"
-   - Establish: between adjacent intersections, either the row OR the column changes — never both.
-   - That gives exactly 4 cases, one for each compass direction:
-     ```
-     row goes down (+1)  -->  South
-     row goes up   (-1)  -->  North
-     col goes up   (+1)  -->  East
-     col goes down (-1)  -->  West
-     ```
-   - "Four cases, four directions. That is the whole puzzle."
+2. **The last line.** Ask what the function returns if none of the four matches and the `raise` is missing. (`None`, silently.) Then trace where `None` goes: into `turn_to(heading, None)`, which subtracts it from a number -- Python stops there, with an error about `NoneType` and `int`, pointing at a line in `turn_to`. "So you open `turn_to`. It is perfectly correct. The message says nothing about which positions caused it." With the `raise`: the program stops on the line that *noticed*, with both positions printed. Same bug, ten seconds instead of an afternoon. State the rule: **when a function is asked something it cannot answer, say so immediately and loudly.**
 
-3. **Introduce the Concept of Heading**:
-   - Draw a compass rose on the board: N at top, E at right, S at bottom, W at left.
-   - Write heading numbers clockwise: 0 at top, 1 at right, 2 at bottom, 3 at left.
-   - "Heading is the direction the robot is currently facing, stored as a number 0-3."
-   - Physical demonstration: Place the robot on the grid. Announce its heading number. Rotate it right and ask students to call out the new heading number.
-   - "Why numbers? Because each right turn adds 1. When we hit 4, we wrap back to 0. That is all the turn logic we need."
+   Why both differences in each case: an earlier draft checked one (`if row_diff == -1: return 0`), which calls (2,1)->(3,3) "South" and never reaches the `raise`. A check with a hole in it buys confidence it hasn't earned.
 
-4. **Why This Matters**:
-   - Without turn logic, the robot can only go in one direction.
-   - Real robots (cars, drones, rovers) all track heading.
-   - This is the bridge between the path-planning algorithm and actual robot movement.
+3. **Counting turns.** "How many clockwise quarter turns from heading 2 (S) to heading 1 (E)?" Walk it physically: 2 -> 3 -> 0 -> 1, three turns. "And how many if we subtract: 1 - 2?" Minus one. Put the table on the board and fill it with the class:
 
-### Guided Practice (20 minutes)
-**For 50-min classes:** 18 min
-**For 3-hour sessions:** 25 min
+   | heading | desired | `desired - heading` | `% 4` |
+   |---|---|---|---|
+   | 0 | 1 | 1 | 1 |
+   | 2 | 1 | -1 | 3 |
+   | 1 | 1 | 0 | 0 |
+   | 3 | 0 | -3 | 1 |
+   | 0 | 2 | 2 | 2 |
 
-1. **Method 1 — `desired_heading` from Coordinate Change**:
-   - Draw a small grid on the board with row/column labels:
-     ```
-           Col 0   Col 1   Col 2
-     Row 0  (0,0)   (0,1)   (0,2)
-     Row 1  (1,0)   (1,1)   (1,2)
-     Row 2  (2,0)   (2,1)   (2,2)
-     ```
-   - Work through examples, highlighting "what changed?":
-     - From (0,0) to (1,0): row went +1 --> heading **2** (South)
-     - From (1,0) to (0,0): row went -1 --> heading **0** (North)
-     - From (0,0) to (0,1): col went +1 --> heading **1** (East)
-     - From (0,1) to (0,0): col went -1 --> heading **3** (West)
-   - Write the method on the board:
-     ```python
-     def desired_heading(current, next_pos):
-         row_diff = next_pos[0] - current[0]
-         col_diff = next_pos[1] - current[1]
-         if row_diff == -1: return 0   # North
-         if col_diff ==  1: return 1   # East
-         if row_diff ==  1: return 2   # South
-         if col_diff == -1: return 3   # West
-     ```
-   - Ask students to verify: "Why does row +1 mean South?" Answer: In our grid, row 0 is at the top, like a spreadsheet. Going down increases the row. Down is South.
+   `% 4` is the wrap. In Python `-1 % 4` is 3 (the result takes the sign of the 4); show it in the REPL, because students who know other languages expect -1.
 
-2. **Method 2 — `turn_to` with a While Loop**:
-   - Ask: "If I am heading 0 (North) and I turn right once, what is my new heading?" (1.) "Turn right again?" (2.) "Again?" (3.) "Again?" (0 — it wraps!)
-   - Physical check: Have students stand facing the front (heading 0, North) and turn right. Call out the heading at each turn: 1, 2, 3, 0.
-   - "Here is the idea: keep turning right — adding 1 each time, wrapping 4 back to 0 — until the heading matches what we want. We do not count ahead of time. We just turn until we are aligned."
-   - Write the function on the board:
-     ```python
-     def turn_to(heading, desired):
-         while heading != desired:
-             turn_right()
-             heading = heading + 1
-             if heading == 4:
-                 heading = 0
-         return heading
-     ```
-   - Trace it for several cases by walking through the while loop line by line:
-     - Start heading 0 (N), desired 2 (S): loop runs — turn, heading=1; turn, heading=2; stop. Two right turns.
-     - Start heading 2 (S), desired 1 (E): loop runs — turn, heading=3; turn, heading=4, wrap to 0; turn, heading=1; stop. Three right turns (wrap triggered!).
-     - Start heading 1 (E), desired 1 (E): loop condition false immediately. Zero turns.
-   - Emphasize: "The while loop handles every case — 0, 1, 2, or 3 turns. You do not need to count ahead. The wrap from 4 to 0 is what makes 'turn right to go from West to North' just work." Point out the `return heading` at the end -- since `heading` is just a local variable inside the function, the caller needs the updated value handed back.
+4. **The short way round.** "Three clockwise turns gets you there. Is there a faster way?" One counterclockwise. So:
+   ```python
+   def turn_to(heading, desired):
+       turns = (desired - heading) % 4
+       if turns == 3:
+           turn_counterclockwise()
+       else:
+           for i in range(turns):
+               turn_clockwise()
+       return desired
+   ```
+   Point at `return desired`: `heading` is the function's own variable, so the caller writes `heading = turn_to(heading, needed)` to keep its record straight. (`turn_clockwise()` and `turn_counterclockwise()` are the Module 2 functions; Lesson 8 wires them in. Today they are words on the board.)
 
-3. **Method 3 — `drive_path` for a List of Intersections**:
-   - Once we have `desired_heading` and `turn_to`, driving a whole path is short:
-     ```python
-     def drive_path(path, position, heading):
-         for next_pos in path:
-             desired = desired_heading(position, next_pos)
-             heading = turn_to(heading, desired)
-             drive_forward_one()
-             position = next_pos
-         return position, heading
-     ```
-   - "For every intersection in the path: figure out which way to face, turn until you face it, drive forward one intersection, update position. Repeat. At the end, hand back the final position and heading so the caller can keep using them."
-   - Note: `position` must be updated after each step so the next call to `desired_heading` works correctly -- and because it's a local variable, the function returns it (along with `heading`) rather than changing something outside itself.
+5. **`drive_path`.**
+   ```python
+   def drive_path(path, position, heading):
+       for next_pos in path:
+           needed = desired_heading(position, next_pos)
+           heading = turn_to(heading, needed)
+           drive_forward_one()           # Lesson 8 replaces this with the real thing
+           position = next_pos
+       return position, heading
+   ```
+   Trace `[(1,0), (2,0), (2,1), (2,2)]` from (0,0) heading 0:
+   ```
+   At (0,0) N, next (1,0): want S(2). (2-0)%4 = 2: two clockwise.  Drive to (1,0).
+   At (1,0) S, next (2,0): want S(2). (2-2)%4 = 0: no turn.        Drive to (2,0).
+   At (2,0) S, next (2,1): want E(1). (1-2)%4 = 3: one ccw.        Drive to (2,1).
+   At (2,1) E, next (2,2): want E(1). (1-1)%4 = 0: no turn.        Drive to (2,2).
+   ```
+   Students call out each line before you write it. Step 3 is the one to dwell on: facing South, needing East, a quarter turn to the left.
 
-4. **Tracing a Full Path**:
-   - Example path: `[(1,0), (2,0), (2,1), (2,2)]`, starting position `(0,0)`, starting heading 0 (N).
-   - Trace on the board, showing each value of `heading` as `turn_to` runs:
-     ```
-     At (0,0) heading 0(N), next (1,0): row+1 --> desired 2(S).  turn_to: 0->1->2. Drive to (1,0).
-     At (1,0) heading 2(S), next (2,0): row+1 --> desired 2(S).  turn_to: already 2. Drive to (2,0).
-     At (2,0) heading 2(S), next (2,1): col+1 --> desired 1(E).  turn_to: 2->3->0(wrap)->1. Drive to (2,1).
-     At (2,1) heading 1(E), next (2,2): col+1 --> desired 1(E).  turn_to: already 1. Drive to (2,2).
-     ```
-   - Have students call out each step before you write it.
-   - Point out step 3 — the wrap from 3 to 0 (via heading=4) happens inside `turn_to`, and students can see it.
-
-### Independent Practice (20 minutes)
-**For 50-min classes:** 15 min
-**For 3-hour sessions:** 25 min
-
-**Exercise 1: Desired Heading from Coordinate Change (Paper)**
-- Given the following pairs of coordinates, say what changed and write the desired heading number and letter:
-  1. From (3,2) to (4,2) --> ___ changed, desired ___ (___)
-  2. From (1,5) to (0,5) --> ___ changed, desired ___ (___)
-  3. From (2,3) to (2,4) --> ___ changed, desired ___ (___)
-  4. From (4,1) to (4,0) --> ___ changed, desired ___ (___)
-  5. From (0,0) to (1,0) --> ___ changed, desired ___ (___)
-- Answers: row+1/2(S); row-1/0(N); col+1/1(E); col-1/3(W); row+1/2(S)
-
-**Exercise 2: Trace `turn_to` on Paper**
-- For each scenario, list the value of `heading` after each pass through the while loop, until the loop stops:
-  1. Current 0(N), desired 1(E) --> heading values: ___
-  2. Current 1(E), desired 1(E) --> heading values: ___
-  3. Current 2(S), desired 0(N) --> heading values: ___
-  4. Current 3(W), desired 2(S) --> heading values: ___
-  5. Current 1(E), desired 0(N) --> heading values: ___
-  6. Current 3(W), desired 1(E) --> heading values: ___
-  7. Current 2(S), desired 3(W) --> heading values: ___
-  8. Current 0(N), desired 3(W) --> heading values: ___
-- Answers: 1; (already); 3,0; 0(wrap),1,2; 2,3,0; 0(wrap),1; 3; 1,2,3
-
-**Exercise 3: Full Path Trace (Paper)**
-- Path: `[(0,1), (0,2), (1,2), (2,2), (2,1), (2,0)]`
-- Starting position: `(0,0)`, Starting heading: 1 (E)
-- For each step, write: position, heading, next position, what changed, desired heading, heading values as `turn_to` runs, final heading after drive.
-- Expected trace:
-  ```
-  At (0,0) heading 1(E), next (0,1): col+1 --> desired 1(E). turn_to: already 1. Drive. Heading 1(E).
-  At (0,1) heading 1(E), next (0,2): col+1 --> desired 1(E). turn_to: already 1. Drive. Heading 1(E).
-  At (0,2) heading 1(E), next (1,2): row+1 --> desired 2(S). turn_to: 2. Drive. Heading 2(S).
-  At (1,2) heading 2(S), next (2,2): row+1 --> desired 2(S). turn_to: already 2. Drive. Heading 2(S).
-  At (2,2) heading 2(S), next (2,1): col-1 --> desired 3(W). turn_to: 3. Drive. Heading 3(W).
-  At (2,1) heading 3(W), next (2,0): col-1 --> desired 3(W). turn_to: already 3. Drive. Heading 3(W).
-  ```
-
-**Exercise 4: Trace a Path on Paper**
-- Path: `[(0,1), (1,1), (2,1), (2,0)]`
-- Starting position: `(0,0)`, Starting heading: 0 (N)
-- For each step, write: position, heading, next position, what changed, desired, heading values through the while loop, final heading.
+### Independent Practice (15 minutes)
+Worksheet Parts 1-5: coordinate change to heading; the `% 4` table including negative rows; two path traces; the planted not-neighbors call. Fast finishers: Part 6 (what the error message says, and where the program stops).
 
 ### Assessment
-
-**Formative (during lesson)**:
-- Can students identify which coordinate changed (row or column) between two adjacent intersections?
-- Can they map each of the 4 cases to the correct compass direction?
-- Can they trace the `turn_to` while loop step by step, showing each value of `heading` including the wrap from 4 back to 0?
-- Can they trace a multi-step path calling `desired_heading`, `turn_to`, and drive in sequence?
-
-**Summative (worksheet/exit ticket)**:
-1. Between two adjacent intersections, what can change? How many total cases are there?
-2. If the robot is at (3,1) and needs to go to (3,2), what changed? What is the desired heading number and letter?
-3. Write out the while loop in `turn_to` from memory.
-4. If the robot is heading 3 (W) and desired is 1 (E), list the values of `heading` after each loop iteration until the loop stops.
-5. Why does `turn_to` need the line `if heading == 4: heading = 0`? Give a scenario where it matters.
-6. Trace through path `[(2,1), (2,2)]` with starting position `(1,1)` and starting heading 2 (S).
+- **Formative:** map a coordinate change to a heading; fill a `% 4` row with a negative difference; trace a path.
+- **Exit ticket:** "Heading 3 (W), desired 1 (E) -- what is `(desired - heading) % 4`, and what does the robot do?" (`(1 - 3) % 4 = 2`; two clockwise turns, i.e. turn around.) "What does `desired_heading((1,1), (2,2))` do?" (Raises: not neighbors.)
 
 ## Common Misconceptions
-
 | Misconception | Reality |
 |---|---|
-| "North means up on the screen, so row should decrease" | This is correct! Row 0 is at the top. Moving North (up) decreases the row number. Students sometimes second-guess themselves on this. |
-| "Right and left depend on which way I'm looking at the grid" | Right and left are relative to the robot's heading, not the viewer. The while loop works with heading numbers, so spatial reasoning is not needed once the numbers are right. |
-| "What if the heading goes past 3?" | It wraps back to 0. The code checks: `if heading == 4: heading = 0`. This is the only tricky line in the whole function. |
-| "Wouldn't it be faster to count turns ahead of time and loop that many times?" | It would be roughly the same amount of code, but the while loop is simpler because it stops when aligned — no separate calculation needed. Trust the loop. |
-| "The heading numbers seem arbitrary" | They follow a consistent clockwise pattern: 0=N, 1=E, 2=S, 3=W. Each right turn adds 1. That consistency is what makes the wrap-around math work. |
-| "Row +1 means North because numbers go up" | Numbers going up means the row index increases, which means moving DOWN on the grid. Down is South. This is the most common confusion. |
-| "I need separate logic for right, left, and 180" | The while loop handles all four cases (0, 1, 2, 3 turns) with the same code. No special cases. |
+| "Row +1 means North because numbers go up" | The row index increasing means moving DOWN the grid. Down is South. |
+| "`-1 % 4` is -1" | In Python the result takes the sign of the divisor: `-1 % 4` is 3. Check it in the REPL. |
+| "Just always turn clockwise; it's simpler" | It works, but three sensor-ended turns take three times as long and give the sensors three chances to miss a line. One special case buys a lot. |
+| "The `raise` is for errors in `desired_heading`" | It's for errors *elsewhere* -- whatever handed in two positions that aren't neighbors. The function is the first place that can notice. |
+| "Checking one difference is enough" | (2,1)->(3,3) has `row_diff == 1`. A one-difference check calls that South. Both differences, every case. |
+| "`turn_to` changes `heading`" | It changes its own copy. The caller must assign from the return value. |
 
 ## Differentiation
-
-**For struggling students**:
-- Provide a printed compass rose with numbers 0, 1, 2, 3 they can physically rotate.
-- Start with only two directions (0=North and 2=South) before adding East and West.
-- Use a physical robot on the grid: point it in a direction, physically turn right once at a time and call out each new heading number (including the wrap from 3 back to 0).
-- Pair with a stronger student for the path-tracing exercise.
-- For `turn_to` tracing, let students draw the compass and physically step around it to verify.
-
-**For advanced students**:
-- Ask: "How would you modify `turn_to` to use left turns instead?" (subtract 1, wrap 0 back to 3 — i.e., `if heading == -1: heading = 3`).
-- Could you extend this to 8 directions (adding NE, NW, SE, SW) by wrapping at 8 instead of 4? What else would `desired_heading` need to detect?
-- Write a visual path tracer that prints the grid with arrows showing the robot's heading at each step.
-- Prove: for any starting and desired heading, the while loop always terminates in at most 3 iterations.
+- **Support:** A printed compass the student can rotate. Do North/South only first. Let them count turns by stepping round the compass before trusting the subtraction.
+- **Extension:** Prove `(desired - heading) % 4` is always 0-3. Eight headings (add NE, NW...): what changes in `desired_heading`, and what would `% 8` mean for the short-way rule? Write the trace printer in `code/solutions/lesson-07-turning.py` for an arbitrary path.
 
 ## Materials & Code Examples
-
-### Heading Reference
-```python
-# Headings as numbers (clockwise from North)
-# 0 = North, 1 = East, 2 = South, 3 = West
-
-HEADING_NAMES = ["N", "E", "S", "W"]
+`code/solutions/lesson-07-turning.py` runs on a laptop with no robot: `desired_heading()` with the `raise`, a table of `% 4` results, and a trace of a full path printing each turn. Expected output for the trace above:
 ```
-
-### `desired_heading` Reference
-```python
-def desired_heading(current, next_pos):
-    row_diff = next_pos[0] - current[0]
-    col_diff = next_pos[1] - current[1]
-    if row_diff == -1: return 0   # North
-    if col_diff ==  1: return 1   # East
-    if row_diff ==  1: return 2   # South
-    if col_diff == -1: return 3   # West
-```
-
-### Path Tracing Example (Lesson 7 code — no robot yet)
-```python
-HEADING_NAMES = ["N", "E", "S", "W"]
-
-def desired_heading(current, next_pos):
-    row_diff = next_pos[0] - current[0]
-    col_diff = next_pos[1] - current[1]
-    if row_diff == -1: return 0
-    if col_diff ==  1: return 1
-    if row_diff ==  1: return 2
-    if col_diff == -1: return 3
-
-path = [(1,0), (2,0), (2,1), (2,2)]
-position = (0,0)
-heading = 0
-
-for next_pos in path:
-    desired = desired_heading(position, next_pos)
-    print(f"At {position} heading {HEADING_NAMES[heading]}, desired {HEADING_NAMES[desired]}")
-    # Simulate turn_to: turn right until heading matches
-    while heading != desired:
-        heading = heading + 1
-        if heading == 4:
-            heading = 0
-        print(f"  ... turned right, heading now {HEADING_NAMES[heading]}")
-    print(f"  Drive to {next_pos}")
-    position = next_pos
-```
-
-### Turn Logic Worksheet
-```
-Name: ________________________  Date: ______________
-
-HEADING REFERENCE: 0=North, 1=East, 2=South, 3=West
-TURN MECHANIC: Each right turn adds 1. If heading reaches 4, wrap to 0.
-
-PART A: Desired Heading from Coordinate Change
-For each pair, name what changed and the desired heading:
-
-1. (2,3) to (3,3) --> ___ changed, desired ___ (___)
-2. (4,1) to (3,1) --> ___ changed, desired ___ (___)
-3. (1,0) to (1,1) --> ___ changed, desired ___ (___)
-4. (0,4) to (0,3) --> ___ changed, desired ___ (___)
-5. (5,2) to (6,2) --> ___ changed, desired ___ (___)
-6. (3,3) to (3,4) --> ___ changed, desired ___ (___)
-
-PART B: Trace `turn_to` — list heading values after each loop iteration
-1. Current 0(N), desired 2(S) --> heading values: ___
-2. Current 1(E), desired 2(S) --> heading values: ___
-3. Current 3(W), desired 3(W) --> heading values: ___
-4. Current 2(S), desired 1(E) --> heading values: ___ (wrap!)
-5. Current 0(N), desired 3(W) --> heading values: ___
-6. Current 1(E), desired 0(N) --> heading values: ___ (wrap!)
-
-PART C: Full Path Trace
-Path: [(1,2), (1,3), (2,3), (3,3), (3,2)]
-Starting position: (1,1), Starting heading: 1 (E)
-
-Step 1: (1,1) heading ___, next (1,2): ___ changed, desired ___, turn_to values ___, drive to (1,2)
-Step 2: (1,2) heading ___, next (1,3): ___ changed, desired ___, turn_to values ___, drive to (1,3)
-Step 3: (1,3) heading ___, next (2,3): ___ changed, desired ___, turn_to values ___, drive to (2,3)
-Step 4: (2,3) heading ___, next (3,3): ___ changed, desired ___, turn_to values ___, drive to (3,3)
-Step 5: (3,3) heading ___, next (3,2): ___ changed, desired ___, turn_to values ___, drive to (3,2)
+  At (0, 0) heading N, need S: 2 turn(s) clockwise
+  At (1, 0) heading S, need S: no turn
+  At (2, 0) heading S, need E: 1 turn counterclockwise
+  At (2, 1) heading E, need E: no turn
+  Arrived at (2, 2) facing E
 ```
 
 ## Teaching Notes
-- **This lesson is intentionally paper-heavy.** Students need to trace the while loop by hand before they code it. Rushing to code without understanding `turn_to` leads to frustrating debugging.
-- **The grid orientation is confusing.** Row 0 at the top (like a spreadsheet) means "down is South and increasing rows." Repeat this several times. Draw it. Point at it. Quiz them on it.
-- **Physical movement helps.** Have students stand up, face the front (heading 0), and turn right one step at a time, calling out each new heading including the wrap from 3 to 0. This kinesthetic exercise cements the mechanic.
-- **Trace the loop, do not count ahead.** Students may want to figure out the number of turns in their heads. That is fine, but make sure they can also walk through the while loop one iteration at a time — because that is what the code does, and it is what they will debug in Lesson 8.
-- **The wrap from 4 to 0 is the only tricky line.** Use the odometer analogy: "9, 10 — no, wait, 0. The odometer wraps." Once students get this, everything else is mechanical.
-- **Connect to the physical robot.** On the actual robot, each loop iteration calls `turn_right()` from Module 2 — the sensor-based turn that drives forward briefly then spins right until it finds the outbound line. This connection will be made concrete in Lesson 8.
-- **Why only right turns?** One turn primitive keeps the code simple: one method, one loop, no special cases. The robot does not care whether 270 degrees right or 90 degrees left is "faster" — both get it to the same heading. Simplicity wins.
+- Paper-heavy on purpose. Students who have filled the `% 4` table by hand, negative rows included, have no trouble with Lesson 8. Students who skipped to code debug the wrap for a week.
+- Get them standing and turning. 0, 1, 2, 3, 0 out loud. Then "from South to East, which way is shorter?" -- they feel the 270-vs-90 answer before the code says it.
+- `raise` is new here, but nothing about it needs teaching beyond "the program stops and prints your message". Students never write `try`/`except` in this course. Don't turn it into a detour on exception handling; the point is where the program stops.
+- If someone asks whether the error can really happen: with `compute_manhattan_path` feeding it, no. It becomes reachable the moment they call `desired_heading` by hand in a test, or wire it into their own Lesson 9 project. That is exactly when a good message is worth the most.
 
 ## Connections to Next Lessons
-- **Lesson 8** will implement `desired_heading`, `turn_to`, and `drive_path` as working functions that call the Module 2/3 driving toolkit — translating the paper design directly into Python.
-- **Lesson 9** (Final Project) will combine `compute_manhattan_path()` and `drive_path()` to drive through a list of destinations.
-- The three functions and the while-loop turning mechanic introduced here become the foundation for Lesson 8. Students already understand the logic; Lesson 8 just puts it into code.
+- **Lesson 8** replaces `drive_forward_one()` with Module 2's `track_to_intersection()` plus one wrinkle about where the wheels stop, and wires `turn_clockwise()` / `turn_counterclockwise()` into `turn_to()`.
+- **Lesson 9** chains `drive_path()` across several destinations; the `position, heading =` assignment is the line that decides whether leg 2 works.
+- **Module 5** reuses all three functions unchanged.

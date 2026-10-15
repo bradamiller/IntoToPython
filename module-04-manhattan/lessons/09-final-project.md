@@ -81,6 +81,8 @@ By the end of this lesson, students will be able to:
 
      destinations = [(2, 0), (2, 3), (0, 3), (0, 0)]
 
+     # Print leg 1's plan BEFORE the button -- read it before the robot moves.
+     print("Planned path for leg 1:", compute_manhattan_path(position, destinations[0]))
      board.wait_for_button()
 
      for dest in destinations:
@@ -92,15 +94,15 @@ By the end of this lesson, students will be able to:
          print("Heading:", HEADING_NAMES[heading])
          print()
      ```
-   - Walk through the key line: `position, heading = drive_path(path, position, heading)`. Ask: "Why do we reassign `position` and `heading` here?" Answer: `drive_path()` doesn't change anything outside itself -- it computes the new position and heading internally and returns them. If we don't capture the return value, the next loop iteration would still think the robot is at its old position.
+   - Walk through the key line: `position, heading = drive_path(path, position, heading)`. Ask: "Why do we reassign `position` and `heading` here?" Answer: `drive_path()` doesn't change anything outside itself -- it computes the new position and heading internally and returns them. If we don't capture the return value, the next loop iteration would still think the robot is at its old position. Then the print before the button: only leg 1 can be printed in advance, because every later leg is planned from wherever the previous one actually ends. Each later leg is printed as it is planned, just before the robot drives it.
 
 2. **Step 2: Trace One Leg on Paper**:
    - Using the board, trace the first leg: `(0, 0)` to `(2, 0)`.
    - Path: `[(1, 0), (2, 0)]`
    - Starting at (0,0) heading 0 (North):
      ```
-     Step 1: Position (0,0) heading 0 (N), desired 2 (S) --> turn_to loop: 0 → 1 → 2, drive to (1,0)
-     Step 2: Position (1,0) heading 2 (S), desired 2 (S) --> already there, no turn, clear_intersection(), drive to (2,0)
+     Step 1: Position (0,0) heading 0 (N), desired 2 (S) --> (2-0)%4 = 2: two clockwise turns; track, drive past; at (1,0)
+     Step 2: Position (1,0) heading 2 (S), desired 2 (S) --> (2-2)%4 = 0: no turn; track, drive past; at (2,0)
      ```
    - "After this leg, `position = (2, 0)`, `heading = 2` (S) -- both in the same two variables the main program already had."
 
@@ -202,138 +204,8 @@ By the end of this lesson, students will be able to:
 
 ## Materials & Code Examples
 
-### Main Program Template
-```python
-from XRPLib.reflectance import Reflectance
-from XRPLib.differential_drive import DifferentialDrive
-from XRPLib.board import Board
-
-HEADING_NAMES = ["N", "E", "S", "W"]
-
-# ===== Sensor toolkit (from Module 2 Lesson 8) =====
-reflectance = Reflectance.get_default_reflectance()
-THRESHOLD = 0.5
-
-def get_left():
-    return reflectance.get_left()
-
-def get_right():
-    return reflectance.get_right()
-
-def get_error():
-    return get_left() - get_right()
-
-def is_at_cross():
-    return get_left() > THRESHOLD and get_right() > THRESHOLD
-
-def is_off_line():
-    return get_left() < THRESHOLD and get_right() < THRESHOLD
-
-
-# ===== Driving toolkit (from Module 2 Lesson 9) =====
-drivetrain = DifferentialDrive.get_default_differential_drive()
-BASE_EFFORT = 0.4
-KP = 0.5
-
-def clear_intersection():
-    drivetrain.straight(8, 0.5)
-
-def track_until_cross():
-    while not is_at_cross():
-        error = get_error()
-        left = BASE_EFFORT - error * KP
-        right = BASE_EFFORT + error * KP
-        drivetrain.set_effort(left, right)
-    drivetrain.stop()
-
-def turn_right():
-    clear_intersection()
-    drivetrain.set_effort(0.3, -0.3)
-    while is_off_line():
-        pass
-    drivetrain.stop()
-
-
-# ===== Manhattan algorithm (from Lesson 5) =====
-def compute_manhattan_path(position, destination):
-    path = []
-    current_row, current_col = position
-    dest_row, dest_col = destination
-    while current_row < dest_row:
-        current_row = current_row + 1
-        path.append((current_row, current_col))
-    while current_row > dest_row:
-        current_row = current_row - 1
-        path.append((current_row, current_col))
-    while current_col < dest_col:
-        current_col = current_col + 1
-        path.append((current_row, current_col))
-    while current_col > dest_col:
-        current_col = current_col - 1
-        path.append((current_row, current_col))
-    return path
-
-
-# ===== Driving functions (from Lesson 8) =====
-def desired_heading(position, next_pos):
-    row_diff = next_pos[0] - position[0]
-    col_diff = next_pos[1] - position[1]
-    if row_diff == -1:
-        return 0  # North
-    elif col_diff == 1:
-        return 1  # East
-    elif row_diff == 1:
-        return 2  # South
-    elif col_diff == -1:
-        return 3  # West
-
-def turn_to(heading, desired):
-    while heading != desired:
-        turn_right()
-        heading = heading + 1
-        if heading == 4:
-            heading = 0
-    return heading
-
-def drive_path(path, position, heading):
-    for next_pos in path:
-        needed = desired_heading(position, next_pos)
-        if heading == needed:
-            clear_intersection()
-        heading = turn_to(heading, needed)
-        track_until_cross()
-        position = next_pos
-    return position, heading
-
-
-# ===== Main Program =====
-board = Board.get_default_board()
-
-position = (0, 0)
-heading = 0  # heading North
-
-destinations = [(2, 0), (2, 3), (0, 3), (0, 0)]
-
-print("=== XRP Grid Navigation ===")
-print("Starting at:", position)
-print("Destinations:", destinations)
-print()
-
-board.wait_for_button()
-
-for dest in destinations:
-    print("--- Navigating to", dest, "---")
-    path = compute_manhattan_path(position, dest)
-    print("Path:", path)
-    print("Steps:", len(path))
-    position, heading = drive_path(path, position, heading)
-    print("Arrived at:", position)
-    print("Heading:", HEADING_NAMES[heading])
-    print()
-
-print("=== All destinations reached! ===")
-print("Final position:", position)
-```
+### Main Program
+`code/solutions/lesson-09-final-project.py` is the complete program: the Module 2 sensor and line-tracking functions (`track_to_intersection`, `turn_clockwise`, `turn_counterclockwise`, `drive_past_intersection`), `compute_manhattan_path`, the three Lesson 8 driving functions, and the main loop above with leg 1 printed before the button. The student starter has the toolkit complete and the main loop as TODOs.
 
 ### Testing Without Robot (Desktop Version)
 ```python
@@ -377,7 +249,7 @@ for dest in destinations:
   - Calling `compute_manhattan_path()` with the arguments swapped (destination first instead of position first)
 - **Debugging tip:** "Is `turn_to()` returning `heading`?" -- If it's missing the `return`, every subsequent turn calculation will be wrong. Have students add a print statement right after `heading = turn_to(heading, needed)` to verify.
 - **Time management for 50-min classes:** Students may need two class periods to complete the full project. Day 1: planning and path-only testing. Day 2: robot testing and demonstration.
-- **If your course covers the Lesson 5 and 8 Optional Extensions (classes)**, note in the wrap-up discussion that the class version eliminates the explicit `position, heading = drive_path(...)` reassignment (the object updates itself) but introduces a *different* bug risk instead: forgetting to update `manhattan.position` to match `navigator.position`, since now there are two separate objects that both need to agree on where the robot is. Neither design is bug-proof -- they just trade one kind of mistake for another.
+- **If your course covers the Lesson 5 and 8 Optional Extensions (classes)**, note in the wrap-up that the class version removes the `position, heading = drive_path(...)` reassignment entirely: the navigator updates itself, and the planner is stateless, so there is no second copy of the position anywhere. That is the felt reason for the `Navigator` class.
 
 ## Connections to Next Lessons
 - This is the final lesson of Module 4. Students now have experience with:
@@ -394,100 +266,26 @@ for dest in destinations:
 
 ## Optional Extension: The Final Project with Classes
 
-*For courses that also cover classes/objects -- combines the Lesson 5 and Lesson 8 Optional Extensions. Skip this section entirely otherwise; nothing later in the course depends on it.*
+*For students who did the Lesson 5 and Lesson 8 Optional Extensions. Not graded; the rubric is the same.*
 
 ```python
-from XRPLib.board import Board
-
-HEADING_NAMES = ["N", "E", "S", "W"]
-
-
-class Manhattan:
-    def __init__(self, start):
-        self.position = start
-
-    def compute_path(self, destination):
-        path = []
-        current_row, current_col = self.position
-        dest_row, dest_col = destination
-        while current_row < dest_row:
-            current_row = current_row + 1
-            path.append((current_row, current_col))
-        while current_row > dest_row:
-            current_row = current_row - 1
-            path.append((current_row, current_col))
-        while current_col < dest_col:
-            current_col = current_col + 1
-            path.append((current_row, current_col))
-        while current_col > dest_col:
-            current_col = current_col - 1
-            path.append((current_row, current_col))
-        return path
-
-
-class Navigator:
-    def __init__(self, start, heading):
-        self.position = start
-        self.heading = heading
-        self.line_track = LineTrack()
-
-    def desired_heading(self, next_pos):
-        row_diff = next_pos[0] - self.position[0]
-        col_diff = next_pos[1] - self.position[1]
-        if row_diff == -1:
-            return 0
-        elif col_diff == 1:
-            return 1
-        elif row_diff == 1:
-            return 2
-        elif col_diff == -1:
-            return 3
-
-    def turn_to(self, desired):
-        while self.heading != desired:
-            self.line_track.turn_right()
-            self.heading = self.heading + 1
-            if self.heading == 4:
-                self.heading = 0
-
-    def drive_path(self, path):
-        for next_pos in path:
-            needed = self.desired_heading(next_pos)
-            if self.heading == needed:
-                self.line_track.clear_intersection()
-            self.turn_to(needed)
-            self.line_track.track_until_cross()
-            self.position = next_pos
-
-
-# ===== Main Program =====
 board = Board.get_default_board()
 
-manhattan = Manhattan((0, 0))
-navigator = Navigator((0, 0), 0)  # heading North
-
+planner = Manhattan()                      # stateless -- told the position every call
+navigator = Navigator((0, 0), 0)           # owns position and heading
 destinations = [(2, 0), (2, 3), (0, 3), (0, 0)]
 
-print("=== XRP Grid Navigation ===")
-print("Starting at:", manhattan.position)
-print("Destinations:", destinations)
-print()
-
+print("Planned path for leg 1:", planner.compute_path(navigator.position, destinations[0]))
 board.wait_for_button()
 
 for dest in destinations:
     print("--- Navigating to", dest, "---")
-    path = manhattan.compute_path(dest)
+    path = planner.compute_path(navigator.position, dest)
     print("Path:", path)
-    print("Steps:", len(path))
     navigator.drive_path(path)
-    manhattan.position = navigator.position
-    print("Arrived at:", navigator.position)
-    print("Heading:", HEADING_NAMES[navigator.heading])
-    print()
-
-print("=== All destinations reached! ===")
-print("Final position:", navigator.position)
+    print("Arrived at:", navigator.position, "facing", HEADING_NAMES[navigator.heading])
 ```
 
-Note the extra line `manhattan.position = navigator.position` -- this is the class version's equivalent of the functions version's `position, heading = drive_path(...)` reassignment, and it's a common place for bugs, since it requires two separate objects to agree on the robot's position rather than one shared variable.
+Notice there is no `position, heading = ...` line and no sync line either. The navigator is the only thing that knows where the robot is; the planner is told `navigator.position` every call and remembers nothing (Lesson 5). An earlier version of this course had the planner store its own position, which needed `manhattan.position = navigator.position` after every leg -- the line everyone forgot. There is no longer a second copy to keep in step.
+
+Code: `code/solutions/lesson-09-final-project-class-addon.py`.
