@@ -1,213 +1,123 @@
-# Lesson 6 Worksheet: Testing and Swapping Pathfinders
+# Lesson 6 Worksheet: Testing and Swapping
 
 **Name:** ________________________
 **Date:** ________________________
 
 ---
 
-## Part A: Predict Dijkstra Output
+## Part A: Why not just compare with the right answer?
 
-For each scenario, predict the path returned by `compute_dijkstra_path()`.
+**1.** Here are two paths from (0,0) to (3,3) on an open grid:
 
-**Setup:**
-```python
-graph = build_dijkstra_graph(4, 4, blocked)
-path = compute_dijkstra_path(position, destination, graph)
-print(path)
-```
+- `[(1,0), (2,0), (3,0), (3,1), (3,2), (3,3)]`
+- `[(0,1), (0,2), (0,3), (1,3), (2,3), (3,3)]`
 
-**Scenario 1:** 4x4 grid, position = (0, 0), blocked = [], destination = (3, 3)
+Are both correct? ______ How many steps does each have? ______
 
-Predicted path: ____________________________________________________________________
+**2.** Module 4's test was `if actual_path == expected_path:`. If `expected_path` is the first one above and a planner returns the second, what does the test print? ______ Is the planner wrong? ______
 
-Path length: __________
+**3.** Why was an exact-match test fine for Manhattan in Module 4 but not for BFS?
 
-**Scenario 2:** 4x4 grid, position = (0, 0), blocked = [(1, 1)], destination = (2, 2)
-
-Predicted path: ____________________________________________________________________
-
-Path length: __________
-
-**Scenario 3:** 4x4 grid, position = (0, 0), blocked = [(0, 1), (1, 0)], destination = (0, 2)
-
-Predicted path: ____________________________________________________________________
-
-Explanation: ____________________________________________________________________
-
-**Scenario 4:** 4x4 grid, position = (1, 1), blocked = [(0, 1), (1, 0), (1, 2), (2, 1)], destination = (3, 3)
-
-Predicted path: ____________________________________________________________________
-
-Explanation: ____________________________________________________________________
-
-**Scenario 5:** 4x4 grid, position = (0, 0), blocked = [(0, 1), (1, 0)], destination = (0, 0)
-
-Predicted path: ____________________________________________________________________
-
-Explanation: ____________________________________________________________________
+_______________________________________________________________
 
 ---
 
-## Part B: Compare Manhattan vs Dijkstra Paths
+## Part B: The five properties
 
-`compute_manhattan_path` moves in straight lines (all rows first, then all columns, or vice versa). `compute_dijkstra_path` finds the true shortest path around obstacles.
+For a correct path from `position` to `destination`:
 
-Fill in the table for a **4x4 grid**:
+| # | Property | Write it as one `if` that adds a problem |
+|---|---|---|
+| 1 | The first step is next to the start | `if not is_neighbor(position, path[0]):` |
+| 2 | The last step is the destination | |
+| 3 | Every step is next to the one before it | |
+| 4 | No step is a blocked intersection | |
+| 5 | With nothing blocked, the number of steps is the Manhattan distance | |
 
-| Position | Dest | Blocked | Manhattan Path | Man. Length | Dijkstra Path | Dijk. Length | Winner |
-|---|---|---|---|---|---|---|---|
-| (0,0) | (3,3) | none | __________________ | ______ | __________________ | ______ | ______ |
-| (0,0) | (3,3) | (1,1),(2,2) | __________________ | ______ | __________________ | ______ | ______ |
-| (0,0) | (0,3) | (0,1) | __________________ | ______ | __________________ | ______ | ______ |
-| (0,0) | (2,0) | (1,0) | __________________ | ______ | __________________ | ______ | ______ |
+**4.** Write `is_neighbor(a, b)` in one line, using `manhattan_distance()`:
 
-**1. When do Manhattan and Dijkstra give the same result?**
+```python
+def is_neighbor(a, b):
+    return ______________________________________
+```
 
-____________________________________________________________________
+**5.** For each wrong path below, say which property catches it and what the FAIL line would say. All are "from (0,0) to (0,3), nothing blocked".
 
-**2. When does Dijkstra give a shorter path?**
+| Returned path | Property # | FAIL line says |
+|---|---|---|
+| `[(0,2), (0,3)]` | | |
+| `[(0,1), (0,2)]` | | |
+| `[(0,1), (0,3)]` | | |
+| `[(0,1), (0,2), (0,3), (0,3)]` | | |
 
-____________________________________________________________________
+**6.** The destination is walled off and the planner correctly returns `[]`. Why can't `check_path()` tell this apart from a planner that returned `[]` because it is broken?
 
-**3. Can Manhattan ever give a shorter path than Dijkstra?** YES / NO
+_______________________________________________________________
 
-Why? ____________________________________________________________________
+What does the harness do about it?
+
+_______________________________________________________________
 
 ---
 
-## Part C: Swapping Algorithms
-
-Below is a program that uses `compute_manhattan_path`. Mark which lines would need to change to swap to `compute_dijkstra_path` using the `compute_path()` dispatch function.
+## Part C: Handing over the planner
 
 ```python
-# Line 1:  blocked = [(1, 1), (2, 2)]
-# Line 2:  path = compute_path("manhattan", (0, 0), (3, 3), blocked)
-# Line 3:  print("Path:", path)
-# Line 4:  print("Steps:", len(path))
+def run_test(test_name, planner, position, destination, expected_steps):
+    path = planner(position, destination)
+    ...
+
+run_all_tests("BFS", compute_bfs_path)
 ```
 
-**Which line changes?** Circle the line number: 1  2  3  4
+**7.** In `run_all_tests("BFS", compute_bfs_path)`, what is being passed as the second argument -- the *result* of running the planner, or the *planner itself*? ______________ How can you tell from the code?
 
-**Rewrite the line that changes:**
+_______________________________________________________________
 
-Line ___: ____________________________________________________________________
+**8.** Inside `run_test`, `planner` is a parameter. When the harness was called with `compute_bfs_path`, what does the line `path = planner(position, destination)` do?
 
-**Which lines stay exactly the same?** ____________________
+_______________________________________________________________
 
-**Why can we swap algorithms without changing most of the code?**
+**9.** A classmate writes `run_all_tests("BFS", compute_bfs_path())`. What goes wrong?
 
-____________________________________________________________________
+_______________________________________________________________
 
-____________________________________________________________________
+**10.** Why does the harness never need an `if` that asks which planner it was given?
 
-**What does `compute_path()` normalize between the two algorithms?**
-
-| Feature | compute_manhattan_path | compute_dijkstra_path | compute_path() dispatch |
-|---|---|---|---|
-| Parameters | __________ | __________ | __________ |
-| Includes start in output? | __________ | __________ | __________ |
-| Considers obstacles? | __________ | __________ | __________ |
+_______________________________________________________________
 
 ---
 
-## Part D: Edge Cases
+## Part D: Run it
 
-**1. What happens when the destination is blocked?**
+Run the harness against both planners.
 
-```python
-graph = build_dijkstra_graph(4, 4, [(2, 2)])
-path = compute_dijkstra_path((0, 0), (2, 2), graph)
-```
+**11.** BFS: ______ of 6 passed. Manhattan: ______ of 6 passed.
 
-What does `compute_dijkstra_path` return? __________
+**12.** Copy one of Manhattan's FAIL lines, including the "- " reason under it:
 
-What message is printed? ____________________________________________________
+_______________________________________________________________
 
-**2. What happens when the start is blocked?**
+_______________________________________________________________
 
-Think about this: if `(0, 0)` is in the blocked list, what happens when we build the graph?
+**13.** Is Manhattan failing because of a bug in `compute_manhattan_path()`? ______ Explain.
 
-```python
-graph = build_dijkstra_graph(4, 4, [(0, 0)])
-path = compute_dijkstra_path((0, 0), (3, 3), graph)
-```
+_______________________________________________________________
 
-Is `(0, 0)` in `graph`? __________
+**14.** In the "Same main program, different planner" section, (2,0) is blocked. Write the first-leg path each planner produced:
 
-What happens when `compute_dijkstra_path` tries to set `distances[position] = 0`?
+Manhattan: ______________________________________________
 
-____________________________________________________________________
+BFS: ______________________________________________
 
-**3. What happens when there is no path?**
+What is the *only* thing that changed in the code between the two runs?
 
-```python
-# All neighbors of (0,0) are blocked, but destination is not blocked
-graph = build_dijkstra_graph(4, 4, [(0, 1), (1, 0)])
-path = compute_dijkstra_path((0, 0), (3, 3), graph)
-```
-
-What happens? ____________________________________________________________________
-
-**4. What happens when start equals destination?**
-
-```python
-graph = build_dijkstra_graph(4, 4, [])
-path = compute_dijkstra_path((0, 0), (0, 0), graph)
-```
-
-What does `compute_dijkstra_path` return? __________
-
-Is this the correct result? __________
-
-Why? ____________________________________________________________________
+_______________________________________________________________
 
 ---
 
-## Answer Key
+## Exit ticket
 
-### Part A:
-1. `[(0,0), (0,1), (0,2), (0,3), (1,3), (2,3), (3,3)]` or equivalent shortest path, length = 6
-2. `[(0,0), (0,1), (0,2), (1,2), (2,2)]` or `[(0,0), (1,0), (2,0), (2,1), (2,2)]`, length = 4
-3. `[]` with "No path found!" — (0,0) has no unblocked neighbors, so no path exists to (0,2).
-4. (1,1) is surrounded by blocked cells, so it cannot reach any neighbor. Path = [] with "No path found!"
-5. `[(0,0)]` — Start and destination are the same. The algorithm immediately finds current == destination and returns a path of length 0.
+A planner returns `[(0,1), (0,3)]` for (0,0) to (0,3). Which property fails, and what does the FAIL line say?
 
-### Part B:
-1. When there are no obstacles in the Manhattan path, both give the same length (6 steps).
-2. When obstacles block the Manhattan route but an alternative path exists.
-3. No. Dijkstra always finds the true shortest path. Manhattan might match it but can never beat it.
-
-### Part C:
-- Line that changes: 2
-- Line 2: `path = compute_path("dijkstra", (0, 0), (3, 3), blocked)`
-- Lines 1, 3, 4 stay the same
-- Both branches of `compute_path()` return the same shape of result -- a list of tuples not including position -- so the calling code never needs to know which algorithm ran.
-
-| Feature | compute_manhattan_path | compute_dijkstra_path | compute_path() dispatch |
-|---|---|---|---|
-| Parameters | position, destination | position, destination, graph | algorithm, position, destination, blocked |
-| Includes start in output? | No | Yes | No (normalized) |
-| Considers obstacles? | No | Yes | Depends on algorithm chosen |
-
-### Part D:
-1. Returns `[]`, prints "Destination is blocked!"
-2. (0,0) is not in the graph. `distances[position] = 0` will cause a KeyError because (0,0) is not a key in distances.
-3. The algorithm runs but never reaches (3,3) from (0,0) because (0,0) has no neighbors. The path reconstruction produces a path not starting at (0,0), so it prints "No path found!" and returns [].
-4. Returns `[(0,0)]` — a path containing just the start/destination. This is correct; you are already there.
-
----
-
-## Part E (Optional Extension): True Polymorphism
-
-*Skip this section if your course doesn't cover classes.*
-
-**1. With the `Manhattan`/`Dijkstra` classes from the Optional Extension, rewrite Part C's Line 2 without a dispatch function:**
-
-```python
-pathfinder = _______________________________________________
-path = pathfinder.compute_path((3, 3))
-```
-
-**2. Why doesn't this version need an `if algorithm == "manhattan"` check anywhere?**
-
-____________________________________________________________________
+_______________________________________________________________

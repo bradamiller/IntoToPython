@@ -1,386 +1,201 @@
 # Lesson 6: Testing and Swapping
 
 ## Overview
-Students verify their Dijkstra functions with systematic tests, then confront a real design question: `compute_manhattan_path(position, destination)` and `compute_dijkstra_path(position, destination, graph)` are *almost* the same shape, but not quite -- Dijkstra needs an extra `graph` argument, and (as flagged in Lesson 5) its returned path includes the start position while Manhattan's doesn't. Students build a small `compute_path(algorithm, position, destination, blocked)` dispatch function that hides these differences behind one call, so the rest of the program -- particularly `drive_path()` -- can ask for a path without caring which algorithm computed it. Swapping algorithms becomes changing one argument, not rewriting the caller. Students first test Dijkstra in isolation, then wire the dispatch function into the Module 4 navigation program.
+Students test `compute_bfs_path()` properly, and in doing so meet a testing idea that will outlast this course: when more than one answer is right, test what must be *true* of a correct answer instead of comparing against one expected list. Module 4's harness compared Manhattan's output to an exact path, which was fine because Manhattan's answer is unique. On an open grid BFS has many equally short paths, and an exact-match test would fail correct code. So the Lesson 6 harness checks five properties -- the first step is next to the start, the last step is the destination, every step is next to the one before, no step is blocked, and on an open grid the length is the Manhattan distance -- plus a separate no-path test for the walled-off case.
 
-This lesson bridges the gap between building the Dijkstra functions (Lessons 4-5) and using them with real sensors (Lessons 7-8). Before students add rangefinder-based obstacle detection, they need confidence that the pathfinding itself works correctly. The dispatch function also sets up an honest comparison, in the Optional Extension, to what true object-oriented polymorphism buys you when two components share an identical interface.
+The second idea is the swap. Because every planner has the same shape, `compute_xxx_path(position, destination)`, the harness can be *handed* the planner it should test: `run_all_tests("BFS", compute_bfs_path)`. Passing a function as an argument is the one new Python idea in the lesson. Students run the same harness against Manhattan and BFS and watch Manhattan fail the two blocked tests, on paper, with the path printed: it drives straight through the wall. That is the motivation for the whole module, demonstrated by the harness rather than asserted. The same swap then appears in a tiny main program: `navigate(compute_bfs_path, ...)` works with either planner by changing one name.
+
+The Optional Extension runs the same harness against planner *objects* (`Manhattan()`, `BFS()`), where the swap is `planner.compute_path(...)` and the harness never knows which class it holds. Module 6 adds a third planner, Dijkstra, to both versions of this harness unchanged.
 
 ## Learning Objectives
 By the end of this lesson, students will be able to:
-- Write test cases that verify Dijkstra produces correct paths on an obstacle-free grid
-- Write test cases that verify Dijkstra correctly reroutes around blocked nodes
-- Explain the shape mismatch between `compute_manhattan_path` and `compute_dijkstra_path`
-- Write a `compute_path(algorithm, ...)` dispatch function that normalizes the two functions behind one call
-- Swap which algorithm a program uses by changing one argument, not rewriting calling code
-- Compare Manhattan and Dijkstra output side-by-side and explain the differences when obstacles are present
+- Explain why an exact-match test is wrong for BFS and right for Manhattan
+- State the five properties every correct path has, and write each as one `if`
+- Explain why the walled-off case needs its own test
+- Pass a function as an argument (`run_all_tests("BFS", compute_bfs_path)`) and explain what `planner(position, destination)` does inside the harness
+- Run the harness against Manhattan and BFS and explain each FAIL line
+- Write a main program that works with either planner by changing one name
+- *(Extension)* Run the same harness against planner objects
 
 ## Key Concepts
-- **Testing**: Running code with known inputs and checking that the output matches expected results. Testing builds confidence that code works before deploying it on hardware (the robot).
-- **Test case**: A specific combination of inputs and expected outputs used to verify that code behaves correctly. For example: "On a 4x4 grid with no obstacles, the path from (0,0) to (3,3) should be 6 steps long."
-- **Interface mismatch**: Two functions doing a similar job but with different parameter lists or return formats. `compute_manhattan_path` takes two parameters and excludes the start from its output; `compute_dijkstra_path` takes three and includes it. Neither is wrong -- they just don't line up automatically.
-- **Dispatch function**: A small function whose only job is to decide which of several other functions to call, and to smooth over their differences so the caller doesn't have to know about them. `compute_path(algorithm, position, destination, blocked)` is a dispatch function.
-- **Regression testing**: Running your existing tests after making a change to ensure the change did not break anything that was previously working.
+- **Property test**: A check of something that must be true of *any* correct answer, rather than a comparison with one expected answer. Five here: starts next to the start; ends at the destination; every step is a neighbor of the previous; no step is blocked; length equals the Manhattan distance when nothing is blocked.
+- **`manhattan_distance(a, b)`** and **`is_neighbor(a, b)`**: `abs(dr) + abs(dc)`, and "that equals 1". The harness's two helpers.
+- **No-path test**: When the destination is walled off, the only right answer is `[]`. `check_path` cannot tell "walled off" from "forgot to look" (both are an empty path with the robot not at the destination), so this case gets its own test.
+- **Passing a function**: `run_all_tests("BFS", compute_bfs_path)` hands the harness the *function itself* (no parentheses). Inside, `planner(position, destination)` calls whichever planner was handed in. Same shape, so the harness never needs to know which.
+- **The swap**: One main program, one harness, any planner, one name changed. Manhattan fails the blocked tests; BFS passes them. That is why Module 5 exists.
+- **`clear_blocked()`**: Each test group starts clean. Without it, blocks from one test leak into the next.
 
 ## Materials Required
-- Computers with Python and Thonny (or preferred IDE)
-- Completed Dijkstra functions from Lessons 4-5 (`dijkstra.py`)
-- `compute_manhattan_path` from Module 4
-- `drive_path` and the driving toolkit from Module 4 Lesson 8
-- XRP robot and grid (for the swap demonstration)
-- Whiteboard or projector for side-by-side comparison
-- Test output worksheet (for recording expected vs. actual results)
+- Computers with Python (no robot needed)
+- `code/starter/lesson-06-testing.py`
+- Lesson 5's working `compute_bfs_path()`
+- Module 4's `compute_manhattan_path()` (in the starter already)
 
 ## Lesson Flow
 
 ### Introduction (10 minutes)
 **For 50-min classes:** 8 min
-**For 3-hour sessions:** 10-12 min
+**For 3-hour sessions:** 12 min
 
-1. **Hook: Would You Trust Untested Code to Drive Your Car?**
-   - Ask: "Imagine you wrote the software for a self-driving car. Would you put a passenger in it without testing it first?"
-   - Discussion: Of course not. You would test it in simulation, on a closed course, with edge cases and unusual scenarios before letting anyone ride in it.
-   - "Our robot is the same. We built the Dijkstra functions, but we haven't proven they work yet. Today we test them -- and then we make it possible to switch between Manhattan and Dijkstra with a single argument."
-
-2. **What Makes a Good Test?**
-   - A good test has:
-     - **Known input**: A specific grid size, blocked list, start, and destination
-     - **Expected output**: The path you calculated by hand (or know from Manhattan distance)
-     - **A check**: Code that compares the actual output to the expected output
-   - "We'll write tests for two scenarios: grids with NO obstacles (where Dijkstra's step count should match Manhattan's) and grids WITH obstacles (where Dijkstra should find a detour)."
-
-3. **The Shape Mismatch**
-   - Write on the board:
+1. **Hook: two right answers, one test**
+   - Two students read out their Lesson 5 Test 1 paths. If they differ (they often do), great; if not, show the second shortest route from Lesson 3. "Both are 6 steps. Both are right. Now here's a test from Module 4:"
+     ```python
+     if actual_path == expected_path:
+         print("PASS")
      ```
-     compute_manhattan_path(position, destination)         -> path, start NOT included
-     compute_dijkstra_path(position, destination, graph)   -> path, start included
-     ```
-   - "These aren't quite interchangeable. Dijkstra needs a graph. And if you compare `len()` of the two outputs directly, you'll be off by one -- that's not a bug, it's just two different design choices that happened to land differently."
-   - "So how do we make the rest of our program not care about this difference?"
+     "Which of these two correct paths does it mark as FAIL?" One of them, necessarily.
+   - "Module 4's test was fine, because Manhattan has exactly one answer. BFS doesn't. We need a different kind of test."
 
-### Guided Practice (15 minutes)
+2. **Test what must be true**
+   - "Forget the exact list. What has to be true of *any* correct path from (0,0) to (3,3)?" Collect on the board. Steer to the five:
+     1. The first step is next to the start.
+     2. The last step is the destination.
+     3. Every step is next to the one before it.
+     4. No step is a blocked intersection.
+     5. With nothing blocked, the number of steps is the Manhattan distance.
+   - "Five one-line checks. Together they are stricter than an exact match -- an exact match can't tell you a path is *valid*, only that it's the one you expected -- and they allow every correct answer."
+
+### Guided Practice (17 minutes)
 **For 50-min classes:** 15 min
-**For 3-hour sessions:** 20 min
+**For 3-hour sessions:** 25 min
 
-1. **Test 1: No Obstacles -- Step Count Should Match Manhattan**
-   - Walk through writing the test together:
-     ```python
-     graph = build_dijkstra_graph(4, 4, [])
-     path = compute_dijkstra_path((0, 0), (3, 3), graph)
-     print("Path:", path)
-     print("Path length:", len(path) - 1, "steps")   # -1 because Dijkstra includes the start
-     print("Expected steps (Manhattan distance):", 6)
-     ```
-   - Run the code. The path length should equal the Manhattan distance: |3-0| + |3-0| = 6.
-   - Note: The exact path may differ from Manhattan's path (Dijkstra might go a different route of the same length), but the NUMBER of steps must be the same.
-   - Ask: "Why do we check the number of steps and not the exact path?" (Because there can be multiple shortest paths of the same length.)
+1. **The helpers**
+   ```python
+   def manhattan_distance(a, b):
+       return abs(a[0] - b[0]) + abs(a[1] - b[1])
 
-2. **Test 2: Blocked Node -- Dijkstra Should Reroute**
-   - Add a blocked node and test again:
-     ```python
-     graph_blocked = build_dijkstra_graph(4, 4, [(1, 0)])
-     path_blocked = compute_dijkstra_path((0, 0), (3, 0), graph_blocked)
-     print("Path with (1,0) blocked:", path_blocked)
-     print("Path length:", len(path_blocked) - 1, "steps")
-     print("Manhattan distance (no obstacles):", 3)
-     ```
-   - Run the code. The path should avoid (1, 0) entirely. The path length should be longer than the Manhattan distance of 3.
+   def is_neighbor(a, b):
+       return manhattan_distance(a, b) == 1
+   ```
 
-3. **Building the Dispatch Function**
-   - "Here's the trick: write one function that hides both algorithms' quirks behind a single, consistent call."
-     ```python
-     def compute_path(algorithm, position, destination, blocked):
-         """Compute a path using the named algorithm.
+2. **`check_path()` returns a list of problems**
+   - Write it together, one property per `if`. An empty list means the path is good. Returning *problems* rather than True/False is deliberate: a FAIL line that says "drives through blocked intersection (1, 0)" tells you what to fix.
+   - The empty-path case at the top: if `path == []` and the robot isn't at the destination, that is a problem -- *unless* the destination is walled off, which this function can't know. Hence the separate no-path test.
 
-         algorithm:   "manhattan" or "dijkstra"
-         position:    (row, col) tuple, current position
-         destination: (row, col) tuple, target
-         blocked:     list of blocked (row, col) tuples (ignored by manhattan)
+3. **`run_test()` and the planner argument**
+   ```python
+   def run_test(test_name, planner, position, destination, expected_steps):
+       path = planner(position, destination)
+       ...
+   ```
+   - Stop on `path = planner(position, destination)`. "`planner` is a parameter. What is in it?" A function. "How did it get there?" `run_all_tests("BFS", compute_bfs_path)` -- the function's name, no parentheses, handed in like a number or a list. "What does `planner(position, destination)` do?" Calls whichever function was handed in.
+   - This is the one new Python idea today. Make it concrete: `f = compute_bfs_path` then `f((0,0), (3,3))` at the prompt.
 
-         Returns a list of (row, col) tuples, NOT including position,
-         no matter which algorithm computed it.
-         """
-         if algorithm == "manhattan":
-             return compute_manhattan_path(position, destination)
-         else:
-             graph = build_dijkstra_graph(4, 4, blocked)
-             path = compute_dijkstra_path(position, destination, graph)
-             return path[1:]  # drop the start position to match Manhattan's shape
-     ```
-   - Walk through what it does: picks the right underlying function, and for Dijkstra, slices off the first element (`path[1:]`) so both branches return the *same shape* of result.
-   - "Now the rest of our program -- especially `drive_path()` -- only ever calls `compute_path(...)`. It never touches `compute_manhattan_path` or `compute_dijkstra_path` directly, so it doesn't need to know their differences exist."
-
-4. **The Swap: One Argument, Not a Rewrite**
-   - Show the Module 4 navigation program (simplified):
-     ```python
-     # Using Manhattan
-     path = compute_path("manhattan", position, dest, [])
-     ```
-   - Now change ONE argument:
-     ```python
-     # Using Dijkstra
-     path = compute_path("dijkstra", position, dest, blocked)
-     ```
-   - "That's it. Everything downstream -- `drive_path(path, position, heading)` -- is completely unaware which algorithm ran."
+4. **`run_all_tests()` and the swap**
+   - Open grid (four cases, expected steps = Manhattan distance), the wall (expected 7), walled off (no-path test). `clear_blocked()` between groups.
+   - Run `run_all_tests("Manhattan", compute_manhattan_path)` then `run_all_tests("BFS", compute_bfs_path)`. Read the Manhattan FAIL lines aloud: `drives through blocked intersection (1, 0)`. "That is the whole reason this module exists, and the harness just proved it."
 
 ### Independent Practice (20 minutes)
 **For 50-min classes:** 15 min
 **For 3-hour sessions:** 25 min
 
-**Exercise 1: Write a Complete Test Suite**
-- Goal: Create a file `test_dijkstra.py` with at least 5 test cases
-- Required tests:
-  1. No obstacles, short path (e.g., (0,0) to (1,1) on a 3x3 grid) -- verify step count equals Manhattan distance
-  2. No obstacles, long path (e.g., (0,0) to (3,3) on a 4x4 grid) -- verify step count equals Manhattan distance
-  3. One blocked node on the direct path -- verify rerouting and no blocked nodes in path
-  4. Multiple blocked nodes -- verify path avoids all of them
-  5. Start and destination are the same -- verify path is `[start]`
-- For each test, print "PASS" or "FAIL" with a description
+Starter file: `code/starter/lesson-06-testing.py`. The planners and `run_all_tests` are given; the property checks, the expected-steps check and the swap calls are TODOs.
 
-**Exercise 2: Side-by-Side Comparison**
-- Goal: Run both algorithms through `compute_path()` on the same inputs and compare
-- Steps:
-  1. Test 3 different position/destination pairs on a clear 4x4 grid
-  2. Call `compute_path("manhattan", ...)` and `compute_path("dijkstra", ..., blocked=[])` for each
-  3. Print both paths and their lengths (`len(path)` for both now, since the dispatch function normalizes the shape!) side-by-side
-  4. Verify that on a clear grid, both produce paths of the same length
-- Key question: Are the paths always identical? Why or why not?
+**Exercise 1: `is_neighbor()`.** One line.
 
-**Exercise 3: The One-Argument Swap**
-- Goal: Modify your Module 4 navigation program to use Dijkstra
-- Steps:
-  1. Copy your Module 4 main program file
-  2. Add the `compute_path()` dispatch function and `dijkstra.py`'s two functions
-  3. Change every `compute_manhattan_path(position, dest)` call to `compute_path("dijkstra", position, dest, blocked)`
-  4. Run the program on the robot -- it should behave identically on a clear grid
-  5. Now add a blocked node and run again -- the robot should detour around it
-- Reflection: How many lines did you change? Why did so few changes work?
+**Exercise 2: the five properties.** Fill in `check_path()` (four properties) and the `expected_steps` check in `run_test()`. Run against BFS: 6 of 6.
 
-**Exercise 4: Challenge -- Automated Pass/Fail Testing**
-- Goal: Write a test function that automatically checks results
-- Create a function:
-  ```python
-  def test_path(name, algorithm, position, dest, blocked):
-      path = compute_path(algorithm, position, dest, blocked)
-      # Check 1: path ends at dest
-      # Check 2: no blocked nodes in path
-      # Check 3: each step moves to an adjacent node
-      # Print PASS or FAIL for each check
-  ```
-- Run it with at least 3 different test scenarios, for both algorithms
+**Exercise 3: the swap.** Run against Manhattan. Which tests fail, and what does each FAIL line say?
+
+**Exercise 4: the main program.** Block (2,0). Run `navigate()` twice with Manhattan, then twice with BFS, changing only the planner's name. Compare the two first legs.
+
+**Exercise 5: break a property.** Make `compute_bfs_path` return `path[1:]` (drop the first step). Which property catches it? Then make it return `path + [destination]`. Which one catches that?
+
+**Exercise 6 (challenge): a sixth property.** Add "no intersection appears twice in the path" to `check_path()`. Can BFS ever fail it? Could a buggy planner?
 
 ### Assessment
 
 **Formative (during lesson)**:
-- Can students write a test case with known inputs and expected outputs?
-- Can students explain why Dijkstra's path length matches Manhattan distance on a clear grid?
-- Can students explain what `compute_path()`'s dispatch function is hiding from its caller?
-- Can students identify the one line that needs to change to swap algorithms?
-- Can students predict what will happen when `drive_path()` receives a Dijkstra-computed path?
+- Students can name the five properties without looking
+- Students can explain the difference between `compute_bfs_path` and `compute_bfs_path()` in the `run_all_tests` call
+- Ask: "Why does the walled-off case need its own test?"
 
 **Summative (worksheet/exit ticket)**:
-1. Write a test case that verifies Dijkstra finds a path of length 4 from (0,0) to (2,2) on a 3x3 grid with no obstacles.
-2. If (1,1) is blocked on a 3x3 grid, what is the shortest path from (0,0) to (2,2)? How many steps? Write a test case that checks this.
-3. What line of code do you change to swap Manhattan for Dijkstra using the dispatch function? Write both the old and new versions.
-4. Why does the dispatch function need to slice off the first element of Dijkstra's path (`path[1:]`) but not Manhattan's?
-5. What would happen to `drive_path()` if the dispatch function did NOT normalize the two algorithms' path shapes?
+- Worksheet Parts A-D
+- Exit ticket: "A planner returns `[(0,1), (0,3)]` for (0,0) to (0,3). Which property fails, and what would the FAIL line say?"
 
 ## Common Misconceptions
-
-| Misconception | Reality |
-|---|---|
-| "Dijkstra and Manhattan should return the exact same path on a clear grid" | They should return paths of the same LENGTH, but the exact route may differ. There are often multiple shortest paths between two points, and the two algorithms may choose differently. |
-| "Testing means running the program and seeing if it looks right" | Testing means comparing actual output to a specific expected result. Visual inspection misses subtle bugs. Automated checks catch errors reliably. |
-| "The swap works because Dijkstra is better than Manhattan" | The swap works because the dispatch function normalizes their differences. Quality does not matter for swappability; a consistent call shape does. |
-| "compute_manhattan_path and compute_dijkstra_path could always be swapped directly, with no dispatch function" | Not quite -- they take different numbers of parameters and return differently-shaped results. That's exactly why the dispatch function exists: to paper over those differences in one place instead of every call site. |
-| "If all tests pass, the code is bug-free" | Passing tests means the code works for the cases you tested. There may be edge cases you did not think of. More tests give more confidence, but testing can never prove the complete absence of bugs. |
+- **"Property tests are weaker than checking the exact answer."** They are stronger. An exact match passes any path equal to the expected one, including a wrong expectation; the properties check validity directly, and they allow every correct answer.
+- **"`run_all_tests("BFS", compute_bfs_path())` -- with parentheses."** That *calls* the planner with no arguments and hands the harness the result (an error, here). No parentheses: hand over the function.
+- **"An empty path always means failure."** It is correct for "already there" and for "walled off". The harness tests both, differently.
+- **"Manhattan failing is a bug in Manhattan."** It is Manhattan behaving exactly as designed: rows then columns, no idea what a wall is. The harness shows the limitation, which is the point.
+- **"The harness knows which planner it's testing."** It doesn't, and must not. It is handed a function and a name for the printout, nothing more.
 
 ## Differentiation
+**For struggling students**: Give `check_path()` complete; have them do Exercises 3 and 4 and *read* the FAIL lines. Understanding what the harness says matters more than writing every check.
 
-**For struggling students**:
-- Provide a test template with blanks to fill in (the inputs and expected values) rather than writing tests from scratch
-- Start with the simplest possible test: a 2x2 grid, no obstacles, (0,0) to (1,1) -- the path should be 2 steps
-- Walk through the dispatch function step-by-step: first show it calling Manhattan, then show it calling Dijkstra, then run and compare
-- Use a checklist: (1) write the input, (2) calculate the expected output by hand, (3) run the code, (4) compare
-- Pair with a partner for the side-by-side comparison exercise
-
-**For advanced students**:
-- Write a function that generates random blocked lists and tests Dijkstra on them, checking that no blocked node appears in any path
-- Add timing to tests: how long does Dijkstra take vs. Manhattan on larger grids? (Use `import time`)
-- Create a test that verifies Dijkstra's path is actually the SHORTEST path (not just a valid path) by checking that no shorter path exists
-- Write tests for edge cases: What if the start is blocked? What if the destination is blocked? What if all paths are blocked?
-- Work through the Optional Extension below and compare it to the dispatch-function approach
+**For advanced students**: Exercises 5 and 6, then: "Write a planner that always returns `[]` and one that returns the Manhattan path with the last step removed. Which tests catch each?"
 
 ## Materials & Code Examples
 
-### Test Program: Comparing Manhattan and Dijkstra
-```python
-test_cases = [
-    ((0, 0), (3, 3), "Corner to corner"),
-    ((0, 0), (0, 3), "Top-left to top-right"),
-    ((1, 1), (3, 2), "Interior to edge"),
-]
+### The harness output (solution file)
 
-print("=" * 60)
-print("COMPARISON: Manhattan vs. Dijkstra (no obstacles)")
-print("=" * 60)
+```
+========== Manhattan ==========
+  PASS  open (0, 0) to (3, 3)  [(1, 0), (2, 0), (3, 0), (3, 1), (3, 2), (3, 3)]
+  PASS  open (0, 0) to (0, 3)  [(0, 1), (0, 2), (0, 3)]
+  PASS  open (2, 1) to (0, 3)  [(1, 1), (0, 1), (0, 2), (0, 3)]
+  PASS  open (1, 1) to (1, 1)  []
+  FAIL  wall at (1,0),(1,1): (0,0) to (3,0)  [(1, 0), (2, 0), (3, 0)]
+          - drives through blocked intersection (1, 0)
+          - expected 7 steps, got 3
+  FAIL  walled off: (0,0) to (3,0)  [(1, 0), (2, 0), (3, 0)]
+          - there is no way through, so the path should be empty
+Manhattan: 4 of 6 passed
 
-for position, dest, description in test_cases:
-    m_path = compute_path("manhattan", position, dest, [])
-    d_path = compute_path("dijkstra", position, dest, [])
-
-    print(f"\nTest: {description}")
-    print(f"  Position: {position}  Destination: {dest}")
-    print(f"  Manhattan path: {m_path}  ({len(m_path)} steps)")
-    print(f"  Dijkstra path:  {d_path}  ({len(d_path)} steps)")
-
-    if len(m_path) == len(d_path):
-        print(f"  PASS: Both produce {len(m_path)}-step paths")
-    else:
-        print(f"  FAIL: Step counts differ!")
+========== BFS ==========
+  PASS  open (0, 0) to (3, 3)  [(1, 0), (2, 0), (3, 0), (3, 1), (3, 2), (3, 3)]
+  PASS  open (0, 0) to (0, 3)  [(0, 1), (0, 2), (0, 3)]
+  PASS  open (2, 1) to (0, 3)  [(1, 1), (0, 1), (0, 2), (0, 3)]
+  PASS  open (1, 1) to (1, 1)  []
+  PASS  wall at (1,0),(1,1): (0,0) to (3,0)  [(0, 1), (0, 2), (1, 2), (2, 2), (3, 2), (3, 1), (3, 0)]
+  PASS  walled off: (0,0) to (3,0)  [] (no path, correctly)
+BFS: 6 of 6 passed
 ```
 
-### The Dispatch Function
+### The swap in a main program
+
 ```python
-def compute_path(algorithm, position, destination, blocked):
-    """Compute a path using the named algorithm. Always returns a path
-    NOT including position, regardless of which algorithm ran."""
-    if algorithm == "manhattan":
-        return compute_manhattan_path(position, destination)
-    else:
-        graph = build_dijkstra_graph(4, 4, blocked)
-        path = compute_dijkstra_path(position, destination, graph)
-        return path[1:]
+def navigate(planner, position, destination):
+    path = planner(position, destination)
+    print("  Path from", position, "to", destination, ":", path, " Steps:", len(path))
+    return destination       # where the robot would be after driving it
+
+add_blocked((2, 0))
+position = navigate(compute_manhattan_path, (0, 0), (3, 3))   # through the wall
+position = navigate(compute_bfs_path, (0, 0), (3, 3))         # around it
 ```
 
-### The One-Argument Swap
-```python
-# ========================================
-# BEFORE (Module 4 style -- Manhattan only)
-# ========================================
-path = compute_manhattan_path(position, dest)
-position, heading = drive_path(path, position, heading)
+### Answer key, Exercise 5
 
-
-# ========================================
-# AFTER (Module 5 -- either algorithm via one argument)
-# ========================================
-path = compute_path("dijkstra", position, dest, blocked)   # <- only this line changed
-position, heading = drive_path(path, position, heading)
-```
-
-### Automated Test Function (Challenge Exercise)
-```python
-def test_path(name, algorithm, position, dest, blocked):
-    """Run a series of checks on a computed path."""
-    print(f"\n--- {name} ---")
-    path = compute_path(algorithm, position, dest, blocked)
-    print(f"  Path: {path}")
-    passed = 0
-    total = 3
-
-    # Check 1: Path ends at destination
-    if (len(path) == 0 and position == dest) or (len(path) > 0 and path[-1] == dest):
-        print(f"  PASS: Ends at {dest}")
-        passed += 1
-    else:
-        print(f"  FAIL: Should end at {dest}")
-
-    # Check 2: No blocked nodes in path
-    blocked_found = [n for n in path if n in blocked]
-    if len(blocked_found) == 0:
-        print(f"  PASS: No blocked nodes in path")
-        passed += 1
-    else:
-        print(f"  FAIL: Blocked nodes in path: {blocked_found}")
-
-    # Check 3: Each step is to an adjacent node (from position, then along path)
-    trace = [position] + path
-    all_ok = True
-    for i in range(len(trace) - 1):
-        r1, c1 = trace[i]
-        r2, c2 = trace[i + 1]
-        if abs(r1 - r2) + abs(c1 - c2) != 1:
-            print(f"  FAIL: Non-adjacent step {trace[i]} -> {trace[i+1]}")
-            all_ok = False
-            break
-    if all_ok:
-        print(f"  PASS: All steps adjacent")
-        passed += 1
-
-    print(f"  Result: {passed}/{total} checks passed")
-    return passed == total
-
-
-# Run the tests
-blocked = [(1, 0), (2, 2)]
-test_path("Short path, no obstacle in way", "dijkstra", (0, 0), (0, 3), blocked)
-test_path("Path must reroute around (1,0)", "dijkstra", (0, 0), (3, 0), blocked)
-test_path("Manhattan, same inputs", "manhattan", (0, 0), (0, 3), blocked)
-```
+Dropping the first step: "first step (2, 0) is not next to the start (0, 0)". Appending the destination again: "step (3, 3) is not next to (3, 3)" (an intersection is not its own neighbor) and the step count is one too many.
 
 ## Teaching Notes
-- **This lesson is the payoff for good design -- with an honest twist.** Students spent Lessons 4-5 building the Dijkstra functions. Now they discover the two algorithms don't line up perfectly, and they build the dispatch function to fix that in one place. Make the swap moment dramatic -- show the old code, make the change live, and run it.
-- **Don't hide the shape mismatch -- it's the actual lesson.** Some students may expect Dijkstra to be a drop-in replacement automatically. Naming the mismatch explicitly (extra `graph` parameter, extra start-position in the output) and showing how the dispatch function papers over it is more honest, and more useful, than pretending it doesn't exist.
-- **Spend time on testing before the swap.** Students are often eager to get to the "cool part" (the swap), but testing teaches a critical skill. Emphasize that professional software developers spend as much time testing as they do writing code.
-- **Let students discover that paths can differ.** When Manhattan and Dijkstra return different paths of the same length, use this as a teaching moment: there are often multiple correct answers, and different algorithms may find different ones. What matters is that the path length is optimal.
-- **Connect to real-world examples.** USB-C is a shared interface -- many different devices use the same connector, sometimes through an adapter. The dispatch function is like that adapter: it lets two things that don't quite match work together anyway.
-- **Save test files.** Students will reuse their test cases in Lessons 7-8 when they add obstacle detection, and again in the capstone (Lesson 9).
+- Returning a *list of problems* from `check_path()` is worth a minute: a test that says only FAIL is a test students will ignore. Every FAIL line here says what is wrong.
+- Function-as-argument is new. Do the `f = compute_bfs_path` demo at the prompt before anyone writes the harness. The common slip is adding parentheses in the `run_all_tests` call.
+- Let students discover the Manhattan FAIL lines themselves rather than announcing them. "Run it against Manhattan and read what it says" lands harder than any explanation.
+- The property-vs-exact lesson generalizes far beyond this course. Say so.
 
 ## Connections to Next Lessons
-- **Lesson 7** will add **obstacle detection** using the XRP rangefinder sensor. Instead of pre-programming the blocked list, the robot will discover obstacles during navigation and feed them to `compute_path("dijkstra", ...)` for real-time rerouting.
-- **Lesson 8** will introduce **obstacle memory** -- saving discovered obstacles between runs so the robot improves over time.
-- **Lesson 9** (Capstone) will combine everything into a complete autonomous navigation system.
-- The interface-mismatch problem introduced here applies broadly in programming -- students will encounter it again whenever they connect two libraries or components that were built independently.
+- **Lesson 7** puts the planner on the robot. The rangefinder loop calls `add_blocked()` exactly as this harness does; the planner cannot tell the difference, which is why passing the paper tests means the robot will re-plan correctly.
+- **Lesson 8** saves and reloads the blocked list; the harness is how to check the reloaded list without driving.
+- **Module 6 (optional)** adds `compute_dijkstra_path` as a third argument to `run_all_tests`, unchanged, plus one more property: total cost.
 
 ---
 
-## Optional Extension: True Polymorphism with Classes
+## Optional Extension: The Harness with Planner Objects
 
-*For courses that also cover classes/objects. Skip this section entirely otherwise; nothing later in the course depends on it.*
+*Do this after the functions harness passes. It is not graded.*
 
-### The Payoff
-The dispatch function works, but it's still one function with an if/else inside -- every time a new algorithm gets added, `compute_path()` itself has to grow another branch. Classes solve the shape-mismatch problem differently: instead of normalizing the *call*, you design both classes to have an **identical method signature** from the start, so no dispatch function is needed at all.
+With the `BFS` and `Manhattan` classes from Lesson 5, the harness is handed an *object* instead of a function, and calls its methods:
 
-```python
-class Manhattan:
-    def __init__(self, start):
-        self.position = start
+| Functions (required) | Class (extension) |
+|---|---|
+| `run_all_tests("BFS", compute_bfs_path)` | `run_all_tests("BFS", BFS())` |
+| `path = planner(position, destination)` | `path = planner.compute_path(position, destination)` |
+| `add_blocked((1, 0))` | `planner.add_blocked((1, 0))` |
+| `clear_blocked()` | `planner.clear_blocked()` |
 
-    def compute_path(self, destination):
-        # ... (from Module 4)
-        ...
+Everything else in the harness is identical. Because both classes have `add_blocked()`, `clear_blocked()` and `compute_path()`, the harness never needs to know which one it holds. `Manhattan.add_blocked()` does nothing, so `Manhattan()` fails the same two tests for the same reason -- which is the correct result.
 
-class Dijkstra:
-    def __init__(self, start, blocked):
-        self.position = start
-        self.blocked = blocked
-        self.graph = self.build_graph()
-
-    def build_graph(self):
-        ...
-
-    def compute_path(self, destination):
-        # ... (from this module's Optional Extensions)
-        ...
-```
-
-Both classes have a `compute_path(destination)` method -- same name, same single parameter, same return type. This shared shape is called a **shared interface**, and code that uses it gets **polymorphism**: the ability to swap one object for another without changing the code that uses it, because both objects respond to the same calls.
-
-```python
-# Using Manhattan
-pathfinder = Manhattan((0, 0))
-
-# Using Dijkstra -- literally just this one line changes
-pathfinder = Dijkstra((0, 0), blocked)
-
-# Everything below is IDENTICAL for either pathfinder:
-path = pathfinder.compute_path(dest)
-```
-
-Unlike the functions version, `Navigator.drive_path()` never needs to know which class `pathfinder` is -- it just calls `.compute_path()` and trusts whatever comes back. No dispatch function, no `if algorithm == "manhattan"` anywhere.
-
-### Discussion Prompt
-"The functions version needed `path[1:]` inside the dispatch function to normalize Dijkstra's output. Does the classes version have that problem?" (It still does, if `Dijkstra.compute_path()`'s reconstruction includes the start position the same way -- classes don't automatically fix an interface mismatch in *return values*, only in *how you call things*. A careful class design would still need `Dijkstra.compute_path()` to slice off the start position internally, to genuinely match `Manhattan.compute_path()`'s behavior.)
-
-### Worksheet
-See the "Optional Extension" section at the end of the Lesson 6 worksheet for matching exercises.
+One wrinkle: `check_path()` needs to know what is blocked to test property 4, and with objects the blocked list lives inside the planner. `code/solutions/lesson-06-testing-class-addon.py` keeps the harness's own small record (`block(planner, x)` calls `planner.add_blocked(x)` and notes it) so the check stays honest. Ask students why the harness shouldn't just read `planner.blocked` directly. (Manhattan has no such attribute, and the harness isn't supposed to know what is inside a planner.)
