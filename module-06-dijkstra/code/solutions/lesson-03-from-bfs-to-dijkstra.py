@@ -5,7 +5,7 @@
 # BFS counts steps. Every step costs the same, so the path with the fewest
 # steps is the fastest. But what if one segment of the grid is slow -- the
 # tape takes a long winding detour between two intersections, so that "one
-# block" takes as long as three? Then the fewest steps is no longer the
+# block" takes as long as four or five? Then the fewest steps is no longer the
 # fastest route, and BFS will happily send the robot down the slow road.
 #
 # Dijkstra's algorithm fixes that. It is BFS with two changes:

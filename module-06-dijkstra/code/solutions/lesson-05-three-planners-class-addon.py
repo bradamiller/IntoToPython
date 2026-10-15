@@ -38,6 +38,11 @@ class Manhattan:
     def clear_blocked(self):
         pass
 
+    def add_slow_edge(self, a, b, cost):
+        # Same idea: Manhattan does not plan by cost. Accepts the call so
+        # the harness can treat every planner alike.
+        pass
+
     def compute_path(self, position, destination):
         path = []
         current_row, current_col = position
@@ -69,6 +74,9 @@ class BFS:
 
     def clear_blocked(self):
         self.blocked = []
+
+    def add_slow_edge(self, a, b, cost):
+        pass        # BFS counts steps; it accepts the call and ignores it
 
     def compute_path(self, position, destination):
         graph = build_graph(self.rows, self.cols, self.blocked)
@@ -189,6 +197,32 @@ def check_path(planner, path, position, destination):
 blocked_for_test = []     # the harness's own record of what it has blocked
 
 
+SLOW = []       # the harness's own record of slow edges, like BLOCKED below
+
+
+def slow(planner, a, b, cost):
+    """Tell the planner about a slow edge AND keep our own record, so the
+    cost check uses the true weights whichever planner we are testing."""
+    SLOW.append((a, b, cost))
+    planner.add_slow_edge(a, b, cost)
+
+
+def true_weight(a, b):
+    for (x, y, cost) in SLOW:
+        if (a == x and b == y) or (a == y and b == x):
+            return cost
+    return 1
+
+
+def true_cost(position, path):
+    total = 0
+    here = position
+    for step in path:
+        total = total + true_weight(here, step)
+        here = step
+    return total
+
+
 def block(planner, intersection):
     planner.add_blocked(intersection)
     blocked_for_test.append(intersection)
@@ -224,6 +258,17 @@ def run_no_path_test(test_name, planner, position, destination):
     return False
 
 
+def run_cost_test(test_name, planner, position, destination, expected_cost):
+    path = planner.compute_path(position, destination)
+    cost = true_cost(position, path)
+    if cost == expected_cost:
+        print("PASS:", test_name, "- cost", cost)
+        return True
+    print("FAIL:", test_name, "- cost", cost, "but the cheapest route costs", expected_cost)
+    print("      path:", path)
+    return False
+
+
 def run_all_tests(name, planner):
     print("========== " + name + " ==========")
     passed = 0
@@ -249,6 +294,16 @@ def run_all_tests(name, planner):
     total = total + 1
     if run_no_path_test("walled off: (0,0) to (3,0)", planner, (0, 0), (3, 0)):
         passed = passed + 1
+
+    # Module 6: the cost property. A fresh planner object per test keeps slow
+    # edges from leaking between planners.
+    unblock_all(planner)
+    slow(planner, (0, 1), (0, 2), 5)
+    total = total + 1
+    if run_cost_test("slow edge (0,1)-(0,2) cost 5: (0,0) to (0,3)", planner, (0, 0), (0, 3), 5):
+        passed = passed + 1
+    while len(SLOW) > 0:
+        SLOW.pop()
 
     unblock_all(planner)
     print(name + ":", passed, "of", total, "passed")

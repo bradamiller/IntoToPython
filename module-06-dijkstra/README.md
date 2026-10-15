@@ -41,9 +41,9 @@ By the end of this module, students will be able to:
 | # | Lesson | Core idea | Code |
 |---|---|---|---|
 | 1 | When Fewest Steps Isn't Fastest | Time a normal block and the slow segment with a stopwatch; a weight is "how many normal blocks' worth of time". Hand-compute the cost of two routes. | paper |
-| 2 | Weights in the Graph | `SLOW_EDGES`, `add_slow_edge(a, b, cost)`, `weight(a, b)`; `path_cost()` as a new harness property; BFS fails it. The limitation, on paper. | split from `lesson-03-*.py` (phase 3) |
+| 2 | Weights in the Graph | `SLOW_EDGES`, `add_slow_edge(a, b, cost)`, `weight(a, b)`; `path_cost()` as a new harness property; BFS fails it. The limitation, on paper. | `code/solutions/lesson-02-weights.py` |
 | 3 | From BFS to Dijkstra | Duplicate `compute_bfs_path`, rename, two changes (closest-first instead of oldest-first; `+ weight` and keep the cheaper total). `print_grid` of costs. Three planners, one harness. | `code/solutions/lesson-03-from-bfs-to-dijkstra.py` |
-| 4 | Drive It | The robot on the slow-segment grid: BFS run, then Dijkstra run. | phase 3 (Module 5 L7 driving loop with the planner swapped) |
+| 4 | Drive It | The robot on the slow-segment grid: BFS run, then Dijkstra run, both plans printed before the button, both timed. | `code/solutions/lesson-04-drive-it.py` |
 | 5 | *Optional extension:* the `Dijkstra` class | Three planner classes through the Module 5 class harness. | `code/solutions/lesson-05-three-planners-class-addon.py` |
 
 ## Physical setup (open — Brad to try on a real grid)
@@ -51,7 +51,7 @@ By the end of this module, students will be able to:
 The module is only honest if the slow segment is *physically real*: something
 students can time and give a number to. Leading candidate: **one grid segment
 whose tape takes a winding detour** between two adjacent intersections, so the
-map says one block but the drive takes about three blocks' time. It needs nothing
+map says one block but the drive takes four or five blocks' time (exactly three ties with the detour round it). It needs nothing
 under the tape, does not disturb line following, and students measure the weight
 with a stopwatch. Alternatives considered and set aside: a rough surface under the
 tape (may disturb the reflectance sensors); "turns cost time" (true, but it makes
@@ -59,10 +59,13 @@ cost depend on heading, which is out of scope).
 
 ## Status
 
-- **Code:** Lessons 3 and 5 exist and run (plain Python, no robot). Lesson 2's code
-  is to be split out of Lesson 3's file. Lesson 4 is Module 5's Lesson 7 driving
-  loop with `compute_dijkstra_path` swapped in.
-- **Lessons, worksheets, slides:** not yet written. `_source-material/` holds the
-  Dijkstra lessons, worksheets and slides from the old Dijkstra-first Module 5;
-  they are seed material for Lessons 1–3 here, not current content.
+- **Code:** Lessons 2, 3, 4 and 5 exist and run (2, 3, 5 on plain Python; 4 against
+  the fake XRPLib). Starters for 2-4 in `code/starter/`.
+- **Lessons and worksheets:** written 2026-10-14 for all five lessons; the site
+  pages (`module-06-dijkstra/lesson-0x-*.mdx`) carry the same content.
+- **Slides:** not written. `_source-material/` holds the old Dijkstra-first Module 5
+  lessons, worksheets and slides; seed material only.
+- **Physical setup:** still open (above). The lessons assume the winding-detour
+  segment and a measured weight of 4 or more; a weight of exactly 3 ties with the
+  three-block detour round one segment, which Lesson 1 teaches on purpose.
 - See `teacher-guide/course-design-decisions.md`, D6, for the reasoning.
