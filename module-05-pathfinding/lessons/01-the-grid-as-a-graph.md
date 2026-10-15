@@ -3,7 +3,7 @@
 ## Overview
 Students learn to see the familiar grid of intersections as a **graph** -- a collection of nodes connected by edges. This is a conceptual lesson with no Python coding. Students work with paper, pencils, and the physical grid to understand graph terminology (nodes, edges, neighbors), discover why the Manhattan algorithm from Module 4 fails when intersections are blocked, and practice finding shortest paths by hand around obstacles. By the end of the lesson, students can draw any grid as a graph, remove blocked nodes, and trace shortest paths that detour around obstacles.
 
-This lesson is the bridge between Module 4's Manhattan pathfinding and Module 5's Dijkstra's algorithm. Students already know how to navigate a clear grid using (row, column) coordinates, tuples, lists, and `compute_manhattan_path()`. Now they confront the reality that real-world grids have obstacles -- and they need a new way of thinking about the grid to handle them. The graph perspective introduced here is the foundation for dictionaries (Lesson 2), Dijkstra's algorithm (Lesson 3), and the Dijkstra functions (Lessons 4-5).
+This lesson is the bridge between Module 4's Manhattan pathfinding and Module 5's breadth-first search. Students already know how to navigate a clear grid using (row, column) coordinates, tuples, lists, and `compute_manhattan_path()`. Now they confront the reality that real-world grids have obstacles -- and they need a new way of thinking about the grid to handle them. The graph perspective introduced here is the foundation for dictionaries (Lesson 2), breadth-first search (Lesson 3), and the pathfinding functions (Lessons 4-5).
 
 ## Learning Objectives
 By the end of this lesson, students will be able to:
@@ -126,7 +126,7 @@ By the end of this lesson, students will be able to:
 4. **Weighted vs. Unweighted**
    - Briefly mention: In some graphs, edges have different costs (a highway might be faster than a side street). These are called **weighted** graphs.
    - Our grid is **unweighted**: every edge costs 1 step. Moving from (0,0) to (0,1) costs the same as (1,1) to (2,1).
-   - This makes our problem simpler, but Dijkstra's algorithm works on both.
+   - This makes our problem simpler. (The optional Module 6 is about what changes when edges have different costs.)
 
 ### Independent Practice (20 minutes)
 **For 50-min classes:** 15 min
@@ -205,7 +205,7 @@ By the end of this lesson, students will be able to:
 **For advanced students**:
 - Work with a larger grid (5x5 or 6x6) and multiple blocked nodes
 - Challenge: Is there a grid configuration where blocking nodes makes it impossible to reach the destination? Draw one.
-- Research: What are some other famous graph algorithms besides Dijkstra's? (BFS, DFS, A*)
+- Research: What are some other famous graph algorithms besides breadth-first search? (Dijkstra's, DFS, A*)
 - Think ahead: How would you represent this graph in Python? What data structure could store "node X connects to nodes Y and Z"? (This previews dictionaries in Lesson 2.)
 - Calculate: On a 4x4 grid, how many total edges exist? (24 edges on the full grid)
 
@@ -279,16 +279,16 @@ print(graph[(0, 0)])    # [(0, 1), (1, 0)]
 ```
 
 ## Teaching Notes
-- **This lesson is the "why" for Dijkstra's algorithm.** Before students can appreciate Dijkstra's, they need to feel the limitation of Manhattan pathfinding. Spend time on the hook -- make the failure of Manhattan vivid and concrete.
+- **This lesson is the "why" for the whole module.** Before students can appreciate a search algorithm, they need to feel the limitation of Manhattan pathfinding. Spend time on the hook -- make the failure of Manhattan vivid and concrete.
 - **Draw big, clear graphs.** Use the entire whiteboard. Have students come up and draw edges, cross out blocked nodes, and trace paths with colored markers. The physical act of drawing reinforces the concepts.
 - **Emphasize that a graph is about connections, not positions.** Students may think a graph is just another way to draw a grid. Help them see that the graph captures WHICH nodes connect to which -- and that removing a node changes those connections for its neighbors.
 - **The word "graph" is confusing.** Students know "graph" from math class as a bar chart or scatter plot. Clarify immediately that in computer science, "graph" means a network of nodes and edges. These are completely different uses of the same word.
-- **Let students struggle with pathfinding.** When they try to find paths around obstacles, resist the urge to give the answer. Let them explore, backtrack, and discover for themselves. This struggle motivates the need for an algorithm (Dijkstra's) that does it systematically.
-- **Connect to GPS.** Students use Google Maps and Waze every day. These apps use graph algorithms similar to Dijkstra's to find routes around traffic and road closures. This is not an abstract concept -- it powers technology they rely on.
-- **Save the worksheets.** Students will reference their hand-drawn graphs and paths in Lesson 3 when they hand-trace Dijkstra's algorithm, and in Lessons 4-5 when they verify their code output.
+- **Let students struggle with pathfinding.** When they try to find paths around obstacles, resist the urge to give the answer. Let them explore, backtrack, and discover for themselves. This struggle motivates the need for an algorithm (breadth-first search) that does it systematically.
+- **Connect to GPS.** Students use Google Maps and Waze every day. These apps use graph search algorithms to find routes around traffic and road closures. This is not an abstract concept -- it powers technology they rely on.
+- **Save the worksheets.** Students will reference their hand-drawn graphs and paths in Lesson 3 when they hand-trace breadth-first search, and in Lessons 4-5 when they verify their code output.
 
 ## Connections to Next Lessons
 - **Lesson 2** will introduce **dictionaries** -- Python's key-value data structure that can represent a graph in code. The graph students drew on paper today will become a Python dictionary: `{(0,0): [(0,1), (1,0)], ...}`
-- **Lesson 3** will teach **Dijkstra's algorithm** -- the systematic method for finding shortest paths on a graph with obstacles. Students will hand-trace the algorithm on the same grids they drew today.
-- **Lessons 4-5** will implement Dijkstra's algorithm as `build_dijkstra_graph()` and `compute_dijkstra_path()` -- returning the same list-of-tuples shape as `compute_manhattan_path()` from Module 4, so `drive_path()` works with either.
+- **Lesson 3** will teach **breadth-first search** -- the systematic method for finding shortest paths on a graph with obstacles. Students will hand-trace the algorithm on the same grids they drew today.
+- **Lessons 4-5** will implement it as `build_graph()`, `add_blocked()` and `compute_bfs_path(position, destination)` -- the same shape as `compute_manhattan_path()` from Module 4, so `drive_path()` works with either.
 - The graph vocabulary introduced here (nodes, edges, neighbors) is used in every remaining lesson of Module 5.

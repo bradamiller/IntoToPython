@@ -303,4 +303,4 @@ _________________________________________________________________
 
 ---
 
-**Next Lesson:** We'll learn about **Dijkstra's Algorithm** — a famous method for finding shortest paths in a graph!
+**Next Lesson:** We'll learn **breadth-first search** — a method for finding shortest paths in a graph, run with a pencil!
