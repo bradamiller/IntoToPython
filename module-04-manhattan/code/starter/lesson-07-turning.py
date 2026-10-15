@@ -34,11 +34,14 @@ def desired_heading(current, next_pos):
     current:  a (row, col) tuple
     next_pos: a (row, col) tuple one step away
     """
-    # TODO: Compare the rows and columns to determine heading
-    # If next_pos row < current row, return 0 (North)
-    # If next_pos col > current col, return 1 (East)
-    # If next_pos row > current row, return 2 (South)
-    # If next_pos col < current col, return 3 (West)
+    # TODO: Compute row_diff and col_diff (next minus current)
+    # TODO: Check BOTH differences in each case:
+    #   col unchanged and row_diff == -1  -> return 0 (North)
+    #   row unchanged and col_diff ==  1  -> return 1 (East)
+    #   col unchanged and row_diff ==  1  -> return 2 (South)
+    #   row unchanged and col_diff == -1  -> return 3 (West)
+    # TODO: If none matched, the two positions are not neighbors:
+    #   raise ValueError(str(current) + " and " + str(next_pos) + " are not neighbors")
     pass
 
 

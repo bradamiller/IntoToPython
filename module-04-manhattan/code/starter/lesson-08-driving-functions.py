@@ -118,13 +118,15 @@ def desired_heading(position, next_pos):
     Logic:
       - row_diff = next_pos[0] - position[0]
       - col_diff = next_pos[1] - position[1]
-      - row_diff == -1 --> 0 (North)
-      - col_diff == 1  --> 1 (East)
-      - row_diff == 1  --> 2 (South)
-      - col_diff == -1 --> 3 (West)
+      - col unchanged and row_diff == -1 --> 0 (North)
+      - row unchanged and col_diff == 1  --> 1 (East)
+      - col unchanged and row_diff == 1  --> 2 (South)
+      - row unchanged and col_diff == -1 --> 3 (West)
+      - anything else: raise ValueError -- they are not neighbors
     """
     # TODO: Calculate row_diff and col_diff
-    # TODO: Return the correct heading number based on the diff values
+    # TODO: Return the correct heading number, checking both diffs each time
+    # TODO: raise ValueError(...) if nothing matched
     pass
 
 

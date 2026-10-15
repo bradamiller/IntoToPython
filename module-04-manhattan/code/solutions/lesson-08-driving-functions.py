@@ -99,14 +99,17 @@ HEADING_NAMES = ["N", "E", "S", "W"]
 def desired_heading(position, next_pos):
     row_diff = next_pos[0] - position[0]
     col_diff = next_pos[1] - position[1]
-    if row_diff == -1:
+    if col_diff == 0 and row_diff == -1:
         return 0  # North
-    elif col_diff == 1:
+    if row_diff == 0 and col_diff == 1:
         return 1  # East
-    elif row_diff == 1:
+    if col_diff == 0 and row_diff == 1:
         return 2  # South
-    elif col_diff == -1:
+    if row_diff == 0 and col_diff == -1:
         return 3  # West
+    # Not one step apart: say so now, where the problem is found,
+    # instead of handing back None and letting turn_to() go wrong later.
+    raise ValueError(str(position) + " and " + str(next_pos) + " are not neighbors")
 
 
 def turn_to(heading, desired):
