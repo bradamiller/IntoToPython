@@ -38,7 +38,7 @@ By the end of this lesson, students will be able to:
 
 2. **Project Requirements**:
    - The robot must:
-     1. Follow the taped circle using `track_until_cross()`
+     1. Follow the taped circle using `track_to_intersection()`, then `drive_past_intersection()`
      2. Detect the cross intersection
      3. Turn around (reverse direction)
      4. Continue following the circle
@@ -85,8 +85,8 @@ By the end of this lesson, students will be able to:
    - Open the sensor and driving toolkit code from Lessons 8-9
    - Verify both toolkits are working individually
    - List the functions available:
-     - Sensor toolkit: `get_error()`, `is_at_cross()`, `is_off_line()`
-     - Driving toolkit: `track_until_cross()`, `turn_right()`, `turn_left()`, `clear_intersection()`
+     - Sensor toolkit: `get_error()`, `is_at_cross()`, `is_either_on_line()`
+     - Driving toolkit: `track_to_intersection()`, `drive_past_intersection()`, `turn_clockwise()`, `turn_counterclockwise()`
 
 3. **Plan the Turn-Around**:
    - To reverse direction on the circle: two right turns, or two left turns, or one 180° turn
@@ -117,37 +117,37 @@ By the end of this lesson, students will be able to:
    def is_at_cross():
        return get_left() > THRESHOLD and get_right() > THRESHOLD
 
-   def is_off_line():
-       return get_left() < THRESHOLD and get_right() < THRESHOLD
+   def is_either_on_line():
+       return get_left() > THRESHOLD or get_right() > THRESHOLD
 
 
    # ===== DRIVING TOOLKIT =====
    drivetrain = DifferentialDrive.get_default_differential_drive()
    BASE_EFFORT = 0.4
    KP = 0.5
+   TURN_EFFORT = 0.25
 
-   def clear_intersection():
-       drivetrain.straight(8, 0.5)
+   def drive_past_intersection():
+       drivetrain.straight(8.75, 0.5)
 
-   def track_until_cross():
+   def track_to_intersection():
        while not is_at_cross():
            error = get_error()
-           left = BASE_EFFORT - error * KP
-           right = BASE_EFFORT + error * KP
-           drivetrain.set_effort(left, right)
+           correction = error * KP
+           drivetrain.arcade(BASE_EFFORT, -correction)
        drivetrain.stop()
 
-   def turn_right():
-       clear_intersection()
-       drivetrain.set_effort(0.3, -0.3)
-       while is_off_line():
+   def turn_clockwise():
+       drivetrain.turn(-60, TURN_EFFORT)
+       drivetrain.arcade(0, -TURN_EFFORT)
+       while not is_either_on_line():
            pass
        drivetrain.stop()
 
-   def turn_left():
-       clear_intersection()
-       drivetrain.set_effort(-0.3, 0.3)
-       while is_off_line():
+   def turn_counterclockwise():
+       drivetrain.turn(60, TURN_EFFORT)
+       drivetrain.arcade(0, TURN_EFFORT)
+       while not is_either_on_line():
            pass
        drivetrain.stop()
 
@@ -160,24 +160,25 @@ By the end of this lesson, students will be able to:
 
    for i in range(4):
        print("Leg", i + 1, "- Following line to cross...")
-       track_until_cross()
+       track_to_intersection()
+       drive_past_intersection()
        print("Cross detected! Reversing direction...")
-       turn_right()
-       turn_right()  # Two right turns = 180 degree reversal
+       turn_clockwise()
+       turn_clockwise()  # Two sensor-ended turns = 180 degree reversal
 
    print("Complete! 4 reversals done.")
    ```
 
 2. **Testing Strategy**:
-   - Test 1: Does `track_until_cross()` work? (Follow to cross, stop)
+   - Test 1: Does `track_to_intersection()` + `drive_past_intersection()` work? (Follow to cross, park on it)
    - Test 2: Does the turn-around work? (Turn and find line again)
    - Test 3: Does the full loop work for 1 reversal?
    - Test 4: Full program — 4 reversals
 
 3. **Common Issues & Solutions**:
    - **Robot doesn't detect cross**: Threshold may need adjustment, or tape is too thin
-   - **Robot loses line after turning**: Check `clear_intersection()`'s 8 cm distance against your robot
-   - **Robot goes wrong direction after turn**: Try `turn_left()` instead of `turn_right()`
+   - **Robot loses line after turning**: Check `drive_past_intersection()`'s 8.75 cm against your robot's sensor-to-axle distance, and the blind 60 degrees in the turn
+   - **Robot goes wrong direction after turn**: Try `turn_counterclockwise()` instead of `turn_clockwise()`
    - **Robot overshoots the cross**: Reduce `BASE_EFFORT` for slower, more accurate driving
 
 ### Presentation & Reflection (15 minutes)
@@ -237,7 +238,7 @@ By the end of this lesson, students will be able to:
 **For advanced students**:
 - Add timing: print how long each leg takes
 - Add speed control: slow on first leg, faster on subsequent legs
-- Create a `turn_around()` function instead of calling `turn_right()` twice
+- Create a `turn_around()` function instead of calling `turn_clockwise()` twice
 - Add error recovery: if the robot loses the line, search for it
 - Work through the Optional Extension below and compare the two versions directly
 
@@ -249,7 +250,7 @@ By the end of this lesson, students will be able to:
 - **The Optional Extension is a separate, self-contained add-on.** If your course doesn't cover classes, skip it entirely — Module 3 only depends on the functions above, never on the class version.
 
 ## Connections to Future Modules
-- **Module 3** uses the driving toolkit directly on the grid — `track_until_cross()` drives between intersections
+- **Module 3** uses the driving toolkit directly on the grid — `track_to_intersection()` and `drive_past_intersection()` drive between intersections
 - **Module 4** builds Manhattan pathfinding and navigation functions on top of this toolkit
 - **Module 5** replaces the Manhattan pathfinding function with a Dijkstra one — same interface, different algorithm
 - The toolkit design pattern established here carries through the entire course
@@ -283,8 +284,8 @@ class LineSensor:
     def is_at_cross(self):
         return self.get_left() > self.threshold and self.get_right() > self.threshold
 
-    def is_off_line(self):
-        return self.get_left() < self.threshold and self.get_right() < self.threshold
+    def is_either_on_line(self):
+        return self.get_left() > self.threshold or self.get_right() > self.threshold
 
 
 class LineTrack:
@@ -293,29 +294,29 @@ class LineTrack:
         self.drivetrain = DifferentialDrive.get_default_differential_drive()
         self.base_effort = 0.4
         self.kp = 0.5
+        self.turn_effort = 0.25
 
-    def clear_intersection(self):
-        self.drivetrain.straight(8, 0.5)
+    def drive_past_intersection(self):
+        self.drivetrain.straight(8.75, 0.5)
 
-    def track_until_cross(self):
+    def track_to_intersection(self):
         while not self.sensor.is_at_cross():
             error = self.sensor.get_error()
-            left = self.base_effort - error * self.kp
-            right = self.base_effort + error * self.kp
-            self.drivetrain.set_effort(left, right)
+            correction = error * self.kp
+            self.drivetrain.arcade(self.base_effort, -correction)
         self.drivetrain.stop()
 
-    def turn_right(self):
-        self.clear_intersection()
-        self.drivetrain.set_effort(0.3, -0.3)
-        while self.sensor.is_off_line():
+    def turn_clockwise(self):
+        self.drivetrain.turn(-60, self.turn_effort)
+        self.drivetrain.arcade(0, -self.turn_effort)
+        while not self.sensor.is_either_on_line():
             pass
         self.drivetrain.stop()
 
-    def turn_left(self):
-        self.clear_intersection()
-        self.drivetrain.set_effort(-0.3, 0.3)
-        while self.sensor.is_off_line():
+    def turn_counterclockwise(self):
+        self.drivetrain.turn(60, self.turn_effort)
+        self.drivetrain.arcade(0, self.turn_effort)
+        while not self.sensor.is_either_on_line():
             pass
         self.drivetrain.stop()
 
@@ -329,12 +330,13 @@ print("Module 2 Final Project - Starting!")
 
 for i in range(4):
     print("Leg", i + 1, "- Following line to cross...")
-    tracker.track_until_cross()
+    tracker.track_to_intersection()
+    tracker.drive_past_intersection()
     print("Cross detected! Reversing direction...")
-    tracker.turn_right()
-    tracker.turn_right()  # Two right turns = 180 degree reversal
+    tracker.turn_clockwise()
+    tracker.turn_clockwise()  # Two sensor-ended turns = 180 degree reversal
 
 print("Complete! 4 reversals done.")
 ```
 
-Every method call in this version has a direct, one-to-one counterpart in the functions version above (`tracker.track_until_cross()` ↔ `track_until_cross()`, and so on) -- the robot's behavior is identical either way.
+Every method call in this version has a direct, one-to-one counterpart in the functions version above (`tracker.track_to_intersection()` ↔ `track_to_intersection()`, and so on) -- the robot's behavior is identical either way.

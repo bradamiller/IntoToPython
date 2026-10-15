@@ -1,7 +1,7 @@
 # Lesson 8: Sensor Functions
 
 ## Overview
-Students take the tangled sensor-reading code from Lesson 7 and organize it into a small toolkit of well-named functions, the same way Module 1 organized repeated driving code into `draw_polygon()`. Nothing here is new syntax -- students already know `def`, parameters, and `return` from Module 1. The one new pattern is functions sharing state through **global variables** (the sensor object, the threshold) instead of everything living inside one function. By the end, students will have a `get_error()` / `is_at_cross()` / `is_off_line()` toolkit they can call from anywhere in the file.
+Students take the tangled sensor-reading code from Lesson 7 and organize it into a small toolkit of well-named functions, the same way Module 1 organized repeated driving code into `draw_polygon()`. Nothing here is new syntax -- students already know `def`, parameters, and `return` from Module 1. The one new pattern is functions sharing state through **global variables** (the sensor object, the threshold) instead of everything living inside one function. By the end, students will have a `get_error()` / `is_at_cross()` / `is_either_on_line()` toolkit they can call from anywhere in the file.
 
 This lesson stands on its own -- classes are never required to finish it or any later module. An **optional extension** at the end of this file shows how to repackage the same toolkit as a `LineSensor` class, for courses that also want to cover OOP.
 
@@ -72,7 +72,7 @@ By the end of this lesson, students will be able to:
      ```python
      error = get_error()
      at_cross = is_at_cross()
-     off_line = is_off_line()
+     on_line = is_either_on_line()
      ```
    - Ask: "Doesn't this read almost like English?"
 
@@ -129,23 +129,24 @@ By the end of this lesson, students will be able to:
      print(f"Error: {error}")
      ```
 
-4. **Step 4: `is_at_cross()` and `is_off_line()`**:
+4. **Step 4: `is_at_cross()` and `is_either_on_line()`**:
+   - Both start with `is_` because they answer a yes/no question. Keep that prefix for every Boolean function; it declares intent.
    - These return `True` or `False` (Boolean values):
      ```python
      def is_at_cross():
          return get_left() > THRESHOLD and get_right() > THRESHOLD
 
-     def is_off_line():
-         return get_left() < THRESHOLD and get_right() < THRESHOLD
+     def is_either_on_line():
+         return get_left() > THRESHOLD or get_right() > THRESHOLD
      ```
    - Explain:
      - `is_at_cross()`: Both sensors see dark (the line) -- this means a cross/intersection
-     - `is_off_line()`: Neither sensor sees dark -- the robot has wandered off the line
+     - `is_either_on_line()`: At least one sensor sees dark -- `or`, not `and`. This is the test a turn needs in Lesson 9: spin until a sensor finds the next line. Off the line entirely, both functions return `False`.
      - Notice `THRESHOLD` is used directly, no different from how `get_left()` is used -- both are just names available to every function in the file
    - Test:
      ```python
      print(f"At cross? {is_at_cross()}")
-     print(f"Off line? {is_off_line()}")
+     print(f"On line? {is_either_on_line()}")
      ```
 
 5. **Demo: Complete Sensor Toolkit on Robot**:
@@ -170,8 +171,8 @@ By the end of this lesson, students will be able to:
      def is_at_cross():
          return get_left() > THRESHOLD and get_right() > THRESHOLD
 
-     def is_off_line():
-         return get_left() < THRESHOLD and get_right() < THRESHOLD
+     def is_either_on_line():
+         return get_left() > THRESHOLD or get_right() > THRESHOLD
 
      # Test program
      board = Board.get_default_board()
@@ -181,8 +182,8 @@ By the end of this lesson, students will be able to:
      for i in range(20):
          error = get_error()
          cross = is_at_cross()
-         off = is_off_line()
-         print(f"Error: {error:.2f}  Cross: {cross}  Off: {off}")
+         on_line = is_either_on_line()
+         print(f"Error: {error:.2f}  Cross: {cross}  On line: {on_line}")
          time.sleep(0.5)
      ```
    - Upload and run on the robot. Move the robot over the line by hand to see values change.
@@ -218,8 +219,8 @@ By the end of this lesson, students will be able to:
   def is_at_cross():
       return get_left() > THRESHOLD and get_right() > THRESHOLD
 
-  def is_off_line():
-      return get_left() < THRESHOLD and get_right() < THRESHOLD
+  def is_either_on_line():
+      return get_left() > THRESHOLD or get_right() > THRESHOLD
 
   board = Board.get_default_board()
 
@@ -228,7 +229,7 @@ By the end of this lesson, students will be able to:
   for i in range(10):
       print(f"Error: {get_error():.2f}")
       print(f"  At cross: {is_at_cross()}")
-      print(f"  Off line: {is_off_line()}")
+      print(f"  On line: {is_either_on_line()}")
       time.sleep(0.5)
   ```
 
@@ -242,10 +243,10 @@ By the end of this lesson, students will be able to:
       print(f"Left: {left:.2f}  Right: {right:.2f}  Error: {error:.2f}")
       if is_at_cross():
           print("  --> CROSS DETECTED")
-      elif is_off_line():
-          print("  --> OFF THE LINE")
-      else:
+      elif is_either_on_line():
           print("  --> Tracking line")
+      else:
+          print("  --> OFF THE LINE")
   ```
 - Test by moving the robot over the line by hand
 
@@ -278,7 +279,7 @@ By the end of this lesson, students will be able to:
 **Summative (worksheet/exit ticket)**:
 1. What line of code creates the global `reflectance` object, and where does it go in the file?
 2. Why doesn't `get_error()` need `reflectance` passed in as a parameter?
-3. Write a function `is_on_line()` that returns True when at least one sensor sees the line.
+3. Write a function `is_off_line()` that returns True when neither sensor sees the line. (How does it relate to `is_either_on_line()`?)
 4. Given the toolkit above, what does `get_error()` return when the robot is centered on the line?
 5. Why does `set_threshold()` need the `global` keyword but `get_error()` does not?
 
@@ -326,8 +327,8 @@ def get_error():
 def is_at_cross():
     return get_left() > THRESHOLD and get_right() > THRESHOLD
 
-def is_off_line():
-    return get_left() < THRESHOLD and get_right() < THRESHOLD
+def is_either_on_line():
+    return get_left() > THRESHOLD or get_right() > THRESHOLD
 ```
 
 ### Comparison: Before and After
@@ -407,7 +408,7 @@ The toolkit above works well for one robot with one set of sensors. But a global
    def is_at_cross(self):
        return self.get_left() > self.threshold and self.get_right() > self.threshold
 
-   def is_off_line(self):
+   def is_either_on_line(self):
        return self.get_left() < self.threshold and self.get_right() < self.threshold
    ```
    - Notice: everywhere `get_left()` used to call another function directly, it now needs `self.` in front -- `self.get_left()` instead of `get_left()`. Every method takes `self` as its first parameter, but you never type it when *calling* a method -- Python passes it automatically.

@@ -176,10 +176,10 @@ def is_at_cross():
     return _____________________________________________
 ```
 
-Now write `is_off_line()`. It should return `True` when **both** sensors read below `THRESHOLD`:
+Now write `is_either_on_line()`. It should return `True` when **at least one** sensor reads above `THRESHOLD`:
 
 ```python
-def is_off_line():
+def is_either_on_line():
     return _____________________________________________
 ```
 

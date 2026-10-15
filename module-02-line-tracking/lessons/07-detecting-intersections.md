@@ -246,5 +246,5 @@ while True:
 
 ## Connections to Next Lessons
 - **Lesson 8** will package the sensor logic into a `LineSensor` class with `is_at_cross()` method
-- **Lesson 9** will package the driving logic into a `LineTrack` class with `track_until_cross()` method
+- **Lesson 9** will package the driving logic into functions -- `track_to_intersection()`, `drive_past_intersection()` and sensor-ended turns -- built on Lesson 8's sensor functions
 - **Lesson 10** (final project) uses both classes to do exactly what we did here, but with cleaner, reusable code

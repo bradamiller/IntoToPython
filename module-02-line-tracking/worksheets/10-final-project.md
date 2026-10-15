@@ -46,15 +46,15 @@ List the functions available in each toolkit:
 |---|---|---|
 | `get_error()` | ________________ | ________________ |
 | `is_at_cross()` | ________________ | ________________ |
-| `is_off_line()` | ________________ | ________________ |
+| `is_either_on_line()` | ________________ | ________________ |
 
 **Driving toolkit:**
 | Function | What It Does | When to Use |
 |---|---|---|
-| `track_until_cross()` | ________________ | ________________ |
-| `turn_right()` | ________________ | ________________ |
-| `turn_left()` | ________________ | ________________ |
-| `clear_intersection()` | ________________ | ________________ |
+| `track_to_intersection()` | ________________ | ________________ |
+| `drive_past_intersection()` | ________________ | ________________ |
+| `turn_clockwise()` | ________________ | ________________ |
+| `turn_counterclockwise()` | ________________ | ________________ |
 
 ---
 
@@ -64,7 +64,7 @@ Record the result of each test:
 
 | Test # | What I Tested | Result (Pass/Fail) | Notes |
 |---|---|---|---|
-| 1 | `track_until_cross()` works | __________ | ________________________ |
+| 1 | `track_to_intersection()` + `drive_past_intersection()` park on the cross | __________ | ________________________ |
 | 2 | Turn-around works | __________ | ________________________ |
 | 3 | 1 full reversal | __________ | ________________________ |
 | 4 | 4 reversals complete | __________ | ________________________ |
@@ -151,7 +151,7 @@ Match each concept to when it was introduced:
 
 *Skip this section if your course doesn't cover classes.*
 
-1. **In the class version's main program, what line replaces every bare `track_until_cross()` call?**
+1. **In the class version's main program, what line replaces every bare `track_to_intersection()` call?**
 
    _________________________________________________________________
 
