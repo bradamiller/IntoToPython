@@ -309,6 +309,28 @@ convert it twice.
 While phase 2 is done and phase 3 is not, this repo's code and its lessons will
 disagree in Modules 4-5. Commit messages say so.
 
+**Phase 3 must-dos recorded from Brad (2026-10-14):**
+
+- **The house analogy, part 2: an address is `self`.** The site's Lesson 2-8 now
+  opens its class section with a blueprint-and-houses figure
+  (`LearningPython/static/img/lesson-m2-08/class-and-objects.svg`: one plan,
+  four houses, `House("red")` ... `House("green")`). At the **first constructor
+  with parameters** -- today that is the `Navigator(start, heading)` extension
+  in Lesson 4-8 -- bring the figure back with an *address* on each house and
+  teach: the address uniquely identifies one house (two identical houses are
+  still two houses); a method is a work order written once for every house,
+  with a blank for the address (that is why `self` is the first parameter in
+  `def`); and when you call `red_house.paint()` Python fills the blank in from
+  the house you pointed at (that is why `self` is absent from the call), so the
+  method works on *this* house's color, windows, `position`. Map the two
+  classic errors onto it: no `self` in the `def` = a form with no address blank
+  ("takes 0 positional arguments but 1 was given"); no `self.` prefix inside =
+  a work order with no address attached (NameError on `color`). Say plainly
+  that in Python the address *is* the house -- `self` is never a number or name
+  students handle. `Navigator((0, 0), 0)` and `Navigator((3, 3), 2)` are two
+  houses from one plan with different numbers on the door. Draw the second
+  figure (addresses on the houses) when writing that lesson.
+
 **RESOLVED 2026-10-14: Module 5's driving layer is now Module 4's (D10).**
 *History:* the February Module 5 code had its own `Navigator` that drove by
 dead reckoning (`drivetrain.turn(90)`, `drivetrain.straight(20)`, string
